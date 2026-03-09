@@ -136,9 +136,9 @@ export default async function LandingPage() {
             ].map((feature) => (
               <div
                 key={feature.title}
-                className="p-6 rounded-2xl border border-border bg-card/40 hover:bg-card transition-colors group shadow-sm"
+                className="p-8 rounded-3xl border border-border/50 bg-card/40 hover:bg-card hover:border-primary/30 transition-all group shadow-xl backdrop-blur-xl"
               >
-                <div className={`w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform`}>
+                <div className={`w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform shadow-inner`}>
                   {feature.icon}
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
@@ -182,9 +182,9 @@ export default async function LandingPage() {
             ].map((plan) => (
               <div
                 key={plan.name}
-                className={`p-6 rounded-2xl border relative flex flex-col shadow-sm ${plan.badge
+                className={`p-8 rounded-3xl border relative flex flex-col shadow-2xl backdrop-blur-xl transition-all hover:-translate-y-1 ${plan.badge
                   ? 'border-primary bg-card ring-1 ring-primary/20'
-                  : 'border-border bg-card/40 hover:bg-card transition-colors'
+                  : 'border-border/50 bg-card/40 hover:bg-card'
                   }`}
               >
                 {plan.badge && (

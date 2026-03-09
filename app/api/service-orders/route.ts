@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
             problem_description: body.problem_description,
             equipment_description: body.equipment_description,
             equipment_serial: body.equipment_serial,
-            estimated_time_minutes: null, // Removed as per request
+            estimated_time_minutes: body.estimated_time_minutes || null,
             estimated_cost: body.estimated_cost || 0,
             parts_cost: body.parts_cost || 0,
             labor_cost: body.labor_cost || 0,

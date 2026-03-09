@@ -1,6 +1,6 @@
 'use client'
 
-import { Menu, Bell, Search } from 'lucide-react'
+import { Bell, Search, Command } from 'lucide-react'
 import { useAppStore } from '@/store/appStore'
 import ThemeToggle from './ThemeToggle'
 import { UserButton, useUser } from '@clerk/nextjs'
@@ -12,8 +12,8 @@ interface HeaderProps {
 }
 
 export default function Header({ title }: HeaderProps) {
-    const { sidebarOpen, setSidebarOpen } = useAppStore()
-    const { user } = useUser()
+    const { user } = useAppStore()
+    const { user: clerkUser } = useUser()
     const router = useRouter()
     const [searchQuery, setSearchQuery] = useState('')
 
@@ -25,61 +25,67 @@ export default function Header({ title }: HeaderProps) {
     }
 
     return (
-        <header className="h-16 lg:h-20 border-b border-border bg-background/80 backdrop-blur-2xl flex items-center px-4 lg:px-8 gap-4 lg:gap-8 sticky top-0 z-10 shadow-sm transition-colors duration-500">
-            <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="w-10 h-10 hidden lg:flex items-center justify-center rounded-xl bg-muted text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all border border-border"
-            >
-                <Menu className="w-5 h-5" />
-            </button>
+        <header className="h-20 lg:h-24 px-6 lg:px-12 flex items-center justify-between sticky top-0 z-40 bg-background/40 backdrop-blur-3xl border-b border-white/5 transition-all duration-500">
 
-            <div className="flex-1 flex items-center gap-8">
-                <h1 className="text-sm font-black tracking-[0.2em] text-foreground uppercase hidden md:block border-r border-border pr-8">{title}</h1>
+            {/* Left: Mobile Title / Breadcrumb */}
+            <div className="flex items-center gap-6">
+                <div className="flex flex-col">
+                    <div className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 leading-none">Nexus OS 2.0</span>
+                    </div>
+                    <h1 className="text-lg font-black tracking-tighter text-foreground mt-1">{title}</h1>
+                </div>
+            </div>
 
-                {/* Search Bar - Stylized */}
-                <form onSubmit={handleSearch} className="relative max-w-md w-full hidden lg:block group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors cursor-text" onClick={() => document.getElementById('global-search')?.focus()} />
+            {/* Center: Global Search (Premium Style) */}
+            <div className="flex-1 max-w-2xl px-12 hidden md:block">
+                <form onSubmit={handleSearch} className="relative group">
+                    <div className="absolute inset-x-0 inset-y-0 bg-primary/5 rounded-[1.5rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
+                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <input
                         id="global-search"
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Pesquisar em Nexus OS..."
-                        className="w-full bg-muted border border-border rounded-xl py-2.5 pl-11 pr-4 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/30 focus:bg-card transition-all font-medium"
+                        placeholder="Pesquisar em todo o sistema..."
+                        className="w-full bg-muted/40 border border-border/50 rounded-[1.5rem] h-12 flex items-center pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-primary/30 transition-all placeholder:opacity-40"
                     />
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 bg-background/50 border border-border/50 px-2 py-1 rounded-lg opacity-40 group-focus-within:opacity-100 transition-opacity">
+                        <Command className="w-3 h-3" />
+                        <span className="text-[10px] font-black">K</span>
+                    </div>
                 </form>
             </div>
 
-            <div className="flex items-center gap-6">
+            {/* Right: Actions & Profile */}
+            <div className="flex items-center gap-6 lg:gap-8">
                 <div className="flex items-center gap-3">
-                    <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all relative border border-border">
-                        <Bell className="w-4 h-4" />
-                        <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-background shadow-[0_0_8px_rgba(59,130,246,0.8)]"></span>
+                    <button className="w-12 h-12 flex items-center justify-center rounded-2xl bg-muted/40 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all relative border border-white/5">
+                        <Bell className="w-5 h-5" />
+                        <span className="absolute top-3.5 right-3.5 w-2 h-2 bg-primary rounded-full border-2 border-background shadow-[0_0_12px_rgba(59,130,246,0.6)]"></span>
                     </button>
+
+                    <div className="hidden lg:block">
+                        <ThemeToggle />
+                    </div>
                 </div>
 
-                <div className="h-10 w-px bg-border mx-2" />
+                <div className="h-10 w-px bg-border/40" />
 
-                <ThemeToggle />
-
-                <div className="h-10 w-px bg-border mx-2" />
-
-                {/* Profile Button */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4 group cursor-pointer">
                     <div className="text-right hidden sm:block">
-                        <p className="text-[10px] font-black text-foreground uppercase leading-none">{user?.fullName || 'Carregando...'}</p>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase mt-1">{user ? 'Conectado' : 'Aguarde'}</p>
+                        <p className="text-[11px] font-black text-foreground uppercase tracking-tight group-hover:text-primary transition-colors">{clerkUser?.fullName || 'Nexus Operator'}</p>
+                        <p className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest mt-0.5">Terminal Ativo</p>
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center overflow-hidden hover:border-primary/50 transition-colors">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 border-2 border-primary/20 p-1 flex items-center justify-center group-hover:border-primary/50 transition-all scale-100 group-hover:scale-110">
                         <UserButton
                             appearance={{
                                 elements: {
-                                    avatarBox: "w-full h-full rounded-none",
+                                    avatarBox: "w-full h-full rounded-xl",
                                     userButtonTrigger: "w-full h-full focus:shadow-none focus:outline-none"
                                 }
                             }}
-                            userProfileMode="navigation"
-                            userProfileUrl="/profile"
                         />
                     </div>
                 </div>
@@ -87,3 +93,4 @@ export default function Header({ title }: HeaderProps) {
         </header>
     )
 }
+

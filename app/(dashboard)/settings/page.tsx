@@ -2,13 +2,27 @@ import { auth } from '@clerk/nextjs/server'
 import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
 import CompanySettingsForm from '@/components/settings/CompanySettingsForm'
+import PaymentMethodsSettings from '@/components/settings/PaymentMethodsSettings'
 import { Building2, Settings, ShieldCheck, Zap, Layers, Clock, CreditCard, ChevronRight, DollarSign } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 
 export default async function SettingsPage() {
     const { userId } = await auth()
     const db = createAdminClient()
-    const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId!).single()
+    const { data: user } = await db.from('users').select('company_id, role').eq('clerk_id', userId!).single()
+
+    if (user?.role !== 'admin') {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] p-8 text-center space-y-4">
+                <div className="p-4 rounded-3xl bg-rose-500/10 text-rose-500">
+                    <ShieldCheck className="w-12 h-12" />
+                </div>
+                <h1 className="text-2xl font-black uppercase tracking-tight">Acesso Restrito</h1>
+                <p className="text-muted-foreground max-w-sm">Você não tem permissão de administrador para acessar as configurações do sistema.</p>
+            </div>
+        )
+    }
+
     const { data: company } = await db.from('companies').select('*').eq('id', user?.company_id).single()
     const { data: serviceTypes } = await db.from('service_types').select('*').eq('company_id', user?.company_id).order('name')
 
@@ -123,6 +137,11 @@ export default async function SettingsPage() {
                                 </div>
                             )}
                         </div>
+                    </div>
+
+                    {/* Section: Payment Methods */}
+                    <div className="md:col-span-2">
+                        <PaymentMethodsSettings />
                     </div>
                 </div>
             </div>

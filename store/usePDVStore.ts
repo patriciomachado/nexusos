@@ -11,16 +11,28 @@ interface CartItem {
 
 interface PDVStore {
     cart: CartItem[]
+    discount: number
+    taxRate: number
     addItem: (product: InventoryItem) => void
     removeItem: (id: string) => void
     updateQuantity: (id: string, quantity: number) => void
+    setDiscount: (amount: number) => void
+    setSearchQuery: (query: string) => void
     clearCart: () => void
+    searchQuery: string
+    subtotal: number
+    taxAmount: number
     total: number
 }
 
 export const usePDVStore = create<PDVStore>((set, get) => ({
     cart: [],
+    discount: 0,
+    taxRate: 0.1177, // Example tax rate based on screenshot (approx 48.25 / 409.90)
+    subtotal: 0,
+    taxAmount: 0,
     total: 0,
+    searchQuery: '',
     addItem: (product) => {
         const { cart } = get()
         const existingItem = cart.find((item) => item.product.id === product.id)
@@ -45,14 +57,18 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
             ]
         }
 
-        const total = newCart.reduce((acc, item) => acc + item.total, 0)
-        set({ cart: newCart, total })
+        const subtotal = newCart.reduce((acc, item) => acc + item.total, 0)
+        const taxAmount = subtotal * get().taxRate
+        const total = subtotal + taxAmount - get().discount
+        set({ cart: newCart, subtotal, taxAmount, total })
     },
     removeItem: (id) => {
         const { cart } = get()
         const newCart = cart.filter((item) => item.product.id !== id)
-        const total = newCart.reduce((acc, item) => acc + item.total, 0)
-        set({ cart: newCart, total })
+        const subtotal = newCart.reduce((acc, item) => acc + item.total, 0)
+        const taxAmount = subtotal * get().taxRate
+        const total = subtotal + taxAmount - get().discount
+        set({ cart: newCart, subtotal, taxAmount, total })
     },
     updateQuantity: (id, quantity) => {
         const { cart } = get()
@@ -64,8 +80,17 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
         const newCart = cart.map((item) =>
             item.product.id === id ? { ...item, quantity, total: quantity * item.price } : item
         )
-        const total = newCart.reduce((acc, item) => acc + item.total, 0)
-        set({ cart: newCart, total })
+        const subtotal = newCart.reduce((acc, item) => acc + item.total, 0)
+        const taxAmount = subtotal * get().taxRate
+        const total = subtotal + taxAmount - get().discount
+        set({ cart: newCart, subtotal, taxAmount, total })
     },
-    clearCart: () => set({ cart: [], total: 0 }),
+    setDiscount: (amount) => {
+        const subtotal = get().subtotal
+        const taxAmount = get().taxAmount
+        const total = subtotal + taxAmount - amount
+        set({ discount: amount, total })
+    },
+    setSearchQuery: (query) => set({ searchQuery: query }),
+    clearCart: () => set({ cart: [], subtotal: 0, taxAmount: 0, total: 0, discount: 0, searchQuery: '' }),
 }))

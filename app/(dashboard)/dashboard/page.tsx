@@ -188,8 +188,8 @@ export default async function DashboardPage() {
                 {/* Main Stats Grid - Enhanced Scale */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                     {kpis.map((kpi) => (
-                        <div key={kpi.label} className="bg-card/50 backdrop-blur-xl border border-border hover:border-primary/30 rounded-2xl lg:rounded-3xl p-5 lg:p-6 transition-all group relative overflow-hidden shadow-sm">
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-3xl rounded-full translate-x-12 -translate-y-12" />
+                        <div key={kpi.label} className="bg-card/40 backdrop-blur-3xl border border-border/50 hover:border-primary/40 rounded-3xl p-6 lg:p-8 transition-all group relative overflow-hidden shadow-2xl">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full translate-x-12 -translate-y-12 group-hover:bg-primary/10 transition-colors" />
                             <div className="flex items-center justify-between mb-4 relative z-10">
                                 <div className={cn(
                                     "w-10 h-10 lg:w-12 lg:h-12 rounded-xl lg:rounded-2xl flex items-center justify-center border transition-all group-hover:scale-110 shadow-inner",
@@ -200,15 +200,15 @@ export default async function DashboardPage() {
                                     <kpi.icon className="w-5 h-5 lg:w-6 lg:h-6" />
                                 </div>
                                 <div className={cn(
-                                    "px-2.5 py-0.5 lg:px-3 lg:py-1 rounded-lg text-[10px] lg:text-xs font-black flex items-center gap-1.5 shadow-sm",
-                                    kpi.trend === 'up' ? "bg-green-500/10 text-green-400 border border-green-500/10" : "bg-red-500/10 text-red-400 border border-red-500/10"
+                                    "px-3 py-1 rounded-xl text-[10px] font-black flex items-center gap-1.5 shadow-sm backdrop-blur-md border border-white/5",
+                                    kpi.trend === 'up' ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
                                 )}>
                                     {kpi.change}
                                     {kpi.trend === 'up' ? <ArrowUpRight className="w-3 h-3 lg:w-3.5 lg:h-3.5" /> : <ArrowDownRight className="w-3 h-3 lg:w-3.5 lg:h-3.5" />}
                                 </div>
                             </div>
-                            <h3 className="text-[9px] lg:text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] leading-none mb-2 opacity-50">{kpi.label}</h3>
-                            <p className="text-2xl lg:text-3xl font-black text-foreground tracking-tighter">{kpi.value}</p>
+                            <h3 className="text-[9px] font-black text-foreground/40 uppercase tracking-[0.25em] leading-none mb-3 opacity-60 group-hover:opacity-100 transition-opacity">{kpi.label}</h3>
+                            <p className="text-3xl lg:text-4xl font-black text-foreground tracking-tighter group-hover:scale-[1.02] transition-transform origin-left">{kpi.value}</p>
                         </div>
                     ))}
                 </div>
