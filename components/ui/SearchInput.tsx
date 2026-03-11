@@ -7,11 +7,17 @@ import { useCallback, useEffect, useState, useTransition } from 'react'
 interface SearchInputProps {
     placeholder?: string
     className?: string
+    value?: string
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+    syncWithUrl?: boolean
 }
 
 export default function SearchInput({
     placeholder = "Pesquisar...",
-    className = "w-full bg-muted/40 border border-border rounded-3xl py-3 pl-11 pr-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 transition-all backdrop-blur-md"
+    className = "w-full bg-muted/40 border border-border rounded-3xl py-3 pl-11 pr-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 transition-all backdrop-blur-md",
+    value,
+    onChange,
+    syncWithUrl = true
 }: SearchInputProps) {
     const router = useRouter()
     const pathname = usePathname()
@@ -22,8 +28,10 @@ export default function SearchInput({
 
     // Update local state if URL changes externally
     useEffect(() => {
-        setSearchTerm(searchParams.get('search') || '')
-    }, [searchParams])
+        if (syncWithUrl) {
+            setSearchTerm(searchParams.get('search') || '')
+        }
+    }, [searchParams, syncWithUrl])
 
     const handleSearch = useCallback((term: string) => {
         const params = new URLSearchParams(searchParams)
@@ -41,6 +49,8 @@ export default function SearchInput({
 
     // Local debounce effect to prevent excessive URL updates
     useEffect(() => {
+        if (!syncWithUrl) return
+
         const timeoutId = setTimeout(() => {
             if (searchTerm !== (searchParams.get('search') || '')) {
                 handleSearch(searchTerm)
@@ -48,7 +58,7 @@ export default function SearchInput({
         }, 500)
 
         return () => clearTimeout(timeoutId)
-    }, [searchTerm, searchParams, handleSearch])
+    }, [searchTerm, searchParams, handleSearch, syncWithUrl])
 
     return (
         <div className="relative w-full group">
@@ -56,8 +66,8 @@ export default function SearchInput({
             <input
                 type="text"
                 placeholder={placeholder}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={value !== undefined ? value : searchTerm}
+                onChange={onChange || ((e) => setSearchTerm(e.target.value))}
                 className={className}
             />
         </div>

@@ -26,48 +26,63 @@
 }
 
 :root {
-  --background: 210 20% 98%;
+  --background: 210 30% 98%;
   --foreground: 224 71% 4%;
   --card: 0 0% 100%;
   --card-foreground: 224 71% 4%;
   --popover: 0 0% 100%;
   --popover-foreground: 224 71% 4%;
-  --primary: 221.2 83.2% 53.3%;
+  --primary: 250 95% 60%;
   --primary-foreground: 210 40% 98%;
   --secondary: 210 40% 96.1%;
   --secondary-foreground: 222.2 47.4% 11.2%;
   --muted: 210 40% 96.1%;
   --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
+  --accent: 250 95% 95%;
   --accent-foreground: 222.2 47.4% 11.2%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
   --border: 214.3 31.8% 91.4%;
   --input: 214.3 31.8% 91.4%;
-  --ring: 221.2 83.2% 53.3%;
-  --radius: 0.75rem;
+  --ring: 250 95% 60%;
+  --radius: 1.5rem;
 }
 
 .dark {
-  --background: 228 24% 6%;
+  --background: 230 45% 5%;
+  /* Much darker, almost black navy */
   --foreground: 0 0% 98%;
-  --card: 224 25% 14%;
+  --card: 228 24% 8%;
   --card-foreground: 0 0% 98%;
-  --popover: 224 25% 14%;
+  --popover: 228 24% 8%;
   --popover-foreground: 0 0% 98%;
-  --primary: 217 91% 60%;
+  --primary: 250 95% 65%;
   --primary-foreground: 0 0% 98%;
-  --secondary: 224 25% 14%;
+  --secondary: 228 24% 10%;
   --secondary-foreground: 0 0% 98%;
-  --muted: 224 25% 14%;
+  --muted: 228 24% 10%;
   --muted-foreground: 215 20% 65%;
-  --accent: 217 91% 60%;
+  --accent: 250 95% 65%;
   --accent-foreground: 0 0% 98%;
   --destructive: 0 62% 30%;
   --destructive-foreground: 0 0% 98%;
-  --border: 224 25% 14%;
-  --input: 224 25% 14%;
-  --ring: 217 91% 60%;
+  --border: 228 24% 12%;
+  --input: 228 24% 12%;
+  --ring: 250 95% 65%;
+}
+
+@layer utilities {
+  .glass-premium {
+    @apply bg-card/40 backdrop-blur-3xl border border-white/10 shadow-2xl;
+  }
+
+  .neon-glow-primary {
+    @apply shadow-indigo-500/20 shadow-lg;
+  }
+
+  .neon-glow-emerald {
+    @apply shadow-emerald-500/20 shadow-lg;
+  }
 }
 
 @layer base {
@@ -79,6 +94,10 @@
   ::file-selector-button {
     border-color: var(--color-border, currentColor);
   }
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -103,6 +122,16 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(240 3.7% 35%);
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Gradient text */

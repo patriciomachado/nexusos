@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { MoreVertical, User, Mail, ShieldCheck, Phone, Trash2, Edit2, Loader2 } from 'lucide-react'
+import { MoreVertical, User, Mail, ShieldCheck, Phone, Trash2, Edit2, Loader2, Calendar, Star, CheckCircle2 } from 'lucide-react'
 import { User as UserType, UserRole } from '@/types'
 import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 
 interface TeamListProps {
     users: UserType[]
@@ -14,10 +15,10 @@ interface TeamListProps {
 const roleLabels: Record<UserRole, string> = {
     admin: 'Administrador',
     manager: 'Gerente',
-    technician: 'Técnico',
-    cashier: 'Operador de Caixa',
-    customer: 'Cliente',
-    attendant: 'Atendente'
+    technician: 'Técnico Especialista',
+    cashier: 'Operador de Fluxo',
+    customer: 'Cliente Final',
+    attendant: 'Atendimento & Suporte'
 }
 
 const roleColors: Record<UserRole, string> = {
@@ -58,76 +59,101 @@ export default function TeamList({ users, onEdit, onRefresh }: TeamListProps) {
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
             {users.map((user) => (
                 <div
                     key={user.id}
-                    className="group relative bg-card border border-border rounded-[2.5rem] p-8 shadow-xl hover:shadow-2xl hover:border-primary/20 transition-all duration-300 overflow-hidden"
+                    className="group relative bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[3rem] p-10 shadow-2xl hover:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] hover:border-primary/30 transition-all duration-500 overflow-hidden"
                 >
-                    {/* Background Glow */}
-                    <div className={`absolute top-0 right-0 w-32 h-32 blur-[60px] rounded-full opacity-5 transition-opacity group-hover:opacity-10 ${user.role === 'admin' ? 'bg-rose-500' : 'bg-primary'}`} />
+                    {/* Background Glow Overlay */}
+                    <div className={cn(
+                        "absolute -top-24 -right-24 w-64 h-64 blur-[100px] rounded-full opacity-0 transition-opacity duration-700 group-hover:opacity-10",
+                        user.role === 'admin' ? 'bg-rose-500' : 'bg-primary'
+                    )} />
 
-                    <div className="flex items-start justify-between mb-8">
-                        <div className="flex items-center gap-5">
-                            <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground font-black text-2xl border border-border group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/20 transition-all shadow-inner">
-                                {user.full_name?.charAt(0) || user.email.charAt(0).toUpperCase()}
+                    <div className="relative space-y-8">
+                        <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-6">
+                                <div className="w-20 h-20 rounded-[1.75rem] bg-gradient-to-br from-primary/10 to-blue-500/10 flex items-center justify-center text-primary font-black text-3xl border border-primary/20 group-hover:scale-110 transition-transform shadow-inner relative">
+                                    {user.full_name?.charAt(0) || user.email.charAt(0).toUpperCase()}
+                                    {user.is_active && (
+                                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 border-4 border-card rounded-full shadow-lg" />
+                                    )}
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="font-black text-xl text-foreground tracking-tighter group-hover:text-primary transition-colors line-clamp-1">{user.full_name || 'Membro Nexus'}</h3>
+                                        {user.role === 'admin' && <ShieldCheck className="w-4 h-4 text-rose-500" />}
+                                    </div>
+                                    <div className={cn(
+                                        "inline-flex px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] border",
+                                        roleColors[user.role]
+                                    )}>
+                                        {roleLabels[user.role]}
+                                    </div>
+                                </div>
                             </div>
-                            <div className="space-y-1">
-                                <h3 className="font-bold text-lg text-foreground tracking-tight group-hover:text-primary transition-colors">{user.full_name || 'Membro sem nome'}</h3>
-                                <span className={`inline-flex px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${roleColors[user.role]}`}>
-                                    {roleLabels[user.role]}
+
+                            <div className="flex flex-col gap-2">
+                                <button
+                                    onClick={() => onEdit(user)}
+                                    className="p-3 rounded-2xl bg-white/5 text-muted-foreground/40 hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20"
+                                    title="Configurações"
+                                >
+                                    <Edit2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(user.id)}
+                                    disabled={deletingId === user.id}
+                                    className="p-3 rounded-2xl bg-white/5 text-muted-foreground/40 hover:text-rose-500 hover:bg-rose-500/10 transition-all border border-transparent hover:border-rose-500/20"
+                                    title="Remover"
+                                >
+                                    {deletingId === user.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 group-hover:bg-primary/5 transition-colors">
+                                <div className="w-10 h-10 rounded-xl bg-card border border-white/5 flex items-center justify-center text-muted-foreground/30 group-hover:text-primary transition-colors">
+                                    <Mail className="w-4 h-4" />
+                                </div>
+                                <span className="text-xs font-bold text-foreground/60 truncate tracking-tight">{user.email}</span>
+                            </div>
+                            {user.phone && (
+                                <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 group-hover:bg-primary/5 transition-colors">
+                                    <div className="w-10 h-10 rounded-xl bg-card border border-white/5 flex items-center justify-center text-muted-foreground/30 group-hover:text-primary transition-colors">
+                                        <Phone className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-xs font-mono font-bold text-foreground/60 tracking-tight">{user.phone}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="pt-6 border-t border-white/5 flex items-center justify-between">
+                            <div className="flex items-center gap-2 bg-emerald-500/10 text-emerald-500 px-4 py-2 rounded-full border border-emerald-500/20">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span className="text-[10px] font-black uppercase tracking-widest leading-none">
+                                    {user.is_active ? 'Totalmente Ativo' : 'Pendente'}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-muted-foreground/30">
+                                <Calendar className="w-3.5 h-3.5" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">
+                                    {mounted
+                                        ? `Desde ${new Date(user.created_at).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}`
+                                        : '--'
+                                    }
                                 </span>
                             </div>
                         </div>
-
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0">
-                            <button
-                                onClick={() => onEdit(user)}
-                                className="p-3 rounded-xl hover:bg-muted text-muted-foreground hover:text-primary transition-all"
-                                title="Editar membro"
-                            >
-                                <Edit2 className="w-4 h-4" />
-                            </button>
-                            <button
-                                onClick={() => handleDelete(user.id)}
-                                disabled={deletingId === user.id}
-                                className="p-3 rounded-xl hover:bg-muted text-muted-foreground hover:text-destructive transition-all"
-                                title="Remover membro"
-                            >
-                                {deletingId === user.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                            </button>
-                        </div>
                     </div>
 
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                            <Mail className="w-4 h-4 shrink-0" />
-                            <span className="truncate">{user.email}</span>
-                        </div>
-                        {user.phone && (
-                            <div className="flex items-center gap-3 text-sm text-muted-foreground font-mono">
-                                <Phone className="w-4 h-4 shrink-0" />
-                                {user.phone}
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${user.is_active ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-muted'}`} />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                                {user.is_active ? 'Ativo' : 'Inativo'}
-                            </span>
-                        </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">
-                            {mounted
-                                ? `Desde ${new Date(user.created_at).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}`
-                                : '--'
-                            }
-                        </span>
-                    </div>
+                    {/* Interaction Glow Layer */}
+                    <div className="absolute inset-0 border border-primary/0 group-hover:border-primary/30 rounded-[3rem] pointer-events-none transition-all duration-500" />
                 </div>
             ))}
         </div>
     )
 }
+

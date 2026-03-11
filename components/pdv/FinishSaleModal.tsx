@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { X, Check, Loader2, Wallet, Users, Info, Banknote, CreditCard, QrCode } from 'lucide-react'
 import { usePDVStore } from '@/store/usePDVStore'
 import { formatCurrency, cn } from '@/lib/utils'
@@ -17,6 +18,7 @@ interface FinishSaleModalProps {
 
 export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, finalAmount }: FinishSaleModalProps) {
     const { cart, clearCart } = usePDVStore()
+    const [mounted, setMounted] = useState(false)
     const [loading, setLoading] = useState(false)
     const [loadingInit, setLoadingInit] = useState(true)
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethodModel[]>([])
@@ -30,6 +32,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
     const [amountReceived, setAmountReceived] = useState('')
 
     useEffect(() => {
+        setMounted(true)
         if (isOpen) {
             initData()
             setAmountReceived(finalAmount.toString())
@@ -132,7 +135,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
         }
     }
 
-    if (!isOpen) return null
+    if (!isOpen || !mounted) return null
 
     const getPMIcon = (code: string) => {
         switch (code?.toLowerCase()) {
@@ -142,8 +145,8 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
         }
     }
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/40 backdrop-blur-xl animate-in fade-in duration-300">
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-background/40 backdrop-blur-xl animate-in fade-in duration-300">
             <div className="bg-card/80 backdrop-blur-3xl border border-white/10 w-full max-w-[1000px] rounded-[3rem] shadow-[0_32px_128px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-500 flex flex-col md:flex-row h-[90vh] md:h-auto">
 
                 {/* Left Panel: Sale Summary & Form */}
@@ -295,7 +298,8 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     )
 }
 

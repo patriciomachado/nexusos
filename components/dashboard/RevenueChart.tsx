@@ -20,7 +20,7 @@ const defaultData = [
 
 export default function RevenueChart({ data = defaultData, totalRevenue = 'R$ 0,00', height = 300 }: RevenueChartProps) {
     return (
-        <div style={{ height }} className="w-full p-3 sm:p-4 rounded-2xl bg-card border border-border relative overflow-hidden group">
+        <div style={{ height }} className="w-full p-3 sm:p-4 rounded-2xl bg-card border border-border relative overflow-hidden group" suppressHydrationWarning>
             <div className="flex items-center justify-between mb-4 relative z-10">
                 <div>
                     <h3 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60">Análise de Receita (7 dias)</h3>
@@ -46,32 +46,39 @@ export default function RevenueChart({ data = defaultData, totalRevenue = 'R$ 0,
                     >
                         <defs>
                             <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.6} />
+                                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.3} />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
                         <XAxis
                             dataKey="name"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 700 }}
+                            tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 900 }}
                             dy={10}
                         />
                         <YAxis hide />
                         <Tooltip
-                            contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '12px', fontSize: '10px', color: 'hsl(var(--foreground))' }}
-                            itemStyle={{ color: 'hsl(var(--primary))', fontWeight: 900 }}
+                            contentStyle={{
+                                backgroundColor: '#0f172a',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '16px',
+                                fontSize: '10px',
+                                color: '#fff',
+                                backdropFilter: 'blur(10px)'
+                            }}
+                            itemStyle={{ color: '#3b82f6', fontWeight: 900 }}
                             formatter={(value: any) => [`R$ ${Number(value).toFixed(2)}`, 'Receita']}
                         />
                         <Area
                             type="monotone"
                             dataKey="revenue"
-                            stroke="hsl(var(--primary))"
-                            strokeWidth={3}
+                            stroke="#3b82f6"
+                            strokeWidth={4}
                             fillOpacity={1}
                             fill="url(#colorRevenue)"
-                            animationDuration={1500}
+                            animationDuration={2000}
                         />
                     </AreaChart>
                 </ResponsiveContainer>

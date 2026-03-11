@@ -4,8 +4,9 @@ import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/layout/Header'
 import { toast } from 'sonner'
-import { Package, Save, X } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils'
+import { Package, Save, X, Camera, Image as ImageIcon, Loader2, Plus } from 'lucide-react'
+import { formatCurrency, cn } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
 
 import PremiumAutocomplete from '@/components/ui/PremiumAutocomplete'
 
@@ -20,10 +21,6 @@ const PRODUCT_SUGGESTIONS = [
     'Capa de Silicone Transparente', 'Capa Anti-Impacto', 'Suporte Veicular Magnético', 'Smartwatch Serie 9', 'Pulseira para Smartwatch Nylon',
     // Peças/Componentes
     'Tela iPhone 11 Incell', 'Bateria iPhone XR Gold', 'Conector de Carga Moto G30', 'SSD 240GB Sata III', 'Memória RAM 8GB DDR4 Notebook'
-]
-
-const CATEGORY_SUGGESTIONS = [
-    'Acessórios', 'Peças de Reposição', 'Periféricos', 'Gadgets', 'Cabos e Adaptadores', 'Áudio', 'Energia', 'Smartphones', 'Notebooks', 'Software'
 ]
 
 interface ProductFormProps {
@@ -46,7 +43,13 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
         maximum_quantity: '999',
         unit: 'un',
         barcode: '',
+        image_url: '',
     })
+
+    const [photo, setPhoto] = useState<File | null>(null)
+    const [isUploading, setIsUploading] = useState(false)
+    const [categories, setCategories] = useState<string[]>([])
+    const [isAddingCategory, setIsAddingCategory] = useState(false)
 
     useEffect(() => {
         if (initialData) {
@@ -62,9 +65,67 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                 maximum_quantity: initialData.maximum_quantity?.toString() || '999',
                 unit: initialData.unit || 'un',
                 barcode: initialData.barcode || '',
+                image_url: initialData.image_url || '',
             })
         }
+        fetchCategories()
     }, [initialData])
+
+    async function fetchCategories() {
+        try {
+            const res = await fetch('/api/inventory/categories')
+            const data = await res.json()
+            if (Array.isArray(data)) {
+                const names = data.map((c: any) => c.name)
+                setCategories(names.sort())
+            }
+        } catch (error) {
+            console.error('Error fetching categories:', error)
+            setCategories([])
+        }
+    }
+
+    async function handleAddCategory(value: string) {
+        if (value && !categories.includes(value)) {
+            setIsAddingCategory(true)
+            try {
+                const res = await fetch('/api/inventory/categories', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: value })
+                })
+                if (res.ok) {
+                    toast.success('Categoria adicionada!')
+                    await fetchCategories()
+                    setForm(p => ({ ...p, category: value }))
+                }
+            } catch (error) {
+                console.error('Error adding category:', error)
+            } finally {
+                setIsAddingCategory(false)
+            }
+        }
+    }
+
+    useEffect(() => {
+        const handlePaste = (e: ClipboardEvent) => {
+            const items = e.clipboardData?.items
+            if (!items) return
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile()
+                    if (blob) {
+                        setPhoto(blob)
+                        toast.success('Imagem colada com sucesso!')
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('paste', handlePaste)
+        return () => window.removeEventListener('paste', handlePaste)
+    }, [])
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
         setForm(p => ({ ...p, [e.target.name]: e.target.value }))
@@ -73,6 +134,35 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
         startTransition(async () => {
+            let finalImageUrl = form.image_url
+
+            // 1. Upload photo if selected
+            if (photo) {
+                setIsUploading(true)
+                try {
+                    const fileExt = photo.name.split('.').pop()
+                    const fileName = `${Date.now()}.${fileExt}`
+                    const filePath = `products/${fileName}`
+
+                    const { data, error } = await supabase.storage
+                        .from('product-images')
+                        .upload(filePath, photo)
+
+                    if (error) throw error
+
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('product-images')
+                        .getPublicUrl(data.path)
+
+                    finalImageUrl = publicUrl
+                } catch (err: any) {
+                    toast.error('Erro no upload da imagem: ' + err.message)
+                    setIsUploading(false)
+                    return
+                }
+                setIsUploading(false)
+            }
+
             const url = productId ? `/api/inventory/${productId}` : '/api/inventory'
             const method = productId ? 'PUT' : 'POST'
 
@@ -81,6 +171,7 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...form,
+                    image_url: finalImageUrl,
                     cost_price: parseFloat(form.cost_price) || 0,
                     selling_price: parseFloat(form.selling_price) || 0,
                     quantity_in_stock: parseFloat(form.quantity_in_stock) || 0,
@@ -115,7 +206,10 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
 
     return (
         <div className="animate-fade-in pb-10">
-            <Header title={productId ? 'Editar Registro de Produto' : 'Novo Cadastro de Produto'} />
+            <Header
+                title={productId ? `Editando: ${form.name || 'Produto'}` : 'Novo Cadastro de Produto'}
+                subtitle={productId ? 'Atualize as informações do registro selecionado' : 'Preencha os dados para adicionar ao estoque'}
+            />
 
             <form onSubmit={handleSubmit} className="p-4 max-w-5xl mx-auto space-y-6 mt-4">
                 <div className="bg-card/40 border border-border/50 rounded-[2.5rem] p-6 backdrop-blur-3xl relative overflow-hidden group">
@@ -153,7 +247,9 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                                         <PremiumAutocomplete
                                             value={form.category}
                                             onChange={val => setForm(p => ({ ...p, category: val }))}
-                                            options={CATEGORY_SUGGESTIONS}
+                                            onAdd={handleAddCategory}
+                                            isAdding={isAddingCategory}
+                                            options={categories}
                                             placeholder="Ex: Peças"
                                         />
                                     </div>
@@ -182,6 +278,46 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                                                 style={{ width: `${Math.min(Math.max(margin, 0), 100)}%` }}
                                             />
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <label className="block text-[9px] font-black text-muted-foreground/50 mb-1.5 uppercase tracking-widest italic">Imagem do Produto</label>
+                                <div className="relative group/photo h-full min-h-[160px]">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="absolute inset-0 opacity-0 cursor-pointer z-20"
+                                        onChange={e => setPhoto(e.target.files?.[0] || null)}
+                                    />
+                                    <div className="h-full min-h-[160px] rounded-3xl border-2 border-dashed border-border/50 bg-white/5 flex flex-col items-center justify-center gap-3 group-hover/photo:border-primary/30 transition-all overflow-hidden relative">
+                                        {photo ? (
+                                            <img src={URL.createObjectURL(photo)} alt="Preview" className="w-full h-full object-cover" />
+                                        ) : form.image_url ? (
+                                            <img src={form.image_url} alt="Produto" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <>
+                                                <div className="p-3 rounded-2xl bg-primary/5 text-primary/30">
+                                                    <Camera className="w-8 h-8" />
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest leading-relaxed">
+                                                        Clique para escolher<br />
+                                                        <span className="text-primary/40">ou pressione Ctrl+V para colar</span>
+                                                    </p>
+                                                    <p className="text-[8px] text-muted-foreground/20 uppercase mt-2">PNG, JPG ou WebP</p>
+                                                </div>
+                                            </>
+                                        )}
+                                        {(photo || form.image_url) && (
+                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/photo:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <ImageIcon className="w-5 h-5 text-white" />
+                                                    <span className="text-[9px] font-black text-white uppercase tracking-widest leading-none">Substituir Imagem</span>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -241,9 +377,9 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-center gap-4">
-                    <button type="submit" disabled={isPending} className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2">
-                        {isPending ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
-                        {isPending ? 'PROCESSANDO...' : (productId ? 'SALVAR ALTERAÇÕES' : 'CADASTRAR PRODUTO')}
+                    <button type="submit" disabled={isPending || isUploading} className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2">
+                        {(isPending || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        {(isPending || isUploading) ? 'PROCESSANDO...' : (productId ? 'SALVAR ALTERAÇÕES' : 'CADASTRAR PRODUTO')}
                     </button>
                     <button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-10 py-4 rounded-xl border border-border bg-card text-foreground/40 font-black text-[10px] uppercase tracking-widest hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2">
                         <X className="w-4 h-4" />

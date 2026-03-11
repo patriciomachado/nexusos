@@ -10,8 +10,8 @@ export default async function CashRegisterPage() {
     const db = createAdminClient()
     const { data: currentUser } = await db.from('users').select('role').eq('clerk_id', userId).single()
 
-    // Only Admin can access Cash Register
-    if (currentUser?.role !== 'admin') {
+    // Only Admin and Manager can access Cash Register
+    if (currentUser?.role !== 'admin' && currentUser?.role !== 'manager') {
         redirect('/dashboard')
     }
 

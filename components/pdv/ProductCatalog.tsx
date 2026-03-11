@@ -20,20 +20,59 @@ export default function ProductCatalog() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const fetchProducts = async () => {
+        const fetchCatalog = async () => {
             setLoading(true)
             try {
-                const res = await fetch(`/api/inventory?search=${encodeURIComponent(searchQuery)}`)
-                const data = await res.json()
-                let filtered = data.data || []
+                // Fetch inventory products
+                const resInv = await fetch(`/api/inventory?search=${encodeURIComponent(searchQuery)}`)
+                const dataInv = await resInv.json()
+                const inventoryItems = dataInv.data || []
 
-                if (activeCategory !== 'all') {
-                    filtered = filtered.filter((p: InventoryItem) =>
+                // Fetch service types if category is 'all' or 'serviços'
+                let mergedItems = [...inventoryItems]
+
+                if (activeCategory === 'all' || activeCategory === 'serviços') {
+                    const resSvc = await fetch('/api/settings/service-types')
+                    const dataSvc = await resSvc.json()
+
+                    const serviceItems: InventoryItem[] = (Array.isArray(dataSvc) ? dataSvc : []).map(svc => ({
+                        id: svc.id,
+                        company_id: svc.company_id,
+                        name: svc.name,
+                        sku: 'SERVICO',
+                        description: svc.description || '',
+                        category: 'Serviços',
+                        cost_price: 0,
+                        selling_price: svc.base_price,
+                        quantity_in_stock: 999,
+                        minimum_quantity: 0,
+                        maximum_quantity: 999,
+                        unit: 'un' as InventoryUnit,
+                        image_url: '',
+                        serial_number_required: false,
+                        is_active: svc.is_active ?? true,
+                        created_at: svc.created_at || new Date().toISOString(),
+                        updated_at: svc.updated_at || new Date().toISOString()
+                    }))
+
+                    // Search filtering for services (since API doesn't filter them yet)
+                    const filteredServices = searchQuery
+                        ? serviceItems.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                        : serviceItems
+
+                    if (activeCategory === 'serviços') {
+                        mergedItems = [...inventoryItems.filter((p: InventoryItem) => p.category?.toLowerCase() === 'serviços'), ...filteredServices]
+                    } else {
+                        mergedItems = [...inventoryItems, ...filteredServices]
+                    }
+                } else {
+                    // Filter standard inventory by other categories
+                    mergedItems = inventoryItems.filter((p: InventoryItem) =>
                         p.category?.toLowerCase() === activeCategory.toLowerCase()
                     )
                 }
 
-                setProducts(filtered)
+                setProducts(mergedItems)
             } catch (error) {
                 console.error('Error fetching catalog:', error)
             } finally {
@@ -41,7 +80,7 @@ export default function ProductCatalog() {
             }
         }
 
-        const debounce = setTimeout(fetchProducts, 300)
+        const debounce = setTimeout(fetchCatalog, 300)
         return () => clearTimeout(debounce)
     }, [searchQuery, activeCategory])
 

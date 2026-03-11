@@ -5,7 +5,6 @@ import Sidebar from '@/components/layout/Sidebar'
 import BottomNav from '@/components/layout/BottomNav'
 import { UserRole } from '@/types'
 
-import ChatWidget from '@/components/chat/ChatWidget'
 
 async function ensureUserExists(clerkId: string, email: string, name: string) {
     const db = createAdminClient()
@@ -74,13 +73,12 @@ export default async function DashboardLayout({
     const userRole = await ensureUserExists(userId, email, name)
 
     return (
-        <div className="flex h-screen bg-background overflow-hidden transition-colors duration-300">
+        <div className="flex h-screen bg-background overflow-hidden transition-colors duration-300" suppressHydrationWarning>
             <Sidebar userRole={userRole} />
-            <main className="flex-1 overflow-y-auto relative pb-20 lg:pb-0">
+            <main className="flex-1 overflow-y-auto relative pb-20 lg:pb-0" suppressHydrationWarning>
                 {children}
             </main>
             <BottomNav userRole={userRole} />
-            <ChatWidget />
         </div>
     )
 }

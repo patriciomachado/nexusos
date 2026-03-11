@@ -5,7 +5,7 @@ import { usePDVStore } from '@/store/usePDVStore'
 import { formatCurrency } from '@/lib/utils'
 
 export default function CartList() {
-    const { cart, removeItem, updateQuantity } = usePDVStore()
+    const { cart, removeItem, updateQuantity, updatePrice } = usePDVStore()
 
     if (cart.length === 0) {
         return (
@@ -32,9 +32,19 @@ export default function CartList() {
                         <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                             <Plus className="w-6 h-6 rotate-45" />
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                             <p className="font-bold text-base truncate pr-2">{item.product.name}</p>
-                            <p className="text-xs text-muted-foreground uppercase tracking-widest">{formatCurrency(item.price)} cada</p>
+                            <div className="flex items-center gap-1 group/price">
+                                <span className="text-[10px] text-muted-foreground uppercase tracking-widest">R$</span>
+                                <input
+                                    type="number"
+                                    value={item.price}
+                                    onChange={(e) => updatePrice(item.id, Number(e.target.value))}
+                                    className="w-20 bg-transparent border-b border-transparent group-hover/price:border-border focus:border-primary focus:outline-none text-xs font-black text-muted-foreground transition-all px-1"
+                                    step="0.01"
+                                />
+                                <span className="text-[10px] text-muted-foreground uppercase tracking-widest pl-1">cada</span>
+                            </div>
                         </div>
                     </div>
 

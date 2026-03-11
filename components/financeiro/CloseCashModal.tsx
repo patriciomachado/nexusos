@@ -12,6 +12,7 @@ interface CloseCashModalProps {
     onSuccess: () => void
     cashRegister: CashRegister
     balance: number
+    title?: string
 }
 
 export default function CloseCashModal({
@@ -19,7 +20,8 @@ export default function CloseCashModal({
     onClose,
     onSuccess,
     cashRegister,
-    balance
+    balance,
+    title = "Fechar Caixa"
 }: CloseCashModalProps) {
     const [physicalBalance, setPhysicalBalance] = useState('')
     const [loading, setLoading] = useState(false)
@@ -66,7 +68,7 @@ export default function CloseCashModal({
                                     <Lock className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-black uppercase tracking-tight">Fechar Caixa</h2>
+                                    <h2 className="text-2xl font-black tracking-tight uppercase">{title}</h2>
                                     <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Resumo do Período</p>
                                 </div>
                             </div>

@@ -9,9 +9,10 @@ interface OpenCashModalProps {
     isOpen: boolean
     onClose: () => void
     onSuccess: () => void
+    title?: string
 }
 
-export default function OpenCashModal({ isOpen, onClose, onSuccess }: OpenCashModalProps) {
+export default function OpenCashModal({ isOpen, onClose, onSuccess, title = "Abertura de Caixa" }: OpenCashModalProps) {
     const [balance, setBalance] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -54,7 +55,7 @@ export default function OpenCashModal({ isOpen, onClose, onSuccess }: OpenCashMo
                 <div className="p-8 space-y-8">
                     <div className="flex justify-between items-start">
                         <div className="space-y-1">
-                            <h2 className="text-2xl font-black tracking-tight uppercase">Abertura de Caixa</h2>
+                            <h2 className="text-2xl font-black tracking-tight uppercase">{title}</h2>
                             <p className="text-xs text-muted-foreground font-medium">Informe o valor em dinheiro disponível agora</p>
                         </div>
                         <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors">

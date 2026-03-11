@@ -9,12 +9,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        fetch(`/api/inventory?id=${id}`) // Assuming the API can fetch by ID or I can just use the GET with filter
+        fetch(`/api/inventory/${id}`)
             .then(res => res.json())
             .then(data => {
-                // If the API returns multiple, find the one
-                const item = Array.isArray(data) ? data.find((i: any) => i.id === id) : data
-                setProduct(item)
+                setProduct(data)
                 setLoading(false)
             })
     }, [id])

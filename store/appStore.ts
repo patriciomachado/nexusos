@@ -16,7 +16,7 @@ export const useAppStore = create<AppState>()(
         (set) => ({
             user: null,
             company: null,
-            sidebarOpen: true,
+            sidebarOpen: false,
             setUser: (user) => set({ user }),
             setCompany: (company) => set({ company }),
             setSidebarOpen: (open) => set({ sidebarOpen: open }),

@@ -54,7 +54,10 @@ export default async function PaymentsPage({
 
     return (
         <div className="animate-fade-in pb-20 bg-background min-h-screen transition-colors duration-300">
-            <Header title="Fluxo Financeiro" />
+            <Header
+                title="Fluxo Financeiro"
+                subtitle="Gestão inteligente de entradas, saídas e liquidações de ordens de serviço."
+            />
 
             <div className="p-6 max-w-7xl mx-auto space-y-8">
                 {/* Dashboard Stats */}

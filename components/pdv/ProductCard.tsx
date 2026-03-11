@@ -1,8 +1,8 @@
 'use client'
 
-import { ShoppingCart, Wrench, Package, AlertCircle } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils'
-import { InventoryItem } from '@/types'
+import { ShoppingCart, Wrench, Package, AlertCircle, Plus } from 'lucide-react'
+import { formatCurrency, cn } from '@/lib/utils'
+import { InventoryItem, InventoryUnit } from '@/types'
 import { usePDVStore } from '@/store/usePDVStore'
 
 interface ProductCardProps {
@@ -12,13 +12,18 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
     const addItem = usePDVStore((state) => state.addItem)
 
-    // Determine if it's a service based on category or name for now
+    // Determine if it's a service based on category, name, or SKU
     const isService = product.category?.toLowerCase().includes('serviço') ||
+        product.sku === 'SERVICO' ||
         ['revisão', 'alinhamento', 'balanceamento', 'limpeza', 'formatacao'].some(s => product.name.toLowerCase().includes(s))
 
-    const stockStatus = Number(product.quantity_in_stock) > 0
-        ? `Estoque: ${product.quantity_in_stock} ${product.unit}`
-        : isService ? 'Serviço Agendado' : 'Sem estoque'
+    const stockStatus = isService
+        ? 'Serviço sob Demanda'
+        : Number(product.quantity_in_stock) > 0
+            ? `Estoque: ${product.quantity_in_stock} ${product.unit}`
+            : 'Sem estoque'
+
+    const price = Number(product.selling_price || 0)
 
     return (
         <div className="group bg-card border border-border rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
@@ -27,14 +32,17 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {/* Image Placeholder with Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent z-10" />
                 <img
-                    src={`https://source.unsplash.com/400x300/?${isService ? 'mechanic,tools' : 'autoparts,engine'}&sig=${product.id}`}
+                    src={product.image_url || "/logo.png"}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
 
                 {/* Category Badge */}
                 <div className="absolute top-4 left-4 z-20">
-                    <span className="px-3 py-1 rounded-full bg-background/50 backdrop-blur-md border border-white/10 text-[9px] font-black uppercase tracking-widest text-foreground">
+                    <span className={cn(
+                        "px-3 py-1 rounded-full backdrop-blur-md border border-white/10 text-[9px] font-black uppercase tracking-widest",
+                        isService ? "bg-orange-500/20 text-orange-500" : "bg-background/50 text-foreground"
+                    )}>
                         {product.category || (isService ? 'Serviço' : 'Produto')}
                     </span>
                 </div>
@@ -47,7 +55,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                         {product.name}
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
-                        <span className={`text-[10px] font-bold uppercase tracking-wider ${Number(product.quantity_in_stock) <= Number(product.minimum_quantity) && !isService ? 'text-destructive' : 'text-muted-foreground'}`}>
+                        <span className={cn(
+                            "text-[10px] font-bold uppercase tracking-wider",
+                            !isService && Number(product.quantity_in_stock) <= Number(product.minimum_quantity) ? 'text-destructive' : 'text-muted-foreground'
+                        )}>
                             {stockStatus}
                         </span>
                     </div>
@@ -55,20 +66,31 @@ export default function ProductCard({ product }: ProductCardProps) {
 
                 <div className="flex items-center justify-between pt-2">
                     <div className="flex flex-col">
-                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Preço Venda</span>
+                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Valor Final</span>
                         <span className="text-xl font-black text-foreground tracking-tight">
-                            {formatCurrency(Number(product.selling_price))}
+                            {formatCurrency(price)}
                         </span>
                     </div>
 
                     <button
                         onClick={() => addItem(product)}
-                        className={`p-3 rounded-2xl transition-all active:scale-90 ${isService
-                                ? 'bg-secondary/10 text-secondary hover:bg-secondary hover:text-secondary-foreground shadow-lg shadow-secondary/10'
-                                : 'bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground shadow-lg shadow-primary/10'
-                            }`}
+                        className={cn(
+                            "p-3 rounded-2xl transition-all active:scale-95 flex items-center gap-2 group/btn shadow-lg",
+                            isService
+                                ? "bg-orange-500/10 text-orange-500 hover:bg-orange-500 hover:text-white shadow-orange-500/10"
+                                : "bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500 hover:text-white shadow-indigo-500/10"
+                        )}
+                        title="Adicionar ao Carrinho"
                     >
-                        {isService ? <Wrench className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
+                        <div className="relative">
+                            {isService ? <Wrench className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
+                            <div className="absolute -top-1.5 -right-1.5 bg-white rounded-full p-0.5 shadow-sm group-hover/btn:scale-110 transition-transform">
+                                <Plus className={cn(
+                                    "w-2.5 h-2.5",
+                                    isService ? "text-orange-600" : "text-indigo-600"
+                                )} />
+                            </div>
+                        </div>
                     </button>
                 </div>
             </div>

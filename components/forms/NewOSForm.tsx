@@ -11,9 +11,12 @@ import { PremiumTextarea } from '@/components/ui/PremiumTextarea'
 import PremiumAutocomplete from '@/components/ui/PremiumAutocomplete'
 import PremiumDateTimePicker from '@/components/ui/PremiumDateTimePicker'
 import {
-    ClipboardList, Wrench, Layers, AlertCircle,
-    Zap, Clock, DollarSign, Calendar, Info, Smartphone, Tablet, Laptop, Settings
+    ClipboardList, Wrench, AlertCircle,
+    Zap, Clock, Info, Smartphone, Settings,
+    Camera, CheckCircle2, XCircle, Loader2,
+    Image as ImageIcon
 } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 // Common device models for autocomplete
 const DEVICE_SUGGESTIONS = [
@@ -98,13 +101,25 @@ export default function NewOSForm({ customers, technicians, serviceTypes, compan
         scheduled_date: initialData?.scheduled_date ? new Date(initialData.scheduled_date).toISOString().slice(0, 16) : '',
         internal_notes: initialData?.internal_notes || '',
         warranty_months: initialData?.warranty_months?.toString() || '3',
+        device_condition: initialData?.device_condition || '',
+        turns_on: initialData?.turns_on ?? true,
         terms_accepted: initialData?.terms_accepted || false,
     })
+
+    const [photos, setPhotos] = useState<{ front: File | null, back: File | null }>({
+        front: null,
+        back: null
+    })
+    const [photoUrls, setPhotoUrls] = useState<{ front: string, back: string }>({
+        front: initialData?.photo_front_url || '',
+        back: initialData?.photo_back_url || ''
+    })
+    const [isUploading, setIsUploading] = useState(false)
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
         if (!form.title.trim()) {
-            toast.error('O título é obrigatório')
+            toast.error('O dispositivo é obrigatório')
             return
         }
         if (!form.customer_id) {
@@ -117,6 +132,45 @@ export default function NewOSForm({ customers, technicians, serviceTypes, compan
             const url = isEdit ? `/api/service-orders/${initialData.id}` : '/api/service-orders'
             const method = isEdit ? 'PUT' : 'POST'
 
+            let finalPhotoFront = photoUrls.front
+            let finalPhotoBack = photoUrls.back
+
+            // 1. Upload photos if present
+            if (photos.front || photos.back) {
+                setIsUploading(true)
+                try {
+                    if (photos.front) {
+                        const fileExt = photos.front.name.split('.').pop()
+                        const fileName = `${companyId}/${Date.now()}-front.${fileExt}`
+                        const { data, error } = await supabase.storage
+                            .from('os-photos')
+                            .upload(fileName, photos.front)
+
+                        if (error) throw error
+                        const { data: { publicUrl } } = supabase.storage.from('os-photos').getPublicUrl(data.path)
+                        finalPhotoFront = publicUrl
+                    }
+
+                    if (photos.back) {
+                        const fileExt = photos.back.name.split('.').pop()
+                        const fileName = `${companyId}/${Date.now()}-back.${fileExt}`
+                        const { data, error } = await supabase.storage
+                            .from('os-photos')
+                            .upload(fileName, photos.back)
+
+                        if (error) throw error
+                        const { data: { publicUrl } } = supabase.storage.from('os-photos').getPublicUrl(data.path)
+                        finalPhotoBack = publicUrl
+                    }
+                } catch (err: any) {
+                    toast.error('Erro no upload de fotos: ' + err.message)
+                    setIsUploading(false)
+                    return
+                }
+                setIsUploading(false)
+            }
+
+            // 2. Submit OS
             const res = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
@@ -129,6 +183,8 @@ export default function NewOSForm({ customers, technicians, serviceTypes, compan
                     warranty_months: parseInt(form.warranty_months) || 0,
                     scheduled_date: form.scheduled_date || null,
                     terms_accepted: form.terms_accepted,
+                    photo_front_url: finalPhotoFront,
+                    photo_back_url: finalPhotoBack,
                 }),
             })
             const data = await res.json()
@@ -157,11 +213,11 @@ export default function NewOSForm({ customers, technicians, serviceTypes, compan
                     <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-[10px] font-black text-muted-foreground/60 mb-2 uppercase tracking-[0.2em]">TÍTULO *</label>
+                                <label className="block text-[10px] font-black text-muted-foreground/60 mb-2 uppercase tracking-[0.2em]">DISPOSITIVO *</label>
                                 <PremiumAutocomplete
                                     value={form.title}
                                     onChange={val => setForm(p => ({ ...p, title: val }))}
-                                    placeholder="Ex: Troca de Tela"
+                                    placeholder="Ex: iPhone 13..."
                                     options={SERVICE_SUGGESTIONS}
                                 />
                             </div>
@@ -175,33 +231,21 @@ export default function NewOSForm({ customers, technicians, serviceTypes, compan
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4">
                             <PremiumSelect
                                 label="TÉCNICO"
                                 options={technicians}
                                 selectedId={form.technician_id}
                                 onSelect={(id) => setForm(p => ({ ...p, technician_id: id }))}
                             />
-                            <PremiumSelect
-                                label="LAB"
-                                options={serviceTypes}
-                                selectedId={form.service_type_id}
-                                onSelect={(id) => setForm(p => ({ ...p, service_type_id: id }))}
-                            />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4">
                             <PremiumSelect
                                 label="ESTADO"
                                 options={STATUS_OPTIONS}
                                 selectedId={form.status}
                                 onSelect={(id) => setForm(p => ({ ...p, status: id }))}
-                            />
-                            <PremiumSelect
-                                label="URGÊNCIA"
-                                options={PRIORITY_OPTIONS}
-                                selectedId={form.priority}
-                                onSelect={(id) => setForm(p => ({ ...p, priority: id }))}
                             />
                         </div>
                     </div>
@@ -270,38 +314,123 @@ export default function NewOSForm({ customers, technicians, serviceTypes, compan
                 </div>
             </div>
 
-            {/* Warranty Terms Acceptance Section */}
-            {warrantyTerms && (
-                <div className="bg-card/40 border border-border p-5 rounded-3xl shadow-sm space-y-4">
-                    <div className="flex items-center gap-3 border-b border-border pb-3">
-                        <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
-                            <Info className="w-4 h-4" />
+            {/* Device Check-in Section */}
+            <div className="bg-card/40 border border-border/50 rounded-[2.5rem] p-6 backdrop-blur-3xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-rose-500/5 blur-[120px] rounded-full transition-all group-hover:bg-rose-500/10" />
+
+                <div className="relative z-10 space-y-6">
+                    <div className="flex items-center justify-between border-b border-border/50 pb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-xl bg-rose-500/10 text-rose-500">
+                                <ClipboardList className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <h2 className="text-sm font-black text-muted-foreground tracking-tight uppercase tracking-widest">Check-in do Aparelho</h2>
+                            </div>
                         </div>
-                        <h2 className="text-[11px] font-black text-foreground/40 uppercase tracking-[0.2em]">Termos de Garantia / Contrato</h2>
+
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest">O aparelho liga?</span>
+                            <button
+                                type="button"
+                                onClick={() => setForm(p => ({ ...p, turns_on: !p.turns_on }))}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${form.turns_on
+                                    ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20'
+                                    : 'bg-rose-500/20 text-rose-500 border border-rose-500/20'
+                                    }`}
+                            >
+                                {form.turns_on ? (
+                                    <>
+                                        <CheckCircle2 className="w-3 h-3" />
+                                        Sim, Liga
+                                    </>
+                                ) : (
+                                    <>
+                                        <XCircle className="w-3 h-3" />
+                                        Não Liga
+                                    </>
+                                )}
+                            </button>
+                        </div>
                     </div>
 
-                    <div className="bg-muted/30 border border-border rounded-2xl p-4 max-h-40 overflow-y-auto custom-scrollbar">
-                        <p className="text-[11px] text-muted-foreground/60 leading-relaxed whitespace-pre-wrap">
-                            {warrantyTerms}
-                        </p>
-                    </div>
-
-                    <label className="flex items-center gap-3 cursor-pointer group p-2">
-                        <input
-                            type="checkbox"
-                            checked={form.terms_accepted}
-                            onChange={e => setForm(p => ({ ...p, terms_accepted: e.target.checked }))}
-                            className="hidden"
-                        />
-                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${form.terms_accepted ? 'bg-emerald-500 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'border-border bg-muted/20 hover:border-emerald-500/50'}`}>
-                            {form.terms_accepted && <Zap className="w-3 h-3 text-white fill-current" />}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-4">
+                            <label className="block text-[9px] font-black text-muted-foreground/50 mb-1.5 uppercase tracking-widest italic">Estado Físico / Avaliação Visual</label>
+                            <PremiumTextarea
+                                name="device_condition"
+                                value={form.device_condition}
+                                onChange={e => setForm(p => ({ ...p, device_condition: e.target.value }))}
+                                placeholder="Ex: Tela riscada, tampa traseira trincada, marcas de uso nas bordas..."
+                                rows={4}
+                                className="bg-white/5 border-white/5 focus:border-rose-500/30 text-sm p-6"
+                            />
                         </div>
-                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${form.terms_accepted ? 'text-emerald-500' : 'text-muted-foreground/40 group-hover:text-muted-foreground/60'}`}>
-                            O cliente está ciente e concorda com os termos acima
-                        </span>
-                    </label>
+
+                        <div className="space-y-4">
+                            <label className="block text-[9px] font-black text-muted-foreground/50 mb-1.5 uppercase tracking-widest italic">Fotos do Recebimento</label>
+                            <div className="grid grid-cols-2 gap-4 h-full">
+                                {/* Front Photo */}
+                                <div className="relative group/photo h-full">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        capture="environment"
+                                        className="absolute inset-0 opacity-0 cursor-pointer z-20"
+                                        onChange={e => setPhotos(p => ({ ...p, front: e.target.files?.[0] || null }))}
+                                    />
+                                    <div className="h-40 rounded-2xl border-2 border-dashed border-border/50 bg-white/5 flex flex-col items-center justify-center gap-2 group-hover/photo:border-rose-500/30 transition-all overflow-hidden relative">
+                                        {photos.front ? (
+                                            <img src={URL.createObjectURL(photos.front)} className="w-full h-full object-cover" />
+                                        ) : photoUrls.front ? (
+                                            <img src={photoUrls.front} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <>
+                                                <Camera className="w-6 h-6 text-muted-foreground/30" />
+                                                <span className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest leading-none">Frontal</span>
+                                            </>
+                                        )}
+                                        {(photos.front || photoUrls.front) && (
+                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/photo:opacity-100 transition-opacity flex items-center justify-center">
+                                                <span className="text-[9px] font-black text-white uppercase tracking-widest">Alterar Foto</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Back Photo */}
+                                <div className="relative group/photo h-full">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        capture="environment"
+                                        className="absolute inset-0 opacity-0 cursor-pointer z-20"
+                                        onChange={e => setPhotos(p => ({ ...p, back: e.target.files?.[0] || null }))}
+                                    />
+                                    <div className="h-40 rounded-2xl border-2 border-dashed border-border/50 bg-white/5 flex flex-col items-center justify-center gap-2 group-hover/photo:border-rose-500/30 transition-all overflow-hidden relative">
+                                        {photos.back ? (
+                                            <img src={URL.createObjectURL(photos.back)} className="w-full h-full object-cover" />
+                                        ) : photoUrls.back ? (
+                                            <img src={photoUrls.back} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <>
+                                                <Camera className="w-6 h-6 text-muted-foreground/30" />
+                                                <span className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest leading-none">Traseira</span>
+                                            </>
+                                        )}
+                                        {(photos.back || photoUrls.back) && (
+                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/photo:opacity-100 transition-opacity flex items-center justify-center">
+                                                <span className="text-[9px] font-black text-white uppercase tracking-widest">Alterar Foto</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            )}
+            </div>
+
 
             {/* Bottom: Notes & Diagnosis */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 bg-card/40 border border-border p-5 rounded-3xl shadow-sm">
@@ -332,19 +461,23 @@ export default function NewOSForm({ customers, technicians, serviceTypes, compan
             </div>
 
             {/* Float-like Compact Action Bar */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 py-4 border-t border-border">
+            <div className="flex flex-col sm:flex-row items-center gap-4 py-6 border-t border-border">
                 <button
                     type="submit"
-                    disabled={isPending}
-                    className="w-full sm:w-auto flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white px-8 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-50"
+                    disabled={isPending || isUploading}
+                    className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2"
                 >
-                    {isPending ? 'PROCESSANDO...' : (initialData?.id ? 'SALVAR ALTERAÇÕES' : 'CONFIRMAR ENTRADA')}
+                    {(isPending || isUploading) ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : <CheckCircle2 className="w-4 h-4" />}
+                    {(isPending || isUploading) ? 'PROCESSANDO...' : (initialData ? 'SALVAR ALTERAÇÕES' : 'ABRIR ORDEM DE SERVIÇO')}
                 </button>
                 <button
                     type="button"
                     onClick={() => router.back()}
-                    className="w-full sm:w-auto px-8 py-3 rounded-xl border border-border bg-card text-foreground/40 font-bold text-[10px] uppercase tracking-widest hover:bg-muted hover:text-foreground transition-all"
+                    className="w-full sm:w-auto px-10 py-4 rounded-xl border border-border bg-card text-foreground/40 font-black text-[10px] uppercase tracking-widest hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2"
                 >
+                    <XCircle className="w-4 h-4" />
                     ABORTAR
                 </button>
             </div>

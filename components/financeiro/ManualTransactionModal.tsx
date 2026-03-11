@@ -12,6 +12,7 @@ interface ManualTransactionModalProps {
     onSuccess: () => void
     type: 'entry' | 'exit'
     cashRegisterId: string
+    title?: string
 }
 
 export default function ManualTransactionModal({
@@ -19,7 +20,8 @@ export default function ManualTransactionModal({
     onClose,
     onSuccess,
     type,
-    cashRegisterId
+    cashRegisterId,
+    title
 }: ManualTransactionModalProps) {
     const [amount, setAmount] = useState('')
     const [description, setDescription] = useState('')
@@ -111,8 +113,8 @@ export default function ManualTransactionModal({
                                 {isEntry ? <ArrowUpRight className="w-6 h-6" /> : <ArrowDownRight className="w-6 h-6" />}
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black uppercase tracking-tight">
-                                    {isEntry ? 'Registrar Suprimento' : 'Registrar Sangria'}
+                                <h2 className="text-2xl font-black tracking-tight uppercase">
+                                    {title || (isEntry ? 'Registrar Suprimento' : 'Registrar Sangria')}
                                 </h2>
                                 <p className="text-xs text-muted-foreground font-semibold">Movimentação manual de valores em caixa</p>
                             </div>
@@ -195,7 +197,7 @@ export default function ManualTransactionModal({
                                 )}
                             >
                                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                                {isEntry ? 'Registrar Suprimento' : 'Registrar Sangria'}
+                                {title || (isEntry ? 'Registrar Suprimento' : 'Registrar Sangria')}
                             </button>
                         </div>
                     </form>

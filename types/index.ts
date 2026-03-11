@@ -116,6 +116,7 @@ export interface InventoryItem {
   maximum_quantity: number
   unit: InventoryUnit
   barcode?: string
+  image_url?: string
   serial_number_required: boolean
   is_active: boolean
   created_at: string

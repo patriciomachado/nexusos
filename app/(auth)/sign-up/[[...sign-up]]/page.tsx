@@ -6,7 +6,7 @@ export default function SignUpPage() {
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <h1 className="text-2xl font-bold text-white">Crie sua conta grátis</h1>
-                    <p className="text-white/60 mt-2">7 dias grátis · Sem cartão de crédito</p>
+                    <p className="text-white/60 mt-2">30 dias grátis · Sem cartão de crédito</p>
                 </div>
                 <SignUp
                     path="/sign-up"

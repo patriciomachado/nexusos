@@ -19,11 +19,10 @@ export default function ThemeToggle() {
     const themes = [
         { id: 'light', icon: Sun, label: 'Luz' },
         { id: 'dark', icon: Moon, label: 'Noite' },
-        { id: 'system', icon: Monitor, label: 'Auto' },
     ]
 
     return (
-        <div className="flex items-center p-1 bg-muted/50 border border-border rounded-2xl gap-1">
+        <div className="flex items-center p-1 bg-muted/50 border border-border rounded-2xl gap-1" suppressHydrationWarning>
             {themes.map((t) => {
                 const Icon = t.icon
                 const isActive = theme === t.id

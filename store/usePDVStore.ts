@@ -16,6 +16,7 @@ interface PDVStore {
     addItem: (product: InventoryItem) => void
     removeItem: (id: string) => void
     updateQuantity: (id: string, quantity: number) => void
+    updatePrice: (id: string, price: number) => void
     setDiscount: (amount: number) => void
     setSearchQuery: (query: string) => void
     clearCart: () => void
@@ -79,6 +80,16 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
 
         const newCart = cart.map((item) =>
             item.product.id === id ? { ...item, quantity, total: quantity * item.price } : item
+        )
+        const subtotal = newCart.reduce((acc, item) => acc + item.total, 0)
+        const taxAmount = subtotal * get().taxRate
+        const total = subtotal + taxAmount - get().discount
+        set({ cart: newCart, subtotal, taxAmount, total })
+    },
+    updatePrice: (id, price) => {
+        const { cart } = get()
+        const newCart = cart.map((item) =>
+            item.product.id === id ? { ...item, price, total: item.quantity * price } : item
         )
         const subtotal = newCart.reduce((acc, item) => acc + item.total, 0)
         const taxAmount = subtotal * get().taxRate

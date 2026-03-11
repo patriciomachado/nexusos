@@ -84,6 +84,10 @@ export async function POST(req: NextRequest) {
             scheduled_date: body.scheduled_date,
             internal_notes: body.internal_notes,
             warranty_months: body.warranty_months || 0,
+            device_condition: body.device_condition || null,
+            turns_on: body.turns_on ?? true,
+            photo_front_url: body.photo_front_url || null,
+            photo_back_url: body.photo_back_url || null,
             created_by: user.id,
         })
         .select()

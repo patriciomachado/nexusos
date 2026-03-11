@@ -154,79 +154,81 @@ export default async function DashboardPage() {
     const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite'
 
     const kpis = [
-        { label: 'Receita (Mês)', value: formatCurrency(data.stats.monthRevenue), icon: DollarSign, color: 'blue', ...data.stats.revenueTrend },
-        { label: 'Ticket Médio', value: formatCurrency(data.stats.avgTicket), icon: TrendingUp, color: 'emerald', change: 'Insight', trend: 'up' },
-        { label: 'OS Ativas', value: (data.stats.totalOS || 0).toString(), icon: ClipboardList, color: 'purple' as const, change: `${data.stats.todayOS} hoje`, trend: 'up' as const },
+        { label: 'Receita do Mês', value: formatCurrency(data.stats.monthRevenue), icon: DollarSign, color: 'blue', change: data.stats.revenueTrend.change, trend: data.stats.revenueTrend.trend },
+        { label: 'Ordens Ativas', value: data.stats.openOS.toString(), icon: ClipboardList, color: 'purple', change: `+${data.stats.todayOS} hoje`, trend: 'up' },
+        { label: 'Novos Clientes', value: (data.stats.totalCustomers || 0).toString(), icon: Users, color: 'emerald', change: data.stats.custTrend.change, trend: data.stats.custTrend.trend },
     ]
 
     return (
-        <div className="bg-background min-h-screen text-foreground pb-4 transition-colors duration-500 overflow-x-hidden">
-            <Header title="Dashboard Principal" />
+        <div className="bg-[#0f172a] min-h-screen text-foreground pb-20 lg:pb-8 transition-colors duration-500 overflow-x-hidden" suppressHydrationWarning>
+            <Header title="Nexus Dashboard" />
 
-            <div className="p-3 sm:p-4 md:p-6 max-w-[1600px] mx-auto space-y-4 lg:space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-1000">
-                {/* Neuro-Greeting Section - Condensed but readable */}
-                <div className="flex flex-row items-center justify-between gap-4">
-                    <div>
-                        <h2 className="text-2xl font-black tracking-tight text-foreground">
-                            {greeting}, <span className="text-primary">{user.full_name?.split(' ')[0] || 'Usuário'}!</span>
+            <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700" suppressHydrationWarning>
+                {/* Stitch Greeting Section */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-6" suppressHydrationWarning>
+                    <div className="text-center sm:text-left" suppressHydrationWarning>
+                        <h2 className="text-3xl font-black tracking-tight text-foreground">
+                            Welcome back, <span className="text-primary">{user.full_name?.split(' ')[0] || 'Operator'}</span>
                         </h2>
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60">
-                            Pulso operacional de hoje.
+                        <p className="text-sm text-muted-foreground font-medium opacity-60">
+                            Here's what's happening with your business today.
                         </p>
                     </div>
-                    <div className="flex gap-2">
-                        <Link href="/reports" className="px-3 py-1.5 rounded-lg bg-card border border-border text-[9px] font-black uppercase tracking-widest hover:bg-muted transition-all flex items-center gap-1.5">
-                            <LayoutDashboard className="w-3 h-3" />
-                            Relatórios
+                    <div className="flex items-center gap-4" suppressHydrationWarning>
+                        <Link href="/reports" className="px-5 py-2.5 rounded-2xl bg-card/40 backdrop-blur-xl border border-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
+                            View Reports
                         </Link>
-                        <Link href="/service-orders/new" className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
-                            Nova OS
+                        <Link href="/service-orders/new" className="px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                            New OS
                         </Link>
                     </div>
                 </div>
 
-                {/* Main Stats Grid - Enhanced Scale */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+                {/* Horizontal Stitch Metric Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6" suppressHydrationWarning>
                     {kpis.map((kpi) => (
-                        <div key={kpi.label} className="bg-card/40 backdrop-blur-3xl border border-border/50 hover:border-primary/40 rounded-3xl p-6 lg:p-8 transition-all group relative overflow-hidden shadow-2xl">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full translate-x-12 -translate-y-12 group-hover:bg-primary/10 transition-colors" />
-                            <div className="flex items-center justify-between mb-4 relative z-10">
-                                <div className={cn(
-                                    "w-10 h-10 lg:w-12 lg:h-12 rounded-xl lg:rounded-2xl flex items-center justify-center border transition-all group-hover:scale-110 shadow-inner",
-                                    kpi.color === 'blue' ? "bg-blue-500/10 border-blue-500/20 text-blue-400" :
-                                        kpi.color === 'emerald' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
-                                            "bg-purple-500/10 border-purple-500/20 text-purple-400"
-                                )}>
-                                    <kpi.icon className="w-5 h-5 lg:w-6 lg:h-6" />
+                        <div key={kpi.label} className="glass-premium rounded-[2rem] p-8 transition-all group relative overflow-hidden active:scale-[0.98]" suppressHydrationWarning>
+                            <div className="flex items-start justify-between relative z-10" suppressHydrationWarning>
+                                <div className="space-y-4">
+                                    <div className={cn(
+                                        "w-12 h-12 rounded-2xl flex items-center justify-center border transition-all group-hover:scale-110",
+                                        kpi.color === 'blue' ? "bg-blue-500/10 border-blue-500/20 text-blue-400" :
+                                            kpi.color === 'emerald' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
+                                                "bg-purple-500/10 border-purple-500/20 text-purple-400"
+                                    )} suppressHydrationWarning>
+                                        <kpi.icon className="w-6 h-6" />
+                                    </div>
+                                    <div suppressHydrationWarning>
+                                        <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] leading-none mb-2">{kpi.label}</h3>
+                                        <p className="text-3xl font-black text-foreground tracking-tighter">{kpi.value}</p>
+                                    </div>
                                 </div>
                                 <div className={cn(
-                                    "px-3 py-1 rounded-xl text-[10px] font-black flex items-center gap-1.5 shadow-sm backdrop-blur-md border border-white/5",
+                                    "px-3 py-1.5 rounded-xl text-[10px] font-black flex items-center gap-1.5 border backdrop-blur-md",
                                     kpi.trend === 'up' ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
-                                )}>
+                                )} suppressHydrationWarning>
                                     {kpi.change}
-                                    {kpi.trend === 'up' ? <ArrowUpRight className="w-3 h-3 lg:w-3.5 lg:h-3.5" /> : <ArrowDownRight className="w-3 h-3 lg:w-3.5 lg:h-3.5" />}
+                                    {kpi.trend === 'up' ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
                                 </div>
                             </div>
-                            <h3 className="text-[9px] font-black text-foreground/40 uppercase tracking-[0.25em] leading-none mb-3 opacity-60 group-hover:opacity-100 transition-opacity">{kpi.label}</h3>
-                            <p className="text-3xl lg:text-4xl font-black text-foreground tracking-tighter group-hover:scale-[1.02] transition-transform origin-left">{kpi.value}</p>
                         </div>
                     ))}
                 </div>
 
                 {/* Primary Visualization Area - Optimization */}
-                <div className="grid lg:grid-cols-3 gap-6">
+                <div className="grid lg:grid-cols-3 gap-6" suppressHydrationWarning>
                     {/* Main Row: Chart & Command Center */}
-                    <div className="lg:col-span-2">
-                        <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-lg transition-all h-full">
+                    <div className="lg:col-span-2" suppressHydrationWarning>
+                        <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-lg transition-all h-full" suppressHydrationWarning>
                             <RevenueChart data={data.chartData} totalRevenue={formatCurrency(data.stats.monthRevenue)} height={220} />
                         </div>
                     </div>
 
-                    <div className="lg:col-span-1">
-                        <div className="bg-gradient-to-br from-primary to-blue-600 rounded-3xl p-8 text-primary-foreground shadow-2xl relative overflow-hidden group border border-white/10 h-full">
-                            <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 blur-3xl rounded-full translate-x-12 -translate-y-12 group-hover:scale-110 transition-transform duration-1000" />
+                    <div className="lg:col-span-1" suppressHydrationWarning>
+                        <div className="bg-gradient-to-br from-primary to-blue-600 rounded-3xl p-8 text-primary-foreground shadow-2xl relative overflow-hidden group border border-white/10 h-full" suppressHydrationWarning>
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 blur-3xl rounded-full translate-x-12 -translate-y-12 group-hover:scale-110 transition-transform duration-1000" suppressHydrationWarning />
                             <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-8 opacity-80 text-white">Comandos</h3>
-                            <div className="grid grid-cols-2 gap-4 relative z-10">
+                            <div className="grid grid-cols-2 gap-4 relative z-10" suppressHydrationWarning>
                                 {[
                                     { label: 'Ordens', icon: ClipboardList, href: '/service-orders/new' },
                                     { label: 'Clientes', icon: Users, href: '/customers' },

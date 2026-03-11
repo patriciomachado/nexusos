@@ -1,6 +1,7 @@
 'use client'
 
 import { Bell, Search, Settings, Grid3X3, Package, BarChart3 } from 'lucide-react'
+import NotificationsDropdown from '../layout/NotificationsDropdown'
 import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -29,19 +30,8 @@ export default function PDVHeader() {
                 </div>
             </div>
 
-            {/* Search Bar */}
-            <div className="flex-1 max-w-xl mx-8">
-                <div className="relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors transition-all" />
-                    <input
-                        type="text"
-                        placeholder="Pesquisar produtos (F1)..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-muted/50 border border-border rounded-2xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-card transition-all font-medium"
-                    />
-                </div>
-            </div>
+            {/* Space for layout balance */}
+            <div className="flex-1" />
 
             {/* Nav & Actions */}
             <div className="flex items-center gap-8">
@@ -59,10 +49,7 @@ export default function PDVHeader() {
                 </nav>
 
                 <div className="flex items-center gap-4">
-                    <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all border border-border relative">
-                        <Bell className="w-4 h-4" />
-                        <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-background"></span>
-                    </button>
+                    <NotificationsDropdown />
                     <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all border border-border">
                         <Settings className="w-4 h-4" />
                     </button>
