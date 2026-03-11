@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Search, Loader2, Package, Grid3X3, Wrench, Headphones } from 'lucide-react'
-import { InventoryItem } from '@/types'
+import { InventoryItem, InventoryUnit } from '@/types'
 import { usePDVStore } from '@/store/usePDVStore'
 import ProductCard from './ProductCard'
 
