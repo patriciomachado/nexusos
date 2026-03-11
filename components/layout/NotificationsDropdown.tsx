@@ -11,6 +11,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
 export default function NotificationsDropdown() {
+    const MotionDiv = motion.div as any
     const [isOpen, setIsOpen] = useState(false)
     const { user: clerkUser } = useUser()
     const { user: appUser } = useAppStore()
@@ -57,7 +58,7 @@ export default function NotificationsDropdown() {
             {/* Dropdown Menu */}
             <AnimatePresence>
                 {isOpen && (
-                    <motion.div
+                    <MotionDiv
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -138,7 +139,7 @@ export default function NotificationsDropdown() {
                                 Ver todas as atividades <ChevronRight className="w-3 h-3" />
                             </button>
                         </div>
-                    </motion.div>
+                    </MotionDiv>
                 )}
             </AnimatePresence>
         </div>
