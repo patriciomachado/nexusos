@@ -24,7 +24,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
     }, [])
 
     return (
-        <header className="h-14 lg:h-18 px-4 lg:px-8 flex items-center justify-between sticky top-0 z-40 bg-background/40 backdrop-blur-3xl border-b border-white/5 transition-all duration-500" suppressHydrationWarning>
+        <header className="h-14 lg:h-18 px-4 lg:px-8 flex items-center justify-between sticky top-0 z-40 bg-background/40 backdrop-blur-3xl border-b border-border/40 transition-all duration-500" suppressHydrationWarning>
 
             {/* Left: Mobile Title / Breadcrumb */}
             <div className="flex items-center gap-6" suppressHydrationWarning>

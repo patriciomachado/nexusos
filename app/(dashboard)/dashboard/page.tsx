@@ -160,7 +160,7 @@ export default async function DashboardPage() {
     ]
 
     return (
-        <div className="bg-[#0f172a] min-h-screen text-foreground pb-20 lg:pb-8 transition-colors duration-500 overflow-x-hidden" suppressHydrationWarning>
+        <div className="bg-background min-h-screen text-foreground pb-20 lg:pb-8 transition-colors duration-500 overflow-x-hidden" suppressHydrationWarning>
             <Header title="Nexus Dashboard" />
 
             <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700" suppressHydrationWarning>
@@ -175,7 +175,7 @@ export default async function DashboardPage() {
                         </p>
                     </div>
                     <div className="flex items-center gap-4" suppressHydrationWarning>
-                        <Link href="/reports" className="px-5 py-2.5 rounded-2xl bg-card/40 backdrop-blur-xl border border-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
+                        <Link href="/reports" className="px-5 py-2.5 rounded-2xl bg-card border border-border/40 text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
                             View Reports
                         </Link>
                         <Link href="/service-orders/new" className="px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
@@ -225,7 +225,7 @@ export default async function DashboardPage() {
                     </div>
 
                     <div className="lg:col-span-1" suppressHydrationWarning>
-                        <div className="bg-gradient-to-br from-primary to-blue-600 rounded-3xl p-8 text-primary-foreground shadow-2xl relative overflow-hidden group border border-white/10 h-full" suppressHydrationWarning>
+                        <div className="bg-gradient-to-br from-primary to-blue-600 rounded-3xl p-8 text-primary-foreground shadow-2xl relative overflow-hidden group border border-border/40 h-full" suppressHydrationWarning>
                             <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 blur-3xl rounded-full translate-x-12 -translate-y-12 group-hover:scale-110 transition-transform duration-1000" suppressHydrationWarning />
                             <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-8 opacity-80 text-white">Comandos</h3>
                             <div className="grid grid-cols-2 gap-4 relative z-10" suppressHydrationWarning>

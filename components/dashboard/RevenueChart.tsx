@@ -50,22 +50,22 @@ export default function RevenueChart({ data = defaultData, totalRevenue = 'R$ 0,
                                 <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" opacity={0.1} />
                         <XAxis
                             dataKey="name"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 900 }}
+                            tick={{ fill: 'currentColor', opacity: 0.3, fontSize: 10, fontWeight: 900 }}
                             dy={10}
                         />
                         <YAxis hide />
                         <Tooltip
                             contentStyle={{
-                                backgroundColor: '#0f172a',
-                                border: '1px solid rgba(255,255,255,0.1)',
+                                backgroundColor: 'hsl(var(--card))',
+                                border: '1px solid hsl(var(--border))',
                                 borderRadius: '16px',
                                 fontSize: '10px',
-                                color: '#fff',
+                                color: 'hsl(var(--foreground))',
                                 backdropFilter: 'blur(10px)'
                             }}
                             itemStyle={{ color: '#3b82f6', fontWeight: 900 }}
