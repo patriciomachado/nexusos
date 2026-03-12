@@ -30,12 +30,19 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
     const [selectedCustomer, setSelectedCustomer] = useState('')
     const [notes, setNotes] = useState('')
     const [amountReceived, setAmountReceived] = useState('')
+    const [isFirstInput, setIsFirstInput] = useState(true)
+
+    const isCashPayment = () => {
+        const pm = paymentMethods.find(p => p.id === selectedPaymentMethod)
+        return pm?.code?.toLowerCase() === 'money' || pm?.code?.toLowerCase() === 'cash' || pm?.code?.toLowerCase() === 'dinheiro' || pm?.code?.toLowerCase() === 'pix'
+    }
 
     useEffect(() => {
         setMounted(true)
         if (isOpen) {
             initData()
             setAmountReceived(finalAmount.toString())
+            setIsFirstInput(true)
         }
     }, [isOpen, finalAmount])
 
@@ -70,12 +77,21 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
     const handleKeypadPress = (val: string) => {
         if (val === 'C') {
             setAmountReceived('')
+            setIsFirstInput(false)
             return
         }
         if (val === '⌫') {
             setAmountReceived(prev => prev.slice(0, -1))
+            setIsFirstInput(false)
             return
         }
+        
+        if (isFirstInput) {
+            setAmountReceived(val === '.' ? '0.' : val)
+            setIsFirstInput(false)
+            return
+        }
+
         if (val === '.' && amountReceived.includes('.')) return
         setAmountReceived(prev => prev + val)
     }
@@ -248,34 +264,42 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                                 <h3 className="text-4xl font-black tracking-tighter">{formatCurrency(finalAmount)}</h3>
                             </div>
 
-                            <div className="bg-white/10 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 space-y-3 md:space-y-4 border border-white/5">
-                                <div className="space-y-1">
-                                    <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Valor Recebido</p>
-                                    <div className="text-3xl md:text-4xl font-black tracking-tighter flex items-baseline gap-2">
-                                        <span className="text-base md:text-lg opacity-40">R$</span>
-                                        {amountReceived || '0,00'}
+                            {isCashPayment() && (
+                                <div className="bg-white/10 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 space-y-3 md:space-y-4 border border-white/5 animate-in fade-in zoom-in-95 duration-300">
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Valor Recebido</p>
+                                        <div className="text-3xl md:text-4xl font-black tracking-tighter flex items-baseline gap-2">
+                                            <span className="text-base md:text-lg opacity-40">R$</span>
+                                            {amountReceived || '0,00'}
+                                        </div>
                                     </div>
+                                    {calculateChange() > 0 && (
+                                        <div className="pt-3 md:pt-4 border-t border-white/10 flex justify-between items-center animate-in slide-in-from-top-2">
+                                            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Troco</p>
+                                            <p className="text-xl md:text-2xl font-black text-emerald-300 tracking-tighter">{formatCurrency(calculateChange())}</p>
+                                        </div>
+                                    )}
                                 </div>
-                                {calculateChange() > 0 && (
-                                    <div className="pt-3 md:pt-4 border-t border-white/10 flex justify-between items-center">
-                                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Troco</p>
-                                        <p className="text-xl md:text-2xl font-black text-emerald-300 tracking-tighter">{formatCurrency(calculateChange())}</p>
-                                    </div>
-                                )}
-                            </div>
+                            )}
                         </div>
 
-                        <div className="grid grid-cols-3 gap-2 md:gap-3 pt-4 md:pt-6">
-                            {['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', '⌫'].map(key => (
-                                <button
-                                    key={key}
-                                    onClick={() => handleKeypadPress(key)}
-                                    className="h-14 md:h-16 rounded-xl md:rounded-2xl bg-white/5 hover:bg-white/15 active:scale-90 transition-all font-black text-lg border border-white/5 backdrop-blur-md"
-                                >
-                                    {key}
-                                </button>
-                            ))}
-                        </div>
+                        {isCashPayment() && (
+                            <div className="grid grid-cols-3 gap-2 md:gap-3 pt-4 md:pt-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                {['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', '⌫'].map(key => (
+                                    <button
+                                        key={key}
+                                        onClick={() => handleKeypadPress(key)}
+                                        className={cn(
+                                            "h-14 md:h-16 rounded-xl md:rounded-2xl bg-white/5 hover:bg-white/15 active:scale-90 transition-all font-black text-lg border border-white/5 backdrop-blur-md",
+                                            key === 'C' && "text-rose-400 font-black",
+                                            key === '⌫' && "text-amber-400"
+                                        )}
+                                    >
+                                        {key}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div className="pt-10">
