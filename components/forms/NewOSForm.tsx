@@ -499,7 +499,7 @@ export default function NewOSForm({ customers, technicians, serviceTypes, compan
                 title="Novo Cliente"
                 maxWidth="lg"
             >
-                <div className="p-4">
+                <div>
                     <CustomerForm 
                         companyId={companyId}
                         initial={{ name: initialCustomerName }}

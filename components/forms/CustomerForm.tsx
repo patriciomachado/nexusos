@@ -72,8 +72,11 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
             {!hideHeader && <Header title={customerId ? 'Atualizar Registro' : 'Novo Cadastro de Cliente'} />}
 
             <form onSubmit={handleSubmit} className={cn("p-4 max-w-5xl mx-auto space-y-6", !hideHeader && "mt-4")}>
-                <div className="bg-card/40 border border-border rounded-[2.5rem] p-6 backdrop-blur-3xl relative overflow-hidden group shadow-lg">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[120px] rounded-full transition-all group-hover:bg-indigo-500/10" />
+                <div className={cn(
+                    "relative overflow-hidden group transition-all",
+                    !hideHeader ? "bg-card/40 border border-border rounded-[2.5rem] p-6 shadow-lg backdrop-blur-3xl" : "p-0"
+                )}>
+                    {!hideHeader && <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[120px] rounded-full transition-all group-hover:bg-indigo-500/10" />}
 
                     <div className="relative z-10 space-y-6">
                         <div className="flex items-center gap-3 border-b border-border pb-4">
@@ -116,7 +119,10 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
+                <div className={cn(
+                    "flex flex-col sm:flex-row items-center gap-4 pt-2",
+                    hideHeader && "border-t border-border mt-6 pt-6"
+                )}>
                     <button
                         type="submit"
                         disabled={isPending}
