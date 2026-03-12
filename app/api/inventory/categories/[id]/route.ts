@@ -7,7 +7,7 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
     const { id } = await params
     const db = createAdminClient()

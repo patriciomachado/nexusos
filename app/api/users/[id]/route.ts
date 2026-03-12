@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase'
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
     const db = createAdminClient()
     const { data: currentUser } = await db.from('users').select('company_id, role').eq('clerk_id', userId).single()
@@ -32,7 +32,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
     const db = createAdminClient()
     const { data: currentUser } = await db.from('users').select('company_id, role').eq('clerk_id', userId).single()

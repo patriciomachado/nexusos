@@ -6,7 +6,7 @@ import {
     RefreshCw, Filter, ArrowDownLeft, Receipt, TrendingUp, PiggyBank,
     CreditCard, Calendar, DollarSign, Search, MoreHorizontal
 } from 'lucide-react'
-import { formatCurrency, formatDateTime, cn, PAYMENT_METHOD_LABELS } from '@/lib/utils'
+import { formatCurrency, formatDateTime, cn, PAYMENT_METHOD_LABELS, SOURCE_TYPE_LABELS } from '@/lib/utils'
 import Header from '@/components/layout/Header'
 import { CashRegister, CashTransaction } from '@/types'
 import { toast } from 'sonner'
@@ -137,14 +137,14 @@ export default function CashRegisterClient() {
             <div className="p-8 lg:p-12 max-w-screen-2xl mx-auto space-y-12">
 
                 {/* Tab Switcher */}
-                <div className="flex items-center gap-2 p-1.5 bg-muted/30 border border-white/5 rounded-3xl w-fit backdrop-blur-3xl mx-auto lg:mx-0">
+                <div className="flex items-center gap-2 p-1.5 bg-muted/30 border border-border/20 rounded-3xl w-fit backdrop-blur-3xl mx-auto lg:mx-0">
                     <button
                         onClick={() => setActiveTab('daily')}
                         className={cn(
                             "px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
                             activeTab === 'daily'
                                 ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20 scale-105"
-                                : "text-muted-foreground/60 hover:text-foreground hover:bg-white/5"
+                                : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/30"
                         )}
                     >
                         <Wallet className="w-3.5 h-3.5" />
@@ -156,7 +156,7 @@ export default function CashRegisterClient() {
                             "px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
                             activeTab === 'history'
                                 ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20 scale-105"
-                                : "text-muted-foreground/60 hover:text-foreground hover:bg-white/5"
+                                : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/30"
                         )}
                     >
                         <History className="w-3.5 h-3.5" />
@@ -179,7 +179,7 @@ export default function CashRegisterClient() {
                         </div>
 
                         {!currentRegister ? (
-                            <div className="flex flex-col items-center justify-center p-24 bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[3rem] shadow-2xl text-center space-y-10">
+                            <div className="flex flex-col items-center justify-center p-24 bg-card/60 backdrop-blur-3xl border border-border/20 rounded-[3rem] shadow-2xl text-center space-y-10">
                                 <div className="w-24 h-24 bg-primary/10 rounded-[2rem] flex items-center justify-center border border-primary/20 group hover:rotate-12 transition-transform">
                                     <Lock className="w-10 h-10 text-primary/40" />
                                 </div>
@@ -199,7 +199,7 @@ export default function CashRegisterClient() {
                             <>
                                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                                     {/* Main Balance Card */}
-                                    <div className="lg:col-span-8 p-10 lg:p-12 rounded-[3.5rem] bg-gradient-to-br from-primary/20 via-primary/5 to-transparent border border-white/5 relative overflow-hidden group shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] min-h-[400px] flex flex-col justify-between">
+                                    <div className="lg:col-span-8 p-10 lg:p-12 rounded-[3.5rem] bg-gradient-to-br from-primary/20 via-primary/5 to-transparent border border-border/20 relative overflow-hidden group shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] min-h-[400px] flex flex-col justify-between">
                                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 animate-pulse" />
                                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
@@ -229,12 +229,12 @@ export default function CashRegisterClient() {
                                             </div>
                                         </div>
 
-                                        <div className="relative z-10 flex items-center gap-4 mt-12 bg-black/20 p-6 rounded-[2.5rem] border border-white/5 backdrop-blur-3xl">
+                                        <div className="relative z-10 flex items-center gap-4 mt-12 bg-muted/40 p-6 rounded-[2.5rem] border border-border/20 backdrop-blur-3xl">
                                             <div className="flex-1">
                                                 <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-1 block">Responsável</span>
                                                 <p className="text-sm font-black text-foreground tracking-tight">Administrador do Sistema</p>
                                             </div>
-                                            <div className="w-px h-8 bg-white/5" />
+                                            <div className="w-px h-8 bg-border/20" />
                                             <div className="flex-1">
                                                 <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-1 block">Status</span>
                                                 <div className="flex items-center gap-2">
@@ -281,7 +281,7 @@ export default function CashRegisterClient() {
                                         </div>
                                         <button
                                             onClick={() => setIsClosingModalOpen(true)}
-                                            className="p-8 rounded-[2.5rem] bg-card/40 backdrop-blur-3xl border border-white/5 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4 group"
+                                            className="p-8 rounded-[2.5rem] bg-card/60 backdrop-blur-3xl border border-border/20 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4 group"
                                         >
                                             <Lock className="w-6 h-6 text-muted-foreground/40 group-hover:text-white transition-colors" />
                                             <span className="text-[11px] font-black uppercase tracking-[0.3em]">Encerrar Expediente</span>
@@ -302,11 +302,11 @@ export default function CashRegisterClient() {
                                         </div>
                                     </div>
 
-                                    <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[3rem] shadow-2xl overflow-hidden">
+                                    <div className="bg-card/60 backdrop-blur-3xl border border-border/20 rounded-[3rem] shadow-2xl overflow-hidden">
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-left min-w-[900px]">
                                                 <thead>
-                                                    <tr className="bg-white/5 border-b border-white/5">
+                                                    <tr className="bg-muted/30 border-b border-border/20">
                                                         <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Horário</th>
                                                         <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Natureza & Descrição</th>
                                                         <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center">Origem</th>
@@ -314,9 +314,9 @@ export default function CashRegisterClient() {
                                                         <th className="p-8 text-right text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Valor</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="divide-y divide-white/5">
+                                                <tbody className="divide-y divide-border/20">
                                                     {transactionsList.length > 0 ? transactionsList.map((tx) => (
-                                                        <tr key={tx.id} className="group hover:bg-white/5 transition-colors">
+                                                        <tr key={tx.id} className="group hover:bg-muted/20 transition-colors">
                                                             <td className="p-8 align-middle">
                                                                 <div className="text-sm font-black text-foreground tabular-nums">
                                                                     {formatDateTime(tx.created_at).split(',')[1]?.replace('às', '') || '-'}
@@ -337,7 +337,7 @@ export default function CashRegisterClient() {
                                                                 </div>
                                                             </td>
                                                             <td className="p-8 align-middle text-center text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest">
-                                                                {tx.source_type?.replace('_', ' ') || 'Caixa'}
+                                                                {SOURCE_TYPE_LABELS[tx.source_type as string] || tx.source_type?.replace('_', ' ') || 'Caixa'}
                                                             </td>
                                                             <td className="p-8 align-middle">
                                                                 <div className="flex items-center gap-2">
@@ -368,7 +368,7 @@ export default function CashRegisterClient() {
                     <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-500">
                         {/* History View */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="p-8 rounded-[2.5rem] bg-card/40 border border-white/5 backdrop-blur-3xl shadow-xl">
+                            <div className="p-8 rounded-[2.5rem] bg-card/60 border border-border/20 backdrop-blur-3xl shadow-xl">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
                                         <TrendingUp className="w-6 h-6" />
@@ -377,7 +377,7 @@ export default function CashRegisterClient() {
                                 </div>
                                 <p className="text-4xl font-black text-foreground tracking-tighter">{formatCurrency(totalReceived)}</p>
                             </div>
-                            <div className="p-8 rounded-[2.5rem] bg-card/40 border border-white/5 backdrop-blur-3xl shadow-xl">
+                            <div className="p-8 rounded-[2.5rem] bg-card/60 border border-border/20 backdrop-blur-3xl shadow-xl">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500">
                                         <Calendar className="w-6 h-6" />
@@ -398,17 +398,17 @@ export default function CashRegisterClient() {
                                     value={searchQuery}
                                     onChange={(e: any) => setSearchQuery(e.target.value)}
                                     placeholder="Buscar por cliente ou número de OS..."
-                                    className="w-full bg-muted/30 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-foreground focus:outline-none focus:border-primary/40 backdrop-blur-3xl"
+                                    className="w-full bg-muted/40 border border-border/20 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-foreground focus:outline-none focus:border-primary/40 backdrop-blur-3xl"
                                 />
                             </div>
                         </div>
 
                         {/* General Transactions Table */}
-                        <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[3rem] shadow-2xl overflow-hidden">
+                        <div className="bg-card/60 backdrop-blur-3xl border border-border/20 rounded-[3rem] shadow-2xl overflow-hidden">
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left min-w-[1000px]">
                                     <thead>
-                                        <tr className="bg-white/5 border-b border-white/5">
+                                        <tr className="bg-muted/30 border-b border-border/20">
                                             <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Data / Hora</th>
                                             <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Cliente / OS</th>
                                             <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Método</th>
@@ -417,11 +417,11 @@ export default function CashRegisterClient() {
                                             <th className="p-8"></th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-white/5">
+                                    <tbody className="divide-y divide-border/20">
                                         {filteredPayments.length > 0 ? filteredPayments.map((p: any) => {
                                             const cfg = STATUS_CONFIG[p.payment_status] || { label: p.payment_status, color: 'text-muted-foreground/40', bg: 'bg-muted/5', border: 'border-border/10' }
                                             return (
-                                                <tr key={p.id} className="group hover:bg-white/5 transition-colors">
+                                                <tr key={p.id} className="group hover:bg-muted/20 transition-colors">
                                                     <td className="p-8 align-middle">
                                                         <div className="flex flex-col">
                                                             <span className="text-sm font-black text-foreground">{formatDateTime(p.payment_date).split(',')[0]}</span>
@@ -457,7 +457,7 @@ export default function CashRegisterClient() {
                                                         </span>
                                                     </td>
                                                     <td className="p-8 text-right align-middle">
-                                                        <button className="p-3 text-muted-foreground/20 hover:text-foreground hover:bg-white/5 rounded-2xl transition-all">
+                                                        <button className="p-3 text-muted-foreground/40 hover:text-foreground hover:bg-muted/50 rounded-2xl transition-all">
                                                             <MoreHorizontal className="w-5 h-5" />
                                                         </button>
                                                     </td>

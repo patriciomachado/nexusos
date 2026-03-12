@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase'
 
 export async function GET(req: NextRequest) {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     const db = createAdminClient()
     const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
     const { searchParams } = new URL(req.url)
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     const db = createAdminClient()
     const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
     const body = await req.json()
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     const db = createAdminClient()
     const body = await req.json()
     const { id, ...updateData } = body
@@ -46,10 +46,10 @@ export async function PATCH(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
-    if (!id) return NextResponse.json({ error: 'Missing ID' }, { status: 400 })
+    if (!id) return NextResponse.json({ error: 'ID ausente' }, { status: 400 })
     const db = createAdminClient()
     const { error } = await db.from('appointments').delete().eq('id', id)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })

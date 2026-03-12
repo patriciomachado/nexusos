@@ -39,7 +39,7 @@ export default async function AppointmentsPage() {
         .order('order_number', { ascending: false })
 
     return (
-        <div className="bg-[#0f172a] min-h-screen text-foreground h-screen flex overflow-hidden">
+        <div className="bg-background min-h-screen text-foreground h-screen flex overflow-hidden">
             <AppointmentsCalendar
                 initialAppointments={appointments || []}
                 customers={customers || []}

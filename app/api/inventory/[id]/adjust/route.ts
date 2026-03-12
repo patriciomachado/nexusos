@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase'
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
     const { id } = await params
     const db = createAdminClient()
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const body = await req.json()
 
     const { data: item } = await db.from('inventory_items').select('quantity_in_stock').eq('id', id).eq('company_id', user?.company_id).single()
-    if (!item) return NextResponse.json({ error: 'Item not found' }, { status: 404 })
+    if (!item) return NextResponse.json({ error: 'Item não encontrado' }, { status: 404 })
 
     const newQty = Number(item.quantity_in_stock) + Number(body.quantity)
     if (newQty < 0) return NextResponse.json({ error: 'Estoque insuficiente' }, { status: 400 })

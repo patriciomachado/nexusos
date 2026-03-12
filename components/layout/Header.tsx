@@ -56,7 +56,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
                 <div className="flex items-center gap-3 group cursor-pointer" suppressHydrationWarning>
                     <div className="text-right hidden sm:block" suppressHydrationWarning>
                         <p className="text-[10px] font-black text-foreground uppercase tracking-tight group-hover:text-primary transition-colors">
-                            {mounted ? (clerkUser?.fullName || 'Nexus Operator') : 'Nexus Operator'}
+                            {mounted ? (clerkUser?.fullName || 'Operador Nexus') : 'Operador Nexus'}
                         </p>
                         <p className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest mt-0.5">Terminal Ativo</p>
                     </div>

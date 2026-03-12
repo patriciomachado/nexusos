@@ -70,7 +70,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                             ? "bg-emerald-500 text-white shadow-emerald-500/20"
                                             : "bg-indigo-500 text-white shadow-indigo-500/20"
                                     )}>
-                                        {os.status.replace('_', ' ')}
+                                        {OS_STATUS_LABELS[os.status]}
                                     </span>
                                     {os.terms_accepted && (
                                         <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest">

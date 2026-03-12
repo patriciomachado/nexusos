@@ -6,7 +6,7 @@ type P = { params: Promise<{ id: string }> }
 
 export async function GET(req: NextRequest, { params }: P) {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     const { id } = await params
     const db = createAdminClient()
     const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: P) {
 
 export async function PUT(req: NextRequest, { params }: P) {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     const { id } = await params
     const db = createAdminClient()
     const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
@@ -29,7 +29,7 @@ export async function PUT(req: NextRequest, { params }: P) {
 
 export async function DELETE(req: NextRequest, { params }: P) {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     const { id } = await params
     const db = createAdminClient()
     const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()

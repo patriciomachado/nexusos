@@ -4,12 +4,12 @@ import { createAdminClient } from '@/lib/supabase'
 
 export async function GET(req: NextRequest) {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
     const db = createAdminClient()
     const { data: currentUser } = await db.from('users').select('company_id, role').eq('clerk_id', userId).single()
 
-    if (!currentUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    if (!currentUser) return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
 
     // Fetch all users from the same company
     const { data, error } = await db
@@ -24,20 +24,20 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
     const db = createAdminClient()
     const { data: currentUser } = await db.from('users').select('company_id, role').eq('clerk_id', userId).single()
 
     if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'manager')) {
-        return NextResponse.json({ error: 'Only admins or managers can add team members' }, { status: 403 })
+        return NextResponse.json({ error: 'Apenas administradores ou gerentes podem adicionar membros' }, { status: 403 })
     }
 
     const body = await req.json()
     const { email, full_name, role, phone, clerk_id } = body
 
     if (!email || !role) {
-        return NextResponse.json({ error: 'Email and role are required' }, { status: 400 })
+        return NextResponse.json({ error: 'E-mail e cargo são obrigatórios' }, { status: 400 })
     }
 
     // Note: In a real app, you might want to invite the user via Clerk.

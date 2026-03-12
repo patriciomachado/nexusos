@@ -5,7 +5,7 @@ import { CreateSaleForm } from '@/types'
 
 export async function POST(req: NextRequest) {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
     const db = createAdminClient()
     const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()

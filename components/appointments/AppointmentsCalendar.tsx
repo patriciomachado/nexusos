@@ -15,7 +15,7 @@ import {
     PenTool,
     ClipboardList
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, APPOINTMENT_STATUS_LABELS } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import PremiumModal from '@/components/ui/PremiumModal'
 import AppointmentForm from './AppointmentForm'
@@ -102,7 +102,7 @@ export default function AppointmentsCalendar({
         return (
             <div className="flex-1 grid grid-cols-7 auto-rows-fr overflow-y-auto lg:overflow-visible">
                 {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-                    <div key={`empty-${i}`} className="border-r border-b border-white/5 bg-white/[0.01]" />
+                    <div key={`empty-${i}`} className="border-r border-b border-border/10 bg-muted/[0.01]" />
                 ))}
                 {Array.from({ length: daysInMonth }).map((_, i) => {
                     const day = i + 1
@@ -115,7 +115,7 @@ export default function AppointmentsCalendar({
                         <div
                             key={day}
                             className={cn(
-                                "border-r border-b border-white/5 p-2 lg:p-4 hover:bg-white/[0.04] transition-colors relative min-h-[120px] group cursor-pointer",
+                                "border-r border-b border-border/10 p-2 lg:p-4 hover:bg-muted/[0.05] transition-colors relative min-h-[120px] group cursor-pointer",
                                 isToday && "bg-primary/[0.03]"
                             )}
                         >
@@ -148,7 +148,7 @@ export default function AppointmentsCalendar({
                                     e.stopPropagation()
                                     handleDayClick(dStr)
                                 }}
-                                className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-white/5 opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-white"
+                                className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-muted/20 opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-white"
                             >
                                 <Plus className="w-3 h-3" />
                             </button>
@@ -173,7 +173,7 @@ export default function AppointmentsCalendar({
                     const isToday = dStr === todayStr
 
                     return (
-                        <div key={i} className={cn("border-r border-b border-white/5 p-4", isToday && "bg-primary/[0.03]")}>
+                        <div key={i} className={cn("border-r border-b border-border/10 p-4", isToday && "bg-primary/[0.03]")}>
                             <div className="text-[10px] font-black uppercase text-muted-foreground/40 mb-1">
                                 {dayDate.toLocaleDateString('pt-BR', { weekday: 'short' })}
                             </div>
@@ -185,7 +185,7 @@ export default function AppointmentsCalendar({
                                     <div
                                         key={a.id}
                                         onClick={() => openAppointment(a)}
-                                        className="p-3 rounded-xl border border-white/5 bg-white/5 cursor-pointer hover:bg-white/10 transition-all"
+                                        className="p-3 rounded-xl border border-border/10 bg-muted/20 cursor-pointer hover:bg-muted/30 transition-all"
                                     >
                                         <div className="text-[9px] font-black text-primary mb-1">
                                             {new Date(a.scheduled_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
@@ -212,7 +212,7 @@ export default function AppointmentsCalendar({
                         <div
                             key={a.id}
                             onClick={() => openAppointment(a)}
-                            className="p-6 rounded-3xl border border-white/5 bg-white/5 cursor-pointer hover:scale-[1.01] transition-all flex items-center justify-between"
+                            className="p-6 rounded-3xl border border-border/10 bg-muted/20 cursor-pointer hover:scale-[1.01] transition-all flex items-center justify-between"
                         >
                             <div className="flex items-center gap-6">
                                 <div className="text-xl font-black text-primary">
@@ -229,7 +229,7 @@ export default function AppointmentsCalendar({
                                     a.status === 'confirmed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
                                         "bg-orange-500/10 border-orange-500/20 text-orange-400"
                             )}>
-                                {a.status}
+                                {APPOINTMENT_STATUS_LABELS[a.status] || a.status}
                             </div>
                         </div>
                     )) : (
@@ -251,8 +251,8 @@ export default function AppointmentsCalendar({
                         <h1 className="text-3xl font-black tracking-tighter capitalize">
                             {view === 'day' ? currentDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' }) : monthName}
                         </h1>
-                        <div className="flex items-center bg-card/40 backdrop-blur-xl border border-white/5 rounded-xl p-1 ml-4" suppressHydrationWarning>
-                            <button onClick={prev} className="p-1.5 hover:bg-white/5 rounded-lg transition-colors text-muted-foreground hover:text-primary">
+                        <div className="flex items-center bg-card/60 backdrop-blur-xl border border-border/20 rounded-xl p-1 ml-4" suppressHydrationWarning>
+                            <button onClick={prev} className="p-1.5 hover:bg-muted/30 rounded-lg transition-colors text-muted-foreground hover:text-primary">
                                 <ChevronLeft className="w-4 h-4" />
                             </button>
                             <button onClick={goToToday} className="px-3 text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">Hoje</button>
@@ -261,11 +261,11 @@ export default function AppointmentsCalendar({
                             </button>
                         </div>
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">Nexus OS Scheduling Hub</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">Central de Agendamentos Nexus OS</p>
                 </div>
 
                 <div className="flex items-center gap-4" suppressHydrationWarning>
-                    <div className="hidden sm:flex bg-card/40 backdrop-blur-xl border border-white/5 rounded-2xl p-1 shadow-lg" suppressHydrationWarning>
+                    <div className="hidden sm:flex bg-card/60 backdrop-blur-xl border border-border/20 rounded-2xl p-1 shadow-lg" suppressHydrationWarning>
                         {(['month', 'week', 'day'] as const).map(v => (
                             <button
                                 key={v}
@@ -296,9 +296,9 @@ export default function AppointmentsCalendar({
 
             <div className="flex-1 flex flex-col lg:flex-row gap-8 overflow-hidden" suppressHydrationWarning>
                 {/* Calendar View Area */}
-                <div className="flex-1 flex flex-col glass-premium rounded-[2.5rem] overflow-hidden border border-white/5" suppressHydrationWarning>
+                <div className="flex-1 flex flex-col glass-premium rounded-[2.5rem] overflow-hidden border border-border/20" suppressHydrationWarning>
                     {view === 'month' && (
-                        <div className="grid grid-cols-7 border-b border-white/5 bg-white/5" suppressHydrationWarning>
+                        <div className="grid grid-cols-7 border-b border-border/10 bg-muted/10" suppressHydrationWarning>
                             {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].map(day => (
                                 <div key={day} className="py-4 text-center text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">{day}</div>
                             ))}
@@ -320,14 +320,14 @@ export default function AppointmentsCalendar({
                             <div
                                 key={a.id}
                                 onClick={() => openAppointment(a)}
-                                className="relative pl-6 border-l-2 border-primary/20 py-2 group cursor-pointer hover:border-primary transition-all rounded-r-xl hover:bg-white/[0.02]"
+                                className="relative pl-6 border-l-2 border-primary/20 py-2 group cursor-pointer hover:border-primary transition-all rounded-r-xl hover:bg-muted/[0.02]"
                                 suppressHydrationWarning
                             >
                                 <div className="absolute left-[-5px] top-3 w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(99,102,241,0.5)] group-hover:scale-125 transition-transform" suppressHydrationWarning />
                                 <div className="text-[10px] font-black text-muted-foreground/40 mb-1" suppressHydrationWarning>{new Date(a.scheduled_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</div>
                                 <h3 className="text-sm font-black text-foreground group-hover:text-primary transition-colors leading-tight">{a.service_orders?.title || 'Compromisso'}</h3>
                                 <div className="flex items-center gap-2 mt-2" suppressHydrationWarning>
-                                    <div className="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center" suppressHydrationWarning>
+                                    <div className="w-6 h-6 rounded-lg bg-muted/20 flex items-center justify-center" suppressHydrationWarning>
                                         <User className="w-3 h-3 text-muted-foreground/40" suppressHydrationWarning />
                                     </div>
                                     <span className="text-[9px] font-bold text-muted-foreground/60 transition-colors" suppressHydrationWarning>{a.customers?.name || 'Cliente Direto'}</span>
@@ -341,7 +341,7 @@ export default function AppointmentsCalendar({
                         )}
                     </div>
 
-                    <div className="mt-8 pt-8 border-t border-white/5" suppressHydrationWarning>
+                    <div className="mt-8 pt-8 border-t border-border/20" suppressHydrationWarning>
                         <div className="glass-premium rounded-2xl p-6 bg-primary/5 border-primary/20 hover:border-primary/40 transition-all cursor-default group" suppressHydrationWarning>
                             <div className="flex items-center justify-between mb-4" suppressHydrationWarning>
                                 <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center group-hover:rotate-6 transition-transform" suppressHydrationWarning>
@@ -388,7 +388,7 @@ export default function AppointmentsCalendar({
             >
                 {selectedAppointment && (
                     <div className="space-y-6" suppressHydrationWarning>
-                        <div className="flex items-center gap-4 bg-white/5 p-4 rounded-3xl border border-white/5" suppressHydrationWarning>
+                        <div className="flex items-center gap-4 bg-muted/30 p-4 rounded-3xl border border-border/20" suppressHydrationWarning>
                             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center" suppressHydrationWarning>
                                 <Clock className="w-6 h-6 text-primary" suppressHydrationWarning />
                             </div>
@@ -436,7 +436,7 @@ export default function AppointmentsCalendar({
                             )}
                         </div>
 
-                        <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5" suppressHydrationWarning>
+                        <div className="p-6 rounded-[2rem] bg-card/40 border border-border/20" suppressHydrationWarning>
                             <div className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest mb-2" suppressHydrationWarning>Status</div>
                             <div className={cn(
                                 "inline-flex px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
@@ -445,20 +445,18 @@ export default function AppointmentsCalendar({
                                         selectedAppointment.status === 'in_progress' ? "bg-orange-500/10 border-orange-500/20 text-orange-400" :
                                             "bg-purple-500/10 border-purple-500/20 text-purple-400"
                             )} suppressHydrationWarning>
-                                {selectedAppointment.status === 'scheduled' ? 'Agendado' :
-                                    selectedAppointment.status === 'confirmed' ? 'Confirmado' :
-                                        selectedAppointment.status === 'in_progress' ? 'Em andamento' : 'Concluído'}
+                                {APPOINTMENT_STATUS_LABELS[selectedAppointment.status] || selectedAppointment.status}
                             </div>
                         </div>
 
                         <div className="flex gap-3 pt-4" suppressHydrationWarning>
                             <button
                                 onClick={handleEdit}
-                                className="flex-1 py-4 rounded-2xl bg-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5"
+                                className="flex-1 py-4 rounded-2xl bg-muted/20 text-[10px] font-black uppercase tracking-widest hover:bg-muted/30 transition-all border border-border/10"
                             >
                                 Editar
                             </button>
-                            <button className="flex-1 py-4 rounded-2xl bg-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/20 transition-all border border-white/5">
+                            <button className="flex-1 py-4 rounded-2xl bg-muted/20 text-[10px] font-black uppercase tracking-widest hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/20 transition-all border border-border/10">
                                 Cancelar
                             </button>
                         </div>

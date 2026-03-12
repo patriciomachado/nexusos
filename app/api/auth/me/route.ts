@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase'
 
 export async function GET() {
     const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
     const db = createAdminClient()
     const { data, error } = await db
@@ -22,7 +22,7 @@ export async function GET() {
     }
 
     if (!data) {
-        return NextResponse.json({ error: 'User not found' }, { status: 404 })
+        return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
     }
 
     return NextResponse.json(data)

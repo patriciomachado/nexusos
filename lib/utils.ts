@@ -109,3 +109,19 @@ export const PLAN_LABELS: Record<string, string> = {
     profissional: 'Profissional',
     avancado: 'Avançado',
 }
+
+export const SOURCE_TYPE_LABELS: Record<string, string> = {
+    manual_suprimento: 'Suprimento Manual',
+    manual_sangria: 'Sangria Manual',
+    sale: 'Venda (PDV)',
+    service_order: 'Ordem de Serviço',
+    inventory_adjustment: 'Ajuste de Estoque',
+}
+
+export const APPOINTMENT_STATUS_LABELS: Record<string, string> = {
+    scheduled: 'Agendado',
+    confirmed: 'Confirmado',
+    in_progress: 'Em Andamento',
+    completed: 'Concluído',
+    canceled: 'Cancelado',
+}

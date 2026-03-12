@@ -168,18 +168,18 @@ export default async function DashboardPage() {
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-6" suppressHydrationWarning>
                     <div className="text-center sm:text-left" suppressHydrationWarning>
                         <h2 className="text-3xl font-black tracking-tight text-foreground">
-                            Welcome back, <span className="text-primary">{user.full_name?.split(' ')[0] || 'Operator'}</span>
+                            Bem-vindo de volta, <span className="text-primary">{user.full_name?.split(' ')[0] || 'Operador'}</span>
                         </h2>
                         <p className="text-sm text-muted-foreground font-medium opacity-60">
-                            Here's what's happening with your business today.
+                            Aqui está o que está acontecendo com seu negócio hoje.
                         </p>
                     </div>
                     <div className="flex items-center gap-4" suppressHydrationWarning>
                         <Link href="/reports" className="px-5 py-2.5 rounded-2xl bg-card border border-border/40 text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
-                            View Reports
+                            Ver Relatórios
                         </Link>
                         <Link href="/service-orders/new" className="px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
-                            New OS
+                            Nova OS
                         </Link>
                     </div>
                 </div>

@@ -70,6 +70,6 @@ export async function POST(
 
     } catch (error) {
         console.error('Rating API Error:', error)
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+        return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 })
     }
 }
