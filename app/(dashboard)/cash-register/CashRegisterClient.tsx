@@ -137,30 +137,30 @@ export default function CashRegisterClient() {
             <div className="p-8 lg:p-12 max-w-screen-2xl mx-auto space-y-12">
 
                 {/* Tab Switcher */}
-                <div className="flex items-center gap-2 p-1.5 bg-muted/30 border border-border/20 rounded-3xl w-fit backdrop-blur-3xl mx-auto lg:mx-0">
+                <div className="flex items-center gap-1 p-1 bg-muted/30 border border-border/20 rounded-2xl w-full sm:w-fit backdrop-blur-3xl mx-auto lg:mx-0 overflow-x-auto scrollbar-hide">
                     <button
                         onClick={() => setActiveTab('daily')}
                         className={cn(
-                            "px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
+                            "flex-1 sm:flex-none px-4 lg:px-8 py-2.5 lg:py-3 rounded-xl lg:rounded-2xl text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 whitespace-nowrap",
                             activeTab === 'daily'
                                 ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20 scale-105"
                                 : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/30"
                         )}
                     >
-                        <Wallet className="w-3.5 h-3.5" />
-                        Fluxo do Dia
+                        <Wallet className="w-3 h-3 lg:w-3.5 lg:h-3.5" />
+                        Fluxo
                     </button>
                     <button
                         onClick={() => setActiveTab('history')}
                         className={cn(
-                            "px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
+                            "flex-1 sm:flex-none px-4 lg:px-8 py-2.5 lg:py-3 rounded-xl lg:rounded-2xl text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 whitespace-nowrap",
                             activeTab === 'history'
                                 ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20 scale-105"
                                 : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/30"
                         )}
                     >
-                        <History className="w-3.5 h-3.5" />
-                        Histórico Geral
+                        <History className="w-3 h-3 lg:w-3.5 lg:h-3.5" />
+                        Histórico
                     </button>
                 </div>
 
@@ -173,8 +173,8 @@ export default function CashRegisterClient() {
                                     <div className="w-8 h-1 bg-primary rounded-full" />
                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">Operações Diárias</span>
                                 </div>
-                                <h2 className="text-4xl lg:text-5xl font-black text-foreground tracking-tighter">Fluxo de Caixa</h2>
-                                <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-xl">Monitoramento em tempo real das movimentações financeiras do PDV.</p>
+                                <h2 className="text-3xl lg:text-5xl font-black text-foreground tracking-tighter">Caixa</h2>
+                                <p className="text-muted-foreground font-medium text-sm lg:text-lg leading-relaxed max-w-xl">Movimentações financeiras em tempo real.</p>
                             </div>
                         </div>
 
@@ -204,63 +204,62 @@ export default function CashRegisterClient() {
                                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
                                         <div className="relative z-10">
-                                            <div className="flex items-center gap-4 mb-12">
-                                                <div className="w-14 h-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-2xl shadow-primary/40">
-                                                    <Wallet className="w-7 h-7" />
+                                            <div className="flex items-center gap-3 mb-8 lg:mb-12">
+                                                <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-2xl shadow-primary/40">
+                                                    <Wallet className="w-5 h-5 lg:w-7 lg:h-7" />
                                                 </div>
                                                 <div>
-                                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Disponível em Espécie</span>
-                                                    <p className="text-[10px] text-muted-foreground/60 font-mono font-black mt-1">Sessão iniciada às {formatDateTime(currentRegister.opened_at).split(',')[1]}</p>
+                                                    <span className="text-[9px] lg:text-[10px] font-black text-primary uppercase tracking-[0.3em]">Saldo em Espécie</span>
+                                                    <p className="text-[8px] lg:text-[10px] text-muted-foreground/60 font-mono font-black mt-0.5 lg:mt-1">Início: {formatDateTime(currentRegister.opened_at).split(',')[1]}</p>
                                                 </div>
                                             </div>
-                                            <div className="space-y-2">
-                                                <h3 className="text-7xl lg:text-8xl font-black text-foreground tracking-tighter tabular-nums drop-shadow-2xl">
+                                            <div className="space-y-1 lg:space-y-2">
+                                                <h3 className="text-5xl lg:text-8xl font-black text-foreground tracking-tighter tabular-nums drop-shadow-2xl">
                                                     {formatCurrency(calculateBalance)}
                                                 </h3>
-                                                <div className="flex items-center gap-4">
-                                                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
-                                                        <TrendingUp className="w-3 h-3" />
-                                                        Fluxo Positivo
+                                                <div className="flex flex-wrap items-center gap-2 lg:gap-4">
+                                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-500 text-[8px] lg:text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
+                                                        <TrendingUp className="w-2.5 h-2.5 lg:w-3 lg:h-3" />
+                                                        Em Dia
                                                     </div>
-                                                    <div className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">
-                                                        Abertura: {formatCurrency(currentRegister.opening_balance)}
+                                                    <div className="text-[8px] lg:text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">
+                                                        Abr: {formatCurrency(currentRegister.opening_balance)}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="relative z-10 flex items-center gap-4 mt-12 bg-muted/40 p-6 rounded-[2.5rem] border border-border/20 backdrop-blur-3xl">
+                                        <div className="relative z-10 flex items-center gap-3 lg:gap-4 mt-8 lg:mt-12 bg-muted/20 lg:bg-muted/40 p-4 lg:p-6 rounded-2xl lg:rounded-[2.5rem] border border-border/20 backdrop-blur-3xl">
                                             <div className="flex-1">
-                                                <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-1 block">Responsável</span>
-                                                <p className="text-sm font-black text-foreground tracking-tight">Administrador do Sistema</p>
+                                                <span className="text-[8px] lg:text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-1 block">Responsável</span>
+                                                <p className="text-xs lg:text-sm font-black text-foreground tracking-tight truncate">Administrador</p>
                                             </div>
-                                            <div className="w-px h-8 bg-border/20" />
+                                            <div className="w-px h-6 lg:h-8 bg-border/20" />
                                             <div className="flex-1">
-                                                <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-1 block">Status</span>
+                                                <span className="text-[8px] lg:text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-1 block">Status</span>
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                                    <p className="text-sm font-black text-foreground tracking-tight">Caixa Aberto</p>
+                                                    <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                                    <p className="text-xs lg:text-sm font-black text-foreground tracking-tight">Ativo</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Action Panels */}
-                                    <div className="lg:col-span-4 flex flex-col gap-6">
-                                        <div className="grid grid-cols-2 gap-6 h-full">
+                                    <div className="lg:col-span-4 flex flex-col gap-4 lg:gap-6">
+                                        <div className="grid grid-cols-2 gap-4 lg:gap-6 lg:h-full">
                                             <button
                                                 onClick={() => {
                                                     setTransactionType('entry')
                                                     setIsTransactionModalOpen(true)
                                                 }}
-                                                className="p-8 rounded-[3rem] bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 flex flex-col items-center justify-center gap-4 transition-all group active:scale-95 shadow-xl"
+                                                className="p-6 lg:p-8 rounded-2xl lg:rounded-[3rem] bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 flex flex-col items-center justify-center gap-3 lg:gap-4 transition-all group active:scale-95 shadow-xl"
                                             >
-                                                <div className="w-16 h-16 rounded-2xl bg-emerald-500 shadow-[0_15px_30px_-5px_rgba(16,185,129,0.4)] text-white flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                    <Plus className="w-8 h-8" />
+                                                <div className="w-10 h-10 lg:w-16 lg:h-16 rounded-xl lg:rounded-2xl bg-emerald-500 shadow-lg text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                                                    <Plus className="w-6 h-6 lg:w-8 lg:h-8" />
                                                 </div>
                                                 <div className="text-center group-hover:translate-y-1 transition-transform">
-                                                    <span className="font-black text-emerald-500 text-[10px] uppercase tracking-[0.2em]">Reforço</span>
-                                                    <p className="text-[9px] text-emerald-500/40 font-bold uppercase tracking-widest mt-1 text-center">Entrada de Caixa</p>
+                                                    <span className="font-black text-emerald-500 text-[8px] lg:text-[10px] uppercase tracking-[0.2em]">Reforço</span>
                                                 </div>
                                             </button>
                                             <button
@@ -268,24 +267,22 @@ export default function CashRegisterClient() {
                                                     setTransactionType('exit')
                                                     setIsTransactionModalOpen(true)
                                                 }}
-                                                className="p-8 rounded-[3rem] bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 flex flex-col items-center justify-center gap-4 transition-all group active:scale-95 shadow-xl"
+                                                className="p-6 lg:p-8 rounded-2xl lg:rounded-[3rem] bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 flex flex-col items-center justify-center gap-3 lg:gap-4 transition-all group active:scale-95 shadow-xl"
                                             >
-                                                <div className="w-16 h-16 rounded-2xl bg-rose-500 shadow-[0_15px_30px_-5px_rgba(244,63,94,0.4)] text-white flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                    <Minus className="w-8 h-8" />
+                                                <div className="w-10 h-10 lg:w-16 lg:h-16 rounded-xl lg:rounded-2xl bg-rose-500 shadow-lg text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                                                    <Minus className="w-6 h-6 lg:w-8 lg:h-8" />
                                                 </div>
                                                 <div className="text-center group-hover:translate-y-1 transition-transform">
-                                                    <span className="font-black text-rose-500 text-[10px] uppercase tracking-[0.2em]">Retirada</span>
-                                                    <p className="text-[9px] text-rose-500/40 font-bold uppercase tracking-widest mt-1 text-center">Saída de Caixa</p>
+                                                    <span className="font-black text-rose-500 text-[8px] lg:text-[10px] uppercase tracking-[0.2em]">Retirada</span>
                                                 </div>
                                             </button>
                                         </div>
                                         <button
                                             onClick={() => setIsClosingModalOpen(true)}
-                                            className="p-8 rounded-[2.5rem] bg-card/60 backdrop-blur-3xl border border-border/20 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4 group"
+                                            className="p-6 lg:p-8 rounded-2xl lg:rounded-[2.5rem] bg-card/60 backdrop-blur-3xl border border-border/20 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4 group"
                                         >
-                                            <Lock className="w-6 h-6 text-muted-foreground/40 group-hover:text-white transition-colors" />
-                                            <span className="text-[11px] font-black uppercase tracking-[0.3em]">Encerrar Expediente</span>
-                                            <ArrowUpRight className="w-5 h-5 opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all text-white" />
+                                            <Lock className="w-4 h-4 lg:w-6 lg:h-6 text-muted-foreground/40 group-hover:text-white transition-colors" />
+                                            <span className="text-[9px] lg:text-[11px] font-black uppercase tracking-[0.3em]">Encerrar Sessão</span>
                                         </button>
                                     </div>
                                 </div>
@@ -307,45 +304,45 @@ export default function CashRegisterClient() {
                                             <table className="w-full text-left min-w-[900px]">
                                                 <thead>
                                                     <tr className="bg-muted/30 border-b border-border/20">
-                                                        <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Horário</th>
-                                                        <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Natureza & Descrição</th>
-                                                        <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center">Origem</th>
-                                                        <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Pagamento</th>
-                                                        <th className="p-8 text-right text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Valor</th>
+                                                        <th className="p-4 lg:p-8 text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Horário</th>
+                                                        <th className="p-4 lg:p-8 text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Lançamento</th>
+                                                        <th className="p-4 lg:p-8 text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center hidden sm:table-cell">Origem</th>
+                                                        <th className="p-4 lg:p-8 text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 hidden md:table-cell">Pagamento</th>
+                                                        <th className="p-4 lg:p-8 text-right text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Valor</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-border/20">
                                                     {transactionsList.length > 0 ? transactionsList.map((tx) => (
                                                         <tr key={tx.id} className="group hover:bg-muted/20 transition-colors">
-                                                            <td className="p-8 align-middle">
-                                                                <div className="text-sm font-black text-foreground tabular-nums">
+                                                            <td className="p-4 lg:p-8 align-middle">
+                                                                <div className="text-xs lg:text-sm font-black text-foreground tabular-nums">
                                                                     {formatDateTime(tx.created_at).split(',')[1]?.replace('às', '') || '-'}
                                                                 </div>
                                                             </td>
-                                                            <td className="p-8 align-middle">
-                                                                <div className="flex items-center gap-4">
+                                                            <td className="p-4 lg:p-8 align-middle">
+                                                                <div className="flex items-center gap-3 lg:gap-4">
                                                                     <div className={cn(
-                                                                        "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border",
+                                                                        "w-8 h-8 lg:w-12 lg:h-12 rounded-lg lg:rounded-xl flex items-center justify-center shrink-0 border",
                                                                         tx.type === 'entry' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-rose-500/10 text-rose-500 border-rose-500/20"
                                                                     )}>
-                                                                        {tx.type === 'entry' ? <ArrowDownLeft className="w-6 h-6" /> : <ArrowUpRight className="w-6 h-6" />}
+                                                                        {tx.type === 'entry' ? <ArrowDownLeft className="w-4 h-4 lg:w-6 lg:h-6" /> : <ArrowUpRight className="w-4 h-4 lg:w-6 lg:h-6" />}
                                                                     </div>
-                                                                    <div className="space-y-1">
-                                                                        <span className="text-sm font-black text-foreground tracking-tight block">{tx.description}</span>
-                                                                        <span className="text-[10px] text-muted-foreground/60 font-bold uppercase tracking-widest block">{tx.justification || 'Manual'}</span>
+                                                                    <div className="space-y-0.5 lg:space-y-1">
+                                                                        <span className="text-xs lg:text-sm font-black text-foreground tracking-tight block truncate max-w-[120px] lg:max-w-none">{tx.description}</span>
+                                                                        <span className="text-[8px] lg:text-[10px] text-muted-foreground/40 font-bold uppercase tracking-widest block">{tx.justification || 'Manual'}</span>
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td className="p-8 align-middle text-center text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest">
+                                                            <td className="p-4 lg:p-8 align-middle text-center text-[8px] lg:text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest hidden sm:table-cell">
                                                                 {SOURCE_TYPE_LABELS[tx.source_type as string] || tx.source_type?.replace('_', ' ') || 'Caixa'}
                                                             </td>
-                                                            <td className="p-8 align-middle">
+                                                            <td className="p-4 lg:p-8 align-middle hidden md:table-cell">
                                                                 <div className="flex items-center gap-2">
                                                                     <PiggyBank className="w-4 h-4 text-muted-foreground/30" />
                                                                     <span className="text-xs font-black text-foreground/60 uppercase">{tx.payment_method?.name || 'Espécie'}</span>
                                                                 </div>
                                                             </td>
-                                                            <td className="p-8 text-right align-middle text-xl font-black tabular-nums">
+                                                            <td className="p-4 lg:p-8 text-right align-middle text-base lg:text-xl font-black tabular-nums">
                                                                 <span className={tx.type === 'entry' ? 'text-emerald-500' : 'text-rose-500'}>
                                                                     {tx.type === 'entry' ? '+' : '-'} {formatCurrency(tx.amount)}
                                                                 </span>

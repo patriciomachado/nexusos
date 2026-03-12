@@ -13,7 +13,10 @@ import {
     ArrowUpRight,
     ArrowDownRight,
     Settings,
-    LayoutDashboard
+    LayoutDashboard,
+    PlusCircle,
+    Store,
+    Calculator
 } from 'lucide-react'
 import Link from 'next/link'
 import RevenueChart from '@/components/dashboard/RevenueChart'
@@ -187,30 +190,50 @@ export default async function DashboardPage() {
                 {/* Horizontal Stitch Metric Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6" suppressHydrationWarning>
                     {kpis.map((kpi) => (
-                        <div key={kpi.label} className="glass-premium rounded-[2rem] p-8 transition-all group relative overflow-hidden active:scale-[0.98]" suppressHydrationWarning>
-                            <div className="flex items-start justify-between relative z-10" suppressHydrationWarning>
-                                <div className="space-y-4">
+                        <div key={kpi.label} className="flex flex-col gap-4">
+                            <div className="glass-premium rounded-[2rem] p-8 transition-all group relative overflow-hidden active:scale-[0.98]" suppressHydrationWarning>
+                                <div className="flex items-start justify-between relative z-10" suppressHydrationWarning>
+                                    <div className="space-y-4">
+                                        <div className={cn(
+                                            "w-12 h-12 rounded-2xl flex items-center justify-center border transition-all group-hover:scale-110",
+                                            kpi.color === 'blue' ? "bg-blue-500/10 border-blue-500/20 text-blue-400" :
+                                                kpi.color === 'emerald' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
+                                                    "bg-purple-500/10 border-purple-500/20 text-purple-400"
+                                        )} suppressHydrationWarning>
+                                            <kpi.icon className="w-6 h-6" />
+                                        </div>
+                                        <div suppressHydrationWarning>
+                                            <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] leading-none mb-2">{kpi.label}</h3>
+                                            <p className="text-3xl font-black text-foreground tracking-tighter">{kpi.value}</p>
+                                        </div>
+                                    </div>
                                     <div className={cn(
-                                        "w-12 h-12 rounded-2xl flex items-center justify-center border transition-all group-hover:scale-110",
-                                        kpi.color === 'blue' ? "bg-blue-500/10 border-blue-500/20 text-blue-400" :
-                                            kpi.color === 'emerald' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
-                                                "bg-purple-500/10 border-purple-500/20 text-purple-400"
+                                        "px-3 py-1.5 rounded-xl text-[10px] font-black flex items-center gap-1.5 border backdrop-blur-md",
+                                        kpi.trend === 'up' ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
                                     )} suppressHydrationWarning>
-                                        <kpi.icon className="w-6 h-6" />
+                                        {kpi.change}
+                                        {kpi.trend === 'up' ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
                                     </div>
-                                    <div suppressHydrationWarning>
-                                        <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] leading-none mb-2">{kpi.label}</h3>
-                                        <p className="text-3xl font-black text-foreground tracking-tighter">{kpi.value}</p>
-                                    </div>
-                                </div>
-                                <div className={cn(
-                                    "px-3 py-1.5 rounded-xl text-[10px] font-black flex items-center gap-1.5 border backdrop-blur-md",
-                                    kpi.trend === 'up' ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
-                                )} suppressHydrationWarning>
-                                    {kpi.change}
-                                    {kpi.trend === 'up' ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
                                 </div>
                             </div>
+                            
+                            {/* Quick Commands for Each Card (Mobile Only) */}
+                            {kpi.label === 'Receita do Mês' && (
+                                <div className="grid grid-cols-3 gap-3 md:hidden px-2 animate-in fade-in slide-in-from-top-4 duration-500">
+                                    <Link href="/service-orders/new" className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-all">
+                                        <PlusCircle className="w-5 h-5" />
+                                        <span className="text-[8px] font-black uppercase tracking-widest">Nova OS</span>
+                                    </Link>
+                                    <Link href="/pdv" className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 active:scale-95 transition-all">
+                                        <Store className="w-5 h-5" />
+                                        <span className="text-[8px] font-black uppercase tracking-widest">Venda PDV</span>
+                                    </Link>
+                                    <Link href="/cash-register" className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 active:scale-95 transition-all">
+                                        <Calculator className="w-5 h-5" />
+                                        <span className="text-[8px] font-black uppercase tracking-widest">Caixa</span>
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>

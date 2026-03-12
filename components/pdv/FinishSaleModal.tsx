@@ -146,18 +146,18 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
     }
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-background/40 backdrop-blur-xl animate-in fade-in duration-300">
-            <div className="bg-card/80 backdrop-blur-3xl border border-white/10 w-full max-w-[1000px] rounded-[3rem] shadow-[0_32px_128px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-500 flex flex-col md:flex-row h-[90vh] md:h-auto">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-0 md:p-4 bg-background/40 backdrop-blur-xl animate-in fade-in duration-300">
+            <div className="bg-card/80 backdrop-blur-3xl border border-white/10 w-full max-w-[1000px] md:rounded-[3rem] shadow-[0_32px_128px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-500 flex flex-col md:flex-row h-full md:h-auto">
 
                 {/* Left Panel: Sale Summary & Form */}
-                <div className="flex-1 p-8 md:p-12 space-y-8 overflow-y-auto">
+                <div className="flex-1 p-6 md:p-12 space-y-6 md:space-y-8 overflow-y-auto">
                     <div className="flex justify-between items-start">
                         <div className="space-y-1">
-                            <h2 className="text-3xl font-black tracking-tighter">Finalizar Venda</h2>
-                            <p className="text-[10px] text-primary font-black uppercase tracking-[0.3em]">Ambiente Seguro Nexus</p>
+                            <h2 className="text-2xl md:text-3xl font-black tracking-tighter">Finalizar Venda</h2>
+                            <p className="text-[9px] md:text-[10px] text-primary font-black uppercase tracking-[0.3em]">Ambiente Seguro Nexus</p>
                         </div>
-                        <button onClick={() => setIsOpen(false)} className="p-4 rounded-[1.5rem] bg-muted/50 hover:bg-muted transition-all md:hidden">
-                            <X className="w-6 h-6" />
+                        <button onClick={() => setIsOpen(false)} className="p-3 md:p-4 rounded-xl md:rounded-[1.5rem] bg-muted/50 hover:bg-muted transition-all md:hidden">
+                            <X className="w-5 h-5 md:w-6 md:h-6" />
                         </button>
                     </div>
 
@@ -196,26 +196,26 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                                 <label className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-2">
                                     <Wallet className="w-4 h-4" /> Forma de Pagamento
                                 </label>
-                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                                     {paymentMethods.map(pm => (
                                         <button
                                             key={pm.id}
                                             onClick={() => setSelectedPaymentMethod(pm.id)}
                                             className={cn(
-                                                "p-6 rounded-[2rem] border-2 transition-all flex flex-col gap-4 text-left group relative overflow-hidden",
+                                                "p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-2 transition-all flex flex-col gap-3 md:gap-4 text-left group relative overflow-hidden",
                                                 selectedPaymentMethod === pm.id
                                                     ? 'bg-primary border-primary text-primary-foreground shadow-2xl shadow-primary/20 scale-[1.02]'
                                                     : 'bg-muted/40 border-transparent hover:border-white/10'
                                             )}
                                         >
                                             <div className={cn(
-                                                "w-10 h-10 rounded-xl flex items-center justify-center",
+                                                "w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center",
                                                 selectedPaymentMethod === pm.id ? 'bg-white/20' : 'bg-muted'
                                             )}>
                                                 {getPMIcon(pm.code)}
                                             </div>
-                                            <span className="font-black text-sm uppercase tracking-tight">{pm.name}</span>
-                                            {selectedPaymentMethod === pm.id && <Check className="absolute top-6 right-6 w-5 h-5" />}
+                                            <span className="font-black text-xs md:text-sm uppercase tracking-tight">{pm.name}</span>
+                                            {selectedPaymentMethod === pm.id && <Check className="absolute top-4 md:top-6 right-4 md:right-6 w-4 h-4 md:w-5 md:h-5" />}
                                         </button>
                                     ))}
                                 </div>
@@ -227,7 +227,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                                 <textarea
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
-                                    className="w-full p-6 rounded-[2rem] bg-muted/40 border-none text-sm font-medium outline-none focus:ring-4 focus:ring-primary/10 min-h-[120px] resize-none transition-all placeholder:opacity-30"
+                                    className="w-full p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] bg-muted/40 border-none text-xs md:text-sm font-medium outline-none focus:ring-4 focus:ring-primary/10 min-h-[100px] md:min-h-[120px] resize-none transition-all placeholder:opacity-30"
                                     placeholder="Notas sobre a venda..."
                                 />
                             </div>
@@ -236,7 +236,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                 </div>
 
                 {/* Right Panel: Numeric Keypad & Totals (Indigo Vibrante) */}
-                <div className="w-full md:w-[420px] bg-gradient-to-br from-indigo-600 to-blue-700 p-8 md:p-12 flex flex-col justify-between text-white relative">
+                <div className="w-full md:w-[420px] bg-gradient-to-br from-indigo-600 to-blue-700 p-6 md:p-12 flex flex-col justify-between text-white relative">
                     <button onClick={() => setIsOpen(false)} className="absolute top-8 right-8 p-3 rounded-2xl hover:bg-white/10 transition-all hidden md:block">
                         <X className="w-6 h-6" />
                     </button>
@@ -248,30 +248,29 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                                 <h3 className="text-4xl font-black tracking-tighter">{formatCurrency(finalAmount)}</h3>
                             </div>
 
-                            <div className="bg-white/10 rounded-[2rem] p-6 space-y-4 border border-white/5">
+                            <div className="bg-white/10 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 space-y-3 md:space-y-4 border border-white/5">
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Valor Recebido</p>
-                                    <div className="text-4xl font-black tracking-tighter flex items-baseline gap-2">
-                                        <span className="text-lg opacity-40">R$</span>
+                                    <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Valor Recebido</p>
+                                    <div className="text-3xl md:text-4xl font-black tracking-tighter flex items-baseline gap-2">
+                                        <span className="text-base md:text-lg opacity-40">R$</span>
                                         {amountReceived || '0,00'}
                                     </div>
                                 </div>
                                 {calculateChange() > 0 && (
-                                    <div className="pt-4 border-t border-white/10 flex justify-between items-center">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Troco</p>
-                                        <p className="text-2xl font-black text-emerald-300 tracking-tighter">{formatCurrency(calculateChange())}</p>
+                                    <div className="pt-3 md:pt-4 border-t border-white/10 flex justify-between items-center">
+                                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Troco</p>
+                                        <p className="text-xl md:text-2xl font-black text-emerald-300 tracking-tighter">{formatCurrency(calculateChange())}</p>
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        {/* Numeric Keypad */}
-                        <div className="grid grid-cols-3 gap-3 pt-6">
+                        <div className="grid grid-cols-3 gap-2 md:gap-3 pt-4 md:pt-6">
                             {['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', '⌫'].map(key => (
                                 <button
                                     key={key}
                                     onClick={() => handleKeypadPress(key)}
-                                    className="h-16 rounded-2xl bg-white/5 hover:bg-white/15 active:scale-90 transition-all font-black text-lg border border-white/5 backdrop-blur-md"
+                                    className="h-14 md:h-16 rounded-xl md:rounded-2xl bg-white/5 hover:bg-white/15 active:scale-90 transition-all font-black text-lg border border-white/5 backdrop-blur-md"
                                 >
                                     {key}
                                 </button>
@@ -283,7 +282,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                         <button
                             onClick={handleFinish}
                             disabled={loading || !cashRegister}
-                            className="w-full h-20 md:h-24 rounded-[2.5rem] bg-white text-indigo-700 font-black uppercase text-base tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-indigo-900/40 disabled:opacity-50 flex items-center justify-center gap-4 group"
+                            className="w-full h-16 md:h-24 rounded-[1.5rem] md:rounded-[2.5rem] bg-white text-indigo-700 font-black uppercase text-sm md:text-base tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-indigo-900/40 disabled:opacity-50 flex items-center justify-center gap-4 group"
                         >
                             {loading ? (
                                 <Loader2 className="w-6 h-6 animate-spin" />

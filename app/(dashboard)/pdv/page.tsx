@@ -30,12 +30,12 @@ export default function PDVPage() {
             {/* Main PDV Area */}
             <main className="flex-1 flex overflow-hidden">
                 {/* Left: Product Catalog Grid */}
-                <div className="flex-1 p-8 overflow-hidden">
+                <div className="flex-1 p-4 lg:p-8 overflow-hidden">
                     <ProductCatalog />
                 </div>
 
-                {/* Right: Cart Sidebar (Fixed Width) */}
-                <aside className="w-[32%] min-w-[400px] h-full">
+                {/* Right: Cart Sidebar (Fixed Width on Desktop, Hidden on Mobile) */}
+                <aside className="hidden lg:block w-[32%] min-w-[400px] h-full border-l border-border/50">
                     <CartSidebar />
                 </aside>
             </main>

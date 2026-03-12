@@ -13,7 +13,7 @@ export default function CartSidebar() {
 
     if (cart.length === 0) {
         return (
-            <div className="flex flex-col h-full bg-card/30 backdrop-blur-3xl border-l border-border p-8 animate-in fade-in slide-in-from-right-8 duration-700">
+            <div className="flex flex-col h-full bg-card/30 backdrop-blur-3xl p-6 lg:p-8 animate-in fade-in duration-700">
                 <div className="flex items-center justify-between mb-12">
                     <h2 className="font-black text-2xl tracking-tighter uppercase underline decoration-primary decoration-4 underline-offset-8">Carrinho</h2>
                     <ShoppingBag className="w-8 h-8 text-muted-foreground opacity-20" />
@@ -33,23 +33,23 @@ export default function CartSidebar() {
     }
 
     return (
-        <div className="flex flex-col h-full bg-card/30 backdrop-blur-3xl border-l border-border animate-in fade-in slide-in-from-right-8 duration-500 overflow-hidden relative">
+        <div className="flex flex-col h-full bg-card/30 backdrop-blur-3xl animate-in fade-in duration-500 overflow-hidden relative">
             {/* Cart Header */}
-            <div className="p-8 pb-4 flex items-center justify-between shrink-0">
+            <div className="p-4 lg:p-8 pb-2 lg:pb-4 flex items-center justify-between shrink-0">
                 <div className="flex flex-col">
-                    <h2 className="font-black text-2xl tracking-tighter uppercase whitespace-nowrap">Carrinho Atual</h2>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Cliente: Consumidor Final</span>
+                    <h2 className="font-black text-xl lg:text-2xl tracking-tighter uppercase whitespace-nowrap">Carrinho</h2>
+                    <span className="text-[9px] lg:text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Consumidor Final</span>
                 </div>
                 <button
                     onClick={clearCart}
-                    className="p-3 rounded-2xl bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-all active:scale-95"
+                    className="p-2 lg:p-3 rounded-xl lg:rounded-2xl bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-all active:scale-95"
                 >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4 lg:w-5 lg:h-5" />
                 </button>
             </div>
 
             {/* Scrollable Cart List */}
-            <div className="flex-1 overflow-y-auto p-8 pt-4 space-y-4 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 lg:p-8 pt-2 lg:pt-4 space-y-3 lg:space-y-4 custom-scrollbar">
                 {cart.map((item) => (
                     <div key={item.id} className="group bg-background/50 border border-border/50 rounded-3xl p-4 flex items-center gap-4 hover:border-primary/30 transition-all hover:bg-card">
                         <div className="w-20 h-20 rounded-2xl bg-muted overflow-hidden flex-shrink-0 border border-border/30">
@@ -91,7 +91,7 @@ export default function CartSidebar() {
             </div>
 
             {/* Checkout Area */}
-            <div className="p-8 bg-muted/30 border-t border-border/50 space-y-6 shrink-0 relative z-10">
+            <div className="p-4 lg:p-8 bg-muted/30 border-t border-border/50 space-y-4 lg:space-y-6 shrink-0 relative z-10">
                 {/* Detailed Summary */}
                 <div className="space-y-4">
                     <div className="flex justify-between items-center text-xs">
@@ -108,9 +108,9 @@ export default function CartSidebar() {
                             <span className="font-black text-destructive">- {formatCurrency(discount)}</span>
                         </div>
                     </div>
-                    <div className="pt-4 border-t border-border flex justify-between items-baseline">
-                        <span className="font-black text-lg tracking-tighter uppercase">Total</span>
-                        <span className="text-4xl font-black text-primary tracking-tighter drop-shadow-sm">{formatCurrency(total)}</span>
+                    <div className="pt-2 lg:pt-4 border-t border-border flex justify-between items-baseline">
+                        <span className="font-black text-base lg:text-lg tracking-tighter uppercase">Total</span>
+                        <span className="text-3xl lg:text-4xl font-black text-primary tracking-tighter drop-shadow-sm">{formatCurrency(total)}</span>
                     </div>
                 </div>
 
@@ -139,7 +139,7 @@ export default function CartSidebar() {
                 {/* Final Button */}
                 <button
                     onClick={() => setIsFinishModalOpen(true)}
-                    className="w-full bg-primary text-primary-foreground py-6 rounded-3xl font-black uppercase tracking-[0.3em] text-sm shadow-2xl shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-1 transition-all active:translate-y-0 active:scale-98 flex items-center justify-center gap-4"
+                    className="w-full bg-primary text-primary-foreground py-4 lg:py-6 rounded-2xl lg:rounded-3xl font-black uppercase tracking-[0.2em] lg:tracking-[0.3em] text-xs lg:text-sm shadow-2xl shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-1 transition-all active:translate-y-0 active:scale-98 flex items-center justify-center gap-3 lg:gap-4"
                 >
                     <ShoppingCart className="w-5 h-5" />
                     Finalizar Venda
