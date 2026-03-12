@@ -84,14 +84,14 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
                                 <User className="w-5 h-5" />
                             </div>
                             <div>
-                                <h2 className="text-sm font-black text-foreground/40 tracking-tight uppercase tracking-widest">Informações Básicas</h2>
+                                <h2 className="text-sm font-black text-foreground/70 tracking-tight uppercase tracking-widest">Informações Básicas</h2>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {fields.map(f => (
                                 <div key={f.name} className={f.name === 'address' ? 'md:col-span-2' : ''}>
-                                    <label className="block text-[9px] font-black text-muted-foreground/50 mb-1.5 uppercase tracking-widest">{f.label}</label>
+                                    <label className="block text-[9px] font-black text-muted-foreground/70 mb-1.5 uppercase tracking-widest">{f.label}</label>
                                     <PremiumInput
                                         name={f.name}
                                         type={f.type}
@@ -106,7 +106,7 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
                         </div>
 
                         <div className="pt-2">
-                            <label className="block text-[9px] font-black text-muted-foreground/50 mb-2 uppercase tracking-widest">OBSERVAÇÕES ADICIONAIS</label>
+                            <label className="block text-[9px] font-black text-muted-foreground/70 mb-2 uppercase tracking-widest">OBSERVAÇÕES ADICIONAIS</label>
                             <PremiumTextarea
                                 name="notes"
                                 value={form.notes}
