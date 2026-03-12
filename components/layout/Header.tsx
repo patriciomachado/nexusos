@@ -46,9 +46,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
                 <div className="flex items-center gap-3">
                     <NotificationsDropdown />
 
-                    <div className="hidden lg:block">
-                        <ThemeToggle />
-                    </div>
+                    <ThemeToggle />
                 </div>
 
                 <div className="h-10 w-px bg-border/40" suppressHydrationWarning />

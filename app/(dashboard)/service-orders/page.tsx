@@ -117,13 +117,13 @@ export default async function ServiceOrdersPage({
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="border-b border-white/5 bg-muted/20">
-                                    <th className="p-6 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em] w-32">ID #</th>
-                                    <th className="p-6 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Serviço / Dispositivo</th>
-                                    <th className="p-6 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Cliente</th>
-                                    <th className="p-6 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Técnico</th>
-                                    <th className="p-6 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Status</th>
-                                    <th className="p-6 text-right"></th>
+                                <tr className="border-b border-white/5 bg-muted/20 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">
+                                    <th className="p-6 w-32 hidden sm:table-cell">ID #</th>
+                                    <th className="p-6">Serviço / Dispositivo</th>
+                                    <th className="p-6">Cliente</th>
+                                    <th className="p-6 hidden sm:table-cell">Técnico</th>
+                                    <th className="p-6">Status</th>
+                                    <th className="p-6 text-right hidden lg:table-cell"></th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
@@ -136,7 +136,7 @@ export default async function ServiceOrdersPage({
                                                 key={order.id}
                                                 className="group hover:bg-white/5 transition-all duration-300"
                                             >
-                                                <td className="p-6 align-middle">
+                                                <td className="p-6 align-middle hidden sm:table-cell">
                                                     <span className="text-xs font-black text-muted-foreground/40 font-mono tracking-tighter">
                                                         {order.order_number}
                                                     </span>
@@ -176,7 +176,7 @@ export default async function ServiceOrdersPage({
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="p-6 align-middle">
+                                                <td className="p-6 align-middle hidden sm:table-cell">
                                                     <span className="text-xs font-bold text-foreground/60 italic">
                                                         {order.technicians?.name || 'Não atribuído'}
                                                     </span>
@@ -192,7 +192,7 @@ export default async function ServiceOrdersPage({
                                                         </div>
                                                     )}
                                                 </td>
-                                                <td className="p-6 align-middle text-right">
+                                                <td className="p-6 align-middle text-right hidden lg:table-cell">
                                                     <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <Link
                                                             href={`/service-orders/${order.id}`}
