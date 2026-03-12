@@ -9,9 +9,14 @@ const inter = Inter({ subsets: ['latin'] })
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 
 export const metadata: Metadata = {
-  title: 'Nexus OS - Gerenciamento de Assistências Técnicas',
-  description: 'Plataforma completa para gerenciar ordens de serviço, técnicos, clientes e financeiro da sua assistência técnica.',
-  keywords: 'assistência técnica, ordens de serviço, gestão, técnicos, clientes',
+  title: 'Nexus OS',
+  description: 'Plataforma completa para gerenciar ordens de serviço e financeiro.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Nexus OS',
+  },
 }
 
 export default function RootLayout({

@@ -5,17 +5,17 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
     LayoutDashboard,
-    Calendar,
     ClipboardList,
-    Settings
+    ShoppingCart,
+    Wallet
 } from 'lucide-react'
 import { UserRole } from '@/types'
 
 const mobileNavItems = [
-    { href: '/dashboard', label: 'Início', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier', 'attendant'] },
-    { href: '/appointments', label: 'Agenda', icon: Calendar, roles: ['admin', 'manager', 'technician', 'attendant'] },
-    { href: '/service-orders', label: 'Ordens', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant'] },
-    { href: '/settings', label: 'Ajustes', icon: Settings, roles: ['admin', 'manager'] },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier', 'attendant'] },
+    { href: '/service-orders', label: 'OS', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant'] },
+    { href: '/pdv', label: 'PDV', icon: ShoppingCart, roles: ['admin', 'manager', 'cashier'] },
+    { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager', 'cashier'] },
 ]
 
 export default function BottomNav({ userRole = 'admin' }: { userRole?: UserRole }) {
