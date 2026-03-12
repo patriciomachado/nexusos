@@ -10,6 +10,8 @@ import PremiumSelect from '@/components/ui/PremiumSelect'
 import { PremiumTextarea } from '@/components/ui/PremiumTextarea'
 import PremiumAutocomplete from '@/components/ui/PremiumAutocomplete'
 import PremiumDateTimePicker from '@/components/ui/PremiumDateTimePicker'
+import PremiumModal from '@/components/ui/PremiumModal'
+import CustomerForm from '@/components/forms/CustomerForm'
 import {
     ClipboardList, Wrench, AlertCircle,
     Zap, Clock, Info, Smartphone, Settings,
@@ -105,6 +107,10 @@ export default function NewOSForm({ customers, technicians, serviceTypes, compan
         turns_on: initialData?.turns_on ?? true,
         terms_accepted: initialData?.terms_accepted || false,
     })
+
+    const [localCustomers, setLocalCustomers] = useState(customers)
+    const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false)
+    const [initialCustomerName, setInitialCustomerName] = useState('')
 
     const [photos, setPhotos] = useState<{ front: File | null, back: File | null }>({
         front: null,
@@ -224,9 +230,13 @@ export default function NewOSForm({ customers, technicians, serviceTypes, compan
                             <div>
                                 <label className="block text-[10px] font-black text-muted-foreground/60 mb-2 uppercase tracking-[0.2em]">CLIENTE *</label>
                                 <CustomerAutocomplete
-                                    customers={customers}
+                                    customers={localCustomers}
                                     selectedId={form.customer_id}
                                     onSelect={(id) => setForm(p => ({ ...p, customer_id: id }))}
+                                    onAdd={(name) => {
+                                        setInitialCustomerName(name)
+                                        setIsCustomerModalOpen(true)
+                                    }}
                                 />
                             </div>
                         </div>
@@ -481,6 +491,29 @@ export default function NewOSForm({ customers, technicians, serviceTypes, compan
                     ABORTAR
                 </button>
             </div>
+
+            {/* Modal para Novo Cliente */}
+            <PremiumModal
+                isOpen={isCustomerModalOpen}
+                onClose={() => setIsCustomerModalOpen(false)}
+                title="Novo Cliente"
+                maxWidth="lg"
+            >
+                <div className="p-4">
+                    <CustomerForm 
+                        companyId={companyId}
+                        initial={{ name: initialCustomerName }}
+                        hideHeader
+                        onSuccess={(customer) => {
+                            if (customer.id) {
+                                setLocalCustomers(p => [...p, customer])
+                                setForm(p => ({ ...p, customer_id: customer.id }))
+                            }
+                            setIsCustomerModalOpen(false)
+                        }}
+                    />
+                </div>
+            </PremiumModal>
         </form>
     )
 }

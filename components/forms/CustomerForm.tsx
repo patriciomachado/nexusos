@@ -7,10 +7,17 @@ import { toast } from 'sonner'
 import { PremiumInput } from '@/components/ui/PremiumInput'
 import { PremiumTextarea } from '@/components/ui/PremiumTextarea'
 import { User, Mail, Phone, FileText, MapPin, Globe, Hash, Save, X } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
-interface Props { companyId: string; customerId?: string; initial?: any }
+interface Props {
+    companyId: string
+    customerId?: string
+    initial?: any
+    hideHeader?: boolean
+    onSuccess?: (customer: { id: string, name: string }) => void
+}
 
-export default function CustomerForm({ companyId, customerId, initial }: Props) {
+export default function CustomerForm({ companyId, customerId, initial, hideHeader, onSuccess }: Props) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [form, setForm] = useState({
@@ -35,12 +42,16 @@ export default function CustomerForm({ companyId, customerId, initial }: Props) 
             const url = customerId ? `/api/customers/${customerId}` : '/api/customers'
             const method = customerId ? 'PUT' : 'POST'
             const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
-            const data = await res.json()
+            const { data, error } = await res.json()
             if (res.ok) {
                 toast.success(customerId ? 'Cliente atualizado!' : 'Cliente criado!')
-                router.push(`/customers/${data.id || customerId}`)
+                if (onSuccess) {
+                    onSuccess({ id: data.id || customerId, name: form.name })
+                } else {
+                    router.push(`/customers/${data.id || customerId}`)
+                }
             } else {
-                toast.error(data.error || 'Erro ao salvar cliente')
+                toast.error(error || 'Erro ao salvar cliente')
             }
         })
     }
@@ -57,10 +68,10 @@ export default function CustomerForm({ companyId, customerId, initial }: Props) 
     ]
 
     return (
-        <div className="animate-fade-in pb-10">
-            <Header title={customerId ? 'Atualizar Registro' : 'Novo Cadastro de Cliente'} />
+        <div className={cn("animate-fade-in pb-10", hideHeader && "pb-0")}>
+            {!hideHeader && <Header title={customerId ? 'Atualizar Registro' : 'Novo Cadastro de Cliente'} />}
 
-            <form onSubmit={handleSubmit} className="p-4 max-w-5xl mx-auto space-y-6 mt-4">
+            <form onSubmit={handleSubmit} className={cn("p-4 max-w-5xl mx-auto space-y-6", !hideHeader && "mt-4")}>
                 <div className="bg-card/40 border border-border rounded-[2.5rem] p-6 backdrop-blur-3xl relative overflow-hidden group shadow-lg">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[120px] rounded-full transition-all group-hover:bg-indigo-500/10" />
 
@@ -116,7 +127,7 @@ export default function CustomerForm({ companyId, customerId, initial }: Props) 
                     </button>
                     <button
                         type="button"
-                        onClick={() => router.back()}
+                        onClick={() => onSuccess ? onSuccess({ id: '', name: '' }) : router.back()}
                         className="w-full sm:w-auto px-8 py-4 rounded-xl border border-border bg-card text-foreground/40 font-black text-[10px] uppercase tracking-[0.2em] hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2"
                     >
                         <X className="w-3.5 h-3.5" />
