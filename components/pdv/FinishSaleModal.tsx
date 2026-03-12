@@ -34,17 +34,18 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
 
     const isCashPayment = () => {
         const pm = paymentMethods.find(p => p.id === selectedPaymentMethod)
-        return pm?.code?.toLowerCase() === 'money' || pm?.code?.toLowerCase() === 'cash' || pm?.code?.toLowerCase() === 'dinheiro' || pm?.code?.toLowerCase() === 'pix'
+        return pm?.code?.toLowerCase() === 'money' || pm?.code?.toLowerCase() === 'cash' || pm?.code?.toLowerCase() === 'dinheiro'
     }
 
     useEffect(() => {
         setMounted(true)
         if (isOpen) {
             initData()
+            // Only set if not already interacting or if it's a fresh open
             setAmountReceived(finalAmount.toString())
             setIsFirstInput(true)
         }
-    }, [isOpen, finalAmount])
+    }, [isOpen]) // Only run on open, don't reset when total changes while open
 
     const initData = async () => {
         setLoadingInit(true)
@@ -76,25 +77,54 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
 
     const handleKeypadPress = (val: string) => {
         if (val === 'C') {
-            setAmountReceived('')
-            setIsFirstInput(false)
+            setAmountReceived('0')
+            setIsFirstInput(true)
             return
         }
         if (val === '⌫') {
-            setAmountReceived(prev => prev.slice(0, -1))
+            setAmountReceived(prev => prev.length <= 1 ? '0' : prev.slice(0, -1))
             setIsFirstInput(false)
             return
         }
         
         if (isFirstInput) {
-            setAmountReceived(val === '.' ? '0.' : val)
+            if (val === '.') {
+                setAmountReceived('0.')
+            } else {
+                setAmountReceived(val)
+            }
             setIsFirstInput(false)
             return
         }
 
         if (val === '.' && amountReceived.includes('.')) return
-        setAmountReceived(prev => prev + val)
+        
+        // Prevent leading zeros if not followed by dot
+        if (amountReceived === '0' && val !== '.') {
+            setAmountReceived(val)
+        } else {
+            setAmountReceived(prev => prev + val)
+        }
     }
+
+    // Keyboard support
+    useEffect(() => {
+        if (!isOpen) return
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (!isCashPayment()) return
+
+            if (e.key >= '0' && e.key <= '9') handleKeypadPress(e.key)
+            if (e.key === '.' || e.key === ',') handleKeypadPress('.')
+            if (e.key === 'Backspace') handleKeypadPress('⌫')
+            if (e.key === 'Escape') setIsOpen(false)
+            if (e.key === 'Enter') handleFinish()
+            if (e.key === 'c' || e.key === 'C') handleKeypadPress('C')
+        }
+
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [isOpen, isFirstInput, amountReceived, selectedPaymentMethod, paymentMethods])
 
     const calculateChange = () => {
         const received = parseFloat(amountReceived) || 0

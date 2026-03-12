@@ -4,8 +4,12 @@ import PDVHeader from '@/components/pdv/PDVHeader'
 import ProductCatalog from '@/components/pdv/ProductCatalog'
 import CartSidebar from '@/components/pdv/CartSidebar'
 import PDVFooter from '@/components/pdv/PDVFooter'
+import FinishSaleModal from '@/components/pdv/FinishSaleModal'
+import { usePDVStore } from '@/store/usePDVStore'
 
 export default function PDVPage() {
+    const { isFinishModalOpen, setIsFinishModalOpen, subtotal, discount, total } = usePDVStore()
+
     return (
         <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
             <style jsx global>{`
@@ -42,6 +46,14 @@ export default function PDVPage() {
 
             {/* Bottom Status Bar */}
             <PDVFooter />
+
+            <FinishSaleModal
+                isOpen={isFinishModalOpen}
+                setIsOpen={setIsFinishModalOpen}
+                total={subtotal}
+                discount={discount}
+                finalAmount={total}
+            />
         </div>
     )
 }

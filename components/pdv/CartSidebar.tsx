@@ -4,11 +4,9 @@ import { Trash2, Plus, Minus, CreditCard, Banknote, QrCode, ShoppingCart, Shoppi
 import { usePDVStore } from '@/store/usePDVStore'
 import { formatCurrency } from '@/lib/utils'
 import { useState } from 'react'
-import FinishSaleModal from './FinishSaleModal'
 
 export default function CartSidebar() {
-    const { cart, subtotal, taxAmount, discount, total, removeItem, updateQuantity, clearCart, setDiscount } = usePDVStore()
-    const [isFinishModalOpen, setIsFinishModalOpen] = useState(false)
+    const { cart, subtotal, taxAmount, discount, total, removeItem, updateQuantity, clearCart, setDiscount, setIsFinishModalOpen } = usePDVStore()
     const [paymentMethod, setPaymentMethod] = useState<'dinheiro' | 'cartao' | 'pix'>('dinheiro')
 
     if (cart.length === 0) {
@@ -146,13 +144,7 @@ export default function CartSidebar() {
                 </button>
             </div>
 
-            <FinishSaleModal
-                isOpen={isFinishModalOpen}
-                setIsOpen={setIsFinishModalOpen}
-                total={subtotal}
-                discount={discount}
-                finalAmount={total}
-            />
+            {/* Modal state is now handled in PDV/page.tsx */}
         </div>
     )
 }

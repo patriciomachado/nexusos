@@ -24,6 +24,8 @@ interface PDVStore {
     subtotal: number
     taxAmount: number
     total: number
+    isFinishModalOpen: boolean
+    setIsFinishModalOpen: (open: boolean) => void
 }
 
 export const usePDVStore = create<PDVStore>((set, get) => ({
@@ -103,5 +105,7 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
         set({ discount: amount, total })
     },
     setSearchQuery: (query) => set({ searchQuery: query }),
-    clearCart: () => set({ cart: [], subtotal: 0, taxAmount: 0, total: 0, discount: 0, searchQuery: '' }),
+    isFinishModalOpen: false,
+    setIsFinishModalOpen: (open) => set({ isFinishModalOpen: open }),
+    clearCart: () => set({ cart: [], subtotal: 0, taxAmount: 0, total: 0, discount: 0, searchQuery: '', isFinishModalOpen: false }),
 }))
