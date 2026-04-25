@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Search, Plus, Trash2, Zap, ShoppingBag, Wrench, Package, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { PremiumInput } from '@/components/ui/PremiumInput'
 
 interface InventoryItem {
     id: string
@@ -35,6 +34,26 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
     const [quickName, setQuickName] = useState('')
     const [quickPrice, setQuickPrice] = useState('0')
     const [quickCost, setQuickCost] = useState('0')
+    const [query, setQuery] = useState('')
+    const [isOpen, setIsOpen] = useState(false)
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    const filteredItems = query === ''
+        ? inventoryItems.slice(0, 5)
+        : inventoryItems.filter(item =>
+            item.name.toLowerCase().includes(query.toLowerCase()) ||
+            item.category.toLowerCase().includes(query.toLowerCase())
+        ).slice(0, 10)
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setIsOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
 
     const addItem = (invItem: InventoryItem) => {
         const newItem: OSItem = {
@@ -78,13 +97,13 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
     const updateItem = (index: number, updates: Partial<OSItem>) => {
         const newItems = [...items]
         const updatedItem = { ...newItems[index], ...updates }
-        updatedItem.total_price = updatedItem.quantity * updatedItem.unit_price
-        updatedItem.total_cost = updatedItem.quantity * updatedItem.unit_cost
+        updatedItem.total_price = (updatedItem.quantity || 0) * (updatedItem.unit_price || 0)
+        updatedItem.total_cost = (updatedItem.quantity || 0) * (updatedItem.unit_cost || 0)
         newItems[index] = updatedItem
         onChange(newItems)
     }
 
-    const total = items.reduce((acc, item) => acc + item.total_price, 0)
+    const total = items.reduce((acc, item) => acc + (item.total_price || 0), 0)
 
     return (
         <div className="space-y-6">
@@ -178,55 +197,61 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                             )}
                         </div>
                     ) : (
-                        <div className="p-6 rounded-[2rem] bg-amber-500/5 border-2 border-amber-500/20 space-y-4 animate-in zoom-in-95 duration-200">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2 text-amber-600">
-                                    <Zap className="w-4 h-4 fill-current" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest italic">Adição Rápida</span>
+                        <div className="p-6 rounded-[2rem] bg-amber-500/5 border-2 border-amber-500/20 space-y-4 animate-in zoom-in-95 duration-200 shadow-xl shadow-amber-500/5 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-5">
+                                <Zap className="w-24 h-24 fill-current text-amber-500" />
+                            </div>
+
+                            <div className="flex items-center justify-between mb-4 relative z-10">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-600">
+                                        <Zap className="w-4 h-4 fill-current" />
+                                    </div>
+                                    <span className="text-xs font-black uppercase tracking-widest text-amber-700">Novo Item Avulso</span>
                                 </div>
                                 <button 
                                     onClick={() => setIsQuickAdd(false)}
-                                    className="text-[9px] font-black uppercase text-muted-foreground hover:text-foreground transition-colors"
+                                    className="px-3 py-1.5 rounded-lg hover:bg-white/10 text-[9px] font-black uppercase text-muted-foreground hover:text-foreground transition-all"
                                 >
-                                    Cancelar
+                                    Fechar
                                 </button>
                             </div>
                             
-                            <div className="space-y-4">
-                                <div className="space-y-1">
-                                    <label className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter px-1">Nome do Item/Serviço</label>
+                            <div className="space-y-4 relative z-10">
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] font-black text-amber-700/60 uppercase tracking-widest px-1 italic">Descrição do Item ou Serviço</label>
                                     <input
                                         autoFocus
                                         type="text"
                                         value={quickName}
                                         onChange={(e) => setQuickName(e.target.value)}
-                                        placeholder="Ex: Formatação de PC"
-                                        className="w-full h-11 bg-card border border-amber-500/30 rounded-xl px-4 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                                        placeholder="Ex: Mão de obra especializada..."
+                                        className="w-full h-12 bg-white/40 border border-amber-500/20 rounded-xl px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
                                     />
                                 </div>
                                 
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className="space-y-1">
-                                        <label className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter px-1">Custo do Item</label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[9px] font-black text-amber-700/60 uppercase tracking-widest px-1 italic">Custo (Opcional)</label>
                                         <div className="relative">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-muted-foreground/40">R$</span>
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-700/40">R$</span>
                                             <input
                                                 type="number"
                                                 value={quickCost}
                                                 onChange={(e) => setQuickCost(e.target.value)}
-                                                className="w-full h-11 bg-card border border-amber-500/30 rounded-xl pl-8 pr-4 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                                                className="w-full h-12 bg-white/40 border border-amber-500/20 rounded-xl pl-10 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
                                             />
                                         </div>
                                     </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter px-1">Valor de Venda</label>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[9px] font-black text-amber-700/60 uppercase tracking-widest px-1 italic">Preço de Venda *</label>
                                         <div className="relative">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-muted-foreground/40">R$</span>
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-700/40">R$</span>
                                             <input
                                                 type="number"
                                                 value={quickPrice}
                                                 onChange={(e) => setQuickPrice(e.target.value)}
-                                                className="w-full h-11 bg-card border border-amber-500/30 rounded-xl pl-8 pr-4 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                                                className="w-full h-12 bg-white/40 border border-amber-500/20 rounded-xl pl-10 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
                                             />
                                         </div>
                                     </div>
@@ -235,10 +260,10 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                 <button
                                     type="button"
                                     onClick={handleQuickAdd}
-                                    className="w-full h-12 bg-amber-500 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-all active:scale-95 flex items-center justify-center gap-2"
+                                    className="w-full h-14 bg-amber-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-amber-500/20 hover:bg-amber-600 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-3 mt-2"
                                 >
-                                    <Plus className="w-4 h-4" />
-                                    Adicionar Item
+                                    <Plus className="w-5 h-5" />
+                                    Confirmar Adição
                                 </button>
                             </div>
                         </div>
@@ -272,7 +297,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                             <tbody className="divide-y divide-border/30">
                                 {items.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="p-12 text-center">
+                                        <td colSpan={6} className="p-12 text-center">
                                             <div className="flex flex-col items-center gap-3 opacity-20">
                                                 <ShoppingBag className="w-8 h-8" />
                                                 <p className="text-[10px] font-black uppercase tracking-[0.3em]">Nenhum item adicionado</p>
@@ -339,10 +364,10 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                 )}
                             </tbody>
                             {items.length > 0 && (
-                                <tfoot>
-                                    <tr className="bg-muted/5">
-                                        <td colSpan={3} className="p-6 text-right text-[10px] font-black text-muted-foreground uppercase tracking-widest">Subtotal Peças/Serviços</td>
-                                        <td className="p-6 text-right">
+                                <tfoot className="bg-muted/5 border-t border-border/50">
+                                    <tr>
+                                        <td colSpan={4} className="p-6 text-right text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Subtotal Geral</td>
+                                        <td className="p-6 text-right whitespace-nowrap">
                                             <span className="text-lg font-black text-indigo-500 tracking-tighter">R$ {total.toFixed(2)}</span>
                                         </td>
                                         <td></td>

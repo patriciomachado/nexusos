@@ -264,7 +264,7 @@ export default function NewOSForm({
                 <div className="lg:col-span-8 space-y-8">
                     
                     {/* CARD 1: IDENTIFICAÇÃO (CHUNKING) */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group z-[40]">
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group z-[100] overflow-visible">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[80px] rounded-full" />
                         
                         <div className="relative flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
@@ -275,9 +275,9 @@ export default function NewOSForm({
                         </div>
 
                         <div className="grid md:grid-cols-2 gap-8">
-                            <div className="space-y-6">
+                            <div className="space-y-6 relative z-20">
                                 <div>
-                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-[0.2em] italic">Tipo de Dispositivo *</label>
+                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-[0.2em] italic">Tipo de dispositivo *</label>
                                     <PremiumAutocomplete
                                         value={form.title}
                                         onChange={val => setForm(p => ({ ...p, title: val }))}
@@ -286,7 +286,7 @@ export default function NewOSForm({
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-[0.2em] italic">Cliente Proprietário *</label>
+                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-[0.2em] italic">Cliente proprietário *</label>
                                     <CustomerAutocomplete
                                         customers={localCustomers}
                                         selectedId={form.customer_id}
@@ -299,7 +299,7 @@ export default function NewOSForm({
                                 </div>
                             </div>
 
-                            <div className="space-y-6">
+                            <div className="space-y-6 relative z-10">
                                 <div className="grid grid-cols-2 gap-4">
                                     <PremiumSelect
                                         label="Técnico Responsável"
@@ -333,7 +333,7 @@ export default function NewOSForm({
                     </div>
 
                     {/* CARD 2: GESTÃO DE ITENS (O RAIO) */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group z-[30]">
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group z-[40] overflow-visible">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full" />
                         
                         <div className="relative flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
@@ -351,7 +351,7 @@ export default function NewOSForm({
                     </div>
 
                     {/* CARD 3: DIAGNÓSTICO & NOTAS */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative overflow-visible group z-[20]">
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative overflow-visible group z-[30]">
                         <div className="relative flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
                             <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
                                 <FileText className="w-5 h-5" />
@@ -361,7 +361,7 @@ export default function NewOSForm({
 
                         <div className="grid md:grid-cols-2 gap-8">
                             <div className="space-y-4">
-                                <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Sintomas relatados pelo cliente</label>
+                                <label className="block text-[10px] font-black text-muted-foreground tracking-widest italic">Sintomas relatados pelo cliente</label>
                                 <PremiumTextarea
                                     value={form.problem_description}
                                     onChange={e => setForm(p => ({ ...p, problem_description: e.target.value }))}
@@ -371,7 +371,7 @@ export default function NewOSForm({
                                 />
                             </div>
                             <div className="space-y-4">
-                                <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Laudo Técnico / Observações</label>
+                                <label className="block text-[10px] font-black text-muted-foreground tracking-widest italic">Laudo Técnico / Observações</label>
                                 <PremiumTextarea
                                     value={form.description}
                                     onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
@@ -399,7 +399,7 @@ export default function NewOSForm({
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 gap-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest">Modelo / Especificação</label>
+                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-widest">Modelo / Especificação</label>
                                     <PremiumAutocomplete
                                         value={form.equipment_description}
                                         onChange={val => setForm(p => ({ ...p, equipment_description: val }))}
@@ -408,7 +408,7 @@ export default function NewOSForm({
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest">Serial / IMEI</label>
+                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-widest">Serial / IMEI</label>
                                     <PremiumInput
                                         value={form.equipment_serial}
                                         onChange={e => setForm(p => ({ ...p, equipment_serial: e.target.value }))}
@@ -418,7 +418,7 @@ export default function NewOSForm({
                             </div>
 
                             <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Aparelho Liga?</span>
+                                <span className="text-[10px] font-black text-muted-foreground tracking-widest">Aparelho liga?</span>
                                 <button
                                     type="button"
                                     onClick={() => setForm(p => ({ ...p, turns_on: !p.turns_on }))}
@@ -433,7 +433,7 @@ export default function NewOSForm({
                             </div>
 
                             <div className="space-y-4">
-                                <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest">Estado Físico</label>
+                                <label className="block text-[10px] font-black text-muted-foreground tracking-widest">Estado físico</label>
                                 <PremiumTextarea
                                     value={form.device_condition}
                                     onChange={e => setForm(p => ({ ...p, device_condition: e.target.value }))}

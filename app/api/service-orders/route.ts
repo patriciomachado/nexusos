@@ -104,6 +104,8 @@ export async function POST(req: NextRequest) {
             quantity: item.quantity,
             unit_price: item.unit_price,
             total_price: item.total_price,
+            unit_cost: item.unit_cost || 0,
+            total_cost: item.total_cost || 0,
         }))
 
         const { error: itemsError } = await db.from('service_order_items').insert(itemsToInsert)
