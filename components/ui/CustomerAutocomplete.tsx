@@ -82,7 +82,7 @@ export default function CustomerAutocomplete({
             </button>
 
             {isOpen && (
-                <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-[2rem] bg-card/95 border border-white/10 shadow-2xl backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200">
+                <div className="absolute z-[100] mt-2 w-full overflow-hidden rounded-[2rem] bg-card/95 border border-white/10 shadow-2xl backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200">
                     <div className="p-3 border-b border-white/5">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/30" />

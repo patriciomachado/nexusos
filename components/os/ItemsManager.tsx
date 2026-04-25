@@ -133,7 +133,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                             </div>
 
                             {isOpen && (query || filteredItems.length > 0) && (
-                                <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-[2rem] bg-card border border-border shadow-2xl backdrop-blur-3xl animate-in fade-in slide-in-from-top-2 duration-200">
+                                <div className="absolute z-[100] mt-2 w-full overflow-hidden rounded-[2rem] bg-card border border-border shadow-2xl backdrop-blur-3xl animate-in fade-in slide-in-from-top-2 duration-200">
                                     <div className="max-h-64 overflow-y-auto p-2 scrollbar-hide">
                                         {filteredItems.map((item) => (
                                             <button
@@ -207,7 +207,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                 
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
-                                        <label className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter px-1">Custo</label>
+                                        <label className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter px-1">Custo do Item</label>
                                         <div className="relative">
                                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-muted-foreground/40">R$</span>
                                             <input
@@ -219,7 +219,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                         </div>
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter px-1">Venda</label>
+                                        <label className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter px-1">Valor de Venda</label>
                                         <div className="relative">
                                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-muted-foreground/40">R$</span>
                                             <input
