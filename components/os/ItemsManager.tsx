@@ -31,26 +31,10 @@ interface Props {
 }
 
 export default function ItemsManager({ inventoryItems, items, onChange }: Props) {
-    const [query, setQuery] = useState('')
-    const [isOpen, setIsOpen] = useState(false)
-    const containerRef = useRef<HTMLDivElement>(null)
-
-    const filteredItems = query === ''
-        ? inventoryItems.slice(0, 5)
-        : inventoryItems.filter(item =>
-            item.name.toLowerCase().includes(query.toLowerCase()) ||
-            item.category?.toLowerCase().includes(query.toLowerCase())
-        ).slice(0, 8)
-
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                setIsOpen(false)
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [])
+    const [isQuickAdd, setIsQuickAdd] = useState(false)
+    const [quickName, setQuickName] = useState('')
+    const [quickPrice, setQuickPrice] = useState('0')
+    const [quickCost, setQuickCost] = useState('0')
 
     const addItem = (invItem: InventoryItem) => {
         const newItem: OSItem = {
@@ -67,20 +51,22 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
         setIsOpen(false)
     }
 
-    const addQuickItem = () => {
-        if (!query.trim()) return
+    const handleQuickAdd = () => {
+        if (!quickName.trim()) return
         const newItem: OSItem = {
             inventory_item_id: null,
-            item_name: query,
+            item_name: quickName,
             quantity: 1,
-            unit_price: 0,
-            unit_cost: 0,
-            total_price: 0,
-            total_cost: 0
+            unit_price: Number(quickPrice),
+            unit_cost: Number(quickCost),
+            total_price: Number(quickPrice),
+            total_cost: Number(quickCost)
         }
         onChange([...items, newItem])
-        setQuery('')
-        setIsOpen(false)
+        setQuickName('')
+        setQuickPrice('0')
+        setQuickCost('0')
+        setIsQuickAdd(false)
     }
 
     const removeItem = (index: number) => {
@@ -117,73 +103,146 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Search & Add Section */}
                 <div className="lg:col-span-5 space-y-4">
-                    <div ref={containerRef} className="relative">
-                        <label className="block text-[9px] font-black text-muted-foreground/50 mb-2 uppercase tracking-widest italic px-1">Buscar no Estoque ou Serviço</label>
-                        <div className="relative group">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/30 group-focus-within:text-indigo-500 transition-colors" />
-                            <input
-                                type="text"
-                                value={query}
-                                onChange={(e) => {
-                                    setQuery(e.target.value)
-                                    setIsOpen(true)
-                                }}
-                                onFocus={() => setIsOpen(true)}
-                                placeholder="Nome da peça ou serviço..."
-                                className="w-full h-14 bg-card/40 border border-border rounded-2xl pl-12 pr-14 text-sm font-bold placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/40 transition-all"
-                            />
-                            <button
-                                type="button"
-                                onClick={addQuickItem}
-                                title="Adição Rápida (Item fora do estoque)"
-                                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white transition-all active:scale-90"
-                            >
-                                <Zap className="w-4 h-4 fill-current" />
-                            </button>
-                        </div>
-
-                        {isOpen && (query || filteredItems.length > 0) && (
-                            <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-[2rem] bg-card border border-border shadow-2xl backdrop-blur-3xl animate-in fade-in slide-in-from-top-2 duration-200">
-                                <div className="max-h-64 overflow-y-auto p-2 scrollbar-hide">
-                                    {filteredItems.map((item) => (
-                                        <button
-                                            key={item.id}
-                                            type="button"
-                                            onClick={() => addItem(item)}
-                                            className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-indigo-500/5 group transition-all text-left border border-transparent hover:border-indigo-500/10"
-                                        >
-                                            <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground/40 group-hover:bg-indigo-500/10 group-hover:text-indigo-500 transition-all">
-                                                {item.category?.toLowerCase().includes('serviço') ? <Wrench className="w-4 h-4" /> : <Package className="w-4 h-4" />}
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-xs font-bold text-foreground truncate">{item.name}</p>
-                                                <p className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">{item.category || 'Peça'}</p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="text-xs font-black text-indigo-500">R$ {item.selling_price.toFixed(2)}</p>
-                                            </div>
-                                        </button>
-                                    ))}
-                                    {query && !inventoryItems.some(i => i.name.toLowerCase() === query.toLowerCase()) && (
-                                        <button
-                                            type="button"
-                                            onClick={addQuickItem}
-                                            className="w-full flex items-center gap-4 p-4 rounded-2xl bg-amber-500/5 hover:bg-amber-500/10 group transition-all text-left border border-dashed border-amber-500/20 mt-1"
-                                        >
-                                            <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-600">
-                                                <Zap className="w-4 h-4 fill-current" />
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-xs font-bold text-amber-700">Adição Rápida</p>
-                                                <p className="text-[10px] text-amber-600/60 font-black uppercase tracking-widest">Item não cadastrado: {query}</p>
-                                            </div>
-                                            <Plus className="w-4 h-4 text-amber-500" />
-                                        </button>
-                                    )}
-                                </div>
+                    {!isQuickAdd ? (
+                        <div ref={containerRef} className="relative">
+                            <label className="block text-[9px] font-black text-muted-foreground/50 mb-2 uppercase tracking-widest italic px-1">Buscar no Estoque ou Serviço</label>
+                            <div className="relative group">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/30 group-focus-within:text-indigo-500 transition-colors" />
+                                <input
+                                    type="text"
+                                    value={query}
+                                    onChange={(e) => {
+                                        setQuery(e.target.value)
+                                        setIsOpen(true)
+                                    }}
+                                    onFocus={() => setIsOpen(true)}
+                                    placeholder="Nome da peça ou serviço..."
+                                    className="w-full h-14 bg-card/40 border border-border rounded-2xl pl-12 pr-14 text-sm font-bold placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/40 transition-all"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setQuickName(query)
+                                        setIsQuickAdd(true)
+                                    }}
+                                    title="Adição Rápida (Item fora do estoque)"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white transition-all active:scale-90"
+                                >
+                                    <Zap className="w-4 h-4 fill-current" />
+                                </button>
                             </div>
-                        )}
-                    </div>
+
+                            {isOpen && (query || filteredItems.length > 0) && (
+                                <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-[2rem] bg-card border border-border shadow-2xl backdrop-blur-3xl animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="max-h-64 overflow-y-auto p-2 scrollbar-hide">
+                                        {filteredItems.map((item) => (
+                                            <button
+                                                key={item.id}
+                                                type="button"
+                                                onClick={() => addItem(item)}
+                                                className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-indigo-500/5 group transition-all text-left border border-transparent hover:border-indigo-500/10"
+                                            >
+                                                <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground/40 group-hover:bg-indigo-500/10 group-hover:text-indigo-500 transition-all">
+                                                    {item.category?.toLowerCase().includes('serviço') ? <Wrench className="w-4 h-4" /> : <Package className="w-4 h-4" />}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-xs font-bold text-foreground truncate">{item.name}</p>
+                                                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">{item.category || 'Peça'}</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-xs font-black text-indigo-500">R$ {item.selling_price.toFixed(2)}</p>
+                                                </div>
+                                            </button>
+                                        ))}
+                                        {query && !inventoryItems.some(i => i.name.toLowerCase() === query.toLowerCase()) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setQuickName(query)
+                                                    setIsQuickAdd(true)
+                                                }}
+                                                className="w-full flex items-center gap-4 p-4 rounded-2xl bg-amber-500/5 hover:bg-amber-500/10 group transition-all text-left border border-dashed border-amber-500/20 mt-1"
+                                            >
+                                                <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-600">
+                                                    <Zap className="w-4 h-4 fill-current" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-xs font-bold text-amber-700">Adição Rápida</p>
+                                                    <p className="text-[10px] text-amber-600/60 font-black uppercase tracking-widest">Configurar item fora do estoque</p>
+                                                </div>
+                                                <Plus className="w-4 h-4 text-amber-500" />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="p-6 rounded-[2rem] bg-amber-500/5 border-2 border-amber-500/20 space-y-4 animate-in zoom-in-95 duration-200">
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2 text-amber-600">
+                                    <Zap className="w-4 h-4 fill-current" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest italic">Adição Rápida</span>
+                                </div>
+                                <button 
+                                    onClick={() => setIsQuickAdd(false)}
+                                    className="text-[9px] font-black uppercase text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                            
+                            <div className="space-y-4">
+                                <div className="space-y-1">
+                                    <label className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter px-1">Nome do Item/Serviço</label>
+                                    <input
+                                        autoFocus
+                                        type="text"
+                                        value={quickName}
+                                        onChange={(e) => setQuickName(e.target.value)}
+                                        placeholder="Ex: Formatação de PC"
+                                        className="w-full h-11 bg-card border border-amber-500/30 rounded-xl px-4 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                                    />
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <label className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter px-1">Custo</label>
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-muted-foreground/40">R$</span>
+                                            <input
+                                                type="number"
+                                                value={quickCost}
+                                                onChange={(e) => setQuickCost(e.target.value)}
+                                                className="w-full h-11 bg-card border border-amber-500/30 rounded-xl pl-8 pr-4 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[8px] font-black text-muted-foreground/60 uppercase tracking-tighter px-1">Venda</label>
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-muted-foreground/40">R$</span>
+                                            <input
+                                                type="number"
+                                                value={quickPrice}
+                                                onChange={(e) => setQuickPrice(e.target.value)}
+                                                className="w-full h-11 bg-card border border-amber-500/30 rounded-xl pl-8 pr-4 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={handleQuickAdd}
+                                    className="w-full h-12 bg-amber-500 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-all active:scale-95 flex items-center justify-center gap-2"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    Adicionar Item
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="p-5 rounded-[2rem] bg-indigo-500/5 border border-indigo-500/10 space-y-3">
                         <div className="flex items-center gap-2 text-indigo-500">
