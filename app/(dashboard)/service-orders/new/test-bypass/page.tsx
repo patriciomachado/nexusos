@@ -8,6 +8,7 @@ export default function TestPage() {
                 customers={[{ id: '1', name: 'John Doe' }]}
                 technicians={[{ id: '1', name: 'Tech 1' }]}
                 serviceTypes={[]}
+                inventoryItems={[]}
                 companyId="something"
             />
         </div>
