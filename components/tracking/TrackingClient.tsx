@@ -253,7 +253,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                     {/* Financial Summary */}
                     <div className="md:col-span-2 rounded-3xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] p-6 flex flex-col md:flex-row items-center justify-between gap-6">
                         <div>
-                            <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">Custo Estimado / Final</p>
+                            <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">Valor Total do Reparo</p>
                             <div className="flex items-end gap-3">
                                 {isFinished ? (
                                     <span className="text-3xl font-black tracking-tighter text-indigo-600 dark:text-indigo-400">

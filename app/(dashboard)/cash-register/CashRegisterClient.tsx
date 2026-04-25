@@ -441,8 +441,51 @@ export default function CashRegisterClient() {
                         </div>
 
                         {/* General Transactions Table */}
-                        <div className="bg-card/60 backdrop-blur-3xl border border-border/20 rounded-[3rem] shadow-2xl overflow-hidden">
-                            <div className="overflow-x-auto">
+                        <div className="bg-card/60 backdrop-blur-3xl border border-border/20 rounded-[2rem] lg:rounded-[3rem] shadow-2xl overflow-hidden">
+                            {/* Mobile: Card List */}
+                            <div className="block lg:hidden divide-y divide-border/20">
+                                {filteredPayments.length > 0 ? filteredPayments.map((p: any) => {
+                                    const cfg = STATUS_CONFIG[p.payment_status] || { label: p.payment_status, color: 'text-muted-foreground/40', bg: 'bg-muted/5', border: 'border-border/10' }
+                                    return (
+                                        <div key={p.id} className="p-5 flex flex-col gap-4 active:bg-muted/40 transition-colors">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-black text-xs">
+                                                        {(p.customers?.name || '?').charAt(0)}
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs font-black text-foreground uppercase tracking-tight truncate max-w-[140px]">{p.customers?.name || '-'}</span>
+                                                        <span className="text-[10px] text-primary/60 font-black tracking-widest uppercase">#{p.service_orders?.order_number || 'N/A'}</span>
+                                                    </div>
+                                                </div>
+                                                <span className="text-lg font-black tabular-nums">
+                                                    {formatCurrency(p.amount)}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-between border-t border-border/10 pt-3">
+                                                <div className="flex items-center gap-2 opacity-60">
+                                                    <CreditCard className="w-3.5 h-3.5 text-muted-foreground/40" />
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-foreground/60">{PAYMENT_METHOD_LABELS[p.payment_method] || p.payment_method}</span>
+                                                </div>
+                                                <span className={cn(
+                                                    "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border",
+                                                    cfg.bg, cfg.color, cfg.border
+                                                )}>
+                                                    {cfg.label}
+                                                </span>
+                                            </div>
+                                            <div className="text-[9px] text-muted-foreground/40 font-bold font-mono italic uppercase tracking-widest mt-1">
+                                                {formatDateTime(p.payment_date)}
+                                            </div>
+                                        </div>
+                                    )
+                                }) : (
+                                    <div className="p-16 text-center text-muted-foreground/40 italic text-sm">Nenhum registro encontrado.</div>
+                                )}
+                            </div>
+
+                            {/* Desktop: Table View */}
+                            <div className="hidden lg:block overflow-x-auto">
                                 <table className="w-full text-left min-w-[1000px]">
                                     <thead>
                                         <tr className="bg-muted/30 border-b border-border/20">

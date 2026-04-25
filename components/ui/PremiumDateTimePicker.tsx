@@ -75,14 +75,14 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
                                 : "bg-muted/30 border-border/50 text-muted-foreground/50 hover:bg-muted/50 hover:border-border"
                         )}
                     >
-                        <div className="flex flex-col gap-0.5 relative z-10">
+                        <span className="flex flex-col gap-0.5 relative z-10 w-full">
                             <span className="text-[8px] font-black uppercase tracking-tighter opacity-50">
                                 {preset.label.split(' ')[0]}
                             </span>
                             <span className="text-[10px] font-bold white-text transition-colors group-hover:text-white truncate">
                                 {preset.label.split(' ').slice(1).join(' ')}
                             </span>
-                        </div>
+                        </span>
                     </button>
                 ))}
             </div>
@@ -98,12 +98,12 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
                             : "bg-muted/30 border-border/50 text-muted-foreground/50 hover:bg-muted/50 hover:border-border"
                     )}
                 >
-                    <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-2">
                         <CalendarIcon className="w-3.5 h-3.5" />
                         <span className="text-[10px] font-bold uppercase tracking-widest">
                             {showCustom ? 'Customizado' : 'Outra Data'}
                         </span>
-                    </div>
+                    </span>
                     <ChevronRight className={cn("w-3.5 h-3.5 transition-transform", showCustom && "rotate-90")} />
                 </button>
 
