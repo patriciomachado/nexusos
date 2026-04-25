@@ -337,8 +337,8 @@ export default function NewOSForm({
 
                         <ItemsManager 
                             inventoryItems={inventoryItems}
-                            onItemsChange={setItems}
-                            initialItems={items}
+                            onChange={setItems}
+                            items={items}
                         />
                     </div>
 
