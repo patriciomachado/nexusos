@@ -9,6 +9,7 @@ interface InventoryItem {
     id: string
     name: string
     selling_price: number
+    cost_price: number
     category: string
 }
 
@@ -18,7 +19,9 @@ export interface OSItem {
     item_name: string
     quantity: number
     unit_price: number
+    unit_cost: number
     total_price: number
+    total_cost: number
 }
 
 interface Props {
@@ -55,7 +58,9 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
             item_name: invItem.name,
             quantity: 1,
             unit_price: invItem.selling_price,
-            total_price: invItem.selling_price
+            unit_cost: invItem.cost_price || 0,
+            total_price: invItem.selling_price,
+            total_cost: invItem.cost_price || 0
         }
         onChange([...items, newItem])
         setQuery('')
@@ -69,7 +74,9 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
             item_name: query,
             quantity: 1,
             unit_price: 0,
-            total_price: 0
+            unit_cost: 0,
+            total_price: 0,
+            total_cost: 0
         }
         onChange([...items, newItem])
         setQuery('')
@@ -86,6 +93,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
         const newItems = [...items]
         const updatedItem = { ...newItems[index], ...updates }
         updatedItem.total_price = updatedItem.quantity * updatedItem.unit_price
+        updatedItem.total_cost = updatedItem.quantity * updatedItem.unit_cost
         newItems[index] = updatedItem
         onChange(newItems)
     }
@@ -195,10 +203,11 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                             <thead>
                                 <tr className="border-b border-border/50">
                                     <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-left">Item</th>
-                                    <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-center w-24">Qtd</th>
-                                    <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-32">Unitário</th>
-                                    <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-32">Total</th>
-                                    <th className="w-16 p-4"></th>
+                                    <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-center w-20">Qtd</th>
+                                    <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-28">Custo Unit.</th>
+                                    <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-28">Preço Venda</th>
+                                    <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-28">Total</th>
+                                    <th className="w-12 p-4"></th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border/30">
@@ -232,14 +241,25 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                     className="w-16 h-8 bg-muted/30 border border-transparent focus:border-indigo-500/30 rounded-lg text-center text-xs font-black focus:outline-none transition-all"
                                                 />
                                             </td>
-                                            <td className="p-4">
+                                            <td className="p-4 text-right">
                                                 <div className="relative">
-                                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground/50 font-black">R$</span>
+                                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[8px] text-muted-foreground/50 font-black">R$</span>
+                                                    <input
+                                                        type="number"
+                                                        value={item.unit_cost}
+                                                        onChange={(e) => updateItem(index, { unit_cost: Number(e.target.value) })}
+                                                        className="w-full h-8 bg-muted/20 border border-transparent focus:border-amber-500/30 rounded-lg pl-6 pr-2 text-right text-xs font-black text-amber-600 focus:outline-none transition-all"
+                                                    />
+                                                </div>
+                                            </td>
+                                            <td className="p-4 text-right">
+                                                <div className="relative">
+                                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[8px] text-muted-foreground/50 font-black">R$</span>
                                                     <input
                                                         type="number"
                                                         value={item.unit_price}
                                                         onChange={(e) => updateItem(index, { unit_price: Number(e.target.value) })}
-                                                        className="w-full h-8 bg-muted/30 border border-transparent focus:border-indigo-500/30 rounded-lg pl-6 pr-2 text-right text-xs font-black focus:outline-none transition-all"
+                                                        className="w-full h-8 bg-muted/30 border border-transparent focus:border-indigo-500/30 rounded-lg pl-6 pr-2 text-right text-xs font-black text-indigo-600 focus:outline-none transition-all"
                                                     />
                                                 </div>
                                             </td>

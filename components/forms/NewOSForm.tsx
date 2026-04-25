@@ -119,10 +119,18 @@ export default function NewOSForm({
     })
     const [isUploading, setIsUploading] = useState(false)
 
-    // Update estimated_cost when items change
+    // Update costs when items change
     useEffect(() => {
-        const totalItems = items.reduce((sum, item) => sum + (item.total_price || 0), 0)
-        setForm(p => ({ ...p, estimated_cost: totalItems.toFixed(2) }))
+        const totalEstimated = items.reduce((sum, item) => sum + (item.total_price || 0), 0)
+        const totalPartsCost = items.reduce((sum, item) => sum + (item.inventory_item_id ? (item.total_cost || 0) : 0), 0)
+        const totalLaborCost = items.reduce((sum, item) => sum + (!item.inventory_item_id ? (item.total_cost || 0) : 0), 0)
+
+        setForm(p => ({ 
+            ...p, 
+            estimated_cost: totalEstimated.toFixed(2),
+            parts_cost: totalPartsCost.toFixed(2),
+            labor_cost: totalLaborCost.toFixed(2)
+        }))
     }, [items])
 
     async function handleSubmit(e: React.FormEvent) {
@@ -256,7 +264,7 @@ export default function NewOSForm({
                 <div className="lg:col-span-8 space-y-8">
                     
                     {/* CARD 1: IDENTIFICAÇÃO (CHUNKING) */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group">
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group z-[30]">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[80px] rounded-full" />
                         
                         <div className="relative flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
@@ -269,12 +277,12 @@ export default function NewOSForm({
                         <div className="grid md:grid-cols-2 gap-8">
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-[0.2em] italic">Título do Serviço (Destaque) *</label>
+                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-[0.2em] italic">Tipo de Dispositivo *</label>
                                     <PremiumAutocomplete
                                         value={form.title}
                                         onChange={val => setForm(p => ({ ...p, title: val }))}
-                                        placeholder="Ex: Troca de Tela iPhone 13"
-                                        options={SERVICE_SUGGESTIONS}
+                                        placeholder="Ex: iPhone 13 Pro Max"
+                                        options={DEVICE_SUGGESTIONS}
                                     />
                                 </div>
                                 <div>
@@ -325,7 +333,7 @@ export default function NewOSForm({
                     </div>
 
                     {/* CARD 2: GESTÃO DE ITENS (O RAIO) */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group">
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group z-[20]">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full" />
                         
                         <div className="relative flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
