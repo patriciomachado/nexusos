@@ -42,15 +42,9 @@ interface Technician {
     id: string
     name: string
 }
-interface ServiceType {
-    id: string
-    name: string
-}
-
 interface Props {
     customers: Customer[]
     technicians: Technician[]
-    serviceTypes: ServiceType[]
     inventoryItems: any[]
     companyId: string
     initialData?: any
@@ -74,7 +68,6 @@ const PRIORITY_OPTIONS = [
 export default function NewOSForm({ 
     customers, 
     technicians, 
-    serviceTypes, 
     inventoryItems, 
     companyId, 
     initialData, 
@@ -85,7 +78,6 @@ export default function NewOSForm({
     const [form, setForm] = useState({
         customer_id: initialData?.customer_id || '',
         technician_id: initialData?.technician_id || '',
-        service_type_id: initialData?.service_type_id || '',
         status: initialData?.status || 'aberta',
         priority: initialData?.priority || 'normal',
         title: initialData?.title || '',
@@ -300,18 +292,12 @@ export default function NewOSForm({
                             </div>
 
                             <div className="space-y-6 relative z-10">
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 gap-4">
                                     <PremiumSelect
                                         label="Técnico Responsável"
                                         options={technicians}
                                         selectedId={form.technician_id}
                                         onSelect={(id) => setForm(p => ({ ...p, technician_id: id }))}
-                                    />
-                                    <PremiumSelect
-                                        label="Tipo de Serviço"
-                                        options={serviceTypes}
-                                        selectedId={form.service_type_id}
-                                        onSelect={(id) => setForm(p => ({ ...p, service_type_id: id }))}
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">

@@ -7,7 +7,6 @@ export default function TestPage() {
             <NewOSForm 
                 customers={[{ id: '1', name: 'John Doe' }]}
                 technicians={[{ id: '1', name: 'Tech 1' }]}
-                serviceTypes={[]}
                 inventoryItems={[]}
                 companyId="something"
             />
