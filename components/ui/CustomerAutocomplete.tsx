@@ -39,7 +39,7 @@ export default function CustomerAutocomplete({
     const filteredCustomers = query === ''
         ? customers.slice(0, 10)
         : customers.filter(c =>
-            c.name.toLowerCase().includes(query.toLowerCase())
+            c.name?.toLowerCase().includes(query.toLowerCase())
         ).slice(0, 10)
 
     useEffect(() => {
@@ -70,12 +70,12 @@ export default function CustomerAutocomplete({
                     isOpen ? "ring-2 ring-primary/30 border-primary/50" : "hover:bg-muted/60 hover:border-border/80"
                 )}
             >
-                <div className="flex items-center gap-3">
+                <span className="flex items-center gap-3">
                     <User className={cn("w-4 h-4 transition-colors", selectedCustomer ? "text-primary" : "text-muted-foreground/30")} />
                     <span className={cn("block truncate", !selectedCustomer && "text-muted-foreground/50")}>
                         {selectedCustomer ? selectedCustomer.name : (placeholder || "Buscar ou selecionar cliente...")}
                     </span>
-                </div>
+                </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
                     <ChevronsUpDown className="h-4 w-4 text-muted-foreground/30" aria-hidden="true" />
                 </span>
@@ -121,9 +121,9 @@ export default function CustomerAutocomplete({
                                                 ? "bg-primary/20 text-primary border border-primary/30"
                                                 : "bg-white/5 text-muted-foreground/40 group-hover:bg-primary/10 group-hover:text-primary border border-white/5"
                                         )}>
-                                            {c.name.charAt(0)}
+                                            {c.name?.charAt(0) || '?'}
                                         </div>
-                                        <span className="flex-1 text-left truncate font-bold">{c.name}</span>
+                                        <span className="flex-1 text-left truncate font-bold">{c.name || 'Sem nome'}</span>
                                         {c.id === selectedId && (
                                             <Check className="w-4 h-4 text-primary" />
                                         )}

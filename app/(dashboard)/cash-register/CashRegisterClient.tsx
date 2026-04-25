@@ -141,7 +141,7 @@ export default function CashRegisterClient() {
                     <button
                         onClick={() => setActiveTab('daily')}
                         className={cn(
-                            "flex-1 sm:flex-none px-4 lg:px-8 py-2.5 lg:py-3 rounded-xl lg:rounded-2xl text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 whitespace-nowrap",
+                            "flex-1 sm:flex-none px-4 lg:px-8 py-2 md:py-3 rounded-xl lg:rounded-2xl text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 whitespace-nowrap",
                             activeTab === 'daily'
                                 ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20 scale-105"
                                 : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/30"
@@ -153,7 +153,7 @@ export default function CashRegisterClient() {
                     <button
                         onClick={() => setActiveTab('history')}
                         className={cn(
-                            "flex-1 sm:flex-none px-4 lg:px-8 py-2.5 lg:py-3 rounded-xl lg:rounded-2xl text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 whitespace-nowrap",
+                            "flex-1 sm:flex-none px-4 lg:px-8 py-2 md:py-3 rounded-xl lg:rounded-2xl text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 whitespace-nowrap",
                             activeTab === 'history'
                                 ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20 scale-105"
                                 : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/30"
@@ -197,9 +197,9 @@ export default function CashRegisterClient() {
                             </div>
                         ) : (
                             <>
-                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                                     {/* Main Balance Card */}
-                                    <div className="lg:col-span-8 p-10 lg:p-12 rounded-[3.5rem] bg-gradient-to-br from-primary/20 via-primary/5 to-transparent border border-border/20 relative overflow-hidden group shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] min-h-[400px] flex flex-col justify-between">
+                                    <div className="lg:col-span-8 p-6 lg:p-12 rounded-[2.5rem] lg:rounded-[3.5rem] bg-gradient-to-br from-primary/20 via-primary/5 to-transparent border border-border/20 relative overflow-hidden group shadow-2xl min-h-[300px] lg:min-h-[400px] flex flex-col justify-between">
                                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 animate-pulse" />
                                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
@@ -214,7 +214,7 @@ export default function CashRegisterClient() {
                                                 </div>
                                             </div>
                                             <div className="space-y-1 lg:space-y-2">
-                                                <h3 className="text-5xl lg:text-8xl font-black text-foreground tracking-tighter tabular-nums drop-shadow-2xl">
+                                                <h3 className="text-4xl lg:text-8xl font-black text-foreground tracking-tighter tabular-nums drop-shadow-2xl">
                                                     {formatCurrency(calculateBalance)}
                                                 </h3>
                                                 <div className="flex flex-wrap items-center gap-2 lg:gap-4">
@@ -299,8 +299,48 @@ export default function CashRegisterClient() {
                                         </div>
                                     </div>
 
-                                    <div className="bg-card/60 backdrop-blur-3xl border border-border/20 rounded-[3rem] shadow-2xl overflow-hidden">
-                                        <div className="overflow-x-auto">
+                                    <div className="bg-card/60 backdrop-blur-3xl border border-border/20 rounded-[2rem] lg:rounded-[3rem] shadow-2xl overflow-hidden">
+                                        {/* Mobile: Card List */}
+                                        <div className="block lg:hidden divide-y divide-border/20">
+                                            {transactionsList.length > 0 ? transactionsList.map((tx) => (
+                                                <div key={tx.id} className="p-5 flex flex-col gap-4 active:bg-muted/40 transition-colors">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={cn(
+                                                                "w-10 h-10 rounded-xl flex items-center justify-center border shrink-0",
+                                                                tx.type === 'entry' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-rose-500/10 text-rose-500 border-rose-500/20"
+                                                            )}>
+                                                                {tx.type === 'entry' ? <ArrowDownLeft className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                <span className="text-xs font-black text-foreground uppercase tracking-tight truncate max-w-[140px]">{tx.description}</span>
+                                                                <span className="text-[10px] text-muted-foreground/40 font-bold uppercase tracking-widest">{formatDateTime(tx.created_at).split(',')[1]?.replace('às', '') || '-'}</span>
+                                                            </div>
+                                                        </div>
+                                                        <span className={cn(
+                                                            "text-lg font-black tabular-nums",
+                                                            tx.type === 'entry' ? 'text-emerald-500' : 'text-rose-500'
+                                                        )}>
+                                                            {tx.type === 'entry' ? '+' : '-'} {formatCurrency(tx.amount)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center justify-between border-t border-border/10 pt-3">
+                                                        <div className="flex items-center gap-2 opacity-60">
+                                                            <PiggyBank className="w-3.5 h-3.5 text-muted-foreground/40" />
+                                                            <span className="text-[9px] font-black text-foreground/60 uppercase tracking-widest">{tx.payment_method?.name || 'Espécie'}</span>
+                                                        </div>
+                                                        <span className="text-[9px] font-black uppercase text-muted-foreground/40 tracking-widest bg-muted/30 px-2 py-1 rounded-lg border border-border/10">
+                                                            {SOURCE_TYPE_LABELS[tx.source_type as string] || tx.source_type?.replace('_', ' ') || 'Caixa'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            )) : (
+                                                <div className="p-16 text-center text-muted-foreground/40 italic text-sm">Sem transações hoje.</div>
+                                            )}
+                                        </div>
+
+                                        {/* Desktop: Table View */}
+                                        <div className="hidden lg:block overflow-x-auto">
                                             <table className="w-full text-left min-w-[900px]">
                                                 <thead>
                                                     <tr className="bg-muted/30 border-b border-border/20">

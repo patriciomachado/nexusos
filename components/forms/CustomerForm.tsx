@@ -39,19 +39,42 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
         startTransition(async () => {
-            const url = customerId ? `/api/customers/${customerId}` : '/api/customers'
-            const method = customerId ? 'PUT' : 'POST'
-            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
-            const { data, error } = await res.json()
-            if (res.ok) {
-                toast.success(customerId ? 'Cliente atualizado!' : 'Cliente criado!')
-                if (onSuccess) {
-                    onSuccess({ id: data.id || customerId, name: form.name })
+            try {
+                const url = customerId ? `/api/customers/${customerId}` : '/api/customers'
+                const method = customerId ? 'PUT' : 'POST'
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(form)
+                })
+
+                let resJson: any
+                const contentType = res.headers.get('content-type') || ''
+                if (contentType.includes('application/json')) {
+                    resJson = await res.json()
                 } else {
-                    router.push(`/customers/${data.id || customerId}`)
+                    // Fallback for non-JSON responses from Vercel/Proxy errors
+                    const text = await res.text()
+                    throw new Error(`Erro do servidor (${res.status}): ${text.substring(0, 100)}...`)
                 }
-            } else {
-                toast.error(error || 'Erro ao salvar cliente')
+
+                if (res.ok) {
+                    toast.success(customerId ? 'Cliente atualizado!' : 'Cliente criado!')
+                    const data = resJson
+                    if (onSuccess) {
+                        onSuccess({
+                            id: data?.id || customerId || '',
+                            name: form.name
+                        })
+                    } else {
+                        router.push(`/customers/${data?.id || customerId}`)
+                    }
+                } else {
+                    toast.error(resJson?.error || 'Erro ao salvar cliente')
+                }
+            } catch (err: any) {
+                console.error('Error saving customer:', err)
+                toast.error(err.message || 'Erro inesperatdo ao salvar cliente. Tente novamente.')
             }
         })
     }

@@ -505,8 +505,12 @@ export default function NewOSForm({ customers, technicians, serviceTypes, compan
                         initial={{ name: initialCustomerName }}
                         hideHeader
                         onSuccess={(customer) => {
-                            if (customer.id) {
-                                setLocalCustomers(p => [...p, customer])
+                            if (customer && customer.id) {
+                                setLocalCustomers(p => {
+                                    // Avoid duplicates in the local state list
+                                    if (p.some(c => c.id === customer.id)) return p
+                                    return [...p, customer]
+                                })
                                 setForm(p => ({ ...p, customer_id: customer.id }))
                             }
                             setIsCustomerModalOpen(false)
