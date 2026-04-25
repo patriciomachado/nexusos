@@ -29,10 +29,14 @@ export default async function EditServiceOrderPage({ params }: { params: Promise
         { data: customers },
         { data: technicians },
         { data: serviceTypes },
+        { data: inventoryItems },
+        { data: osItems }
     ] = await Promise.all([
         db.from('customers').select('id, name').eq('company_id', companyId).eq('is_active', true).order('name'),
         db.from('technicians').select('id, name').eq('company_id', companyId).eq('is_active', true).order('name'),
         db.from('service_types').select('id, name').eq('company_id', companyId).eq('is_active', true).order('name'),
+        db.from('inventory_items').select('id, name, selling_price, category').eq('company_id', companyId).eq('is_active', true).order('name'),
+        db.from('service_order_items').select('*').eq('service_order_id', id)
     ])
 
     return (
@@ -50,8 +54,9 @@ export default async function EditServiceOrderPage({ params }: { params: Promise
                 customers={customers || []}
                 technicians={technicians || []}
                 serviceTypes={serviceTypes || []}
+                inventoryItems={inventoryItems || []}
                 companyId={companyId}
-                initialData={os}
+                initialData={{ ...os, items: osItems }}
                 warrantyTerms={company?.warranty_terms}
             />
         </div>

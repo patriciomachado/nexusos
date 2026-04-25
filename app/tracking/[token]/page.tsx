@@ -28,6 +28,7 @@ export default async function TrackingPage({
             *,
             companies(name, logo_url, phone, email, city, state, warranty_terms),
             customers(name, phone),
+            service_order_items(*),
             customer_ratings(*)
         `)
         .eq('tracking_token', token)

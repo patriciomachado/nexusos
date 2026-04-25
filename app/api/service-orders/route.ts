@@ -95,6 +95,24 @@ export async function POST(req: NextRequest) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
+    // Insert items if present
+    if (body.items && Array.isArray(body.items) && body.items.length > 0) {
+        const itemsToInsert = body.items.map((item: any) => ({
+            service_order_id: data.id,
+            inventory_item_id: item.inventory_item_id || null,
+            item_name: item.item_name,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            total_price: item.total_price,
+        }))
+
+        const { error: itemsError } = await db.from('service_order_items').insert(itemsToInsert)
+        if (itemsError) {
+            console.error('Error inserting OS items:', itemsError)
+            // We don't fail the whole OS creation, but maybe we should log it
+        }
+    }
+
     // Log history
     await db.from('service_order_history').insert({
         service_order_id: data.id,

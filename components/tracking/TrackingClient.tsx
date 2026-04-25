@@ -250,23 +250,55 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                         </div>
                     )}
 
+                    {/* Items Breakdown */}
+                    {os.service_order_items && os.service_order_items.length > 0 && (
+                        <div className="md:col-span-2 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12121a] p-6 shadow-sm">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                                    <ClipboardList className="w-5 h-5" />
+                                </div>
+                                <h3 className="font-bold tracking-tight">Serviços e Peças</h3>
+                            </div>
+
+                            <div className="space-y-3">
+                                {os.service_order_items.map((item: any) => (
+                                    <div key={item.id} className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-white/5 last:border-0">
+                                        <div>
+                                            <p className="text-sm font-bold">{item.item_name}</p>
+                                            <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium">
+                                                {item.quantity}x {formatCurrency(item.unit_price)}
+                                            </p>
+                                        </div>
+                                        <p className="text-sm font-black text-slate-700 dark:text-slate-300">
+                                            {formatCurrency(item.total_price)}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Financial Summary */}
                     <div className="md:col-span-2 rounded-3xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] p-6 flex flex-col md:flex-row items-center justify-between gap-6">
                         <div>
                             <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">Valor Total do Reparo</p>
                             <div className="flex items-end gap-3">
-                                {isFinished ? (
-                                    <span className="text-3xl font-black tracking-tighter text-indigo-600 dark:text-indigo-400">
-                                        {formatCurrency(os.final_cost || os.estimated_cost)}
-                                    </span>
-                                ) : (
-                                    <>
-                                        <span className="text-3xl font-black tracking-tighter">
-                                            {formatCurrency(os.estimated_cost)}
-                                        </span>
-                                        <span className="text-sm text-slate-400 pb-1 font-medium">(Estimado)</span>
-                                    </>
-                                )}
+                                {(() => {
+                                    const itemsTotal = os.service_order_items?.reduce((acc: number, item: any) => acc + (Number(item.total_price) || 0), 0) || 0;
+                                    const finalValue = os.final_cost || itemsTotal || os.estimated_cost;
+                                    const isEstimated = !os.final_cost && itemsTotal === 0;
+
+                                    return (
+                                        <>
+                                            <span className={`text-3xl font-black tracking-tighter ${os.final_cost || itemsTotal > 0 ? 'text-indigo-600 dark:text-indigo-400' : ''}`}>
+                                                {formatCurrency(finalValue)}
+                                            </span>
+                                            {isEstimated && (
+                                                <span className="text-sm text-slate-400 pb-1 font-medium">(Estimado)</span>
+                                            )}
+                                        </>
+                                    );
+                                })()}
                             </div>
                         </div>
 

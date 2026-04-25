@@ -41,6 +41,26 @@ export async function PUT(req: NextRequest, { params }: Params) {
         .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Sync items if present in body
+    if (body.items && Array.isArray(body.items)) {
+        // 1. Delete existing items
+        await db.from('service_order_items').delete().eq('service_order_id', id)
+
+        // 2. Insert new items
+        if (body.items.length > 0) {
+            const itemsToInsert = body.items.map((item: any) => ({
+                service_order_id: id,
+                inventory_item_id: item.inventory_item_id || null,
+                item_name: item.item_name,
+                quantity: item.quantity,
+                unit_price: item.unit_price,
+                total_price: item.total_price,
+            }))
+            await db.from('service_order_items').insert(itemsToInsert)
+        }
+    }
+
     return NextResponse.json(data)
 }
 

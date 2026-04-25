@@ -11,10 +11,11 @@ export default async function NewServiceOrderPage() {
     const companyId = user?.company_id
     const { data: company } = await db.from('companies').select('warranty_terms').eq('id', companyId).single()
 
-    const [{ data: customers }, { data: technicians }, { data: serviceTypes }] = await Promise.all([
+    const [{ data: customers }, { data: technicians }, { data: serviceTypes }, { data: inventoryItems }] = await Promise.all([
         db.from('customers').select('id, name').eq('company_id', companyId).eq('is_active', true).order('name'),
         db.from('technicians').select('id, name').eq('company_id', companyId).eq('is_active', true).order('name'),
         db.from('service_types').select('id, name').eq('company_id', companyId).eq('is_active', true).order('name'),
+        db.from('inventory_items').select('id, name, selling_price, category').eq('company_id', companyId).eq('is_active', true).order('name'),
     ])
 
     return (
@@ -25,6 +26,7 @@ export default async function NewServiceOrderPage() {
                 technicians={technicians || []}
                 serviceTypes={serviceTypes || []}
                 companyId={companyId}
+                inventoryItems={inventoryItems || []}
                 warrantyTerms={company?.warranty_terms}
             />
         </div>
