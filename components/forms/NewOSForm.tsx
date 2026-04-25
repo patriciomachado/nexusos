@@ -374,7 +374,7 @@ export default function NewOSForm({
                 <div className="lg:col-span-4 space-y-8">
                     
                     {/* CARD 4: DETALHES DO APARELHO */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner sticky top-48">
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner">
                         <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
                             <div className="p-2 rounded-xl bg-orange-500/10 text-orange-400">
                                 <Smartphone className="w-5 h-5" />
