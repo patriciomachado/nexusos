@@ -256,7 +256,7 @@ export default function NewOSForm({
                 <div className="lg:col-span-8 space-y-8">
                     
                     {/* CARD 1: IDENTIFICAÇÃO (CHUNKING) */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative overflow-hidden group">
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[80px] rounded-full" />
                         
                         <div className="relative flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
@@ -325,7 +325,7 @@ export default function NewOSForm({
                     </div>
 
                     {/* CARD 2: GESTÃO DE ITENS (O RAIO) */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative overflow-hidden group">
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full" />
                         
                         <div className="relative flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
