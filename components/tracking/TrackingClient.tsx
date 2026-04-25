@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ShieldCheck, Zap, Info, Smartphone, CheckCircle2, Clock, MapPin, SearchCode, Wrench, AlertTriangle, MessageSquare, Star, MessageCircle, User } from 'lucide-react'
+import { ShieldCheck, Zap, Info, Smartphone, CheckCircle2, Clock, MapPin, SearchCode, Wrench, AlertTriangle, MessageSquare, Star, MessageCircle, User, ClipboardList } from 'lucide-react'
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils'
 import Image from 'next/image'
 import CustomerRatingForm from './CustomerRatingForm'
