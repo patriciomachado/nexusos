@@ -280,26 +280,37 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
 
                     {/* Financial Summary */}
                     <div className="md:col-span-2 rounded-3xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] p-6 flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div>
-                            <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">Valor Total do Reparo</p>
-                            <div className="flex items-end gap-3">
-                                {(() => {
-                                    const itemsTotal = os.service_order_items?.reduce((acc: number, item: any) => acc + (Number(item.total_price) || 0), 0) || 0;
-                                    const finalValue = os.final_cost || itemsTotal || os.estimated_cost;
-                                    const isEstimated = !os.final_cost && itemsTotal === 0;
+                        <div className="w-full md:w-auto">
+                            <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">Resumo Financeiro</p>
+                            
+                            {(() => {
+                                const itemsTotal = os.service_order_items?.reduce((acc: number, item: any) => acc + (Number(item.total_price) || 0), 0) || 0;
+                                const discount = Number(os.discount_amount) || 0;
+                                const finalValue = os.final_cost || itemsTotal || os.estimated_cost;
+                                const subtotal = finalValue + discount;
+                                const isEstimated = !os.final_cost && itemsTotal === 0;
 
-                                    return (
-                                        <>
-                                            <span className={`text-3xl font-black tracking-tighter ${os.final_cost || itemsTotal > 0 ? 'text-indigo-600 dark:text-indigo-400' : ''}`}>
+                                return (
+                                    <div className="space-y-1">
+                                        {discount > 0 && (
+                                            <div className="flex items-center gap-3 text-sm font-medium">
+                                                <span className="text-slate-500">Subtotal: {formatCurrency(subtotal)}</span>
+                                                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full text-[10px] font-black uppercase">
+                                                    -{formatCurrency(discount)} DESC.
+                                                </span>
+                                            </div>
+                                        )}
+                                        <div className="flex items-end gap-3">
+                                            <span className={`text-3xl md:text-4xl font-black tracking-tighter ${os.final_cost || itemsTotal > 0 ? 'text-indigo-600 dark:text-indigo-400' : ''}`}>
                                                 {formatCurrency(finalValue)}
                                             </span>
                                             {isEstimated && (
                                                 <span className="text-sm text-slate-400 pb-1 font-medium">(Estimado)</span>
                                             )}
-                                        </>
-                                    );
-                                })()}
-                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
                         </div>
 
                         <div className="flex gap-6 w-full md:w-auto text-sm">

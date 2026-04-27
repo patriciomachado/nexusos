@@ -153,7 +153,19 @@ export default async function PrintOSPage({
                     <div className="w-1/2 pt-12 text-black">
                         <div className="border-t border-black text-center pt-1 w-64 text-sm font-bold">Assinatura do Cliente</div>
                     </div>
-                    <div className="bg-gray-100 p-4 border border-black rounded w-72">
+                    <div className="bg-gray-100 p-4 border border-black rounded w-72 space-y-1">
+                        {os.discount_amount > 0 && (
+                            <>
+                                <div className="flex justify-between text-xs font-bold text-gray-500">
+                                    <span>SUBTOTAL:</span>
+                                    <span>{formatCurrency((os.final_cost || os.estimated_cost) + os.discount_amount)}</span>
+                                </div>
+                                <div className="flex justify-between text-xs font-bold text-emerald-700">
+                                    <span>DESCONTO:</span>
+                                    <span>-{formatCurrency(os.discount_amount)}</span>
+                                </div>
+                            </>
+                        )}
                         <div className="flex justify-between font-black text-xl border-t-2 border-black pt-2">
                             <span>TOTAL:</span>
                             <span>{formatCurrency(os.final_cost || os.estimated_cost)}</span>

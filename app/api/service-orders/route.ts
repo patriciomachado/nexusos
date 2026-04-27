@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
             warranty_months: body.warranty_months || 0,
             device_condition: body.device_condition || null,
             turns_on: body.turns_on ?? true,
+            discount_amount: body.discount_amount || 0,
             photo_front_url: body.photo_front_url || null,
             photo_back_url: body.photo_back_url || null,
             created_by: user.id,

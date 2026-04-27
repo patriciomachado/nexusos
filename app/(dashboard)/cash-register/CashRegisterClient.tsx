@@ -74,11 +74,13 @@ export default function CashRegisterClient() {
             setPayments(Array.isArray(paymentsData.data) ? paymentsData.data : [])
             setCompanyId(userData?.company_id || null)
             setRegisters(Array.isArray(registersData.data) ? registersData.data : [])
-            setAllTransactions(Array.isArray(allTransData.data) ? allTransData.data : (Array.isArray(allTransData) ? allTransData : []))
-
+            
+            const allTx = Array.isArray(allTransData.data) ? allTransData.data : (Array.isArray(allTransData) ? allTransData : [])
+            console.log(`Loaded ${allTx.length} total transactions`)
+            setAllTransactions(allTx)
         } catch (error) {
-            console.error('Error fetching cash data:', error)
-            toast.error('Erro ao carregar dados financeiros.')
+            console.error('Error in fetchData:', error)
+            toast.error('Erro ao carregar dados do caixa')
         } finally {
             setLoading(false)
         }

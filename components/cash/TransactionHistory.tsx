@@ -67,8 +67,9 @@ export default function TransactionHistory({
                 amount: Number(p.amount),
                 type: 'entry' as const,
                 date: p.payment_date || p.created_at,
-                method: p.payment_method,
+                method: p.payment_method || 'PIX/Cartão',
                 category: 'Faturamento Externo',
+                sourceType: 'payment',
                 originalData: p
             }))
 
@@ -108,59 +109,58 @@ export default function TransactionHistory({
 
     // Calculate Metrics for the current view
     const metrics = useMemo(() => {
-        const totalRevenue = dateFilteredHistory
-            .filter(item => item.type === 'entry')
+        // 1. Gross Revenue (Only OS and Sales)
+        const grossRevenue = dateFilteredHistory
+            .filter(item => 
+                item.type === 'entry' && 
+                (item.sourceType === 'service_order' || item.sourceType === 'product_sale' || item.sourceType === 'payment')
+            )
             .reduce((sum, item) => sum + item.amount, 0)
         
+        // 2. Other Entries (Manual Suprimentos)
+        const otherEntries = dateFilteredHistory
+            .filter(item => item.type === 'entry' && item.sourceType === 'manual_suprimento')
+            .reduce((sum, item) => sum + item.amount, 0)
+
+        // 3. Total Expenses (Sangrias and Exits)
         const totalExpenses = dateFilteredHistory
             .filter(item => item.type === 'exit')
             .reduce((sum, item) => sum + item.amount, 0)
 
-        // Calculate Gross Profit
-        // Gross Profit = Revenue - Cost of Goods/Parts
-        // We look into originalData for parts_cost or product cost if available
+        // 4. Total Cost of Goods (Parts Cost)
         const totalCost = dateFilteredHistory.reduce((sum, item) => {
             const data = item.originalData
-            if (!data) return sum
+            if (!data || item.type !== 'entry') return sum
 
-            // Costs are only associated with revenue (entries)
-            if (item.type !== 'entry') return sum
-
-            // Try to find cost in different possible nested structures
             let cost = 0
 
-            // 1. Check direct service_orders
-            const so = data.service_orders || (data.service_order_id ? data : null)
-            if (so) {
-                const soData = Array.isArray(so) ? so[0] : so
-                if (soData.parts_cost !== undefined && soData.parts_cost !== null) {
-                    cost = Number(soData.parts_cost)
-                }
-            }
-
-            // 2. Check direct sales
-            if (cost === 0) {
-                const sale = data.sales || (data.sale_id ? data : null)
-                if (sale) {
-                    const saleData = Array.isArray(sale) ? sale[0] : sale
-                    if (saleData.total_cost !== undefined && saleData.total_cost !== null) {
-                        cost = Number(saleData.total_cost)
-                    }
-                }
+            // Check enriched data from API
+            if (data.service_orders) {
+                cost = Number(data.service_orders.parts_cost || 0)
+            } else if (data.sales) {
+                cost = Number(data.sales.total_cost || 0)
+            } 
+            // Fallback for direct fields if not enriched or older data
+            else if (data.parts_cost) {
+                cost = Number(data.parts_cost)
+            } else if (data.total_cost) {
+                cost = Number(data.total_cost)
             }
 
             return sum + cost
         }, 0)
 
-        const grossProfit = totalRevenue - totalCost
+        const grossProfit = grossRevenue - totalCost
+        // Net Profit = Gross Profit - Expenses (Other entries like Suprimento don't count as profit, just cash balance)
         const netProfit = grossProfit - totalExpenses
 
         return {
-            totalRevenue,
+            totalRevenue: grossRevenue, // We display Gross Revenue as the main "Faturamento"
+            otherEntries,
             totalExpenses,
             grossProfit,
             netProfit,
-            margin: totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0
+            margin: grossRevenue > 0 ? (netProfit / grossRevenue) * 100 : 0
         }
     }, [dateFilteredHistory])
 

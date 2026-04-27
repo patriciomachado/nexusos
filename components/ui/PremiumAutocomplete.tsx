@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Search, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PremiumInput } from './PremiumInput'
-import * as Popover from '@radix-ui/react-popover'
+import { createPortal } from 'react-dom'
 
 interface Props {
     options: string[]
@@ -31,6 +31,9 @@ export default function PremiumAutocomplete({
 }: Props) {
     const [isOpen, setIsOpen] = useState(false)
     const [filteredOptions, setFilteredOptions] = useState<string[]>([])
+    const containerRef = useRef<HTMLDivElement>(null)
+    const dropdownRef = useRef<HTMLDivElement>(null)
+    const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({})
 
     useEffect(() => {
         if (value.trim() === '') {
@@ -44,72 +47,104 @@ export default function PremiumAutocomplete({
     }, [value, options])
 
     const showAddOption = onAdd && value && !options.some(opt => opt.toLowerCase() === value.toLowerCase())
+    const shouldShow = isOpen && (filteredOptions.length > 0 || showAddOption)
+
+    // Position dropdown
+    useEffect(() => {
+        if (shouldShow && containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect()
+            setDropdownStyle({
+                position: 'fixed',
+                top: rect.bottom + 8,
+                left: rect.left,
+                width: rect.width,
+                zIndex: 9999,
+            })
+        }
+    }, [shouldShow])
+
+    // Close on outside click
+    useEffect(() => {
+        if (!shouldShow) return
+        function handlePointerDown(event: PointerEvent) {
+            const target = event.target as Node
+            if (containerRef.current?.contains(target) || dropdownRef.current?.contains(target)) return
+            setIsOpen(false)
+        }
+        const timer = setTimeout(() => document.addEventListener('pointerdown', handlePointerDown), 0)
+        return () => { clearTimeout(timer); document.removeEventListener('pointerdown', handlePointerDown) }
+    }, [shouldShow])
+
+    // Close on Escape
+    useEffect(() => {
+        if (!shouldShow) return
+        const h = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false) }
+        document.addEventListener('keydown', h)
+        return () => document.removeEventListener('keydown', h)
+    }, [shouldShow])
 
     return (
-        <div className={cn("relative w-full", className)}>
-            <Popover.Root open={Boolean(isOpen && (filteredOptions.length > 0 || showAddOption))} onOpenChange={setIsOpen}>
-                <Popover.Trigger asChild>
-                    <div className="w-full">
-                        <PremiumInput
-                            value={value}
-                            onChange={(e) => {
-                                onChange(e.target.value)
-                                if (!isOpen) setIsOpen(true)
-                            }}
-                            onFocus={() => setIsOpen(true)}
-                            placeholder={placeholder}
-                            icon={icon || <Search className="w-4 h-4" />}
-                            required={required}
-                        />
-                    </div>
-                </Popover.Trigger>
+        <div ref={containerRef} className={cn("relative w-full", className)}>
+            <PremiumInput
+                value={value}
+                onChange={(e) => {
+                    onChange(e.target.value)
+                    if (!isOpen) setIsOpen(true)
+                }}
+                onFocus={() => setIsOpen(true)}
+                placeholder={placeholder}
+                icon={icon || <Search className="w-4 h-4" />}
+                required={required}
+            />
 
-                <Popover.Portal>
-                    <Popover.Content 
-                        className="z-[9999] w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-2xl bg-card/95 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200"
-                        sideOffset={8}
-                        align="start"
-                    >
-                        <ul className="p-1 max-h-64 overflow-y-auto custom-scrollbar">
-                            {filteredOptions.map((opt, i) => (
-                                <li key={i}>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            onChange(opt)
-                                            setIsOpen(false)
-                                        }}
-                                        className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition-all text-foreground/70 hover:bg-primary/10 hover:text-primary text-left"
-                                    >
-                                        <span className="truncate">{opt}</span>
-                                    </button>
-                                </li>
-                            ))}
+            {shouldShow && typeof document !== 'undefined' && createPortal(
+                <div
+                    ref={dropdownRef}
+                    style={dropdownStyle}
+                    className="overflow-hidden rounded-2xl bg-card/95 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200"
+                >
+                    <ul className="p-1 max-h-64 overflow-y-auto custom-scrollbar">
+                        {filteredOptions.map((opt, i) => (
+                            <li key={i}>
+                                <button
+                                    type="button"
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={() => {
+                                        onChange(opt)
+                                        setIsOpen(false)
+                                    }}
+                                    className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition-all text-foreground/70 hover:bg-primary/10 hover:text-primary text-left"
+                                >
+                                    <span className="truncate">{opt}</span>
+                                </button>
+                            </li>
+                        ))}
 
-                            {showAddOption && (
-                                <li className="mt-1 border-t border-border/50 pt-1">
-                                    <button
-                                        type="button"
-                                        disabled={isAdding}
-                                        onClick={() => {
-                                            onAdd(value)
-                                            setIsOpen(false)
-                                        }}
-                                        className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black transition-all text-primary hover:bg-primary/5 text-left uppercase tracking-widest"
-                                    >
-                                        {isAdding ? (
-                                            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                                        ) : (
-                                            <Plus className="w-4 h-4" />
-                                        )}
-                                        <span className="truncate">Adicionar "{value}"</span>
-                                    </button>
-                                </li>
-                            )}
-                        </ul>
-                    </Popover.Content>
-                </Popover.Portal>
-            </Popover.Root>
+                        {showAddOption && (
+                            <li className="mt-1 border-t border-border/50 pt-1">
+                                <button
+                                    type="button"
+                                    disabled={isAdding}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={() => {
+                                        onAdd!(value)
+                                        setIsOpen(false)
+                                    }}
+                                    className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black transition-all text-primary hover:bg-primary/5 text-left uppercase tracking-widest"
+                                >
+                                    {isAdding ? (
+                                        <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                    ) : (
+                                        <Plus className="w-4 h-4" />
+                                    )}
+                                    <span className="truncate">Adicionar &quot;{value}&quot;</span>
+                                </button>
+                            </li>
+                        )}
+                    </ul>
+                </div>,
+                document.body
+            )}
         </div>
     )
 }

@@ -324,7 +324,7 @@ export default async function DashboardPage() {
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
                                         {data.recentOS && data.recentOS.length > 0 ? data.recentOS.map((os) => (
-                                            <tr key={os.id} className="hover:bg-white/[0.02] transition-colors group relative">
+                                            <tr key={os.id} className="hover:bg-white/[0.02] transition-colors group relative cursor-pointer select-none">
                                                 <td className="p-6 font-mono text-[10px] opacity-30">#{os.id.slice(0, 8)}</td>
                                                 <td className="p-6">
                                                     <Link 

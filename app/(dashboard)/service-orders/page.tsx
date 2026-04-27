@@ -134,7 +134,7 @@ export default async function ServiceOrdersPage({
                                         return (
                                             <tr
                                                 key={order.id}
-                                                className="group hover:bg-white/5 transition-all duration-300 relative"
+                                                className="group hover:bg-white/5 transition-all duration-300 relative cursor-pointer select-none"
                                             >
                                                 <td className="p-6 align-middle hidden sm:table-cell">
                                                     <span className="text-xs font-black text-muted-foreground/40 font-mono tracking-tighter">
@@ -143,7 +143,10 @@ export default async function ServiceOrdersPage({
                                                 </td>
                                                 <td className="p-6 align-middle">
                                                     <div className="space-y-1">
-                                                        <Link href={`/service-orders/${order.id}`} className="text-base font-black text-foreground group-hover:text-primary transition-colors tracking-tight block before:absolute before:inset-0 before:z-0">
+                                                        <Link 
+                                                            href={`/service-orders/${order.id}`} 
+                                                            className="text-base font-black text-foreground group-hover:text-primary transition-colors tracking-tight block before:absolute before:inset-0 before:z-[1]"
+                                                        >
                                                             {order.title}
                                                         </Link>
                                                         <div className="flex items-center gap-3">

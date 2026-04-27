@@ -22,12 +22,8 @@ import {
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
-// Common device models for autocomplete
-const DEVICE_SUGGESTIONS = [
-    'iPhone 11', 'iPhone 12', 'iPhone 13', 'iPhone 14', 'iPhone 15',
-    'Samsung S21', 'Samsung S22', 'Samsung S23', 'Samsung S24',
-    'iPad Pro', 'MacBook Pro', 'Apple Watch S9'
-]
+// No auto-fill suggestions - free text input
+const DEVICE_SUGGESTIONS: string[] = []
 
 interface Customer {
     id: string
@@ -87,6 +83,7 @@ export default function NewOSForm({
         internal_notes: initialData?.internal_notes || '',
         warranty_months: initialData?.warranty_months?.toString() || '3',
         device_condition: initialData?.device_condition || '',
+        discount_amount: initialData?.discount_amount?.toString() || '0',
         turns_on: initialData?.turns_on ?? true,
         terms_accepted: initialData?.terms_accepted || false,
     })
@@ -114,20 +111,27 @@ export default function NewOSForm({
         const totalPartsCost = items.reduce((sum, item) => sum + (item.inventory_item_id ? (item.total_cost || 0) : 0), 0)
         const totalLaborCost = items.reduce((sum, item) => sum + (!item.inventory_item_id ? (item.total_cost || 0) : 0), 0)
 
-        setForm(p => ({ 
-            ...p, 
-            estimated_cost: totalEstimated.toFixed(2),
-            parts_cost: totalPartsCost.toFixed(2),
-            labor_cost: totalLaborCost.toFixed(2)
-        }))
+        setForm(p => {
+            const subtotal = items.reduce((sum, item) => sum + (item.total_price || 0), 0)
+            const discount = parseFloat(p.discount_amount) || 0
+            const totalEstimated = subtotal - discount
+
+            return { 
+                ...p, 
+                estimated_cost: totalEstimated.toFixed(2),
+                parts_cost: totalPartsCost.toFixed(2),
+                labor_cost: totalLaborCost.toFixed(2)
+            }
+        })
     }, [items])
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
+        // Se o título estiver vazio, usar a descrição do equipamento ou um padrão
         if (!form.title.trim()) {
-            toast.error('O título do serviço é obrigatório')
-            return
+            form.title = form.equipment_description || 'Nova Ordem de Serviço'
         }
+
         if (!form.customer_id) {
             toast.error('Selecione um cliente')
             return
@@ -184,6 +188,7 @@ export default function NewOSForm({
                     parts_cost: parseFloat(form.parts_cost) || 0,
                     labor_cost: parseFloat(form.labor_cost) || 0,
                     estimated_cost: parseFloat(form.estimated_cost) || 0,
+                    discount_amount: parseFloat(form.discount_amount) || 0,
                     warranty_months: parseInt(form.warranty_months) || 0,
                     scheduled_date: form.scheduled_date || null,
                     terms_accepted: form.terms_accepted,
@@ -223,6 +228,20 @@ export default function NewOSForm({
                 </div>
 
                 <div className="flex items-center gap-6">
+                    <div className="hidden md:flex flex-col items-end">
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Subtotal</span>
+                        <span className="text-sm font-bold text-foreground/60 tabular-nums leading-none">
+                            R$ {(items.reduce((sum, item) => sum + (item.total_price || 0), 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
+                    </div>
+
+                    <div className="hidden md:flex flex-col items-end">
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Desconto</span>
+                        <span className="text-sm font-bold text-rose-400 tabular-nums leading-none">
+                            - R$ {parseFloat(form.discount_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
+                    </div>
+
                     <div className="hidden md:flex flex-col items-end">
                         <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Total Estimado</span>
                         <span className="text-xl font-black text-emerald-400 tabular-nums leading-none">
@@ -450,18 +469,50 @@ export default function NewOSForm({
                     <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group z-[20] overflow-visible">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full" />
                         
-                        <div className="relative flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
-                            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
-                                <Cpu className="w-5 h-5" />
-                            </div>
-                            <h2 className="text-sm font-black uppercase tracking-widest text-foreground/60">Peças & Serviços (Itens da OS)</h2>
-                        </div>
+
 
                         <ItemsManager 
                             inventoryItems={inventoryItems}
                             onChange={setItems}
                             items={items}
                         />
+
+                        <div className="mt-8 pt-8 border-t border-white/5 flex flex-col md:flex-row items-end md:items-center justify-end gap-8">
+                            <div className="w-full md:w-64 space-y-2">
+                                <label className="block text-[10px] font-black text-rose-400/60 uppercase tracking-widest italic px-1">Conceder Desconto (R$)</label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-rose-400/40 italic">R$</span>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={form.discount_amount}
+                                        onChange={(e) => {
+                                            const disc = e.target.value
+                                            setForm(p => {
+                                                const subtotal = items.reduce((sum, item) => sum + (item.total_price || 0), 0)
+                                                const discount = parseFloat(disc) || 0
+                                                const total = subtotal - discount
+                                                return {
+                                                    ...p,
+                                                    discount_amount: disc,
+                                                    estimated_cost: total.toFixed(2)
+                                                }
+                                            })
+                                        }}
+                                        className="w-full h-14 bg-rose-500/5 border border-rose-500/10 rounded-2xl pl-12 pr-6 text-sm font-black text-rose-400 placeholder:text-rose-500/20 focus:ring-4 focus:ring-rose-500/10 outline-none transition-all tabular-nums"
+                                        placeholder="0,00"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col items-end gap-1">
+                                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Total Geral</span>
+                                <span className="text-4xl font-black text-emerald-400 tabular-nums tracking-tighter">
+                                    R$ {parseFloat(form.estimated_cost).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                                <p className="text-[9px] font-bold text-muted-foreground italic uppercase tracking-widest">Sujeito a alterações conforme laudo técnico</p>
+                            </div>
+                        </div>
                     </div>
 
                     {/* CARD 3: DIAGNÓSTICO & NOTAS */}

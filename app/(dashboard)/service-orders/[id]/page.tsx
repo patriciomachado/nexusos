@@ -369,36 +369,35 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                 
                                 {(() => {
                                     const itemsTotal = os.service_order_items?.reduce((acc: number, item: any) => acc + (Number(item.total_price) || 0), 0) || 0;
-                                    if (itemsTotal <= 0) return null;
+                                    const subtotal = itemsTotal || os.estimated_cost;
+                                    const discount = Number(os.discount_amount) || 0;
+                                    const finalValue = (os.final_cost || subtotal) - (os.final_cost ? 0 : discount);
+                                    
                                     return (
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-muted-foreground/60 text-xs uppercase tracking-tighter font-bold">Total de Itens</span>
-                                            <span className="text-foreground font-mono font-bold">{formatCurrency(itemsTotal)}</span>
-                                        </div>
+                                        <>
+                                            <div className="flex justify-between items-center group/item">
+                                                <span className="text-muted-foreground/60 text-xs uppercase tracking-tighter font-bold">Subtotal</span>
+                                                <span className="text-foreground/70 font-mono font-medium">{formatCurrency(subtotal)}</span>
+                                            </div>
+
+                                            {discount > 0 && (
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-rose-500/60 text-xs uppercase tracking-tighter font-bold">Desconto Concedido</span>
+                                                    <span className="text-rose-500 font-mono font-bold">- {formatCurrency(discount)}</span>
+                                                </div>
+                                            )}
+
+                                            <div className="pt-4 mt-2 border-t border-primary/10">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] mb-1 text-center">Valor Total a Pagar</span>
+                                                    <div className="text-3xl font-black text-primary text-center tracking-tighter tabular-nums drop-shadow-sm">
+                                                        {formatCurrency(finalValue)}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
                                     );
                                 })()}
-
-                                {os.parts_cost > 0 && (
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-muted-foreground/60 text-[10px] uppercase tracking-tighter">Custo de Peças (Est.)</span>
-                                        <span className="text-destructive/50 font-mono text-xs">{formatCurrency(os.parts_cost)}</span>
-                                    </div>
-                                )}
-
-                                <div className="pt-4 mt-2 border-t border-primary/10">
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] mb-1 text-center">Valor Total a Pagar</span>
-                                        {(() => {
-                                            const itemsTotal = os.service_order_items?.reduce((acc: number, item: any) => acc + (Number(item.total_price) || 0), 0) || 0;
-                                            const finalValue = os.final_cost || itemsTotal || os.estimated_cost;
-                                            return (
-                                                <div className="text-3xl font-black text-primary text-center tracking-tighter tabular-nums drop-shadow-sm">
-                                                    {formatCurrency(finalValue)}
-                                                </div>
-                                            );
-                                        })()}
-                                    </div>
-                                </div>
                                 
                                 {os.status === 'faturada' && (
                                     <div className="mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-center">

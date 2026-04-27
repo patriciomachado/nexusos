@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { createPortal } from 'react-dom'
 
 interface Option {
     id: string
@@ -20,24 +21,75 @@ interface Props {
 
 export default function PremiumSelect({ options, selectedId, onSelect, placeholder = "Selecionar...", label, error }: Props) {
     const [isOpen, setIsOpen] = useState(false)
-    const containerRef = useRef<HTMLDivElement>(null)
+    const buttonRef = useRef<HTMLButtonElement>(null)
+    const dropdownRef = useRef<HTMLDivElement>(null)
+    const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({})
 
     const selectedOption = options.find(o => o.id === selectedId)
 
+    // Position the dropdown relative to the button
     useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                setIsOpen(false)
-            }
+        if (isOpen && buttonRef.current) {
+            const rect = buttonRef.current.getBoundingClientRect()
+            setDropdownStyle({
+                position: 'fixed',
+                top: rect.bottom + 8,
+                left: rect.left,
+                width: rect.width,
+                zIndex: 9999,
+            })
         }
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [])
+    }, [isOpen])
+
+    // Close on outside click
+    useEffect(() => {
+        if (!isOpen) return
+
+        function handlePointerDown(event: PointerEvent) {
+            const target = event.target as Node
+            if (
+                buttonRef.current?.contains(target) ||
+                dropdownRef.current?.contains(target)
+            ) {
+                return
+            }
+            setIsOpen(false)
+        }
+
+        // Use a small delay so the opening click doesn't immediately close
+        const timer = setTimeout(() => {
+            document.addEventListener('pointerdown', handlePointerDown)
+        }, 0)
+
+        return () => {
+            clearTimeout(timer)
+            document.removeEventListener('pointerdown', handlePointerDown)
+        }
+    }, [isOpen])
+
+    // Close on scroll (optional, for better UX)
+    useEffect(() => {
+        if (!isOpen) return
+        const handleScroll = () => setIsOpen(false)
+        window.addEventListener('scroll', handleScroll, true)
+        return () => window.removeEventListener('scroll', handleScroll, true)
+    }, [isOpen])
+
+    // Close on Escape
+    useEffect(() => {
+        if (!isOpen) return
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setIsOpen(false)
+        }
+        document.addEventListener('keydown', handleKeyDown)
+        return () => document.removeEventListener('keydown', handleKeyDown)
+    }, [isOpen])
 
     return (
-        <div ref={containerRef} className="relative w-full">
+        <div className="relative w-full">
             {label && <label className="block text-[10px] font-black text-muted-foreground/60 mb-2 uppercase tracking-[0.2em]">{label}</label>}
             <button
+                ref={buttonRef}
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
@@ -54,8 +106,12 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
                 </span>
             </button>
 
-            {isOpen && (
-                <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-2xl bg-card border border-border shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200">
+            {isOpen && typeof document !== 'undefined' && createPortal(
+                <div
+                    ref={dropdownRef}
+                    style={dropdownStyle}
+                    className="overflow-hidden rounded-2xl bg-card border border-border shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200"
+                >
                     <ul className="max-h-60 overflow-y-auto p-1 py-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
                         {options.length > 0 ? (
                             options.map((o) => (
@@ -86,7 +142,8 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
                             </li>
                         )}
                     </ul>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )
