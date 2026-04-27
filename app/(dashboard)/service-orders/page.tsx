@@ -134,7 +134,7 @@ export default async function ServiceOrdersPage({
                                         return (
                                             <tr
                                                 key={order.id}
-                                                className="group hover:bg-white/5 transition-all duration-300"
+                                                className="group hover:bg-white/5 transition-all duration-300 relative"
                                             >
                                                 <td className="p-6 align-middle hidden sm:table-cell">
                                                     <span className="text-xs font-black text-muted-foreground/40 font-mono tracking-tighter">
@@ -143,7 +143,7 @@ export default async function ServiceOrdersPage({
                                                 </td>
                                                 <td className="p-6 align-middle">
                                                     <div className="space-y-1">
-                                                        <Link href={`/service-orders/${order.id}`} className="text-base font-black text-foreground group-hover:text-primary transition-colors tracking-tight block">
+                                                        <Link href={`/service-orders/${order.id}`} className="text-base font-black text-foreground group-hover:text-primary transition-colors tracking-tight block before:absolute before:inset-0 before:z-0">
                                                             {order.title}
                                                         </Link>
                                                         <div className="flex items-center gap-3">
@@ -193,7 +193,7 @@ export default async function ServiceOrdersPage({
                                                     )}
                                                 </td>
                                                 <td className="p-6 align-middle text-right hidden lg:table-cell">
-                                                    <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity relative z-10">
                                                         <Link
                                                             href={`/service-orders/${order.id}`}
                                                             className="p-3 rounded-xl bg-muted/40 hover:bg-primary hover:text-primary-foreground transition-all"

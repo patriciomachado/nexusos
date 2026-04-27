@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { cn, APPOINTMENT_STATUS_LABELS } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import PremiumModal from '@/components/ui/PremiumModal'
 import AppointmentForm from './AppointmentForm'
 
@@ -423,17 +424,20 @@ export default function AppointmentsCalendar({
                                 </div>
                             </div>
 
-                            {selectedAppointment.service_orders && (
-                                <div className="flex items-center gap-3" suppressHydrationWarning>
-                                    <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center" suppressHydrationWarning>
-                                        <ClipboardList className="w-4 h-4 text-muted-foreground/40" suppressHydrationWarning />
-                                    </div>
-                                    <div suppressHydrationWarning>
-                                        <div className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest" suppressHydrationWarning>Ordem de Serviço</div>
-                                        <div className="text-sm font-bold text-foreground" suppressHydrationWarning>#{selectedAppointment.service_orders.order_number} - {selectedAppointment.service_orders.title}</div>
-                                    </div>
-                                </div>
-                            )}
+                                    {selectedAppointment.service_orders && (
+                                        <Link 
+                                            href={`/service-orders/${selectedAppointment.service_order_id}`}
+                                            className="flex items-center gap-3 group/os hover:bg-white/5 p-2 rounded-2xl transition-colors"
+                                        >
+                                            <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center group-hover/os:bg-primary/10 transition-colors" suppressHydrationWarning>
+                                                <ClipboardList className="w-4 h-4 text-muted-foreground/40 group-hover/os:text-primary transition-colors" suppressHydrationWarning />
+                                            </div>
+                                            <div suppressHydrationWarning>
+                                                <div className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest" suppressHydrationWarning>Ordem de Serviço</div>
+                                                <div className="text-sm font-bold text-foreground group-hover/os:text-primary transition-colors" suppressHydrationWarning>#{selectedAppointment.service_orders.order_number} - {selectedAppointment.service_orders.title}</div>
+                                            </div>
+                                        </Link>
+                                    )}
                         </div>
 
                         <div className="p-6 rounded-[2rem] bg-card/40 border border-border/20" suppressHydrationWarning>

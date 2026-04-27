@@ -291,37 +291,95 @@ export default async function DashboardPage() {
                 {/* Primary Visualization Area - Optimization */}
                 <div className="grid lg:grid-cols-3 gap-6" suppressHydrationWarning>
                     {/* Main Row: Chart & Command Center */}
-                    <div className="lg:col-span-2" suppressHydrationWarning>
-                        <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-lg transition-all h-full" suppressHydrationWarning>
+                    <div className="lg:col-span-2 space-y-6" suppressHydrationWarning>
+                        <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-lg transition-all h-[350px]" suppressHydrationWarning>
                             <RevenueChart 
                                 data={data.chartData} 
                                 totalRevenue={formatCurrency(data.stats.monthRevenue)} 
                                 totalProfit={formatCurrency(data.stats.monthNetProfit)}
-                                height={220} 
+                                height={280} 
                             />
+                        </div>
+
+                        {/* Recent Service Orders Table for Admin */}
+                        <div className="glass-premium rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl" suppressHydrationWarning>
+                            <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                                <div>
+                                    <h2 className="text-xl font-black uppercase tracking-widest leading-none">Ordens de Serviço Recentes</h2>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-2 opacity-50">Últimas movimentações do sistema</p>
+                                </div>
+                                <Link href="/service-orders" className="px-6 py-3 rounded-2xl bg-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5">
+                                    Ver Tudo
+                                </Link>
+                            </div>
+                            <div className="overflow-x-auto">
+                                <table className="w-full border-collapse">
+                                    <thead>
+                                        <tr className="text-left border-b border-white/5 bg-white/[0.01]">
+                                            <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">ID</th>
+                                            <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">Título</th>
+                                            <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">Cliente</th>
+                                            <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 text-right">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-white/5">
+                                        {data.recentOS && data.recentOS.length > 0 ? data.recentOS.map((os) => (
+                                            <tr key={os.id} className="hover:bg-white/[0.02] transition-colors group relative">
+                                                <td className="p-6 font-mono text-[10px] opacity-30">#{os.id.slice(0, 8)}</td>
+                                                <td className="p-6">
+                                                    <Link 
+                                                        href={`/service-orders/${os.id}`} 
+                                                        className="font-bold text-foreground group-hover:text-primary transition-colors block before:absolute before:inset-0 before:z-0"
+                                                    >
+                                                        {os.title}
+                                                    </Link>
+                                                </td>
+                                                <td className="p-6 text-sm font-medium text-foreground/70">{os.customers?.name || 'Cliente Direto'}</td>
+                                                <td className="p-6 text-right relative z-10">
+                                                    <span className={cn(
+                                                        "px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border",
+                                                        STATUS_CONFIG[os.status]?.bg || "bg-muted border-white/5 text-muted-foreground"
+                                                    )}>
+                                                        {STATUS_CONFIG[os.status]?.label || os.status}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        )) : (
+                                            <tr>
+                                                <td colSpan={4} className="p-12 text-center text-muted-foreground/40 text-xs italic">Nenhuma ordem de serviço recente.</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
                     <div className="lg:col-span-1" suppressHydrationWarning>
-                        <div className="bg-gradient-to-br from-primary to-blue-600 rounded-3xl p-8 text-primary-foreground shadow-2xl relative overflow-hidden group border border-border/40 h-full" suppressHydrationWarning>
-                            <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 blur-3xl rounded-full translate-x-12 -translate-y-12 group-hover:scale-110 transition-transform duration-1000" suppressHydrationWarning />
-                            <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-8 opacity-80 text-white">Comandos</h3>
-                            <div className="grid grid-cols-2 gap-4 relative z-10" suppressHydrationWarning>
-                                {[
-                                    { label: 'Ordens', icon: ClipboardList, href: '/service-orders/new' },
-                                    { label: 'Clientes', icon: Users, href: '/customers' },
-                                    { label: 'Financeiro', icon: DollarSign, href: '/cash-register' },
-                                    { label: 'Ajustes', icon: Settings, href: '/settings' },
-                                ].map(action => (
-                                    <Link
-                                        key={action.label}
-                                        href={action.href}
-                                        className="flex flex-col items-center justify-center gap-4 p-6 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/5 transition-all hover:-translate-y-1 shadow-inner"
-                                    >
-                                        <action.icon className="w-6 h-6 text-white" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-white/90">{action.label}</span>
-                                    </Link>
-                                ))}
+                        <div className="bg-gradient-to-br from-primary to-blue-600 rounded-[2.5rem] p-10 text-primary-foreground shadow-2xl relative overflow-hidden group border border-white/10 h-full min-h-[400px]" suppressHydrationWarning>
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[100px] rounded-full translate-x-12 -translate-y-12 group-hover:scale-110 transition-transform duration-1000" suppressHydrationWarning />
+                            <div className="relative z-10 space-y-8" suppressHydrationWarning>
+                                <div suppressHydrationWarning>
+                                    <h3 className="text-xs font-black uppercase tracking-[0.3em] mb-2 opacity-60 text-white">Centro de Comando</h3>
+                                    <p className="text-xl font-bold text-white">Acesso Rápido</p>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4" suppressHydrationWarning>
+                                    {[
+                                        { label: 'Nova OS', icon: ClipboardList, href: '/service-orders/new' },
+                                        { label: 'Clientes', icon: Users, href: '/customers' },
+                                        { label: 'Financeiro', icon: DollarSign, href: '/cash-register' },
+                                        { label: 'Ajustes', icon: Settings, href: '/settings' },
+                                    ].map(action => (
+                                        <Link
+                                            key={action.label}
+                                            href={action.href}
+                                            className="flex flex-col items-center justify-center gap-4 p-8 rounded-3xl bg-white/10 hover:bg-white/20 border border-white/5 transition-all hover:-translate-y-1 shadow-inner group/action"
+                                        >
+                                            <action.icon className="w-8 h-8 text-white transition-transform group-hover/action:scale-110" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/90">{action.label}</span>
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

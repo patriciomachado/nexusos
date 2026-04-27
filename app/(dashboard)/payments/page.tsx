@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
 import { formatCurrency, formatDateTime, PAYMENT_METHOD_LABELS, cn } from '@/lib/utils'
@@ -151,18 +152,26 @@ export default async function PaymentsPage({
                                                     <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs border border-primary/20">
                                                         {(p.customers?.name || 'C').charAt(0)}
                                                     </div>
-                                                    <span className="text-sm font-bold text-foreground group-hover:text-primary transition-colors uppercase tracking-tight">
-                                                        {p.customers?.name || (p.notes?.includes('PDV') ? 'Consumidor Final' : 'Consumidor Final')}
-                                                    </span>
+                                                    <div className="flex flex-col">
+                                                        {p.customers ? (
+                                                            <Link href={`/customers/${p.customer_id}`} className="text-sm font-bold text-foreground hover:text-primary transition-colors uppercase tracking-tight">
+                                                                {p.customers.name}
+                                                            </Link>
+                                                        ) : (
+                                                            <span className="text-sm font-bold text-foreground uppercase tracking-tight">
+                                                                {p.notes?.includes('PDV') ? 'Consumidor Final' : 'Consumidor Final'}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td className="p-5">
                                                 <div className="flex flex-col">
                                                     {p.service_orders ? (
-                                                        <>
-                                                            <span className="text-xs font-mono text-primary font-bold">#{p.service_orders.order_number}</span>
-                                                            <span className="text-[10px] text-muted-foreground/60 truncate max-w-[150px]">{p.service_orders.title}</span>
-                                                        </>
+                                                        <Link href={`/service-orders/${p.service_order_id}`} className="group/os">
+                                                            <span className="text-xs font-mono text-primary font-bold group-hover/os:underline">#{p.service_orders.order_number}</span>
+                                                            <span className="text-[10px] text-muted-foreground/60 truncate max-w-[150px] block group-hover/os:text-primary/60 transition-colors">{p.service_orders.title}</span>
+                                                        </Link>
                                                     ) : (
                                                         <span className={cn(
                                                             "text-[10px] font-black uppercase tracking-widest",
