@@ -54,8 +54,20 @@ export async function POST(req: NextRequest) {
         if (saleError) throw saleError
 
         // 3. Create Sale Items and Update Stock
+        let totalCost = 0;
         for (const item of body.items) {
-            // Create item
+            // Get item cost
+            const { data: stockItem } = await db
+                .from('inventory_items')
+                .select('quantity_in_stock, cost_price')
+                .eq('id', item.inventory_item_id)
+                .single()
+
+            const unitCost = stockItem?.cost_price || 0;
+            const itemTotalCost = unitCost * item.quantity;
+            totalCost += itemTotalCost;
+
+            // Create item with costs
             const { error: itemError } = await db
                 .from('sale_items')
                 .insert({
@@ -64,18 +76,14 @@ export async function POST(req: NextRequest) {
                     item_name: item.item_name,
                     quantity: item.quantity,
                     unit_price: item.unit_price,
-                    total_price: item.total_price
+                    total_price: item.total_price,
+                    unit_cost: unitCost,
+                    total_cost: itemTotalCost
                 })
 
             if (itemError) throw itemError
 
             // Update Stock
-            const { data: stockItem } = await db
-                .from('inventory_items')
-                .select('quantity_in_stock')
-                .eq('id', item.inventory_item_id)
-                .single()
-
             if (stockItem) {
                 await db
                     .from('inventory_items')
@@ -85,6 +93,12 @@ export async function POST(req: NextRequest) {
                     .eq('id', item.inventory_item_id)
             }
         }
+
+        // Update total cost on sale header
+        await db
+            .from('sales')
+            .update({ total_cost: totalCost })
+            .eq('id', sale.id)
 
         // 4. Register Cash Transaction
         const { data: transType } = await db
@@ -136,6 +150,7 @@ export async function POST(req: NextRequest) {
                 payment_status: 'completed',
                 payment_date: new Date().toISOString(),
                 reference_id: sale.id,
+                sale_id: sale.id,
                 notes: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
                 created_by: user.id
             })

@@ -48,18 +48,49 @@ export async function PUT(req: NextRequest, { params }: Params) {
         // 1. Delete existing items
         await db.from('service_order_items').delete().eq('service_order_id', id)
 
-        // 2. Insert new items
+        // 2. Insert new items with cost tracking
+        let totalPartsCost = 0;
         if (body.items.length > 0) {
-            const itemsToInsert = body.items.map((item: any) => ({
-                service_order_id: id,
-                inventory_item_id: item.inventory_item_id || null,
-                item_name: item.item_name,
-                quantity: item.quantity,
-                unit_price: item.unit_price,
-                total_price: item.total_price,
-            }))
-            await db.from('service_order_items').insert(itemsToInsert)
+            const itemsToInsert = []
+            
+            for (const item of body.items) {
+                let unitCost = item.unit_cost || 0
+                
+                // If inventory item, try to get cost if not provided
+                if (item.inventory_item_id && unitCost === 0) {
+                    const { data: invItem } = await db
+                        .from('inventory_items')
+                        .select('cost_price')
+                        .eq('id', item.inventory_item_id)
+                        .single()
+                    if (invItem) unitCost = invItem.cost_price || 0
+                }
+
+                const itemTotalCost = unitCost * item.quantity
+                totalPartsCost += itemTotalCost
+
+                itemsToInsert.push({
+                    service_order_id: id,
+                    inventory_item_id: item.inventory_item_id || null,
+                    item_name: item.item_name,
+                    quantity: item.quantity,
+                    unit_price: item.unit_price,
+                    total_price: item.total_price,
+                    unit_cost: unitCost,
+                    total_cost: itemTotalCost
+                })
+            }
+
+            if (itemsToInsert.length > 0) {
+                await db.from('service_order_items').insert(itemsToInsert)
+            }
         }
+
+        // 3. Update the header parts_cost
+        await db
+            .from('service_orders')
+            .update({ parts_cost: totalPartsCost })
+            .eq('id', id)
     }
 
     return NextResponse.json(data)

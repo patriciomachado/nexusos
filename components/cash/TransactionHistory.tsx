@@ -5,7 +5,7 @@ import {
     Search, Filter, ArrowUpRight, ArrowDownLeft, 
     Calendar, Receipt, MoreHorizontal, Wallet,
     TrendingUp, TrendingDown, Clock, History,
-    DollarSign, Activity, PieChart, Info
+    DollarSign, Activity, PieChart, Info, ShieldCheck
 } from 'lucide-react'
 import { formatCurrency, formatDateTime, cn } from '@/lib/utils'
 
@@ -13,15 +13,19 @@ interface TransactionHistoryProps {
     companyId: string
     initialPayments?: any[]
     allTransactions?: any[]
+    registers?: any[]
 }
 
 export default function TransactionHistory({ 
     companyId, 
     initialPayments = [], 
-    allTransactions = [] 
+    allTransactions = [],
+    registers = []
 }: TransactionHistoryProps) {
     const [searchQuery, setSearchQuery] = useState('')
     const [filterType, setFilterType] = useState<'all' | 'entry' | 'exit'>('all')
+    const [timeRange, setTimeRange] = useState<string>('30')
+    const [showMonthPicker, setShowMonthPicker] = useState(false)
 
     // Unified History Logic
     const unifiedHistory = useMemo(() => {
@@ -34,6 +38,10 @@ export default function TransactionHistory({
                 category = 'Venda PDV'
             } else if (tx.source_type === 'service_order') {
                 category = 'Serviço (OS)'
+            } else if (tx.source_type === 'manual_sangria') {
+                category = 'Sangria de Caixa'
+            } else if (tx.source_type === 'manual_suprimento') {
+                category = 'Suprimento de Caixa'
             }
 
             return {
@@ -69,32 +77,79 @@ export default function TransactionHistory({
         )
     }, [initialPayments, allTransactions])
 
-    const filteredHistory = useMemo(() => {
+    const dateFilteredHistory = useMemo(() => {
+        const now = new Date()
         return unifiedHistory.filter(item => {
+            const itemDate = new Date(item.date)
+            
+            if (timeRange === 'all') return true
+
+            if (timeRange === '30' || timeRange === '60' || timeRange === '90') {
+                const days = parseInt(timeRange)
+                const cutoff = new Date()
+                cutoff.setDate(now.getDate() - days)
+                return itemDate >= cutoff
+            } else if (timeRange.includes('-')) {
+                const [year, month] = timeRange.split('-').map(Number)
+                return itemDate.getFullYear() === year && itemDate.getMonth() === month - 1
+            }
+            return true
+        })
+    }, [unifiedHistory, timeRange])
+
+    const filteredHistory = useMemo(() => {
+        return dateFilteredHistory.filter(item => {
             const matchesSearch = item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                 item.category.toLowerCase().includes(searchQuery.toLowerCase())
             const matchesType = filterType === 'all' || item.type === filterType
             return matchesSearch && matchesType
         })
-    }, [unifiedHistory, searchQuery, filterType])
+    }, [dateFilteredHistory, searchQuery, filterType])
 
     // Calculate Metrics for the current view
     const metrics = useMemo(() => {
-        const totalRevenue = unifiedHistory
+        const totalRevenue = dateFilteredHistory
             .filter(item => item.type === 'entry')
             .reduce((sum, item) => sum + item.amount, 0)
         
-        const totalExpenses = unifiedHistory
+        const totalExpenses = dateFilteredHistory
             .filter(item => item.type === 'exit')
             .reduce((sum, item) => sum + item.amount, 0)
 
         // Calculate Gross Profit
         // Gross Profit = Revenue - Cost of Goods/Parts
         // We look into originalData for parts_cost or product cost if available
-        const totalCost = initialPayments.reduce((sum, p) => {
-            const partsCost = Number(p.service_orders?.parts_cost || 0)
-            // If it's a sale, we might have product costs in the future
-            return sum + partsCost
+        const totalCost = dateFilteredHistory.reduce((sum, item) => {
+            const data = item.originalData
+            if (!data) return sum
+
+            // Costs are only associated with revenue (entries)
+            if (item.type !== 'entry') return sum
+
+            // Try to find cost in different possible nested structures
+            let cost = 0
+
+            // 1. Check direct service_orders
+            const so = data.service_orders || (data.service_order_id ? data : null)
+            if (so) {
+                const soData = Array.isArray(so) ? so[0] : so
+                if (soData.parts_cost !== undefined && soData.parts_cost !== null) {
+                    cost = Number(soData.parts_cost)
+                }
+            }
+
+            // 2. Check direct sales
+            if (cost === 0) {
+                const sale = data.sales || (data.sale_id ? data : null)
+                if (sale) {
+                    const saleData = Array.isArray(sale) ? sale[0] : sale
+                    if (saleData.total_cost !== undefined && saleData.total_cost !== null) {
+                        cost = Number(saleData.total_cost)
+                    }
+                }
+            }
+
+            return sum + cost
         }, 0)
 
         const grossProfit = totalRevenue - totalCost
@@ -107,7 +162,19 @@ export default function TransactionHistory({
             netProfit,
             margin: totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0
         }
-    }, [unifiedHistory, initialPayments])
+    }, [dateFilteredHistory])
+
+    const availableMonths = useMemo(() => {
+        const months = []
+        const now = new Date()
+        for (let i = 0; i < 12; i++) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+            const label = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+            const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+            months.push({ label, value })
+        }
+        return months
+    }, [])
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
@@ -180,34 +247,105 @@ export default function TransactionHistory({
                     </p>
                 </div>
 
-                <div className="flex items-center gap-2 bg-muted/30 p-1 rounded-2xl border border-border/50">
-                    <button
-                        onClick={() => setFilterType('all')}
-                        className={cn(
-                            "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                            filterType === 'all' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                        )}
-                    >
-                        Todos
-                    </button>
-                    <button
-                        onClick={() => setFilterType('entry')}
-                        className={cn(
-                            "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                            filterType === 'entry' ? "bg-emerald-500/10 text-emerald-500 shadow-sm" : "text-muted-foreground hover:text-emerald-500"
-                        )}
-                    >
-                        Entradas
-                    </button>
-                    <button
-                        onClick={() => setFilterType('exit')}
-                        className={cn(
-                            "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                            filterType === 'exit' ? "bg-rose-500/10 text-rose-500 shadow-sm" : "text-muted-foreground hover:text-rose-500"
-                        )}
-                    >
-                        Saídas
-                    </button>
+                <div className="flex flex-wrap items-center gap-3">
+                    {/* Time Range Filter */}
+                    <div className="flex items-center gap-1.5 bg-muted/30 p-1 rounded-2xl border border-border/50">
+                        {['30', '60', '90'].map((range) => (
+                            <button
+                                key={range}
+                                onClick={() => setTimeRange(range)}
+                                className={cn(
+                                    "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                    timeRange === range ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                                )}
+                            >
+                                {range} Dias
+                            </button>
+                        ))}
+                        
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowMonthPicker(!showMonthPicker)}
+                                className={cn(
+                                    "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
+                                    timeRange.includes('-') ? "bg-primary/10 text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                                )}
+                            >
+                                <Calendar className="w-3 h-3" />
+                                {timeRange.includes('-') 
+                                    ? availableMonths.find(m => m.value === timeRange)?.label 
+                                    : "Outro Mês"}
+                            </button>
+
+                            {showMonthPicker && (
+                                <div className="absolute top-full right-0 mt-2 w-48 glass-premium border border-border/50 rounded-2xl shadow-2xl z-[100] py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                                        {availableMonths.map((m) => (
+                                            <button
+                                                key={m.value}
+                                                onClick={() => {
+                                                    setTimeRange(m.value)
+                                                    setShowMonthPicker(false)
+                                                }}
+                                                className={cn(
+                                                    "w-full text-left px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-colors",
+                                                    timeRange === m.value ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                                )}
+                                            >
+                                                {m.label}
+                                            </button>
+                                        ))}
+                                        <div className="border-t border-border/10 my-1" />
+                                        <button
+                                            onClick={() => {
+                                                setTimeRange('all')
+                                                setShowMonthPicker(false)
+                                            }}
+                                            className={cn(
+                                                "w-full text-left px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-colors",
+                                                timeRange === 'all' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                            )}
+                                        >
+                                            Ver Tudo
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="w-px h-6 bg-border/20 hidden sm:block" />
+
+                    {/* Type Filter */}
+                    <div className="flex items-center gap-1.5 bg-muted/30 p-1 rounded-2xl border border-border/50">
+                        <button
+                            onClick={() => setFilterType('all')}
+                            className={cn(
+                                "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                filterType === 'all' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            Todos
+                        </button>
+                        <button
+                            onClick={() => setFilterType('entry')}
+                            className={cn(
+                                "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                filterType === 'entry' ? "bg-emerald-500/10 text-emerald-500 shadow-sm" : "text-muted-foreground hover:text-emerald-500"
+                            )}
+                        >
+                            Entradas
+                        </button>
+                        <button
+                            onClick={() => setFilterType('exit')}
+                            className={cn(
+                                "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                filterType === 'exit' ? "bg-rose-500/10 text-rose-500 shadow-sm" : "text-muted-foreground hover:text-rose-500"
+                            )}
+                        >
+                            Saídas
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -296,6 +434,78 @@ export default function TransactionHistory({
                     </div>
                 )}
             </div>
+
+            {/* Histórico de Fechamentos (Registers) */}
+            {registers && registers.length > 0 && (
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between px-2">
+                        <div>
+                            <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                <ShieldCheck className="w-4 h-4 text-primary" />
+                                Histórico de Fechamentos (Expedientes)
+                            </h3>
+                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">
+                                Conferência de saldos e encerramentos anteriores
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="glass-premium rounded-[2.5rem] border border-border/40 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="border-b border-border/10 bg-muted/20">
+                                        <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Data/Hora</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Operador</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Abertura</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right">Fechamento Esperado</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right">Real Informado</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-border/5">
+                                    {registers.slice(0, 10).map((reg) => (
+                                        <tr key={reg.id} className="group hover:bg-muted/30 transition-colors">
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-bold text-foreground">{formatDateTime(reg.opened_at).split(',')[0]}</span>
+                                                    <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-40">
+                                                        {new Date(reg.opened_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className="text-xs font-bold text-foreground/80">{reg.users?.name || 'Sistema'}</span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className="text-xs font-medium text-muted-foreground">{formatCurrency(reg.opening_balance)}</span>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <span className="text-xs font-bold text-foreground">{formatCurrency(reg.closing_balance || 0)}</span>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <span className="text-xs font-black text-primary">{formatCurrency(reg.actual_balance || reg.closing_balance || 0)}</span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex justify-center">
+                                                    <span className={cn(
+                                                        "text-[9px] font-black px-2 py-0.5 rounded-lg uppercase tracking-widest border",
+                                                        reg.status === 'open' 
+                                                            ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" 
+                                                            : "bg-muted text-muted-foreground border-border/20"
+                                                    )}>
+                                                        {reg.status === 'open' ? 'Aberto' : 'Encerrado'}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            )}
             
             {/* Legend/Info */}
             <div className="p-6 glass-premium rounded-[2rem] border border-border/30 flex items-start gap-4">

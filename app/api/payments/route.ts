@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     const db = createAdminClient()
     const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
-    const { data, error, count } = await db.from('payments').select('*, customers(name), service_orders(order_number, title)', { count: 'exact' }).eq('company_id', user?.company_id).order('payment_date', { ascending: false }).limit(100)
+    const { data, error, count } = await db.from('payments').select('*, customers(name), service_orders(order_number, title, parts_cost), sales(total_cost)', { count: 'exact' }).eq('company_id', user?.company_id).order('payment_date', { ascending: false }).limit(100)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ data, count })
 }

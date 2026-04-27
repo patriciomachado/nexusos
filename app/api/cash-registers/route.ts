@@ -11,8 +11,11 @@ export async function GET(req: NextRequest) {
     
     if (!user) return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
 
-    // List all cash registers for the company, ordered by opened_at
-    const { data, error, count } = await db
+    const { searchParams } = new URL(req.url)
+    const status = searchParams.get('status')
+
+    // List cash registers for the company
+    let query = db
         .from('cash_registers')
         .select(`
             *,
@@ -20,9 +23,19 @@ export async function GET(req: NextRequest) {
         `, { count: 'exact' })
         .eq('company_id', user.company_id)
         .order('opened_at', { ascending: false })
-        .limit(50)
+
+    if (status) {
+        query = query.eq('status', status)
+    }
+
+    const { data, error, count } = await query.limit(50)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // If status=open is requested, return just the object if it exists
+    if (status === 'open' && data && data.length > 0) {
+        return NextResponse.json(data[0])
+    }
 
     return NextResponse.json({ data, count })
 }

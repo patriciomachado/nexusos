@@ -44,11 +44,17 @@ export default function CashRegisterClient() {
             if (regData && !regData.error && regData.id) {
                 setCurrentRegister(regData)
                 const transRes = await fetch(`/api/cash-transactions?cash_register_id=${regData.id}`, { cache: 'no-store' })
-                const transData = await transRes.json()
-                setTransactions(Array.isArray(transData) ? transData : [])
+                const transResp = await transRes.json()
+                const tData = Array.isArray(transResp) ? transResp : (transResp.data || [])
+                setTransactions(tData)
             } else {
                 setCurrentRegister(null)
-                setTransactions([])
+                // If no register is open, fetch all transactions from today to show as "recent"
+                const today = new Date().toISOString().split('T')[0]
+                const transRes = await fetch(`/api/cash-transactions?date=${today}`, { cache: 'no-store' })
+                const transResp = await transRes.json()
+                const tData = Array.isArray(transResp) ? transResp : (transResp.data || [])
+                setTransactions(tData)
             }
 
             const [paymentsRes, userRes, registersRes, allTransRes] = await Promise.all([
@@ -68,7 +74,7 @@ export default function CashRegisterClient() {
             setPayments(Array.isArray(paymentsData.data) ? paymentsData.data : [])
             setCompanyId(userData?.company_id || null)
             setRegisters(Array.isArray(registersData.data) ? registersData.data : [])
-            setAllTransactions(Array.isArray(allTransData) ? allTransData : [])
+            setAllTransactions(Array.isArray(allTransData.data) ? allTransData.data : (Array.isArray(allTransData) ? allTransData : []))
 
         } catch (error) {
             console.error('Error fetching cash data:', error)
@@ -79,7 +85,36 @@ export default function CashRegisterClient() {
     }
 
     useEffect(() => {
-        fetchData()
+        const checkMidnightClosure = async () => {
+            if (currentRegister && currentRegister.status === 'open') {
+                const openedAt = new Date(currentRegister.opened_at)
+                const now = new Date()
+                
+                // If it was opened on a previous day, auto-close it
+                if (openedAt.getDate() !== now.getDate() || openedAt.getMonth() !== now.getMonth() || openedAt.getFullYear() !== now.getFullYear()) {
+                    try {
+                        console.log('Auto-closing register from previous day...')
+                        const res = await fetch(`/api/cash-registers/${currentRegister.id}/close`, { 
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        })
+                        
+                        if (res.ok) {
+                            toast.success('Caixa do dia anterior foi encerrado automaticamente.')
+                            fetchData()
+                        } else {
+                            toast.error('Detectamos um caixa aberto do dia anterior, mas houve um erro ao encerrá-lo automaticamente.')
+                        }
+                    } catch (error) {
+                        console.error('Error auto-closing register:', error)
+                    }
+                }
+            }
+        }
+
+        fetchData().then(() => {
+            checkMidnightClosure()
+        })
     }, [])
 
     const handleSuccess = () => {
@@ -344,7 +379,9 @@ export default function CashRegisterClient() {
                                                         {tx.type === 'entry' ? '+' : '-'} {formatCurrency(tx.amount)}
                                                     </p>
                                                     <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest">
-                                                        {SOURCE_TYPE_LABELS[tx.source_type as keyof typeof SOURCE_TYPE_LABELS] || tx.source_type}
+                                                        {tx.source_type === 'manual_suprimento' ? 'Suprimento de Caixa' : 
+                                                         tx.source_type === 'manual_sangria' ? 'Sangria de Caixa' :
+                                                         SOURCE_TYPE_LABELS[tx.source_type as keyof typeof SOURCE_TYPE_LABELS] || tx.source_type}
                                                     </p>
                                                 </div>
                                             </div>
@@ -470,6 +507,7 @@ export default function CashRegisterClient() {
                             companyId={companyId || ''} 
                             initialPayments={payments}
                             allTransactions={allTransactions}
+                            registers={registers}
                         />
                         </div>
                     </motion.div>
