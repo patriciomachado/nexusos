@@ -8,11 +8,7 @@ export default function SignInPage() {
                     <h1 className="text-2xl font-bold text-white">Bem-vindo de volta</h1>
                     <p className="text-white/60 mt-2">Entre na sua conta do Nexus OS</p>
                 </div>
-                <SignIn
-                    path="/sign-in"
-                    routing="path"
-                    forceRedirectUrl="/dashboard"
-                />
+                <SignIn />
             </div>
         </div>
     )

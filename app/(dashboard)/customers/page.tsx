@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Plus, Search, User, Phone, Mail, MapPin, ChevronRight, MoreVertical, Star, ShieldCheck } from 'lucide-react'
 import { formatPhone, cn } from '@/lib/utils'
 import SearchInput from '@/components/ui/SearchInput'
+import CustomerActions from '@/components/customers/CustomerActions'
 
 export default async function CustomersPage({
     searchParams,
@@ -114,9 +115,7 @@ export default async function CustomersPage({
                                                 </div>
                                             </div>
                                         </div>
-                                        <button className="p-2 rounded-xl bg-muted/20 text-muted-foreground/20 hover:text-foreground transition-colors">
-                                            <MoreVertical className="w-5 h-5" />
-                                        </button>
+                                        <CustomerActions customerId={c.id} customerName={c.name} />
                                     </div>
 
                                     <div className="grid grid-cols-1 gap-4">

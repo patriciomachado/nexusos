@@ -1,23 +1,37 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Loader2, Package, Grid3X3, Wrench, Headphones } from 'lucide-react'
+import { Search, Loader2, Package, Grid3X3, Wrench, Headphones, Tag } from 'lucide-react'
 import { InventoryItem, InventoryUnit } from '@/types'
 import { usePDVStore } from '@/store/usePDVStore'
 import ProductCard from './ProductCard'
 
-const CATEGORIES = [
-    { id: 'all', label: 'Todos', icon: Grid3X3 },
-    { id: 'peças', label: 'Peças', icon: Package },
-    { id: 'serviços', label: 'Serviços', icon: Wrench },
-    { id: 'acessórios', label: 'Acessórios', icon: Headphones },
-]
+interface Category {
+    id: string;
+    name: string;
+}
 
 export default function ProductCatalog() {
     const [activeCategory, setActiveCategory] = useState('all')
     const searchQuery = usePDVStore((state) => state.searchQuery)
     const [products, setProducts] = useState<InventoryItem[]>([])
+    const [categories, setCategories] = useState<Category[]>([])
     const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await fetch('/api/inventory/categories')
+                const data = await res.json()
+                if (Array.isArray(data)) {
+                    setCategories(data)
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error)
+            }
+        }
+        fetchCategories()
+    }, [])
 
     useEffect(() => {
         const fetchCatalog = async () => {
@@ -28,10 +42,10 @@ export default function ProductCatalog() {
                 const dataInv = await resInv.json()
                 const inventoryItems = dataInv.data || []
 
-                // Fetch service types if category is 'all' or 'serviços'
                 let mergedItems = [...inventoryItems]
 
-                if (activeCategory === 'all' || activeCategory === 'serviços') {
+                // Fetch service types if needed
+                if (activeCategory === 'all' || activeCategory === 'servicos' || activeCategory === 'Serviços') {
                     const resSvc = await fetch('/api/settings/service-types')
                     const dataSvc = await resSvc.json()
 
@@ -42,33 +56,35 @@ export default function ProductCatalog() {
                         sku: 'SERVICO',
                         description: svc.description || '',
                         category: 'Serviços',
+                        category_id: 'servicos',
                         cost_price: 0,
                         selling_price: svc.base_price,
                         quantity_in_stock: 999,
                         minimum_quantity: 0,
                         maximum_quantity: 999,
                         unit: 'un' as InventoryUnit,
-                        image_url: '',
+                        image_url: '', // Will use fallback
                         serial_number_required: false,
                         is_active: svc.is_active ?? true,
                         created_at: svc.created_at || new Date().toISOString(),
                         updated_at: svc.updated_at || new Date().toISOString()
                     }))
 
-                    // Search filtering for services (since API doesn't filter them yet)
                     const filteredServices = searchQuery
                         ? serviceItems.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
                         : serviceItems
 
-                    if (activeCategory === 'serviços') {
-                        mergedItems = [...inventoryItems.filter((p: InventoryItem) => p.category?.toLowerCase() === 'serviços'), ...filteredServices]
+                    if (activeCategory === 'servicos' || activeCategory === 'Serviços') {
+                        mergedItems = [...inventoryItems.filter((p: InventoryItem) => 
+                            p.category?.toLowerCase().includes('serviço') || p.category_id === 'servicos'
+                        ), ...filteredServices]
                     } else {
                         mergedItems = [...inventoryItems, ...filteredServices]
                     }
-                } else {
-                    // Filter standard inventory by other categories
+                } else if (activeCategory !== 'all') {
+                    // Filter by specific category ID or Name
                     mergedItems = inventoryItems.filter((p: InventoryItem) =>
-                        p.category?.toLowerCase() === activeCategory.toLowerCase()
+                        p.category_id === activeCategory || p.category === activeCategory
                     )
                 }
 
@@ -87,19 +103,39 @@ export default function ProductCatalog() {
     return (
         <div className="flex flex-col h-full space-y-8 animate-in fade-in duration-700">
             {/* Catalog Header: Categories & Search */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div className="flex items-center gap-2 bg-muted/30 p-1.5 rounded-2xl border border-border/50">
-                    {CATEGORIES.map((cat) => (
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 shrink-0">
+                <div className="flex items-center gap-2 bg-muted/30 p-1.5 rounded-2xl border border-border/50 overflow-x-auto no-scrollbar">
+                    <button
+                        onClick={() => setActiveCategory('all')}
+                        className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shrink-0 ${activeCategory === 'all'
+                            ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                            }`}
+                    >
+                        <Grid3X3 className="w-4 h-4" />
+                        Todos
+                    </button>
+                    <button
+                        onClick={() => setActiveCategory('servicos')}
+                        className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shrink-0 ${activeCategory === 'servicos'
+                            ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                            }`}
+                    >
+                        <Wrench className="w-4 h-4" />
+                        Serviços
+                    </button>
+                    {categories.map((cat) => (
                         <button
                             key={cat.id}
                             onClick={() => setActiveCategory(cat.id)}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeCategory === cat.id
+                            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shrink-0 ${activeCategory === cat.id
                                 ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
                                 : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                                 }`}
                         >
-                            <cat.icon className="w-4 h-4" />
-                            {cat.label}
+                            <Tag className="w-4 h-4" />
+                            {cat.name}
                         </button>
                     ))}
                 </div>

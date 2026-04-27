@@ -19,7 +19,7 @@ export async function POST(
         .from('cash_registers')
         .select('*')
         .eq('id', id)
-        .eq('user_id', user.id)
+        .eq('company_id', user.company_id)
         .single()
 
     if (fetchError || !cashRegister) {

@@ -40,7 +40,7 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
     // Prevent hydration mismatch
     const sidebarOpen = mounted ? store.sidebarOpen : true
     const setSidebarOpen = store.setSidebarOpen
-    const effectiveOpen = sidebarOpen || isHovered
+    const effectiveOpen = mounted ? (sidebarOpen || isHovered) : true
 
     return (
         <>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Settings, Grid3X3, Package, BarChart3, ShoppingCart } from 'lucide-react'
+import { Settings, Grid3X3, Package, BarChart3, ShoppingCart, Search } from 'lucide-react'
 import NotificationsDropdown from '../layout/NotificationsDropdown'
 import { UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
@@ -36,10 +36,21 @@ export default function PDVHeader() {
                 </div>
             </div>
 
-            {/* Space for layout balance */}
-            <div className="flex-1" />
+            {/* Search Input - Desktop Center */}
+            <div className="flex-1 max-w-2xl px-8 hidden lg:block">
+                <div className="relative group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
+                    <input
+                        type="text"
+                        placeholder="Pesquisar produtos ou serviços... (F2)"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-muted/30 border border-border/50 rounded-2xl py-3 pl-11 pr-4 text-sm font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/30 transition-all placeholder:text-muted-foreground/30"
+                    />
+                </div>
+            </div>
 
-            {/* Nav & Actions */}
+            {/* Actions */}
             <div className="flex items-center gap-3 lg:gap-8">
                 <nav className="hidden lg:flex items-center gap-6">
                     {navItems.map((item) => (

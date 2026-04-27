@@ -1,12 +1,12 @@
 'use client'
 
-import { Trash2, Plus, Minus, CreditCard, Banknote, QrCode, ShoppingCart, ShoppingBag } from 'lucide-react'
+import { Trash2, Plus, Minus, CreditCard, Banknote, QrCode, ShoppingCart, ShoppingBag, Wrench, Package } from 'lucide-react'
 import { usePDVStore } from '@/store/usePDVStore'
 import { formatCurrency } from '@/lib/utils'
 import { useState } from 'react'
 
 export default function CartSidebar() {
-    const { cart, subtotal, taxAmount, discount, total, removeItem, updateQuantity, clearCart, setDiscount, setIsFinishModalOpen } = usePDVStore()
+    const { cart, subtotal, discount, total, removeItem, updateQuantity, clearCart, setDiscount, setIsFinishModalOpen } = usePDVStore()
     const [paymentMethod, setPaymentMethod] = useState<'dinheiro' | 'cartao' | 'pix'>('dinheiro')
 
     if (cart.length === 0) {
@@ -50,12 +50,18 @@ export default function CartSidebar() {
             <div className="flex-1 overflow-y-auto p-4 lg:p-8 pt-2 lg:pt-4 space-y-3 lg:space-y-4 custom-scrollbar">
                 {cart.map((item) => (
                     <div key={item.id} className="group bg-background/50 border border-border/50 rounded-3xl p-4 flex items-center gap-4 hover:border-primary/30 transition-all hover:bg-card">
-                        <div className="w-20 h-20 rounded-2xl bg-muted overflow-hidden flex-shrink-0 border border-border/30">
-                            <img
-                                src={`https://source.unsplash.com/100x100/?autopart&sig=${item.id}`}
-                                alt={item.product.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                            />
+                        <div className="w-20 h-20 rounded-2xl bg-muted overflow-hidden flex-shrink-0 border border-border/30 flex items-center justify-center">
+                            {item.product.image_url ? (
+                                <img
+                                    src={item.product.image_url}
+                                    alt={item.product.name}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                            ) : (
+                                <div className="flex flex-col items-center gap-1 opacity-20">
+                                    {item.product.sku === 'SERVICO' ? <Wrench className="w-8 h-8" /> : <Package className="w-8 h-8" />}
+                                </div>
+                            )}
                         </div>
                         <div className="flex-1 min-w-0 flex flex-col justify-center">
                             <h4 className="font-bold text-sm text-foreground truncate">{item.product.name}</h4>
@@ -95,10 +101,6 @@ export default function CartSidebar() {
                     <div className="flex justify-between items-center text-xs">
                         <span className="font-bold text-muted-foreground uppercase tracking-widest">Subtotal</span>
                         <span className="font-black text-foreground">{formatCurrency(subtotal)}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-xs">
-                        <span className="font-bold text-muted-foreground uppercase tracking-widest">Impostos (estimado)</span>
-                        <span className="font-black text-foreground">{formatCurrency(taxAmount)}</span>
                     </div>
                     <div className="flex justify-between items-center text-xs group">
                         <span className="font-bold text-destructive/60 uppercase tracking-widest group-hover:text-destructive transition-colors">Descontos</span>

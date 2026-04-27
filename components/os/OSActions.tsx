@@ -45,7 +45,12 @@ export default function OSActions({ os, variant = 'list' }: Props) {
     const [isPending, startTransition] = useTransition()
     const [isOpen, setIsOpen] = useState(false)
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+    const [mounted, setMounted] = useState(false)
     const menuRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -107,7 +112,11 @@ export default function OSActions({ os, variant = 'list' }: Props) {
     }
 
     return (
-        <div ref={menuRef} className={cn("relative inline-block text-left", isOpen ? "z-[100]" : "z-auto")}>
+        <div 
+            ref={menuRef} 
+            className={cn("relative inline-block text-left", (mounted && isOpen) ? "z-[100]" : "z-auto")}
+            suppressHydrationWarning
+        >
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(

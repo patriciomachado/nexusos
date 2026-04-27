@@ -29,7 +29,7 @@ export default function PDVFooter() {
     }, [])
 
     return (
-        <footer className="h-10 bg-background border-t border-border flex items-center px-6 justify-between shrink-0 fixed bottom-0 w-full z-20">
+        <footer className="h-10 bg-background border-t border-border flex items-center px-6 justify-between shrink-0">
             <div className="flex items-center gap-6 divide-x divide-border">
                 <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-emerald-500">
                     <Wifi className="w-3 h-3" />

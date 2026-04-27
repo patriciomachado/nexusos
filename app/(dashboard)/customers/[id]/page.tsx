@@ -9,6 +9,7 @@ import {
     ChevronRight, MoreVertical, User
 } from 'lucide-react'
 import { formatDateTime, formatCurrency, formatPhone, OS_STATUS_LABELS, OS_STATUS_COLORS } from '@/lib/utils'
+import CustomerActions from '@/components/customers/CustomerActions'
 
 export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { userId } = await auth()
@@ -56,9 +57,12 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                             </div>
 
                             <div className="flex-1 space-y-4">
-                                <div>
-                                    <h1 className="text-3xl font-black text-foreground tracking-tight">{customer.name}</h1>
-                                    <p className="text-muted-foreground/30 text-xs font-bold uppercase tracking-[0.2em] mt-1">ID: {customer.id.split('-')[0]}</p>
+                                <div className="flex items-start justify-between">
+                                    <div>
+                                        <h1 className="text-3xl font-black text-foreground tracking-tight">{customer.name}</h1>
+                                        <p className="text-muted-foreground/30 text-xs font-bold uppercase tracking-[0.2em] mt-1">ID: {customer.id.split('-')[0]}</p>
+                                    </div>
+                                    <CustomerActions customerId={customer.id} customerName={customer.name} />
                                 </div>
 
                                 <div className="grid sm:grid-cols-2 gap-4">
@@ -182,6 +186,15 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                                 Editar Perfil Completo
                             </div>
                         </Link>
+
+                        <div className="pt-2">
+                            <CustomerActions 
+                                customerId={customer.id} 
+                                customerName={customer.name} 
+                                className="w-full"
+                                variant="danger-button"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

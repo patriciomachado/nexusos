@@ -1,21 +1,12 @@
-import { createOpenAI } from '@ai-sdk/openai';
-import { streamText } from 'ai';
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
 
-const openrouter = createOpenAI({
-    baseURL: 'https://openrouter.ai/api/v1',
-    apiKey: process.env.OPENROUTER_API_KEY,
-});
+export async function POST(req: NextRequest) {
+    const { userId } = await auth()
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-export const maxDuration = 30;
-
-export async function POST(req: Request) {
-    const { messages } = await req.json();
-
-    const result = streamText({
-        model: openrouter('openai/gpt-4o-mini'),
-        messages,
-        system: "Você é o Nexus, um assistente virtual inteligente integrado ao Nexus OS. Você ajuda o usuário a gerenciar ordem de serviços, técnicos, clientes, estoque e finanças. Seja prestativo, claro, objetivo e comunique-se em português do Brasil.",
-    });
-
-    return result.toTextStreamResponse();
+    return NextResponse.json({ 
+        role: 'assistant', 
+        content: 'Olá! O serviço da Aura AI está temporariamente desativado para manutenção e atualizações. Por favor, utilize as funções manuais do sistema por enquanto.' 
+    })
 }

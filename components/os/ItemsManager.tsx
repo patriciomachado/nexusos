@@ -207,7 +207,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                     <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-600">
                                         <Zap className="w-4 h-4 fill-current" />
                                     </div>
-                                    <span className="text-xs font-black uppercase tracking-widest text-amber-700">Novo Item Avulso</span>
+                                    <span className="text-xs font-black uppercase tracking-widest text-amber-700">Serviço Rápido (O RAIO)</span>
                                 </div>
                                 <button 
                                     onClick={() => setIsQuickAdd(false)}
@@ -219,13 +219,13 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                             
                             <div className="space-y-4 relative z-10">
                                 <div className="space-y-1.5">
-                                    <label className="text-[9px] font-black text-amber-700/60 uppercase tracking-widest px-1 italic">Descrição do Item ou Serviço</label>
+                                    <label className="text-[9px] font-black text-amber-700/60 uppercase tracking-widest px-1 italic">Descrição do Serviço / Peça</label>
                                     <input
                                         autoFocus
                                         type="text"
                                         value={quickName}
                                         onChange={(e) => setQuickName(e.target.value)}
-                                        placeholder="Ex: Mão de obra especializada..."
+                                        placeholder="Ex: Troca de tela iPhone 13..."
                                         className="w-full h-12 bg-white/40 border border-amber-500/20 rounded-xl px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
                                     />
                                 </div>

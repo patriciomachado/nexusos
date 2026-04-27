@@ -2,7 +2,6 @@ import { auth } from '@clerk/nextjs/server'
 import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
 import CompanySettingsForm from '@/components/settings/CompanySettingsForm'
-import ServiceTypesSettings from '@/components/settings/ServiceTypesSettings'
 import SubscriptionSettings from '@/components/settings/SubscriptionSettings'
 import PaymentMethodsSettings from '@/components/settings/PaymentMethodsSettings'
 import { Building2, Globe, ShieldCheck } from 'lucide-react'
@@ -64,14 +63,6 @@ export default async function SettingsPage() {
                 </div>
 
                 <div className="grid lg:grid-cols-2 gap-12">
-                    {/* Section: Service Types */}
-                    <div className="p-10 rounded-[3.5rem] bg-card/40 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group hover:border-orange-500/20 transition-all duration-500">
-                        <div className="absolute top-0 left-0 w-96 h-96 bg-orange-500/5 blur-[100px] rounded-full -translate-x-1/2 -translate-y-1/2 group-hover:bg-orange-500/10 transition-colors" />
-                        <div className="relative z-10">
-                            <ServiceTypesSettings />
-                        </div>
-                    </div>
-
                     {/* Section: Subscription */}
                     <div className="relative z-10">
                         {company && <SubscriptionSettings company={company} />}

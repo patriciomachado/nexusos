@@ -37,8 +37,10 @@ export const useNotificationStore = create<NotificationState>()(
                         .limit(20)
 
                     if (error) {
-                        console.error('Supabase error fetching notifications:', error)
-                        throw error
+                        // Silent fail if table doesn't exist yet - avoids crashing the dashboard
+                        console.warn('Notifications table might not exist yet:', error.message)
+                        set({ notifications: [], unreadCount: 0 })
+                        return
                     }
 
                     const unread = data?.filter(n => n.status !== 'read').length || 0

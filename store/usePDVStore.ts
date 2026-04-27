@@ -12,7 +12,6 @@ interface CartItem {
 interface PDVStore {
     cart: CartItem[]
     discount: number
-    taxRate: number
     addItem: (product: InventoryItem) => void
     removeItem: (id: string) => void
     updateQuantity: (id: string, quantity: number) => void
@@ -22,7 +21,6 @@ interface PDVStore {
     clearCart: () => void
     searchQuery: string
     subtotal: number
-    taxAmount: number
     total: number
     isFinishModalOpen: boolean
     setIsFinishModalOpen: (open: boolean) => void
@@ -31,9 +29,7 @@ interface PDVStore {
 export const usePDVStore = create<PDVStore>((set, get) => ({
     cart: [],
     discount: 0,
-    taxRate: 0.1177, // Example tax rate based on screenshot (approx 48.25 / 409.90)
     subtotal: 0,
-    taxAmount: 0,
     total: 0,
     searchQuery: '',
     addItem: (product) => {
@@ -61,17 +57,15 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
         }
 
         const subtotal = newCart.reduce((acc, item) => acc + item.total, 0)
-        const taxAmount = subtotal * get().taxRate
-        const total = subtotal + taxAmount - get().discount
-        set({ cart: newCart, subtotal, taxAmount, total })
+        const total = subtotal - get().discount
+        set({ cart: newCart, subtotal, total })
     },
     removeItem: (id) => {
         const { cart } = get()
         const newCart = cart.filter((item) => item.product.id !== id)
         const subtotal = newCart.reduce((acc, item) => acc + item.total, 0)
-        const taxAmount = subtotal * get().taxRate
-        const total = subtotal + taxAmount - get().discount
-        set({ cart: newCart, subtotal, taxAmount, total })
+        const total = subtotal - get().discount
+        set({ cart: newCart, subtotal, total })
     },
     updateQuantity: (id, quantity) => {
         const { cart } = get()
@@ -84,9 +78,8 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
             item.product.id === id ? { ...item, quantity, total: quantity * item.price } : item
         )
         const subtotal = newCart.reduce((acc, item) => acc + item.total, 0)
-        const taxAmount = subtotal * get().taxRate
-        const total = subtotal + taxAmount - get().discount
-        set({ cart: newCart, subtotal, taxAmount, total })
+        const total = subtotal - get().discount
+        set({ cart: newCart, subtotal, total })
     },
     updatePrice: (id, price) => {
         const { cart } = get()
@@ -94,18 +87,17 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
             item.product.id === id ? { ...item, price, total: item.quantity * price } : item
         )
         const subtotal = newCart.reduce((acc, item) => acc + item.total, 0)
-        const taxAmount = subtotal * get().taxRate
-        const total = subtotal + taxAmount - get().discount
-        set({ cart: newCart, subtotal, taxAmount, total })
+        const total = subtotal - get().discount
+        set({ cart: newCart, subtotal, total })
     },
     setDiscount: (amount) => {
         const subtotal = get().subtotal
-        const taxAmount = get().taxAmount
-        const total = subtotal + taxAmount - amount
+        const total = subtotal - amount
         set({ discount: amount, total })
     },
     setSearchQuery: (query) => set({ searchQuery: query }),
     isFinishModalOpen: false,
     setIsFinishModalOpen: (open) => set({ isFinishModalOpen: open }),
-    clearCart: () => set({ cart: [], subtotal: 0, taxAmount: 0, total: 0, discount: 0, searchQuery: '', isFinishModalOpen: false }),
+    clearCart: () => set({ cart: [], subtotal: 0, total: 0, discount: 0, searchQuery: '', isFinishModalOpen: false }),
 }))
+

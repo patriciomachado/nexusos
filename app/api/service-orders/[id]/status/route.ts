@@ -13,7 +13,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const { data: os } = await db
         .from('service_orders')
-        .select('status, final_cost, estimated_cost, order_number')
+        .select('status, final_cost, estimated_cost, order_number, customer_id')
         .eq('id', id)
         .eq('company_id', user?.company_id)
         .single()
@@ -28,16 +28,42 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         updateData.completed_at = new Date().toISOString()
     }
     if (body.status === 'faturada') {
-        // Find open cash register
-        const { data: openRegister } = await db
+        const amount = os.final_cost || os.estimated_cost || 0
+
+        // 1. Create Payment record (for Global Financial History)
+        const { data: pmData } = await db.from('payment_methods').select('code').eq('id', body.payment_method_id).single()
+        const methodMap: Record<string, string> = {
+            'CASH': 'dinheiro',
+            'DEBIT_CARD': 'cartao_debito',
+            'CREDIT_CARD': 'cartao_credito',
+            'PIX': 'pix',
+            'CHEQUE': 'transferencia',
+            'INSTALLMENT': 'crediario'
+        }
+        
+        await db.from('payments').insert({
+            company_id: user?.company_id,
+            customer_id: os.customer_id,
+            service_order_id: id,
+            amount: amount,
+            payment_method: methodMap[pmData?.code || ''] || 'dinheiro',
+            payment_status: 'completed',
+            payment_date: new Date().toISOString(),
+            created_by: user?.id,
+            notes: `Pagamento automático OS #${os.order_number}`
+        })
+
+        // 2. Create Cash Transaction (for the Drawer/Register)
+        const { data: openRegisters } = await db
             .from('cash_registers')
             .select('id')
-            .eq('user_id', user?.id)
+            .eq('company_id', user?.company_id)
             .eq('status', 'open')
-            .maybeSingle()
+            .order('opened_at', { ascending: false })
+
+        const openRegister = openRegisters && openRegisters.length > 0 ? openRegisters[0] : null
 
         if (openRegister) {
-            const amount = os.final_cost || os.estimated_cost || 0
             const { data: transType } = await db
                 .from('transaction_types')
                 .select('id')
@@ -48,10 +74,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                 .from('cash_transactions')
                 .insert({
                     cash_register_id: openRegister.id,
+                    company_id: user?.company_id,
                     user_id: user?.id,
                     type: 'entry',
                     amount: amount,
-                    payment_method_id: body.payment_method_id || 'dinheiro_id_placeholder', // Should be passed from UI
+                    payment_method_id: body.payment_method_id,
                     transaction_type_id: transType?.id,
                     description: `Pagamento OS #${os.order_number}`,
                     source_type: 'service_order',

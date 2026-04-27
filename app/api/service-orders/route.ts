@@ -69,7 +69,6 @@ export async function POST(req: NextRequest) {
             order_number: orderNumber,
             customer_id: body.customer_id || null,
             technician_id: body.technician_id || null,
-            service_type_id: body.service_type_id || null,
             status: body.status || 'aberta',
             priority: body.priority || 'normal',
             title: body.title,

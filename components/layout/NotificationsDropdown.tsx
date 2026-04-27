@@ -17,6 +17,11 @@ export default function NotificationsDropdown() {
     const { user: appUser } = useAppStore()
     const { notifications, unreadCount, fetchNotifications, markAsRead, isLoading } = useNotificationStore()
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     useEffect(() => {
         const idToUse = appUser?.id || clerkUser?.id
@@ -82,7 +87,7 @@ export default function NotificationsDropdown() {
 
                         {/* List */}
                         <div className="max-h-[400px] overflow-y-auto scrollbar-hide py-2">
-                            {isLoading ? (
+                            {isLoading || !mounted ? (
                                 <div className="p-8 flex flex-col items-center justify-center gap-3">
                                     <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                                     <span className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">Carregando...</span>
@@ -115,9 +120,9 @@ export default function NotificationsDropdown() {
                                                 <div className="flex items-center justify-between gap-2">
                                                     <p className="text-xs font-black text-foreground uppercase tracking-tight truncate">
                                                         {notification.title || 'Alerta do Sistema'}
-                                                    </p>
+                                                     </p>
                                                     <span className="text-[10px] font-bold text-muted-foreground/40 whitespace-nowrap">
-                                                        {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: ptBR })}
+                                                        {notification.created_at ? formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: ptBR }) : 'agora'}
                                                     </span>
                                                 </div>
                                                 <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">

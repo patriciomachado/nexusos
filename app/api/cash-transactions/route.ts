@@ -35,11 +35,11 @@ export async function POST(req: NextRequest) {
     // Verify cash register state
     const { data: cashRegister } = await db
         .from('cash_registers')
-        .select('status, user_id')
+        .select('status, company_id')
         .eq('id', cash_register_id)
         .single()
 
-    if (!cashRegister || cashRegister.status === 'closed' || cashRegister.user_id !== user.id) {
+    if (!cashRegister || cashRegister.status === 'closed' || cashRegister.company_id !== user.company_id) {
         return NextResponse.json({ error: 'Caixa inválido ou já fechado.' }, { status: 400 })
     }
 
@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
         .from('cash_transactions')
         .insert({
             cash_register_id,
+            company_id: user.company_id,
             type,
             amount,
             payment_method_id,
@@ -73,13 +74,18 @@ export async function GET(req: NextRequest) {
     const registerId = searchParams.get('cash_register_id')
 
     const db = createAdminClient()
-    const { data: user } = await db.from('users').select('id').eq('clerk_id', userId).single()
+    const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
+    // We need to fetch transactions where the cash_register belongs to the user's company
     let query = db
         .from('cash_transactions')
-        .select('*, payment_methods(name), transaction_types(name)')
-        .eq('user_id', user.id)
+        .select(`
+            *,
+            payment_methods(name),
+            transaction_types(name)
+        `)
+        .eq('company_id', user.company_id)
         .order('created_at', { ascending: false })
 
     if (registerId) query = query.eq('cash_register_id', registerId)

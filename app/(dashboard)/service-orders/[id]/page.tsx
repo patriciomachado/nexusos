@@ -19,7 +19,6 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
       *,
       customers(name, phone, email, address, city),
       technicians(name, phone, specialties),
-      service_types(name),
       service_order_items(*),
       service_order_attachments(*),
       service_order_history(*, users(full_name)),

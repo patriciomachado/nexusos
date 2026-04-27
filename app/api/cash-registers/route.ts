@@ -7,24 +7,22 @@ export async function GET(req: NextRequest) {
     if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
     const db = createAdminClient()
-    const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
+    const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
+    
     if (!user) return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
 
-    // Find the currently open cash register for this company
-    const { data: cashRegister, error } = await db
+    // List all cash registers for the company, ordered by opened_at
+    const { data, error, count } = await db
         .from('cash_registers')
-        .select('*')
+        .select(`
+            *,
+            users!user_id (name)
+        `, { count: 'exact' })
         .eq('company_id', user.company_id)
-        .eq('status', 'open')
         .order('opened_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
+        .limit(50)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    return NextResponse.json(cashRegister, {
-        headers: {
-            'Cache-Control': 'no-store, max-age=0'
-        }
-    })
+    return NextResponse.json({ data, count })
 }

@@ -4,7 +4,10 @@ import { useState, useEffect, useMemo } from 'react'
 import {
     Plus, Minus, ArrowUpRight, Wallet, History, Lock, Unlock,
     RefreshCw, Filter, ArrowDownLeft, Receipt, TrendingUp, PiggyBank,
-    CreditCard, Calendar, DollarSign, Search, MoreHorizontal
+    CreditCard, Calendar, DollarSign, Search, MoreHorizontal,
+    ArrowUpCircle, ArrowDownCircle, ShieldCheck, Activity, BarChart3,
+    ArrowRightLeft, Landmark, Zap, AlertCircle, TrendingDown,
+    Clock, Users, ArrowRight, LayoutDashboard, FileText, Settings
 } from 'lucide-react'
 import { formatCurrency, formatDateTime, cn, PAYMENT_METHOD_LABELS, SOURCE_TYPE_LABELS } from '@/lib/utils'
 import Header from '@/components/layout/Header'
@@ -13,42 +16,34 @@ import { toast } from 'sonner'
 import OpenCashModal from '../../../components/financeiro/OpenCashModal'
 import ManualTransactionModal from '../../../components/financeiro/ManualTransactionModal'
 import CloseCashModal from '../../../components/financeiro/CloseCashModal'
-import RegisterPaymentButton from '@/components/payments/RegisterPaymentButton'
-import SearchInput from '@/components/ui/SearchInput'
-
-const STATUS_CONFIG: Record<string, { label: string, color: string, bg: string, border: string }> = {
-    completed: { label: 'Pago', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-    pending: { label: 'Pendente', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
-    failed: { label: 'Falhou', color: 'text-rose-400', bg: 'bg-rose-500/10', border: 'border-rose-500/20' },
-    refunded: { label: 'Reembolsado', color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
-    partial: { label: 'Parcial', color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
-}
+import TransactionHistory from '@/components/cash/TransactionHistory'
+import { motion, AnimatePresence } from 'framer-motion'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 export default function CashRegisterClient() {
     const [activeTab, setActiveTab] = useState<'daily' | 'history'>('daily')
     const [currentRegister, setCurrentRegister] = useState<CashRegister | null>(null)
     const [transactions, setTransactions] = useState<CashTransaction[]>([])
+    const [allTransactions, setAllTransactions] = useState<CashTransaction[]>([])
+    const [registers, setRegisters] = useState<CashRegister[]>([])
     const [payments, setPayments] = useState<any[]>([])
-    const [customers, setCustomers] = useState<any[]>([])
-    const [orders, setOrders] = useState<any[]>([])
     const [companyId, setCompanyId] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
     const [isOpeningModalOpen, setIsOpeningModalOpen] = useState(false)
     const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false)
     const [isClosingModalOpen, setIsClosingModalOpen] = useState(false)
     const [transactionType, setTransactionType] = useState<'entry' | 'exit'>('entry')
-    const [searchQuery, setSearchQuery] = useState('')
 
     const fetchData = async () => {
         setLoading(true)
         try {
-            // Fetch register and current day transactions
-            const regRes = await fetch('/api/cash-registers/current')
+            // Fetch current register with cache: 'no-store' to ensure real-time data
+            const regRes = await fetch('/api/cash-registers/current', { cache: 'no-store' })
             const regData = await regRes.json()
 
-            if (regData && !regData.error) {
+            if (regData && !regData.error && regData.id) {
                 setCurrentRegister(regData)
-                const transRes = await fetch(`/api/cash-transactions?cash_register_id=${regData.id}`)
+                const transRes = await fetch(`/api/cash-transactions?cash_register_id=${regData.id}`, { cache: 'no-store' })
                 const transData = await transRes.json()
                 setTransactions(Array.isArray(transData) ? transData : [])
             } else {
@@ -56,25 +51,24 @@ export default function CashRegisterClient() {
                 setTransactions([])
             }
 
-            // Fetch general financial data
-            const [paymentsRes, customersRes, ordersRes, userRes] = await Promise.all([
-                fetch('/api/payments'), // We might need to update this API to return all or filter
-                fetch('/api/customers'),
-                fetch('/api/service-orders'),
-                fetch('/api/auth/me') // Assuming we have this to get company_id
+            const [paymentsRes, userRes, registersRes, allTransRes] = await Promise.all([
+                fetch('/api/payments', { cache: 'no-store' }),
+                fetch('/api/auth/me', { cache: 'no-store' }),
+                fetch('/api/cash-registers', { cache: 'no-store' }),
+                fetch('/api/cash-transactions', { cache: 'no-store' })
             ])
 
-            const [paymentsData, customersData, ordersData, userData] = await Promise.all([
+            const [paymentsData, userData, registersData, allTransData] = await Promise.all([
                 paymentsRes.json(),
-                customersRes.json(),
-                ordersRes.json(),
-                userRes.json()
+                userRes.json(),
+                registersRes.json(),
+                allTransRes.json()
             ])
 
-            setPayments(Array.isArray(paymentsData) ? paymentsData : [])
-            setCustomers(Array.isArray(customersData) ? customersData : [])
-            setOrders(Array.isArray(ordersData) ? ordersData : [])
+            setPayments(Array.isArray(paymentsData.data) ? paymentsData.data : [])
             setCompanyId(userData?.company_id || null)
+            setRegisters(Array.isArray(registersData.data) ? registersData.data : [])
+            setAllTransactions(Array.isArray(allTransData) ? allTransData : [])
 
         } catch (error) {
             console.error('Error fetching cash data:', error)
@@ -88,502 +82,441 @@ export default function CashRegisterClient() {
         fetchData()
     }, [])
 
-    const transactionsList = useMemo(() => Array.isArray(transactions) ? transactions : [], [transactions])
+    const handleSuccess = () => {
+        setTimeout(() => fetchData(), 500)
+    }
 
     const calculateBalance = useMemo(() => {
         if (!currentRegister) return 0
         let balance = Number(currentRegister.opening_balance)
-        transactionsList.forEach(tx => {
+        transactions.forEach(tx => {
             if (tx.type === 'entry') balance += Number(tx.amount)
             else balance -= Number(tx.amount)
         })
         return balance
-    }, [currentRegister, transactionsList])
+    }, [currentRegister, transactions])
 
-    const filteredPayments = useMemo(() => {
-        let list = payments
-        if (searchQuery) {
-            const s = searchQuery.toLowerCase()
-            list = list.filter((p: any) =>
-                p.customers?.name?.toLowerCase().includes(s) ||
-                p.service_orders?.order_number?.toLowerCase().includes(s) ||
-                p.service_orders?.title?.toLowerCase().includes(s)
-            )
-        }
-        return list
-    }, [payments, searchQuery])
+    const stats = useMemo(() => {
+        const entries = transactions.filter(t => t.type === 'entry').reduce((acc, t) => acc + Number(t.amount), 0)
+        const exits = transactions.filter(t => t.type === 'exit').reduce((acc, t) => acc + Number(t.amount), 0)
+        return { entries, exits }
+    }, [transactions])
 
-    const totalReceived = useMemo(() => payments.filter((p: any) => p.payment_status === 'completed').reduce((s: number, p: any) => s + p.amount, 0) || 0, [payments])
-    const totalPending = useMemo(() => payments.filter((p: any) => p.payment_status === 'pending').reduce((s: number, p: any) => s + p.amount, 0) || 0, [payments])
+    const chartData = useMemo(() => {
+        if (!currentRegister) return []
+        let currentBalance = Number(currentRegister.opening_balance)
+        const data = [{ time: 'Início', balance: currentBalance }]
+        
+        const sortedTrans = [...transactions].sort((a, b) => 
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        )
+
+        sortedTrans.forEach(tx => {
+            if (tx.type === 'entry') currentBalance += Number(tx.amount)
+            else currentBalance -= Number(tx.amount)
+            data.push({
+                time: new Date(tx.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                balance: currentBalance
+            })
+        })
+
+        return data
+    }, [currentRegister, transactions])
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-background transition-colors duration-500">
-                <div className="flex flex-col items-center gap-6">
-                    <div className="relative">
-                        <div className="w-16 h-16 rounded-3xl border-2 border-primary/20 animate-pulse" />
-                        <RefreshCw className="w-8 h-8 text-primary animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/40 animate-pulse">Sincronizando Hub Financeiro</span>
+            <div className="flex items-center justify-center min-h-screen bg-[#09090B]">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+                    <p className="text-xs font-medium text-zinc-500 animate-pulse">Sincronizando dados financeiros...</p>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="animate-fade-in pb-20 bg-background min-h-screen transition-colors duration-300">
-            <Header title="Gestão Financeira & Caixa" subtitle="Controle total de entradas diárias e histórico de pagamentos." />
+        <div className="min-h-screen bg-[#09090B] text-zinc-100 pb-24 lg:pb-12">
+            <Header 
+                title="Caixa Operacional" 
+                subtitle="Gestão inteligente de fluxo de caixa e transações em tempo real." 
+            />
 
-            <div className="p-8 lg:p-12 max-w-screen-2xl mx-auto space-y-12">
+            <main className="px-4 lg:px-8 py-6 max-w-7xl mx-auto space-y-8">
+                {/* Dashboard Tabs & Global Actions */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="inline-flex p-1 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+                        <button
+                            onClick={() => setActiveTab('daily')}
+                            className={cn(
+                                "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",
+                                activeTab === 'daily' 
+                                    ? "bg-primary text-black shadow-lg" 
+                                    : "text-zinc-400 hover:text-zinc-200"
+                            )}
+                        >
+                            <LayoutDashboard className="w-4 h-4" />
+                            Terminal Hoje
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('history')}
+                            className={cn(
+                                "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",
+                                activeTab === 'history' 
+                                    ? "bg-primary text-black shadow-lg" 
+                                    : "text-zinc-400 hover:text-zinc-200"
+                            )}
+                        >
+                            <History className="w-4 h-4" />
+                            Histórico de Fechamentos
+                        </button>
+                    </div>
 
-                {/* Tab Switcher */}
-                <div className="flex items-center gap-1 p-1 bg-muted/30 border border-border/20 rounded-2xl w-full sm:w-fit backdrop-blur-3xl mx-auto lg:mx-0 overflow-x-auto scrollbar-hide">
-                    <button
-                        onClick={() => setActiveTab('daily')}
-                        className={cn(
-                            "flex-1 sm:flex-none px-4 lg:px-8 py-2 md:py-3 rounded-xl lg:rounded-2xl text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 whitespace-nowrap",
-                            activeTab === 'daily'
-                                ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20 scale-105"
-                                : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/30"
+                    <div className="flex items-center gap-3">
+                        <button 
+                            onClick={fetchData}
+                            className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-100 hover:border-zinc-700 transition-all active:scale-95"
+                        >
+                            <RefreshCw className="w-5 h-5" />
+                        </button>
+                        
+                        {!currentRegister ? (
+                            <button
+                                onClick={() => setIsOpeningModalOpen(true)}
+                                className="flex items-center gap-2 px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
+                            >
+                                <Unlock className="w-4 h-4" />
+                                Abrir Terminal
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => setIsClosingModalOpen(true)}
+                                className="flex items-center gap-2 px-6 py-2.5 bg-rose-500 hover:bg-rose-400 text-white font-bold rounded-xl transition-all shadow-lg shadow-rose-500/20 active:scale-95"
+                            >
+                                <Lock className="w-4 h-4" />
+                                Encerrar Expediente
+                            </button>
                         )}
-                    >
-                        <Wallet className="w-3 h-3 lg:w-3.5 lg:h-3.5" />
-                        Fluxo
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('history')}
-                        className={cn(
-                            "flex-1 sm:flex-none px-4 lg:px-8 py-2 md:py-3 rounded-xl lg:rounded-2xl text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 whitespace-nowrap",
-                            activeTab === 'history'
-                                ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20 scale-105"
-                                : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/30"
-                        )}
-                    >
-                        <History className="w-3 h-3 lg:w-3.5 lg:h-3.5" />
-                        Histórico
-                    </button>
+                    </div>
                 </div>
 
                 {activeTab === 'daily' ? (
-                    <>
-                        {/* Daily Flow Header */}
-                        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-1 bg-primary rounded-full" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">Operações Diárias</span>
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        {/* LEFT COLUMN: Stats & Chart */}
+                        <div className="lg:col-span-8 space-y-8">
+                            {/* Main Balance Card */}
+                            <div className="relative overflow-hidden bg-zinc-900/40 border border-zinc-800 rounded-3xl p-8 group">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] -mr-32 -mt-32" />
+                                
+                                <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2 text-primary font-bold text-[10px] uppercase tracking-widest">
+                                            <Wallet className="w-3.5 h-3.5" />
+                                            Saldo Disponível em Caixa
+                                        </div>
+                                        <h2 className="text-5xl font-black tracking-tighter tabular-nums">
+                                            {formatCurrency(calculateBalance)}
+                                        </h2>
+                                        {currentRegister && (
+                                            <div className="flex items-center gap-2 text-xs text-zinc-500 mt-2">
+                                                <span className="flex items-center gap-1">
+                                                    <Clock className="w-3 h-3" />
+                                                    Aberto às {new Date(currentRegister.opened_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </span>
+                                                <span className="w-1 h-1 bg-zinc-800 rounded-full" />
+                                                <span>Abertura: {formatCurrency(currentRegister.opening_balance)}</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="flex gap-4">
+                                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-5 py-3 text-right">
+                                            <span className="block text-[9px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Entradas</span>
+                                            <span className="text-xl font-bold text-emerald-400 tabular-nums">{formatCurrency(stats.entries)}</span>
+                                        </div>
+                                        <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl px-5 py-3 text-right">
+                                            <span className="block text-[9px] font-bold text-rose-500 uppercase tracking-widest mb-1">Saídas</span>
+                                            <span className="text-xl font-bold text-rose-400 tabular-nums">{formatCurrency(stats.exits)}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <h2 className="text-3xl lg:text-5xl font-black text-foreground tracking-tighter">Caixa</h2>
-                                <p className="text-muted-foreground font-medium text-sm lg:text-lg leading-relaxed max-w-xl">Movimentações financeiras em tempo real.</p>
+
+                                {/* Flow Chart */}
+                                <div className="h-[220px] w-full mt-10">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart data={chartData}>
+                                            <defs>
+                                                <linearGradient id="colorFlow" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                                            <XAxis 
+                                                dataKey="time" 
+                                                axisLine={false} 
+                                                tickLine={false} 
+                                                tick={{ fontSize: 10, fill: '#71717a' }}
+                                                dy={10}
+                                            />
+                                            <YAxis hide />
+                                            <Tooltip 
+                                                contentStyle={{ 
+                                                    backgroundColor: '#18181b', 
+                                                    border: '1px solid #27272a',
+                                                    borderRadius: '12px',
+                                                    fontSize: '12px'
+                                                }}
+                                            />
+                                            <Area 
+                                                type="monotone" 
+                                                dataKey="balance" 
+                                                stroke="#3b82f6" 
+                                                strokeWidth={3}
+                                                fillOpacity={1} 
+                                                fill="url(#colorFlow)" 
+                                                animationDuration={1500}
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+
+                            {/* Transaction List */}
+                            <div className="bg-zinc-900/40 border border-zinc-800 rounded-3xl overflow-hidden">
+                                <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
+                                    <h3 className="text-sm font-bold flex items-center gap-2">
+                                        <ArrowRightLeft className="w-4 h-4 text-zinc-500" />
+                                        Últimas Movimentações
+                                    </h3>
+                                    <div className="px-2 py-1 bg-zinc-800 rounded text-[10px] font-bold text-zinc-400">
+                                        {transactions.length} registros
+                                    </div>
+                                </div>
+
+                                <div className="divide-y divide-zinc-800 max-h-[500px] overflow-y-auto custom-scrollbar">
+                                    {transactions.length === 0 ? (
+                                        <div className="py-20 flex flex-col items-center justify-center text-zinc-600 gap-4">
+                                            <div className="p-4 bg-zinc-900 rounded-full border border-zinc-800">
+                                                <Activity className="w-8 h-8 opacity-20" />
+                                            </div>
+                                            <p className="text-xs font-medium uppercase tracking-widest opacity-40">Nenhuma transação registrada hoje</p>
+                                        </div>
+                                    ) : (
+                                        transactions.map((tx, idx) => (
+                                            <motion.div 
+                                                key={tx.id}
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: idx * 0.05 }}
+                                                className="group flex items-center justify-between p-4 hover:bg-zinc-800/30 transition-all cursor-default"
+                                            >
+                                                <div className="flex items-center gap-4">
+                                                    <div className={cn(
+                                                        "w-10 h-10 rounded-xl flex items-center justify-center border",
+                                                        tx.type === 'entry' 
+                                                            ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" 
+                                                            : "bg-rose-500/10 text-rose-500 border-rose-500/20"
+                                                    )}>
+                                                        {tx.type === 'entry' ? <ArrowDownLeft className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
+                                                    </div>
+                                                    <div className="space-y-0.5">
+                                                        <p className="text-sm font-bold text-zinc-100 group-hover:text-primary transition-colors">{tx.description}</p>
+                                                        <div className="flex items-center gap-3 text-[10px] text-zinc-500 font-medium uppercase tracking-tight">
+                                                            <span className="flex items-center gap-1">
+                                                                <CreditCard className="w-3 h-3" />
+                                                                {tx.payment_method?.name || 'Automático'}
+                                                            </span>
+                                                            <span className="w-1 h-1 bg-zinc-800 rounded-full" />
+                                                            <span className="flex items-center gap-1">
+                                                                <Clock className="w-3 h-3" />
+                                                                {new Date(tx.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right space-y-0.5">
+                                                    <p className={cn(
+                                                        "text-base font-bold tabular-nums",
+                                                        tx.type === 'entry' ? "text-emerald-400" : "text-rose-400"
+                                                    )}>
+                                                        {tx.type === 'entry' ? '+' : '-'} {formatCurrency(tx.amount)}
+                                                    </p>
+                                                    <p className="text-[9px] font-black uppercase text-zinc-600 tracking-widest">
+                                                        {SOURCE_TYPE_LABELS[tx.source_type as keyof typeof SOURCE_TYPE_LABELS] || tx.source_type}
+                                                    </p>
+                                                </div>
+                                            </motion.div>
+                                        ))
+                                    )}
+                                </div>
                             </div>
                         </div>
 
-                        {!currentRegister ? (
-                            <div className="flex flex-col items-center justify-center p-24 bg-card/60 backdrop-blur-3xl border border-border/20 rounded-[3rem] shadow-2xl text-center space-y-10">
-                                <div className="w-24 h-24 bg-primary/10 rounded-[2rem] flex items-center justify-center border border-primary/20 group hover:rotate-12 transition-transform">
-                                    <Lock className="w-10 h-10 text-primary/40" />
+                        {/* RIGHT COLUMN: Quick Actions & Insights */}
+                        <div className="lg:col-span-4 space-y-8">
+                            {/* Actions Card */}
+                            <div className="bg-zinc-900/40 border border-zinc-800 rounded-3xl p-6 space-y-6">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+                                    <Zap className="w-4 h-4 text-primary" />
+                                    Ações Rápidas
+                                </h3>
+
+                                <div className="space-y-3">
+                                    <button
+                                        onClick={() => { setTransactionType('entry'); setIsTransactionModalOpen(true); }}
+                                        disabled={!currentRegister}
+                                        className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-500 group-hover:scale-110 transition-transform">
+                                                <Plus className="w-5 h-5" />
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="text-sm font-bold text-zinc-100">Suprimento</p>
+                                                <p className="text-[10px] text-zinc-500 uppercase font-medium">Entrada de dinheiro</p>
+                                            </div>
+                                        </div>
+                                        <ArrowRight className="w-4 h-4 text-zinc-700 group-hover:text-emerald-500 transition-colors" />
+                                    </button>
+
+                                    <button
+                                        onClick={() => { setTransactionType('exit'); setIsTransactionModalOpen(true); }}
+                                        disabled={!currentRegister}
+                                        className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-rose-500/30 hover:bg-rose-500/5 transition-all group disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-2.5 bg-rose-500/10 rounded-xl text-rose-500 group-hover:scale-110 transition-transform">
+                                                <Minus className="w-5 h-5" />
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="text-sm font-bold text-zinc-100">Sangria</p>
+                                                <p className="text-[10px] text-zinc-500 uppercase font-medium">Retirada de dinheiro</p>
+                                            </div>
+                                        </div>
+                                        <ArrowRight className="w-4 h-4 text-zinc-700 group-hover:text-rose-500 transition-colors" />
+                                    </button>
                                 </div>
-                                <div className="space-y-4">
-                                    <h2 className="text-3xl font-black tracking-tighter text-foreground">Caixa Fechado</h2>
-                                    <p className="text-muted-foreground/60 max-w-sm mx-auto text-lg">Inicie sua jornada financeira hoje abrindo o caixa para registro de vendas e retiradas.</p>
-                                </div>
-                                <button
-                                    onClick={() => setIsOpeningModalOpen(true)}
-                                    className="bg-primary hover:bg-primary/90 text-primary-foreground px-10 py-5 rounded-[2rem] font-black uppercase text-xs tracking-widest shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-3"
-                                >
-                                    <Unlock className="w-5 h-5" />
-                                    Abrir Caixa Agora
-                                </button>
-                            </div>
-                        ) : (
-                            <>
-                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-                                    {/* Main Balance Card */}
-                                    <div className="lg:col-span-8 p-6 lg:p-12 rounded-[2.5rem] lg:rounded-[3.5rem] bg-gradient-to-br from-primary/20 via-primary/5 to-transparent border border-border/20 relative overflow-hidden group shadow-2xl min-h-[300px] lg:min-h-[400px] flex flex-col justify-between">
-                                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/20 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 animate-pulse" />
-                                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
-                                        <div className="relative z-10">
-                                            <div className="flex items-center gap-3 mb-8 lg:mb-12">
-                                                <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-2xl shadow-primary/40">
-                                                    <Wallet className="w-5 h-5 lg:w-7 lg:h-7" />
-                                                </div>
-                                                <div>
-                                                    <span className="text-[9px] lg:text-[10px] font-black text-primary uppercase tracking-[0.3em]">Saldo em Espécie</span>
-                                                    <p className="text-[8px] lg:text-[10px] text-muted-foreground/60 font-mono font-black mt-0.5 lg:mt-1">Início: {formatDateTime(currentRegister.opened_at).split(',')[1]}</p>
-                                                </div>
-                                            </div>
-                                            <div className="space-y-1 lg:space-y-2">
-                                                <h3 className="text-4xl lg:text-8xl font-black text-foreground tracking-tighter tabular-nums drop-shadow-2xl">
-                                                    {formatCurrency(calculateBalance)}
-                                                </h3>
-                                                <div className="flex flex-wrap items-center gap-2 lg:gap-4">
-                                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-500 text-[8px] lg:text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
-                                                        <TrendingUp className="w-2.5 h-2.5 lg:w-3 lg:h-3" />
-                                                        Em Dia
-                                                    </div>
-                                                    <div className="text-[8px] lg:text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">
-                                                        Abr: {formatCurrency(currentRegister.opening_balance)}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                {!currentRegister && (
+                                    <div className="p-4 bg-primary/5 border border-primary/20 rounded-2xl">
+                                        <div className="flex items-center gap-2 text-primary text-xs font-bold mb-2">
+                                            <AlertCircle className="w-4 h-4" />
+                                            Terminal Offline
                                         </div>
-
-                                        <div className="relative z-10 flex items-center gap-3 lg:gap-4 mt-8 lg:mt-12 bg-muted/20 lg:bg-muted/40 p-4 lg:p-6 rounded-2xl lg:rounded-[2.5rem] border border-border/20 backdrop-blur-3xl">
-                                            <div className="flex-1">
-                                                <span className="text-[8px] lg:text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-1 block">Responsável</span>
-                                                <p className="text-xs lg:text-sm font-black text-foreground tracking-tight truncate">Administrador</p>
-                                            </div>
-                                            <div className="w-px h-6 lg:h-8 bg-border/20" />
-                                            <div className="flex-1">
-                                                <span className="text-[8px] lg:text-[9px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-1 block">Status</span>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                                    <p className="text-xs lg:text-sm font-black text-foreground tracking-tight">Ativo</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Action Panels */}
-                                    <div className="lg:col-span-4 flex flex-col gap-4 lg:gap-6">
-                                        <div className="grid grid-cols-2 gap-4 lg:gap-6 lg:h-full">
-                                            <button
-                                                onClick={() => {
-                                                    setTransactionType('entry')
-                                                    setIsTransactionModalOpen(true)
-                                                }}
-                                                className="p-6 lg:p-8 rounded-2xl lg:rounded-[3rem] bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 flex flex-col items-center justify-center gap-3 lg:gap-4 transition-all group active:scale-95 shadow-xl"
-                                            >
-                                                <div className="w-10 h-10 lg:w-16 lg:h-16 rounded-xl lg:rounded-2xl bg-emerald-500 shadow-lg text-white flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                    <Plus className="w-6 h-6 lg:w-8 lg:h-8" />
-                                                </div>
-                                                <div className="text-center group-hover:translate-y-1 transition-transform">
-                                                    <span className="font-black text-emerald-500 text-[8px] lg:text-[10px] uppercase tracking-[0.2em]">Reforço</span>
-                                                </div>
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setTransactionType('exit')
-                                                    setIsTransactionModalOpen(true)
-                                                }}
-                                                className="p-6 lg:p-8 rounded-2xl lg:rounded-[3rem] bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 flex flex-col items-center justify-center gap-3 lg:gap-4 transition-all group active:scale-95 shadow-xl"
-                                            >
-                                                <div className="w-10 h-10 lg:w-16 lg:h-16 rounded-xl lg:rounded-2xl bg-rose-500 shadow-lg text-white flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                    <Minus className="w-6 h-6 lg:w-8 lg:h-8" />
-                                                </div>
-                                                <div className="text-center group-hover:translate-y-1 transition-transform">
-                                                    <span className="font-black text-rose-500 text-[8px] lg:text-[10px] uppercase tracking-[0.2em]">Retirada</span>
-                                                </div>
-                                            </button>
-                                        </div>
-                                        <button
-                                            onClick={() => setIsClosingModalOpen(true)}
-                                            className="p-6 lg:p-8 rounded-2xl lg:rounded-[2.5rem] bg-card/60 backdrop-blur-3xl border border-border/20 hover:bg-rose-500 hover:text-white transition-all active:scale-95 shadow-2xl flex items-center justify-center gap-4 group"
+                                        <p className="text-[11px] text-primary/70 font-medium leading-relaxed mb-4">
+                                            Abra o caixa para começar a processar vendas e gerenciar movimentações financeiras.
+                                        </p>
+                                        <button 
+                                            onClick={() => setIsOpeningModalOpen(true)}
+                                            className="w-full py-2.5 bg-primary text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/20"
                                         >
-                                            <Lock className="w-4 h-4 lg:w-6 lg:h-6 text-muted-foreground/40 group-hover:text-white transition-colors" />
-                                            <span className="text-[9px] lg:text-[11px] font-black uppercase tracking-[0.3em]">Encerrar Sessão</span>
+                                            Ativar Agora
                                         </button>
                                     </div>
-                                </div>
-
-                                {/* Daily Transactions Table */}
-                                <div className="space-y-8 mt-12">
-                                    <div className="flex items-center justify-between px-4">
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-3">
-                                                <History className="w-5 h-5 text-primary" />
-                                                <h2 className="text-2xl font-black tracking-tighter">Lançamentos do Dia</h2>
-                                            </div>
-                                            <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">Movimentações da sessão atual</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-card/60 backdrop-blur-3xl border border-border/20 rounded-[2rem] lg:rounded-[3rem] shadow-2xl overflow-hidden">
-                                        {/* Mobile: Card List */}
-                                        <div className="block lg:hidden divide-y divide-border/20">
-                                            {transactionsList.length > 0 ? transactionsList.map((tx) => (
-                                                <div key={tx.id} className="p-5 flex flex-col gap-4 active:bg-muted/40 transition-colors">
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className={cn(
-                                                                "w-10 h-10 rounded-xl flex items-center justify-center border shrink-0",
-                                                                tx.type === 'entry' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-rose-500/10 text-rose-500 border-rose-500/20"
-                                                            )}>
-                                                                {tx.type === 'entry' ? <ArrowDownLeft className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
-                                                            </div>
-                                                            <div className="flex flex-col">
-                                                                <span className="text-xs font-black text-foreground uppercase tracking-tight truncate max-w-[140px]">{tx.description}</span>
-                                                                <span className="text-[10px] text-muted-foreground/40 font-bold uppercase tracking-widest">{formatDateTime(tx.created_at).split(',')[1]?.replace('às', '') || '-'}</span>
-                                                            </div>
-                                                        </div>
-                                                        <span className={cn(
-                                                            "text-lg font-black tabular-nums",
-                                                            tx.type === 'entry' ? 'text-emerald-500' : 'text-rose-500'
-                                                        )}>
-                                                            {tx.type === 'entry' ? '+' : '-'} {formatCurrency(tx.amount)}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center justify-between border-t border-border/10 pt-3">
-                                                        <div className="flex items-center gap-2 opacity-60">
-                                                            <PiggyBank className="w-3.5 h-3.5 text-muted-foreground/40" />
-                                                            <span className="text-[9px] font-black text-foreground/60 uppercase tracking-widest">{tx.payment_method?.name || 'Espécie'}</span>
-                                                        </div>
-                                                        <span className="text-[9px] font-black uppercase text-muted-foreground/40 tracking-widest bg-muted/30 px-2 py-1 rounded-lg border border-border/10">
-                                                            {SOURCE_TYPE_LABELS[tx.source_type as string] || tx.source_type?.replace('_', ' ') || 'Caixa'}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            )) : (
-                                                <div className="p-16 text-center text-muted-foreground/40 italic text-sm">Sem transações hoje.</div>
-                                            )}
-                                        </div>
-
-                                        {/* Desktop: Table View */}
-                                        <div className="hidden lg:block overflow-x-auto">
-                                            <table className="w-full text-left min-w-[900px]">
-                                                <thead>
-                                                    <tr className="bg-muted/30 border-b border-border/20">
-                                                        <th className="p-4 lg:p-8 text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Horário</th>
-                                                        <th className="p-4 lg:p-8 text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Lançamento</th>
-                                                        <th className="p-4 lg:p-8 text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center hidden sm:table-cell">Origem</th>
-                                                        <th className="p-4 lg:p-8 text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 hidden md:table-cell">Pagamento</th>
-                                                        <th className="p-4 lg:p-8 text-right text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Valor</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-border/20">
-                                                    {transactionsList.length > 0 ? transactionsList.map((tx) => (
-                                                        <tr key={tx.id} className="group hover:bg-muted/20 transition-colors">
-                                                            <td className="p-4 lg:p-8 align-middle">
-                                                                <div className="text-xs lg:text-sm font-black text-foreground tabular-nums">
-                                                                    {formatDateTime(tx.created_at).split(',')[1]?.replace('às', '') || '-'}
-                                                                </div>
-                                                            </td>
-                                                            <td className="p-4 lg:p-8 align-middle">
-                                                                <div className="flex items-center gap-3 lg:gap-4">
-                                                                    <div className={cn(
-                                                                        "w-8 h-8 lg:w-12 lg:h-12 rounded-lg lg:rounded-xl flex items-center justify-center shrink-0 border",
-                                                                        tx.type === 'entry' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-rose-500/10 text-rose-500 border-rose-500/20"
-                                                                    )}>
-                                                                        {tx.type === 'entry' ? <ArrowDownLeft className="w-4 h-4 lg:w-6 lg:h-6" /> : <ArrowUpRight className="w-4 h-4 lg:w-6 lg:h-6" />}
-                                                                    </div>
-                                                                    <div className="space-y-0.5 lg:space-y-1">
-                                                                        <span className="text-xs lg:text-sm font-black text-foreground tracking-tight block truncate max-w-[120px] lg:max-w-none">{tx.description}</span>
-                                                                        <span className="text-[8px] lg:text-[10px] text-muted-foreground/40 font-bold uppercase tracking-widest block">{tx.justification || 'Manual'}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td className="p-4 lg:p-8 align-middle text-center text-[8px] lg:text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest hidden sm:table-cell">
-                                                                {SOURCE_TYPE_LABELS[tx.source_type as string] || tx.source_type?.replace('_', ' ') || 'Caixa'}
-                                                            </td>
-                                                            <td className="p-4 lg:p-8 align-middle hidden md:table-cell">
-                                                                <div className="flex items-center gap-2">
-                                                                    <PiggyBank className="w-4 h-4 text-muted-foreground/30" />
-                                                                    <span className="text-xs font-black text-foreground/60 uppercase">{tx.payment_method?.name || 'Espécie'}</span>
-                                                                </div>
-                                                            </td>
-                                                            <td className="p-4 lg:p-8 text-right align-middle text-base lg:text-xl font-black tabular-nums">
-                                                                <span className={tx.type === 'entry' ? 'text-emerald-500' : 'text-rose-500'}>
-                                                                    {tx.type === 'entry' ? '+' : '-'} {formatCurrency(tx.amount)}
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                    )) : (
-                                                        <tr>
-                                                            <td colSpan={5} className="p-32 text-center text-muted-foreground/40 italic">Sem transações hoje.</td>
-                                                        </tr>
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                    </>
-                ) : (
-                    <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-500">
-                        {/* History View */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="p-8 rounded-[2.5rem] bg-card/60 border border-border/20 backdrop-blur-3xl shadow-xl">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
-                                        <TrendingUp className="w-6 h-6" />
-                                    </div>
-                                    <span className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">Receita Total</span>
-                                </div>
-                                <p className="text-4xl font-black text-foreground tracking-tighter">{formatCurrency(totalReceived)}</p>
-                            </div>
-                            <div className="p-8 rounded-[2.5rem] bg-card/60 border border-border/20 backdrop-blur-3xl shadow-xl">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500">
-                                        <Calendar className="w-6 h-6" />
-                                    </div>
-                                    <span className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">Pendente</span>
-                                </div>
-                                <p className="text-4xl font-black text-foreground tracking-tighter">{formatCurrency(totalPending)}</p>
-                            </div>
-                            <div className="p-8 rounded-[2.5rem] bg-card/40 border border-white/5 backdrop-blur-3xl shadow-xl flex items-center justify-center">
-                                <RegisterPaymentButton customers={customers} orders={orders} companyId={companyId || ''} />
-                            </div>
-                        </div>
-
-                        {/* Search & Filters */}
-                        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                            <div className="w-full md:w-96">
-                                <SearchInput
-                                    value={searchQuery}
-                                    onChange={(e: any) => setSearchQuery(e.target.value)}
-                                    placeholder="Buscar por cliente ou número de OS..."
-                                    className="w-full bg-muted/40 border border-border/20 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-foreground focus:outline-none focus:border-primary/40 backdrop-blur-3xl"
-                                />
-                            </div>
-                        </div>
-
-                        {/* General Transactions Table */}
-                        <div className="bg-card/60 backdrop-blur-3xl border border-border/20 rounded-[2rem] lg:rounded-[3rem] shadow-2xl overflow-hidden">
-                            {/* Mobile: Card List */}
-                            <div className="block lg:hidden divide-y divide-border/20">
-                                {filteredPayments.length > 0 ? filteredPayments.map((p: any) => {
-                                    const cfg = STATUS_CONFIG[p.payment_status] || { label: p.payment_status, color: 'text-muted-foreground/40', bg: 'bg-muted/5', border: 'border-border/10' }
-                                    return (
-                                        <div key={p.id} className="p-5 flex flex-col gap-4 active:bg-muted/40 transition-colors">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-black text-xs">
-                                                        {(p.customers?.name || '?').charAt(0)}
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="text-xs font-black text-foreground uppercase tracking-tight truncate max-w-[140px]">{p.customers?.name || '-'}</span>
-                                                        <span className="text-[10px] text-primary/60 font-black tracking-widest uppercase">#{p.service_orders?.order_number || 'N/A'}</span>
-                                                    </div>
-                                                </div>
-                                                <span className="text-lg font-black tabular-nums">
-                                                    {formatCurrency(p.amount)}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center justify-between border-t border-border/10 pt-3">
-                                                <div className="flex items-center gap-2 opacity-60">
-                                                    <CreditCard className="w-3.5 h-3.5 text-muted-foreground/40" />
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-foreground/60">{PAYMENT_METHOD_LABELS[p.payment_method] || p.payment_method}</span>
-                                                </div>
-                                                <span className={cn(
-                                                    "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border",
-                                                    cfg.bg, cfg.color, cfg.border
-                                                )}>
-                                                    {cfg.label}
-                                                </span>
-                                            </div>
-                                            <div className="text-[9px] text-muted-foreground/40 font-bold font-mono italic uppercase tracking-widest mt-1">
-                                                {formatDateTime(p.payment_date)}
-                                            </div>
-                                        </div>
-                                    )
-                                }) : (
-                                    <div className="p-16 text-center text-muted-foreground/40 italic text-sm">Nenhum registro encontrado.</div>
                                 )}
                             </div>
 
-                            {/* Desktop: Table View */}
-                            <div className="hidden lg:block overflow-x-auto">
-                                <table className="w-full text-left min-w-[1000px]">
-                                    <thead>
-                                        <tr className="bg-muted/30 border-b border-border/20">
-                                            <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Data / Hora</th>
-                                            <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Cliente / OS</th>
-                                            <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Método</th>
-                                            <th className="p-8 text-right text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Valor</th>
-                                            <th className="p-8 text-center text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Status</th>
-                                            <th className="p-8"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-border/20">
-                                        {filteredPayments.length > 0 ? filteredPayments.map((p: any) => {
-                                            const cfg = STATUS_CONFIG[p.payment_status] || { label: p.payment_status, color: 'text-muted-foreground/40', bg: 'bg-muted/5', border: 'border-border/10' }
-                                            return (
-                                                <tr key={p.id} className="group hover:bg-muted/20 transition-colors">
-                                                    <td className="p-8 align-middle">
-                                                        <div className="flex flex-col">
-                                                            <span className="text-sm font-black text-foreground">{formatDateTime(p.payment_date).split(',')[0]}</span>
-                                                            <span className="text-[10px] text-muted-foreground/40 font-bold font-mono italic uppercase tracking-widest">{formatDateTime(p.payment_date).split(',')[1]}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="p-8 align-middle">
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-black text-xs">
-                                                                {(p.customers?.name || '?').charAt(0)}
-                                                            </div>
-                                                            <div className="flex flex-col">
-                                                                <span className="text-sm font-black text-foreground uppercase tracking-tight">{p.customers?.name || '-'}</span>
-                                                                <span className="text-[10px] text-primary/60 font-black tracking-widest uppercase">#{p.service_orders?.order_number || 'N/A'}</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td className="p-8 align-middle">
-                                                        <div className="flex items-center gap-2">
-                                                            <CreditCard className="w-4 h-4 text-muted-foreground/20" />
-                                                            <span className="text-[10px] font-black uppercase tracking-widest text-foreground/60">{PAYMENT_METHOD_LABELS[p.payment_method] || p.payment_method}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="p-8 text-right align-middle">
-                                                        <span className="text-2xl font-black tracking-tighter tabular-nums">{formatCurrency(p.amount)}</span>
-                                                    </td>
-                                                    <td className="p-8 text-center align-middle">
-                                                        <span className={cn(
-                                                            "px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-lg",
-                                                            cfg.bg, cfg.color, cfg.border
-                                                        )}>
-                                                            {cfg.label}
-                                                        </span>
-                                                    </td>
-                                                    <td className="p-8 text-right align-middle">
-                                                        <button className="p-3 text-muted-foreground/40 hover:text-foreground hover:bg-muted/50 rounded-2xl transition-all">
-                                                            <MoreHorizontal className="w-5 h-5" />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            )
-                                        }) : (
-                                            <tr>
-                                                <td colSpan={6} className="p-32 text-center text-muted-foreground/40 italic">Nenhum registro encontrado.</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                            {/* Performance Insights */}
+                            <div className="bg-zinc-900/40 border border-zinc-800 rounded-3xl p-6 space-y-6">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+                                    <Activity className="w-4 h-4 text-primary" />
+                                    Métricas de Hoje
+                                </h3>
+
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between p-3 bg-zinc-900/60 rounded-2xl border border-zinc-800">
+                                        <div className="flex items-center gap-3">
+                                            <Users className="w-4 h-4 text-zinc-600" />
+                                            <span className="text-[10px] font-bold text-zinc-400 uppercase">Operadores Ativos</span>
+                                        </div>
+                                        <span className="text-lg font-black text-white">
+                                            {new Set(transactions.map(t => t.user_id)).size || 0}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex items-center justify-between p-3 bg-zinc-900/60 rounded-2xl border border-zinc-800">
+                                        <div className="flex items-center gap-3">
+                                            <Receipt className="w-4 h-4 text-zinc-600" />
+                                            <span className="text-[10px] font-bold text-zinc-400 uppercase">Ticket Médio</span>
+                                        </div>
+                                        <span className="text-lg font-black text-white">
+                                            {formatCurrency(transactions.length > 0 ? stats.entries / transactions.length : 0)}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex items-center justify-between p-3 bg-zinc-900/60 rounded-2xl border border-zinc-800">
+                                        <div className="flex items-center gap-3">
+                                            <TrendingUp className="w-4 h-4 text-emerald-500" />
+                                            <span className="text-[10px] font-bold text-zinc-400 uppercase">Vendas OS/PDV</span>
+                                        </div>
+                                        <span className="text-lg font-black text-white">
+                                            {transactions.filter(t => t.source_type === 'service_order' || t.source_type === 'product_sale').length}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                ) : (
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-zinc-900/40 rounded-3xl border border-zinc-800 p-2 overflow-hidden backdrop-blur-xl"
+                    >
+                        <TransactionHistory 
+                            companyId={companyId || ''} 
+                            initialPayments={payments}
+                            allTransactions={allTransactions}
+                        />
+                    </motion.div>
                 )}
-            </div>
+            </main>
 
-            <OpenCashModal
-                isOpen={isOpeningModalOpen}
-                onClose={() => setIsOpeningModalOpen(false)}
-                onSuccess={() => fetchData()}
-                title="Abrir Fluxo de Caixa"
-            />
-
-            {currentRegister && (
-                <>
+            {/* Modals */}
+            <AnimatePresence>
+                {isOpeningModalOpen && (
+                    <OpenCashModal
+                        isOpen={isOpeningModalOpen}
+                        onClose={() => setIsOpeningModalOpen(false)}
+                        onSuccess={handleSuccess}
+                    />
+                )}
+                {currentRegister && isTransactionModalOpen && (
                     <ManualTransactionModal
                         isOpen={isTransactionModalOpen}
                         onClose={() => setIsTransactionModalOpen(false)}
-                        onSuccess={() => fetchData()}
+                        onSuccess={handleSuccess}
                         type={transactionType}
                         cashRegisterId={currentRegister.id}
-                        title={transactionType === 'entry' ? 'Reforço de Caixa' : 'Retirada de Caixa'}
+                        title={transactionType === 'entry' ? 'Suprimento de Caixa' : 'Sangria de Caixa'}
                     />
+                )}
+                {currentRegister && isClosingModalOpen && (
                     <CloseCashModal
                         isOpen={isClosingModalOpen}
                         onClose={() => setIsClosingModalOpen(false)}
-                        onSuccess={() => fetchData()}
+                        onSuccess={handleSuccess}
                         cashRegister={currentRegister}
                         balance={calculateBalance}
-                        title="Encerrar Fluxo Diário"
                     />
-                </>
-            )}
+                )}
+            </AnimatePresence>
+
+            <style jsx global>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #27272a;
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #3f3f46;
+                }
+            `}</style>
         </div>
     )
 }
-

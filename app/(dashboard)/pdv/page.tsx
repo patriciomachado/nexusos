@@ -11,7 +11,7 @@ export default function PDVPage() {
     const { isFinishModalOpen, setIsFinishModalOpen, subtotal, discount, total } = usePDVStore()
 
     return (
-        <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
+        <div className="flex flex-col h-[100dvh] max-h-[100dvh] bg-background text-foreground overflow-hidden">
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar {
                     width: 6px;
@@ -20,11 +20,23 @@ export default function PDVPage() {
                     background: transparent;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(var(--primary), 0.1);
+                    background: hsl(var(--primary) / 0.3);
                     border-radius: 10px;
+                    border: 2px solid transparent;
+                    background-clip: padding-box;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(var(--primary), 0.2);
+                    background: hsl(var(--primary) / 0.5);
+                    border-radius: 10px;
+                    border: 2px solid transparent;
+                    background-clip: padding-box;
+                }
+                .no-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .no-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
                 }
             `}</style>
 
@@ -32,14 +44,14 @@ export default function PDVPage() {
             <PDVHeader />
 
             {/* Main PDV Area */}
-            <main className="flex-1 flex overflow-hidden">
+            <main className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">
                 {/* Left: Product Catalog Grid */}
-                <div className="flex-1 p-4 lg:p-8 overflow-hidden">
+                <div className="flex-1 flex flex-col p-4 lg:p-8 min-h-0">
                     <ProductCatalog />
                 </div>
 
                 {/* Right: Cart Sidebar (Fixed Width on Desktop, Hidden on Mobile) */}
-                <aside className="hidden lg:block w-[32%] min-w-[400px] h-full border-l border-border/50">
+                <aside className="hidden lg:block w-[32%] min-w-[400px] border-l border-border/50 shrink-0">
                     <CartSidebar />
                 </aside>
             </main>

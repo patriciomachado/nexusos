@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
-import { formatCurrency, formatDateTime, PAYMENT_METHOD_LABELS } from '@/lib/utils'
+import { formatCurrency, formatDateTime, PAYMENT_METHOD_LABELS, cn } from '@/lib/utils'
 import RegisterPaymentButton from '@/components/payments/RegisterPaymentButton'
 import { DollarSign, TrendingUp, Calendar, CreditCard, Search, Filter, ArrowUpRight, ArrowDownRight, MoreHorizontal } from 'lucide-react'
 import SearchInput from '@/components/ui/SearchInput'
@@ -44,7 +44,8 @@ export default async function PaymentsPage({
         filteredPayments = filteredPayments.filter((p: any) =>
             p.customers?.name?.toLowerCase().includes(s) ||
             p.service_orders?.order_number?.toLowerCase().includes(s) ||
-            p.service_orders?.title?.toLowerCase().includes(s)
+            p.service_orders?.title?.toLowerCase().includes(s) ||
+            p.notes?.toLowerCase().includes(s)
         )
     }
 
@@ -148,17 +149,28 @@ export default async function PaymentsPage({
                                             <td className="p-5">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs border border-primary/20">
-                                                        {(p.customers?.name || '?').charAt(0)}
+                                                        {(p.customers?.name || 'C').charAt(0)}
                                                     </div>
                                                     <span className="text-sm font-bold text-foreground group-hover:text-primary transition-colors uppercase tracking-tight">
-                                                        {p.customers?.name || '-'}
+                                                        {p.customers?.name || (p.notes?.includes('PDV') ? 'Consumidor Final' : 'Consumidor Final')}
                                                     </span>
                                                 </div>
                                             </td>
                                             <td className="p-5">
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs font-mono text-primary font-bold">#{p.service_orders?.order_number || 'N/A'}</span>
-                                                    <span className="text-[10px] text-muted-foreground/60 truncate max-w-[150px]">{p.service_orders?.title || '-'}</span>
+                                                    {p.service_orders ? (
+                                                        <>
+                                                            <span className="text-xs font-mono text-primary font-bold">#{p.service_orders.order_number}</span>
+                                                            <span className="text-[10px] text-muted-foreground/60 truncate max-w-[150px]">{p.service_orders.title}</span>
+                                                        </>
+                                                    ) : (
+                                                        <span className={cn(
+                                                            "text-[10px] font-black uppercase tracking-widest",
+                                                            p.notes?.includes('PDV') ? "text-primary/60" : "text-muted-foreground/60 italic"
+                                                        )}>
+                                                            {p.notes?.includes('PDV') ? 'Venda PDV' : (p.notes || 'Venda Direta')}
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </td>
                                             <td className="p-5">

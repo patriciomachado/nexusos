@@ -41,8 +41,8 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
         setMounted(true)
         if (isOpen) {
             initData()
-            // Only set if not already interacting or if it's a fresh open
-            setAmountReceived(finalAmount.toString())
+            // Default to 0 as requested by the user
+            setAmountReceived('0')
             setIsFirstInput(true)
         }
     }, [isOpen]) // Only run on open, don't reset when total changes while open
@@ -51,9 +51,9 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
         setLoadingInit(true)
         try {
             const [pmRes, crRes, custRes] = await Promise.all([
-                fetch('/api/payment-methods'),
-                fetch('/api/cash-registers/current'),
-                fetch('/api/customers')
+                fetch('/api/payment-methods', { cache: 'no-store' }),
+                fetch('/api/cash-registers/current', { cache: 'no-store' }),
+                fetch('/api/customers', { cache: 'no-store' })
             ])
 
             const [pmData, crData, custData] = await Promise.all([
@@ -158,7 +158,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                 final_amount: finalAmount,
                 payment_method_id: selectedPaymentMethod,
                 notes,
-                amount_received: parseFloat(amountReceived) || finalAmount
+                amount_received: parseFloat(amountReceived)
             }
 
             const res = await fetch('/api/sales', {
@@ -197,13 +197,17 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
 
                 {/* Left Panel: Sale Summary & Form */}
                 <div className="flex-1 p-6 md:p-12 space-y-6 md:space-y-8 overflow-y-auto">
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start relative">
                         <div className="space-y-1">
                             <h2 className="text-2xl md:text-3xl font-black tracking-tighter">Finalizar Venda</h2>
                             <p className="text-[9px] md:text-[10px] text-primary font-black uppercase tracking-[0.3em]">Ambiente Seguro Nexus</p>
                         </div>
-                        <button onClick={() => setIsOpen(false)} className="p-3 md:p-4 rounded-xl md:rounded-[1.5rem] bg-muted/50 hover:bg-muted transition-all md:hidden">
-                            <X className="w-5 h-5 md:w-6 md:h-6" />
+                        <button 
+                            onClick={() => setIsOpen(false)} 
+                            className="flex items-center gap-2 p-3 rounded-2xl bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-all border border-destructive/20 md:hidden"
+                            title="Cancelar (Esc)"
+                        >
+                            <X className="w-5 h-5" />
                         </button>
                     </div>
 
@@ -283,8 +287,12 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
 
                 {/* Right Panel: Numeric Keypad & Totals (Indigo Vibrante) */}
                 <div className="w-full md:w-[420px] bg-gradient-to-br from-indigo-600 to-blue-700 p-6 md:p-12 flex flex-col justify-between text-white relative">
-                    <button onClick={() => setIsOpen(false)} className="absolute top-8 right-8 p-3 rounded-2xl hover:bg-white/10 transition-all hidden md:block">
-                        <X className="w-6 h-6" />
+                    <button 
+                        onClick={() => setIsOpen(false)} 
+                        className="absolute top-6 right-6 w-10 h-10 md:w-12 md:h-12 rounded-full bg-rose-500/20 text-rose-200 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center border border-rose-500/30 group z-50 shadow-2xl"
+                        title="Fechar (Esc)"
+                    >
+                        <X className="w-5 h-5 md:w-6 md:h-6 group-hover:rotate-90 transition-transform duration-300" />
                     </button>
 
                     <div className="space-y-10">
@@ -299,8 +307,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                                     <div className="space-y-1">
                                         <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Valor Recebido</p>
                                         <div className="text-3xl md:text-4xl font-black tracking-tighter flex items-baseline gap-2">
-                                            <span className="text-base md:text-lg opacity-40">R$</span>
-                                            {amountReceived || '0,00'}
+                                            {formatCurrency(parseFloat(amountReceived) || 0)}
                                         </div>
                                     </div>
                                     {calculateChange() > 0 && (

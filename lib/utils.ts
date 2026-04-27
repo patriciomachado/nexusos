@@ -114,6 +114,7 @@ export const SOURCE_TYPE_LABELS: Record<string, string> = {
     manual_suprimento: 'Suprimento Manual',
     manual_sangria: 'Sangria Manual',
     sale: 'Venda (PDV)',
+    product_sale: 'Venda (PDV)',
     service_order: 'Ordem de Serviço',
     inventory_adjustment: 'Ajuste de Estoque',
 }

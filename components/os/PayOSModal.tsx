@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { X, CheckCircle2, CreditCard, Loader2, DollarSign } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn, formatCurrency } from '@/lib/utils'
@@ -26,10 +27,12 @@ export default function PayOSModal({
     const [paymentMethodId, setPaymentMethodId] = useState('')
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethodModel[]>([])
     const [loading, setLoading] = useState(false)
+    const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
+        setMounted(true)
         if (isOpen) {
-            fetch('/api/payment-methods')
+            fetch('/api/payment-methods', { cache: 'no-store' })
                 .then(res => res.json())
                 .then(data => {
                     setPaymentMethods(data)
@@ -39,8 +42,6 @@ export default function PayOSModal({
                 })
         }
     }, [isOpen])
-
-    if (!isOpen) return null
 
     const handleConfirm = async () => {
         if (!paymentMethodId) {
@@ -74,26 +75,31 @@ export default function PayOSModal({
         }
     }
 
-    return (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300">
-            <div className="bg-card border border-border w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+    if (!isOpen || !mounted) return null
+
+    const modalContent = (
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 lg:p-8 bg-black/80 backdrop-blur-xl animate-in fade-in duration-500">
+            <div className="bg-card border border-border w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-10 duration-500 max-h-[90vh] flex flex-col -mt-20">
                 <div className="p-8 space-y-6 overflow-y-auto scrollbar-hide">
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500">
-                                <CheckCircle2 className="w-6 h-6" />
+                            <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                                <DollarSign className="w-6 h-6" />
                             </div>
                             <div>
                                 <h2 className="text-xl font-black uppercase tracking-tight">Faturar OS</h2>
                                 <p className="text-[10px] text-foreground/40 font-black uppercase tracking-widest">OS Nº {osNumber}</p>
                             </div>
                         </div>
-                        <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors">
-                            <X className="w-5 h-5 text-muted-foreground" />
+                        <button 
+                            onClick={onClose}
+                            className="p-2 hover:bg-muted rounded-xl transition-colors text-muted-foreground"
+                        >
+                            <X className="w-5 h-5" />
                         </button>
                     </div>
 
-                    <div className="p-6 bg-muted/40 border border-border rounded-3xl text-center space-y-1">
+                    <div className="p-6 rounded-3xl bg-muted/30 border border-border/50">
                         <span className="text-[10px] text-foreground/60 font-black uppercase tracking-widest">Valor a Receber</span>
                         <p className="text-3xl font-black text-foreground tracking-tighter">{formatCurrency(amount)}</p>
                     </div>
@@ -147,4 +153,6 @@ export default function PayOSModal({
             </div>
         </div>
     )
+
+    return createPortal(modalContent, document.body)
 }

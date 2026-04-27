@@ -6,8 +6,9 @@ import Header from '@/components/layout/Header'
 import { toast } from 'sonner'
 import { PremiumInput } from '@/components/ui/PremiumInput'
 import { PremiumTextarea } from '@/components/ui/PremiumTextarea'
-import { User, Mail, Phone, FileText, MapPin, Globe, Hash, Save, X } from 'lucide-react'
+import { User, Mail, Phone, FileText, MapPin, Globe, Hash, Save, X, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 
 interface Props {
     companyId: string
@@ -79,6 +80,31 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
         })
     }
 
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+
+    async function handleDelete() {
+        startTransition(async () => {
+            try {
+                const res = await fetch(`/api/customers/${customerId}`, {
+                    method: 'DELETE',
+                })
+
+                if (res.ok) {
+                    toast.success('Cliente removido com sucesso!')
+                    router.push('/customers')
+                    router.refresh()
+                } else {
+                    const error = await res.json()
+                    toast.error(error.error || 'Erro ao deletar cliente')
+                }
+            } catch (err: any) {
+                toast.error('Erro ao conectar com o servidor')
+            } finally {
+                setShowDeleteConfirm(false)
+            }
+        })
+    }
+
     const fields = [
         { label: 'NOME COMPLETO *', name: 'name', type: 'text', required: true, placeholder: 'Ex: João Silva', icon: <User className="w-4 h-4" /> },
         { label: 'E-MAIL DE CONTATO', name: 'email', type: 'email', placeholder: 'joao@empresa.com', icon: <Mail className="w-4 h-4" /> },
@@ -146,10 +172,20 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
                     "flex flex-col sm:flex-row items-center gap-4 pt-2",
                     hideHeader && "border-t border-border mt-6 pt-6"
                 )}>
+                    {customerId && (
+                        <button
+                            type="button"
+                            onClick={() => setShowDeleteConfirm(true)}
+                            className="w-full sm:w-auto px-6 h-14 rounded-xl border border-rose-500/20 bg-rose-500/5 text-rose-500 font-black text-[10px] uppercase tracking-[0.2em] hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center gap-2"
+                        >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            EXCLUIR
+                        </button>
+                    )}
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3"
+                        className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-4 h-14 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3"
                     >
                         {isPending ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                         {isPending ? 'PROCESSANDO...' : 'SALVAR ALTERAÇÕES'}
@@ -157,14 +193,25 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
                     <button
                         type="button"
                         onClick={() => onSuccess ? onSuccess({ id: '', name: '' }) : router.back()}
-                        className="w-full sm:w-auto px-8 py-4 rounded-xl border border-border bg-card text-foreground/40 font-black text-[10px] uppercase tracking-[0.2em] hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto px-8 h-14 rounded-xl border border-border bg-card text-foreground/40 font-black text-[10px] uppercase tracking-[0.2em] hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2"
                     >
                         <X className="w-3.5 h-3.5" />
                         ABORTAR
                     </button>
                 </div>
             </form>
+
+            <PremiumConfirmDialog
+                isOpen={showDeleteConfirm}
+                title="Excluir Cliente"
+                description="Tem certeza que deseja desativar este cliente? Esta ação não removerá os dados permanentemente, mas o cliente não aparecerá mais nas listagens ativas."
+                confirmLabel="Sim, Excluir"
+                cancelLabel="Não, Manter"
+                onConfirm={handleDelete}
+                onCancel={() => setShowDeleteConfirm(false)}
+            />
         </div>
+
     )
 }
 

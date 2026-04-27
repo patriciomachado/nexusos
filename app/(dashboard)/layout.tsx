@@ -1,14 +1,13 @@
-import { auth, currentUser } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
-import { createAdminClient } from '@/lib/supabase'
 import Sidebar from '@/components/layout/Sidebar'
 import BottomNav from '@/components/layout/BottomNav'
+import ClientAIWrapper from '@/components/ai/client-wrapper'
+import { currentUser } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
+import { supabase as db } from '@/lib/supabase'
+
 import { UserRole } from '@/types'
 
-
-async function ensureUserExists(clerkId: string, email: string, name: string) {
-    const db = createAdminClient()
-
+async function ensureUserExists(clerkId: string, email: string, name: string): Promise<UserRole> {
     const { data: existingUser } = await db
         .from('users')
         .select('id, company_id, role')
@@ -79,6 +78,7 @@ export default async function DashboardLayout({
                 {children}
             </main>
             <BottomNav userRole={userRole} />
+            {/* <ClientAIWrapper /> */}
         </div>
     )
 }

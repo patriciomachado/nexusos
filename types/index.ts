@@ -109,6 +109,7 @@ export interface InventoryItem {
   sku?: string
   description?: string
   category?: string
+  category_id?: string
   cost_price: number
   selling_price: number
   quantity_in_stock: number

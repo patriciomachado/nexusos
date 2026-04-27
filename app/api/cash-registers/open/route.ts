@@ -10,16 +10,28 @@ export async function POST(req: NextRequest) {
     const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-    // Check if there's already an open cash register
-    const { data: openRegister } = await db
+    // Check if there's already an open cash register for this company
+    const { data: openRegisters, error: checkError } = await db
         .from('cash_registers')
         .select('id')
-        .eq('user_id', user.id)
+        .eq('company_id', user.company_id)
         .eq('status', 'open')
-        .maybeSingle()
 
-    if (openRegister) {
-        return NextResponse.json({ error: 'Já existe um caixa aberto para este usuário.' }, { status: 400 })
+    if (checkError) {
+        return NextResponse.json({ error: 'Erro ao verificar caixa: ' + checkError.message }, { status: 500 })
+    }
+
+    if (openRegisters && openRegisters.length > 0) {
+        // Auto-close any orphaned registers to prevent system deadlocks
+        await db
+            .from('cash_registers')
+            .update({ 
+                status: 'closed', 
+                closed_at: new Date().toISOString(),
+                closing_balance: 0,
+                final_balance: 0
+            })
+            .in('id', openRegisters.map(r => r.id))
     }
 
     const { opening_balance } = await req.json()
@@ -32,6 +44,7 @@ export async function POST(req: NextRequest) {
         .from('cash_registers')
         .insert({
             user_id: user.id,
+            company_id: user.company_id,
             opening_balance,
             status: 'open',
             opened_at: new Date().toISOString()

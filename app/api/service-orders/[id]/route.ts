@@ -14,7 +14,7 @@ export async function GET(req: NextRequest, { params }: Params) {
 
     const { data, error } = await db
         .from('service_orders')
-        .select('*, customers(*), technicians(*), service_types(*), service_order_items(*), service_order_attachments(*), service_order_history(*), payments(*)')
+        .select('*, customers(*), technicians(*), service_order_items(*), service_order_attachments(*), service_order_history(*), payments(*)')
         .eq('id', id)
         .eq('company_id', user?.company_id)
         .single()
@@ -31,10 +31,11 @@ export async function PUT(req: NextRequest, { params }: Params) {
     const db = createAdminClient()
     const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
     const body = await req.json()
+    const { items, customers, technicians, service_order_items, service_order_attachments, service_order_history, payments, ...updateData } = body
 
     const { data, error } = await db
         .from('service_orders')
-        .update({ ...body, updated_at: new Date().toISOString() })
+        .update({ ...updateData, updated_at: new Date().toISOString() })
         .eq('id', id)
         .eq('company_id', user?.company_id)
         .select()

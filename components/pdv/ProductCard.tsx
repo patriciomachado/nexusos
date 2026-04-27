@@ -31,11 +31,17 @@ export default function ProductCard({ product }: ProductCardProps) {
             <div className="relative h-48 bg-muted overflow-hidden">
                 {/* Image Placeholder with Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent z-10" />
-                <img
-                    src={product.image_url || "/logo.png"}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
+                {product.image_url ? (
+                    <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center opacity-10">
+                        {isService ? <Wrench className="w-20 h-20" /> : <Package className="w-20 h-20" />}
+                    </div>
+                )}
 
                 {/* Category Badge */}
                 <div className="absolute top-4 left-4 z-20">

@@ -14,16 +14,23 @@ export async function POST(req: NextRequest) {
     const body: CreateSaleForm = await req.json()
 
     // 1. Check if cash register is open
-    const { data: cashRegister } = await db
+    let registerId = body.cash_register_id
+
+    const { data: openRegisters } = await db
         .from('cash_registers')
         .select('id')
-        .eq('id', body.cash_register_id)
+        .eq('company_id', user.company_id)
         .eq('status', 'open')
-        .single()
+        .order('opened_at', { ascending: false })
 
-    if (!cashRegister) {
-        return NextResponse.json({ error: 'Caixa fechado ou inexistente.' }, { status: 400 })
+    const activeRegister = openRegisters && openRegisters.length > 0 ? openRegisters[0] : null
+
+    if (!activeRegister) {
+        return NextResponse.json({ error: 'Nenhum caixa aberto encontrado para esta empresa.' }, { status: 400 })
     }
+
+    // Use the active register found in DB to avoid issues with stale IDs from frontend
+    registerId = activeRegister.id
 
     try {
         // 2. Create Sale
@@ -33,7 +40,7 @@ export async function POST(req: NextRequest) {
                 company_id: user.company_id,
                 user_id: user.id,
                 customer_id: body.customer_id || null,
-                cash_register_id: body.cash_register_id,
+                cash_register_id: registerId,
                 total_amount: body.total_amount,
                 discount_amount: body.discount_amount,
                 final_amount: body.final_amount,
@@ -89,7 +96,8 @@ export async function POST(req: NextRequest) {
         const { error: cashError } = await db
             .from('cash_transactions')
             .insert({
-                cash_register_id: body.cash_register_id,
+                cash_register_id: registerId,
+                company_id: user.company_id,
                 type: 'entry',
                 amount: body.final_amount,
                 payment_method_id: body.payment_method_id,
@@ -101,6 +109,38 @@ export async function POST(req: NextRequest) {
             })
 
         if (cashError) throw cashError
+
+        // 5. Register Payment (Financial History)
+        const { data: pm } = await db
+            .from('payment_methods')
+            .select('code')
+            .eq('id', body.payment_method_id)
+            .single()
+
+        const methodMap: Record<string, string> = {
+            'CASH': 'dinheiro',
+            'DEBIT_CARD': 'cartao_debito',
+            'CREDIT_CARD': 'cartao_credito',
+            'PIX': 'pix',
+            'CHEQUE': 'transferencia',
+            'INSTALLMENT': 'crediario'
+        }
+
+        const { error: paymentError } = await db
+            .from('payments')
+            .insert({
+                company_id: user.company_id,
+                customer_id: body.customer_id || null,
+                amount: body.final_amount,
+                payment_method: methodMap[pm?.code || ''] || 'dinheiro',
+                payment_status: 'completed',
+                payment_date: new Date().toISOString(),
+                reference_id: sale.id,
+                notes: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
+                created_by: user.id
+            })
+
+        if (paymentError) console.error('Error creating payment record:', paymentError)
 
         return NextResponse.json(sale, { status: 201 })
     } catch (error: any) {

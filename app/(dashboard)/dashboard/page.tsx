@@ -51,6 +51,13 @@ async function getDashboardData(companyId: string) {
     const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()
     const endOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString()
 
+    // Get company users for expense filtering
+    const { data: companyUsers } = await db.from('users').select('id').eq('company_id', companyId)
+    const userIds = companyUsers?.map(u => u.id) || []
+
+    // Date range for 7 days
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+
     const [
         { count: totalOS },
         { data: openOSData },
@@ -62,7 +69,14 @@ async function getDashboardData(companyId: string) {
         { count: totalCustomers },
         { count: prevCustomersCount },
         { count: activeTechnicians },
-        { data: inventoryAlerts }
+        { data: inventoryAlerts },
+        // New data for profit calculation
+        { data: salesMonth },
+        { data: osMonthData },
+        { data: expensesMonth },
+        // Daily chart data with costs
+        { data: chartSales },
+        { data: chartOS }
     ] = await Promise.all([
         db.from('service_orders').select('*', { count: 'exact', head: true }).eq('company_id', companyId),
         db.from('service_orders').select('estimated_cost, final_cost, status').eq('company_id', companyId).in('status', ['aberta', 'agendada', 'em_andamento', 'aguardando_pecas']),
@@ -70,15 +84,33 @@ async function getDashboardData(companyId: string) {
         db.from('service_orders').select('*, customers(name, company_name), technicians(name)').eq('company_id', companyId).order('created_at', { ascending: false }).limit(6),
         db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfMonth),
         db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfPrevMonth).lte('payment_date', endOfPrevMonth),
-        db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()),
+        db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', sevenDaysAgo),
         db.from('customers').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true),
         db.from('customers').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true).lt('created_at', startOfMonth),
         db.from('technicians').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true),
-        db.from('inventory_items').select('id, name, quantity_in_stock, minimum_quantity').eq('company_id', companyId).filter('quantity_in_stock', 'lte', 'minimum_quantity').limit(4)
+        db.from('inventory_items').select('id, name, quantity_in_stock, minimum_quantity').eq('company_id', companyId).filter('quantity_in_stock', 'lte', 'minimum_quantity').limit(4),
+        // Profit queries
+        db.from('sales').select('final_amount, sale_items(quantity, product:inventory_items(cost_price))').eq('company_id', companyId).eq('status', 'completed').gte('created_at', startOfMonth),
+        db.from('service_orders').select('final_cost, parts_cost').eq('company_id', companyId).in('status', ['concluida', 'faturada']).gte('completed_at', startOfMonth),
+        db.from('cash_transactions').select('amount').eq('type', 'exit').in('user_id', userIds).gte('created_at', startOfMonth),
+        // Daily chart with profit details
+        db.from('sales').select('final_amount, created_at, sale_items(quantity, product:inventory_items(cost_price))').eq('company_id', companyId).eq('status', 'completed').gte('created_at', sevenDaysAgo),
+        db.from('service_orders').select('final_cost, parts_cost, completed_at').eq('company_id', companyId).in('status', ['concluida', 'faturada']).gte('completed_at', sevenDaysAgo)
     ])
 
     const monthRevenue = currentPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
     const prevMonthRevenue = prevPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
+
+    // Profit Calculation
+    const osGrossProfit = osMonthData?.reduce((sum, os) => sum + ((os.final_cost || 0) - (os.parts_cost || 0)), 0) || 0
+    const salesGrossProfit = salesMonth?.reduce((sum, sale) => {
+        const cost = (sale.sale_items as any[])?.reduce((iSum, item) => iSum + (Number(item.quantity) * Number(item.product?.cost_price || 0)), 0) || 0
+        return sum + (sale.final_amount - cost)
+    }, 0) || 0
+    
+    const monthGrossProfit = osGrossProfit + salesGrossProfit
+    const totalExpenses = expensesMonth?.reduce((sum, exp) => sum + (exp.amount || 0), 0) || 0
+    const monthNetProfit = monthGrossProfit - totalExpenses
 
     // Average Ticket (Current Month)
     const concludedOS = recentOS?.filter(os => os.status === 'concluida' || os.status === 'faturada') || []
@@ -102,10 +134,20 @@ async function getDashboardData(companyId: string) {
         const d = new Date()
         d.setDate(d.getDate() - (6 - i))
         const dateStr = d.toISOString().split('T')[0]
+        
         const dayRevenue = chartPayments?.filter(p => p.payment_date.startsWith(dateStr)).reduce((sum, p) => sum + (p.amount || 0), 0) || 0
+        
+        // Day Profit approximation
+        const dayOsProfit = chartOS?.filter(os => os.completed_at?.startsWith(dateStr)).reduce((sum, os) => sum + ((os.final_cost || 0) - (os.parts_cost || 0)), 0) || 0
+        const daySalesProfit = chartSales?.filter(s => s.created_at?.startsWith(dateStr)).reduce((sum, sale) => {
+            const cost = (sale.sale_items as any[])?.reduce((iSum, item) => iSum + (Number(item.quantity) * Number(item.product?.cost_price || 0)), 0) || 0
+            return sum + (sale.final_amount - cost)
+        }, 0) || 0
+
         return {
             name: d.toLocaleDateString('pt-BR', { weekday: 'short' }),
-            revenue: dayRevenue
+            revenue: dayRevenue,
+            profit: dayOsProfit + daySalesProfit
         }
     })
 
@@ -115,6 +157,8 @@ async function getDashboardData(companyId: string) {
             openOS: openOSData?.length || 0,
             todayOS,
             monthRevenue,
+            monthGrossProfit,
+            monthNetProfit,
             avgTicket,
             totalCustomers,
             activeTechnicians,
@@ -156,8 +200,13 @@ export default async function DashboardPage() {
     const hour = new Date().getHours()
     const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite'
 
+    const grossMargin = data.stats.monthRevenue > 0 ? (data.stats.monthGrossProfit / data.stats.monthRevenue * 100).toFixed(1) : '0'
+    const netMargin = data.stats.monthRevenue > 0 ? (data.stats.monthNetProfit / data.stats.monthRevenue * 100).toFixed(1) : '0'
+
     const kpis = [
-        { label: 'Receita do Mês', value: formatCurrency(data.stats.monthRevenue), icon: DollarSign, color: 'blue', change: data.stats.revenueTrend.change, trend: data.stats.revenueTrend.trend },
+        { label: 'Receita Mensal', value: formatCurrency(data.stats.monthRevenue), icon: DollarSign, color: 'blue', change: data.stats.revenueTrend.change, trend: data.stats.revenueTrend.trend },
+        { label: 'Lucro Bruto', value: formatCurrency(data.stats.monthGrossProfit), icon: TrendingUp, color: 'indigo', change: `${grossMargin}% margem`, trend: 'up' },
+        { label: 'Lucro Líquido', value: formatCurrency(data.stats.monthNetProfit), icon: CheckCircle, color: 'emerald', change: `${netMargin}% líquido`, trend: 'up' },
         { label: 'Ordens Ativas', value: data.stats.openOS.toString(), icon: ClipboardList, color: 'purple', change: `+${data.stats.todayOS} hoje`, trend: 'up' },
         { label: 'Novos Clientes', value: (data.stats.totalCustomers || 0).toString(), icon: Users, color: 'emerald', change: data.stats.custTrend.change, trend: data.stats.custTrend.trend },
     ]
@@ -166,7 +215,7 @@ export default async function DashboardPage() {
         <div className="bg-background min-h-screen text-foreground pb-20 lg:pb-8 transition-colors duration-500 overflow-x-hidden" suppressHydrationWarning>
             <Header title="Nexus Dashboard" />
 
-            <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700" suppressHydrationWarning>
+            <div className="p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700" suppressHydrationWarning>
                 {/* Stitch Greeting Section */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-6" suppressHydrationWarning>
                     <div className="text-center sm:text-left" suppressHydrationWarning>
@@ -174,7 +223,7 @@ export default async function DashboardPage() {
                             Bem-vindo de volta, <span className="text-primary">{user.full_name?.split(' ')[0] || 'Operador'}</span>
                         </h2>
                         <p className="text-sm text-muted-foreground font-medium opacity-60">
-                            Aqui está o que está acontecendo com seu negócio hoje.
+                            Aqui está o resumo financeiro e operacional do seu negócio.
                         </p>
                     </div>
                     <div className="flex items-center gap-4" suppressHydrationWarning>
@@ -188,27 +237,28 @@ export default async function DashboardPage() {
                 </div>
 
                 {/* Horizontal Stitch Metric Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6" suppressHydrationWarning>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6" suppressHydrationWarning>
                     {kpis.map((kpi) => (
                         <div key={kpi.label} className="flex flex-col gap-4">
-                            <div className="glass-premium rounded-[2rem] p-8 transition-all group relative overflow-hidden active:scale-[0.98]" suppressHydrationWarning>
-                                <div className="flex items-start justify-between relative z-10" suppressHydrationWarning>
+                            <div className="glass-premium rounded-[2rem] p-6 lg:p-8 transition-all group relative overflow-hidden active:scale-[0.98] h-full" suppressHydrationWarning>
+                                <div className="flex flex-col justify-between h-full relative z-10" suppressHydrationWarning>
                                     <div className="space-y-4">
                                         <div className={cn(
                                             "w-12 h-12 rounded-2xl flex items-center justify-center border transition-all group-hover:scale-110",
                                             kpi.color === 'blue' ? "bg-blue-500/10 border-blue-500/20 text-blue-400" :
                                                 kpi.color === 'emerald' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
-                                                    "bg-purple-500/10 border-purple-500/20 text-purple-400"
+                                                    kpi.color === 'indigo' ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" :
+                                                        "bg-purple-500/10 border-purple-500/20 text-purple-400"
                                         )} suppressHydrationWarning>
                                             <kpi.icon className="w-6 h-6" />
                                         </div>
                                         <div suppressHydrationWarning>
                                             <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] leading-none mb-2">{kpi.label}</h3>
-                                            <p className="text-3xl font-black text-foreground tracking-tighter">{kpi.value}</p>
+                                            <p className="text-2xl lg:text-3xl font-black text-foreground tracking-tighter">{kpi.value}</p>
                                         </div>
                                     </div>
                                     <div className={cn(
-                                        "px-3 py-1.5 rounded-xl text-[10px] font-black flex items-center gap-1.5 border backdrop-blur-md",
+                                        "mt-4 px-3 py-1.5 rounded-xl text-[10px] font-black flex items-center gap-1.5 border backdrop-blur-md self-start",
                                         kpi.trend === 'up' ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
                                     )} suppressHydrationWarning>
                                         {kpi.change}
@@ -217,8 +267,8 @@ export default async function DashboardPage() {
                                 </div>
                             </div>
                             
-                            {/* Quick Commands for Each Card (Mobile Only) */}
-                            {kpi.label === 'Receita do Mês' && (
+                            {/* Quick Commands for Revenue Card (Mobile Only) */}
+                            {kpi.label === 'Receita Mensal' && (
                                 <div className="grid grid-cols-3 gap-3 md:hidden px-2 animate-in fade-in slide-in-from-top-4 duration-500">
                                     <Link href="/service-orders/new" className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-all">
                                         <PlusCircle className="w-5 h-5" />
@@ -243,7 +293,12 @@ export default async function DashboardPage() {
                     {/* Main Row: Chart & Command Center */}
                     <div className="lg:col-span-2" suppressHydrationWarning>
                         <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-lg transition-all h-full" suppressHydrationWarning>
-                            <RevenueChart data={data.chartData} totalRevenue={formatCurrency(data.stats.monthRevenue)} height={220} />
+                            <RevenueChart 
+                                data={data.chartData} 
+                                totalRevenue={formatCurrency(data.stats.monthRevenue)} 
+                                totalProfit={formatCurrency(data.stats.monthNetProfit)}
+                                height={220} 
+                            />
                         </div>
                     </div>
 
