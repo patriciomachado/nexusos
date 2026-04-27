@@ -46,7 +46,7 @@ export default function PDVPage() {
             {/* Main PDV Area */}
             <main className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">
                 {/* Left: Product Catalog Grid */}
-                <div className="flex-1 flex flex-col p-4 lg:p-8 min-h-0">
+                <div className="flex-1 flex flex-col p-4 lg:p-8 min-h-0 overflow-y-auto custom-scrollbar">
                     <ProductCatalog />
                 </div>
 

@@ -90,7 +90,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     >
                         <div className="relative">
                             {isService ? <Wrench className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
-                            <div className="absolute -top-1.5 -right-1.5 bg-white rounded-full p-0.5 shadow-sm group-hover/btn:scale-110 transition-transform">
+                            <div className="absolute -top-1.5 -right-1.5 bg-background rounded-full p-0.5 shadow-sm group-hover/btn:scale-110 transition-transform">
                                 <Plus className={cn(
                                     "w-2.5 h-2.5",
                                     isService ? "text-orange-600" : "text-indigo-600"

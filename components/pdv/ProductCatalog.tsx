@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Search, Loader2, Package, Grid3X3, Wrench, Headphones, Tag } from 'lucide-react'
 import { InventoryItem, InventoryUnit } from '@/types'
 import { usePDVStore } from '@/store/usePDVStore'
@@ -17,6 +17,31 @@ export default function ProductCatalog() {
     const [products, setProducts] = useState<InventoryItem[]>([])
     const [categories, setCategories] = useState<Category[]>([])
     const [loading, setLoading] = useState(true)
+    
+    // Horizontal scroll drag logic
+    const categoryRef = useRef<HTMLDivElement>(null)
+    const [isDragging, setIsDragging] = useState(false)
+    const [startX, setStartX] = useState(0)
+    const [scrollLeft, setScrollLeft] = useState(0)
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        setIsDragging(true)
+        setStartX(e.pageX - (categoryRef.current?.offsetLeft || 0))
+        setScrollLeft(categoryRef.current?.scrollLeft || 0)
+    }
+
+    const handleMouseLeave = () => setIsDragging(false)
+    const handleMouseUp = () => setIsDragging(false)
+
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (!isDragging) return
+        e.preventDefault()
+        const x = e.pageX - (categoryRef.current?.offsetLeft || 0)
+        const walk = (x - startX) * 2
+        if (categoryRef.current) {
+            categoryRef.current.scrollLeft = scrollLeft - walk
+        }
+    }
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -104,7 +129,14 @@ export default function ProductCatalog() {
         <div className="flex flex-col h-full space-y-8 animate-in fade-in duration-700">
             {/* Catalog Header: Categories & Search */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 shrink-0">
-                <div className="flex items-center gap-2 bg-muted/30 p-1.5 rounded-2xl border border-border/50 overflow-x-auto no-scrollbar">
+                <div 
+                    ref={categoryRef}
+                    onMouseDown={handleMouseDown}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseUp={handleMouseUp}
+                    onMouseMove={handleMouseMove}
+                    className="flex items-center gap-2 bg-muted/30 p-1.5 rounded-2xl border border-border/50 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none"
+                >
                     <button
                         onClick={() => setActiveCategory('all')}
                         className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shrink-0 ${activeCategory === 'all'
@@ -149,7 +181,7 @@ export default function ProductCatalog() {
             </div>
 
             {/* Grid Container */}
-            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+            <div className="flex-1">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center h-64 space-y-4">
                         <Loader2 className="w-12 h-12 animate-spin text-primary opacity-20" />

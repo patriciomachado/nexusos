@@ -125,17 +125,17 @@ export default function CashRegisterClient() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-[#09090B]">
+            <div className="flex items-center justify-center min-h-screen bg-background">
                 <div className="flex flex-col items-center gap-4">
                     <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-                    <p className="text-xs font-medium text-zinc-500 animate-pulse">Sincronizando dados financeiros...</p>
+                    <p className="text-xs font-medium text-muted-foreground animate-pulse">Sincronizando dados financeiros...</p>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-[#09090B] text-zinc-100 pb-24 lg:pb-12">
+        <div className="min-h-screen bg-background text-foreground pb-24 lg:pb-12">
             <Header 
                 title="Caixa Operacional" 
                 subtitle="Gestão inteligente de fluxo de caixa e transações em tempo real." 
@@ -144,14 +144,14 @@ export default function CashRegisterClient() {
             <main className="px-4 lg:px-8 py-6 max-w-7xl mx-auto space-y-8">
                 {/* Dashboard Tabs & Global Actions */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="inline-flex p-1 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+                    <div className="inline-flex p-1 bg-muted/50 border border-border rounded-xl">
                         <button
                             onClick={() => setActiveTab('daily')}
                             className={cn(
                                 "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",
                                 activeTab === 'daily' 
-                                    ? "bg-primary text-black shadow-lg" 
-                                    : "text-zinc-400 hover:text-zinc-200"
+                                    ? "bg-primary text-primary-foreground shadow-lg" 
+                                    : "text-muted-foreground hover:text-foreground"
                             )}
                         >
                             <LayoutDashboard className="w-4 h-4" />
@@ -162,8 +162,8 @@ export default function CashRegisterClient() {
                             className={cn(
                                 "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",
                                 activeTab === 'history' 
-                                    ? "bg-primary text-black shadow-lg" 
-                                    : "text-zinc-400 hover:text-zinc-200"
+                                    ? "bg-primary text-primary-foreground shadow-lg" 
+                                    : "text-muted-foreground hover:text-foreground"
                             )}
                         >
                             <History className="w-4 h-4" />
@@ -174,7 +174,7 @@ export default function CashRegisterClient() {
                     <div className="flex items-center gap-3">
                         <button 
                             onClick={fetchData}
-                            className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-100 hover:border-zinc-700 transition-all active:scale-95"
+                            className="p-2.5 rounded-xl bg-muted border border-border text-muted-foreground hover:text-foreground hover:border-border/80 transition-all active:scale-95"
                         >
                             <RefreshCw className="w-5 h-5" />
                         </button>
@@ -204,7 +204,7 @@ export default function CashRegisterClient() {
                         {/* LEFT COLUMN: Stats & Chart */}
                         <div className="lg:col-span-8 space-y-8">
                             {/* Main Balance Card */}
-                            <div className="relative overflow-hidden bg-zinc-900/40 border border-zinc-800 rounded-3xl p-8 group">
+                            <div className="relative overflow-hidden bg-card/40 border border-border rounded-3xl p-8 group">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] -mr-32 -mt-32" />
                                 
                                 <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -217,12 +217,12 @@ export default function CashRegisterClient() {
                                             {formatCurrency(calculateBalance)}
                                         </h2>
                                         {currentRegister && (
-                                            <div className="flex items-center gap-2 text-xs text-zinc-500 mt-2">
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
                                                 <span className="flex items-center gap-1">
                                                     <Clock className="w-3 h-3" />
                                                     Aberto às {new Date(currentRegister.opened_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
-                                                <span className="w-1 h-1 bg-zinc-800 rounded-full" />
+                                                <span className="w-1 h-1 bg-border rounded-full" />
                                                 <span>Abertura: {formatCurrency(currentRegister.opening_balance)}</span>
                                             </div>
                                         )}
@@ -250,22 +250,24 @@ export default function CashRegisterClient() {
                                                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                                                 </linearGradient>
                                             </defs>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.3)" />
                                             <XAxis 
                                                 dataKey="time" 
                                                 axisLine={false} 
                                                 tickLine={false} 
-                                                tick={{ fontSize: 10, fill: '#71717a' }}
+                                                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                                                 dy={10}
                                             />
                                             <YAxis hide />
                                             <Tooltip 
                                                 contentStyle={{ 
-                                                    backgroundColor: '#18181b', 
-                                                    border: '1px solid #27272a',
+                                                    backgroundColor: 'hsl(var(--card))', 
+                                                    border: '1px solid hsl(var(--border))',
+                                                    color: 'hsl(var(--card-foreground))',
                                                     borderRadius: '12px',
                                                     fontSize: '12px'
                                                 }}
+                                                itemStyle={{ color: 'hsl(var(--foreground))' }}
                                             />
                                             <Area 
                                                 type="monotone" 
@@ -282,21 +284,21 @@ export default function CashRegisterClient() {
                             </div>
 
                             {/* Transaction List */}
-                            <div className="bg-zinc-900/40 border border-zinc-800 rounded-3xl overflow-hidden">
-                                <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
+                            <div className="bg-card/40 border border-border rounded-3xl overflow-hidden">
+                                <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                                     <h3 className="text-sm font-bold flex items-center gap-2">
-                                        <ArrowRightLeft className="w-4 h-4 text-zinc-500" />
+                                        <ArrowRightLeft className="w-4 h-4 text-muted-foreground" />
                                         Últimas Movimentações
                                     </h3>
-                                    <div className="px-2 py-1 bg-zinc-800 rounded text-[10px] font-bold text-zinc-400">
+                                    <div className="px-2 py-1 bg-muted rounded text-[10px] font-bold text-muted-foreground">
                                         {transactions.length} registros
                                     </div>
                                 </div>
 
-                                <div className="divide-y divide-zinc-800 max-h-[500px] overflow-y-auto custom-scrollbar">
+                                <div className="divide-y divide-border max-h-[500px] overflow-y-auto custom-scrollbar">
                                     {transactions.length === 0 ? (
-                                        <div className="py-20 flex flex-col items-center justify-center text-zinc-600 gap-4">
-                                            <div className="p-4 bg-zinc-900 rounded-full border border-zinc-800">
+                                        <div className="py-20 flex flex-col items-center justify-center text-muted-foreground gap-4">
+                                            <div className="p-4 bg-muted rounded-full border border-border">
                                                 <Activity className="w-8 h-8 opacity-20" />
                                             </div>
                                             <p className="text-xs font-medium uppercase tracking-widest opacity-40">Nenhuma transação registrada hoje</p>
@@ -309,7 +311,7 @@ export default function CashRegisterClient() {
                                                 animate={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: idx * 0.05 }}
                                             >
-                                                <div className="group flex items-center justify-between p-4 hover:bg-zinc-800/30 transition-all cursor-default">
+                                                <div className="group flex items-center justify-between p-4 hover:bg-muted/30 transition-all cursor-default">
                                                 <div className="flex items-center gap-4">
                                                     <div className={cn(
                                                         "w-10 h-10 rounded-xl flex items-center justify-center border",
@@ -320,13 +322,13 @@ export default function CashRegisterClient() {
                                                         {tx.type === 'entry' ? <ArrowDownLeft className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
                                                     </div>
                                                     <div className="space-y-0.5">
-                                                        <p className="text-sm font-bold text-zinc-100 group-hover:text-primary transition-colors">{tx.description}</p>
-                                                        <div className="flex items-center gap-3 text-[10px] text-zinc-500 font-medium uppercase tracking-tight">
+                                                        <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{tx.description}</p>
+                                                        <div className="flex items-center gap-3 text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
                                                             <span className="flex items-center gap-1">
                                                                 <CreditCard className="w-3 h-3" />
                                                                 {tx.payment_method?.name || 'Automático'}
                                                             </span>
-                                                            <span className="w-1 h-1 bg-zinc-800 rounded-full" />
+                                                            <span className="w-1 h-1 bg-border rounded-full" />
                                                             <span className="flex items-center gap-1">
                                                                 <Clock className="w-3 h-3" />
                                                                 {new Date(tx.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -341,7 +343,7 @@ export default function CashRegisterClient() {
                                                     )}>
                                                         {tx.type === 'entry' ? '+' : '-'} {formatCurrency(tx.amount)}
                                                     </p>
-                                                    <p className="text-[9px] font-black uppercase text-zinc-600 tracking-widest">
+                                                    <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest">
                                                         {SOURCE_TYPE_LABELS[tx.source_type as keyof typeof SOURCE_TYPE_LABELS] || tx.source_type}
                                                     </p>
                                                 </div>
@@ -356,8 +358,8 @@ export default function CashRegisterClient() {
                         {/* RIGHT COLUMN: Quick Actions & Insights */}
                         <div className="lg:col-span-4 space-y-8">
                             {/* Actions Card */}
-                            <div className="bg-zinc-900/40 border border-zinc-800 rounded-3xl p-6 space-y-6">
-                                <h3 className="text-xs font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+                            <div className="bg-card/40 border border-border rounded-3xl p-6 space-y-6">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                     <Zap className="w-4 h-4 text-primary" />
                                     Ações Rápidas
                                 </h3>
@@ -366,35 +368,35 @@ export default function CashRegisterClient() {
                                     <button
                                         onClick={() => { setTransactionType('entry'); setIsTransactionModalOpen(true); }}
                                         disabled={!currentRegister}
-                                        className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group disabled:opacity-30 disabled:cursor-not-allowed"
+                                        className="w-full flex items-center justify-between p-4 rounded-2xl bg-muted border border-border hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group disabled:opacity-30 disabled:cursor-not-allowed"
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-500 group-hover:scale-110 transition-transform">
                                                 <Plus className="w-5 h-5" />
                                             </div>
                                             <div className="text-left">
-                                                <p className="text-sm font-bold text-zinc-100">Suprimento</p>
-                                                <p className="text-[10px] text-zinc-500 uppercase font-medium">Entrada de dinheiro</p>
+                                                <p className="text-sm font-bold text-foreground">Suprimento</p>
+                                                <p className="text-[10px] text-muted-foreground uppercase font-medium">Entrada de dinheiro</p>
                                             </div>
                                         </div>
-                                        <ArrowRight className="w-4 h-4 text-zinc-700 group-hover:text-emerald-500 transition-colors" />
+                                        <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-emerald-500 transition-colors" />
                                     </button>
 
                                     <button
                                         onClick={() => { setTransactionType('exit'); setIsTransactionModalOpen(true); }}
                                         disabled={!currentRegister}
-                                        className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-rose-500/30 hover:bg-rose-500/5 transition-all group disabled:opacity-30 disabled:cursor-not-allowed"
+                                        className="w-full flex items-center justify-between p-4 rounded-2xl bg-muted border border-border hover:border-rose-500/30 hover:bg-rose-500/5 transition-all group disabled:opacity-30 disabled:cursor-not-allowed"
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="p-2.5 bg-rose-500/10 rounded-xl text-rose-500 group-hover:scale-110 transition-transform">
                                                 <Minus className="w-5 h-5" />
                                             </div>
                                             <div className="text-left">
-                                                <p className="text-sm font-bold text-zinc-100">Sangria</p>
-                                                <p className="text-[10px] text-zinc-500 uppercase font-medium">Retirada de dinheiro</p>
+                                                <p className="text-sm font-bold text-foreground">Sangria</p>
+                                                <p className="text-[10px] text-muted-foreground uppercase font-medium">Retirada de dinheiro</p>
                                             </div>
                                         </div>
-                                        <ArrowRight className="w-4 h-4 text-zinc-700 group-hover:text-rose-500 transition-colors" />
+                                        <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-rose-500 transition-colors" />
                                     </button>
                                 </div>
 
@@ -418,39 +420,39 @@ export default function CashRegisterClient() {
                             </div>
 
                             {/* Performance Insights */}
-                            <div className="bg-zinc-900/40 border border-zinc-800 rounded-3xl p-6 space-y-6">
-                                <h3 className="text-xs font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+                            <div className="bg-card/40 border border-border rounded-3xl p-6 space-y-6">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                     <Activity className="w-4 h-4 text-primary" />
                                     Métricas de Hoje
                                 </h3>
 
                                 <div className="space-y-4">
-                                    <div className="flex items-center justify-between p-3 bg-zinc-900/60 rounded-2xl border border-zinc-800">
+                                    <div className="flex items-center justify-between p-3 bg-muted/60 rounded-2xl border border-border">
                                         <div className="flex items-center gap-3">
-                                            <Users className="w-4 h-4 text-zinc-600" />
-                                            <span className="text-[10px] font-bold text-zinc-400 uppercase">Operadores Ativos</span>
+                                            <Users className="w-4 h-4 text-muted-foreground/60" />
+                                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Operadores Ativos</span>
                                         </div>
-                                        <span className="text-lg font-black text-white">
+                                        <span className="text-lg font-black text-foreground">
                                             {new Set(transactions.map(t => t.user_id)).size || 0}
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between p-3 bg-zinc-900/60 rounded-2xl border border-zinc-800">
+                                    <div className="flex items-center justify-between p-3 bg-muted/60 rounded-2xl border border-border">
                                         <div className="flex items-center gap-3">
-                                            <Receipt className="w-4 h-4 text-zinc-600" />
-                                            <span className="text-[10px] font-bold text-zinc-400 uppercase">Ticket Médio</span>
+                                            <Receipt className="w-4 h-4 text-muted-foreground/60" />
+                                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Ticket Médio</span>
                                         </div>
-                                        <span className="text-lg font-black text-white">
+                                        <span className="text-lg font-black text-foreground">
                                             {formatCurrency(transactions.length > 0 ? stats.entries / transactions.length : 0)}
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between p-3 bg-zinc-900/60 rounded-2xl border border-zinc-800">
+                                    <div className="flex items-center justify-between p-3 bg-muted/60 rounded-2xl border border-border">
                                         <div className="flex items-center gap-3">
                                             <TrendingUp className="w-4 h-4 text-emerald-500" />
-                                            <span className="text-[10px] font-bold text-zinc-400 uppercase">Vendas OS/PDV</span>
+                                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Vendas OS/PDV</span>
                                         </div>
-                                        <span className="text-lg font-black text-white">
+                                        <span className="text-lg font-black text-foreground">
                                             {transactions.filter(t => t.source_type === 'service_order' || t.source_type === 'product_sale').length}
                                         </span>
                                     </div>
@@ -463,7 +465,7 @@ export default function CashRegisterClient() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                     >
-                        <div className="bg-zinc-900/40 rounded-3xl border border-zinc-800 p-2 overflow-hidden backdrop-blur-xl">
+                        <div className="bg-card/40 rounded-3xl border border-border p-2 overflow-hidden backdrop-blur-xl">
                         <TransactionHistory 
                             companyId={companyId || ''} 
                             initialPayments={payments}
@@ -512,11 +514,12 @@ export default function CashRegisterClient() {
                     background: transparent;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #27272a;
+                    background: var(--border);
                     border-radius: 10px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #3f3f46;
+                    background: var(--muted-foreground);
+                    opacity: 0.5;
                 }
             `}</style>
         </div>

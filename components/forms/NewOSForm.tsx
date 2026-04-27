@@ -206,7 +206,7 @@ export default function NewOSForm({
     return (
         <form onSubmit={handleSubmit} className="p-4 max-w-[1600px] mx-auto space-y-8 pb-32 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {/* Header Flutuante com Resumo de Custo */}
-            <div className="sticky top-20 z-50 bg-background/60 backdrop-blur-3xl border border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-2xl shadow-black/40">
+            <div className="sticky top-20 z-[400] bg-background/60 backdrop-blur-3xl border border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-2xl shadow-black/40">
                 <div className="flex items-center gap-4">
                     <div className="p-3 rounded-xl bg-indigo-500/20 text-indigo-400">
                         <Zap className="w-5 h-5 animate-pulse" />
