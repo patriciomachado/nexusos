@@ -67,13 +67,7 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
         }
     }, [isOpen])
 
-    // Close on scroll (optional, for better UX)
-    useEffect(() => {
-        if (!isOpen) return
-        const handleScroll = () => setIsOpen(false)
-        window.addEventListener('scroll', handleScroll, true)
-        return () => window.removeEventListener('scroll', handleScroll, true)
-    }, [isOpen])
+    // Close on Escape
 
     // Close on Escape
     useEffect(() => {

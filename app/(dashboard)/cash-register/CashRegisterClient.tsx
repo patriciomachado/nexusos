@@ -9,7 +9,7 @@ import {
     ArrowRightLeft, Landmark, Zap, AlertCircle, TrendingDown,
     Clock, Users, ArrowRight, LayoutDashboard, FileText, Settings
 } from 'lucide-react'
-import { formatCurrency, formatDateTime, cn, PAYMENT_METHOD_LABELS, SOURCE_TYPE_LABELS } from '@/lib/utils'
+import { formatCurrency, formatDateTime, cn, PAYMENT_METHOD_LABELS, SOURCE_TYPE_LABELS, getLocalDateString } from '@/lib/utils'
 import Header from '@/components/layout/Header'
 import { CashRegister, CashTransaction } from '@/types'
 import { toast } from 'sonner'
@@ -50,7 +50,7 @@ export default function CashRegisterClient() {
             } else {
                 setCurrentRegister(null)
                 // If no register is open, fetch all transactions from today to show as "recent"
-                const today = new Date().toISOString().split('T')[0]
+                const today = getLocalDateString()
                 const transRes = await fetch(`/api/cash-transactions?date=${today}`, { cache: 'no-store' })
                 const transResp = await transRes.json()
                 const tData = Array.isArray(transResp) ? transResp : (transResp.data || [])

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Calendar as CalendarIcon, Clock, ChevronRight, Check } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, getLocalDateTimePickerValue } from '@/lib/utils'
 
 interface Props {
     value: string
@@ -27,7 +27,7 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
     const presets = [
         {
             label: 'Hoje Agora',
-            getValue: () => new Date().toISOString().slice(0, 16),
+            getValue: () => getLocalDateTimePickerValue(),
             color: 'bg-primary/10 text-primary border-primary/20'
         },
         {
@@ -35,7 +35,7 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
             getValue: () => {
                 const d = new Date()
                 d.setHours(14, 0, 0, 0)
-                return d.toISOString().slice(0, 16)
+                return getLocalDateTimePickerValue(d)
             },
             color: 'bg-blue-500/10 text-blue-400 border-blue-500/20'
         },
@@ -45,7 +45,7 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
                 const d = new Date()
                 d.setDate(d.getDate() + 1)
                 d.setHours(9, 0, 0, 0)
-                return d.toISOString().slice(0, 16)
+                return getLocalDateTimePickerValue(d)
             },
             color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
         }

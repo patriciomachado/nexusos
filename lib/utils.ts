@@ -1,7 +1,10 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { format, formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { formatInTimeZone, toDate } from 'date-fns-tz'
+
+const TIMEZONE = 'America/Sao_Paulo'
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -16,17 +19,56 @@ export function formatCurrency(value: number): string {
 
 export function formatDate(date: string | Date | null): string {
     if (!date) return '-'
-    return format(new Date(date), 'dd/MM/yyyy', { locale: ptBR })
+    const d = typeof date === 'string' ? new Date(date) : date
+    return formatInTimeZone(d, TIMEZONE, 'dd/MM/yyyy')
 }
 
 export function formatDateTime(date: string | Date | null): string {
     if (!date) return '-'
-    return format(new Date(date), "dd/MM/yyyy, 'às' HH:mm", { locale: ptBR })
+    const d = typeof date === 'string' ? new Date(date) : date
+    return formatInTimeZone(d, TIMEZONE, "dd/MM/yyyy, 'às' HH:mm")
 }
 
 export function formatRelative(date: string | Date | null): string {
     if (!date) return '-'
     return formatDistanceToNow(new Date(date), { addSuffix: true, locale: ptBR })
+}
+
+export function getStartOfDay(date: Date = new Date()): Date {
+    // Get year, month, day in target timezone
+    const dateStr = formatInTimeZone(date, TIMEZONE, 'yyyy-MM-dd')
+    // Create a date at 00:00:00 in that timezone
+    return toDate(`${dateStr}T00:00:00`, { timeZone: TIMEZONE })
+}
+
+export function getEndOfDay(date: Date = new Date()): Date {
+    const dateStr = formatInTimeZone(date, TIMEZONE, 'yyyy-MM-dd')
+    return toDate(`${dateStr}T23:59:59.999`, { timeZone: TIMEZONE })
+}
+
+export function getStartOfMonth(date: Date = new Date()): Date {
+    const dateStr = formatInTimeZone(date, TIMEZONE, 'yyyy-MM-01')
+    return toDate(`${dateStr}T00:00:00`, { timeZone: TIMEZONE })
+}
+
+export function getEndOfMonth(date: Date = new Date()): Date {
+    // Get the first day of the next month and subtract one millisecond
+    const startOfNextMonthStr = formatInTimeZone(new Date(date.getFullYear(), date.getMonth() + 1, 1), TIMEZONE, 'yyyy-MM-01')
+    const startOfNextMonth = toDate(`${startOfNextMonthStr}T00:00:00`, { timeZone: TIMEZONE })
+    return new Date(startOfNextMonth.getTime() - 1)
+}
+
+export function getStartOfDaysAgo(days: number, from: Date = new Date()): Date {
+    const d = new Date(from.getTime() - days * 24 * 60 * 60 * 1000)
+    return getStartOfDay(d)
+}
+
+export function getLocalDateString(date: Date = new Date()): string {
+    return formatInTimeZone(date, TIMEZONE, 'yyyy-MM-dd')
+}
+
+export function getLocalDateTimePickerValue(date: Date = new Date()): string {
+    return formatInTimeZone(date, TIMEZONE, "yyyy-MM-dd'T'HH:mm")
 }
 
 export function formatPhone(phone: string | null | undefined): string {

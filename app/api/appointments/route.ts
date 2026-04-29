@@ -1,57 +1,98 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
+import { getLocalDateString } from '@/lib/utils'
+import { appointmentSchema, idSchema } from '@/lib/validations/schemas'
 
 export async function GET(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+    
+    const { db, companyId } = ctx
     const { searchParams } = new URL(req.url)
-    const dateFrom = searchParams.get('from') || new Date().toISOString().split('T')[0]
-    const dateTo = searchParams.get('to') || new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]
+    const dateFrom = searchParams.get('from') || getLocalDateString()
+    const dateTo = searchParams.get('to') || getLocalDateString(new Date(Date.now() + 7 * 86400000))
 
     const { data, error } = await db
         .from('appointments')
         .select('*, technicians(name), customers(name), service_orders(title, status)')
-        .eq('company_id', user?.company_id)
+        .eq('company_id', companyId)
         .gte('scheduled_date', dateFrom)
         .lte('scheduled_date', dateTo)
         .order('scheduled_date')
+        
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ data })
 }
 
 export async function POST(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+    
+    const { db, companyId } = ctx
     const body = await req.json()
-    const { data, error } = await db.from('appointments').insert({ ...body, company_id: user?.company_id }).select().single()
+    
+    const validation = appointmentSchema.safeParse(body)
+    if (!validation.success) {
+        return NextResponse.json({ error: validation.error.format() }, { status: 400 })
+    }
+
+    const { data, error } = await db
+        .from('appointments')
+        .insert({ ...validation.data, company_id: companyId })
+        .select()
+        .single()
+        
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json(data, { status: 201 })
 }
 
 export async function PATCH(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-    const db = createAdminClient()
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+    
+    const { db, companyId } = ctx
     const body = await req.json()
     const { id, ...updateData } = body
-    const { data, error } = await db.from('appointments').update(updateData).eq('id', id).select().single()
+    
+    if (!idSchema.safeParse(id).success) {
+        return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
+    }
+
+    const validation = appointmentSchema.partial().safeParse(updateData)
+    if (!validation.success) {
+        return NextResponse.json({ error: validation.error.format() }, { status: 400 })
+    }
+
+    const { data, error } = await db
+        .from('appointments')
+        .update(validation.data)
+        .eq('id', id)
+        .eq('company_id', companyId) // IDOR PROTECTION
+        .select()
+        .single()
+        
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json(data)
 }
 
 export async function DELETE(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+    
+    const { db, companyId } = ctx
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
-    if (!id) return NextResponse.json({ error: 'ID ausente' }, { status: 400 })
-    const db = createAdminClient()
-    const { error } = await db.from('appointments').delete().eq('id', id)
+    
+    if (!id || !idSchema.safeParse(id).success) {
+        return NextResponse.json({ error: 'ID inválido ou ausente' }, { status: 400 })
+    }
+
+    const { error } = await db
+        .from('appointments')
+        .delete()
+        .eq('id', id)
+        .eq('company_id', companyId) // IDOR PROTECTION
+        
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ success: true })
 }

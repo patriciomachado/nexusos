@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
+import { cn, getLocalDateTimePickerValue } from '@/lib/utils'
 import CustomerAutocomplete from '@/components/ui/CustomerAutocomplete'
 import { PremiumInput } from '@/components/ui/PremiumInput'
 import PremiumSelect from '@/components/ui/PremiumSelect'
@@ -23,7 +23,34 @@ import {
 import { supabase } from '@/lib/supabase'
 
 // No auto-fill suggestions - free text input
-const DEVICE_SUGGESTIONS: string[] = []
+// Common device suggestions for the autocomplete
+const DEVICE_SUGGESTIONS: string[] = [
+    'Notebook',
+    'Microcomputador',
+    'Smartphone',
+    'Tablet',
+    'Monitor',
+    'Impressora',
+    'Projetor',
+    'Console de Game',
+    'MacBook',
+    'iPad',
+    'iPhone',
+    'Servidor',
+    'Nobreak',
+    'Switch/Roteador',
+    'Pc Gamer',
+    'Notebook Acer',
+    'Notebook Dell',
+    'Notebook HP',
+    'Notebook Samsung',
+    'Notebook Positivo',
+    'Impressora HP',
+    'Impressora Epson',
+    'Microcomputador Positivo',
+    'Microcomputador Dell'
+]
+
 
 interface Customer {
     id: string
@@ -79,7 +106,7 @@ export default function NewOSForm({
         parts_cost: initialData?.parts_cost?.toString() || '0',
         labor_cost: initialData?.labor_cost?.toString() || '0',
         estimated_cost: initialData?.estimated_cost?.toString() || '0',
-        scheduled_date: initialData?.scheduled_date ? new Date(initialData.scheduled_date).toISOString().slice(0, 16) : '',
+        scheduled_date: initialData?.scheduled_date ? getLocalDateTimePickerValue(new Date(initialData.scheduled_date)) : '',
         internal_notes: initialData?.internal_notes || '',
         warranty_months: initialData?.warranty_months?.toString() || '3',
         device_condition: initialData?.device_condition || '',

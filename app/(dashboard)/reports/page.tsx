@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, getStartOfDay, getStartOfMonth } from '@/lib/utils'
 import { BarChart3, TrendingUp, Users, Package, ClipboardCheck, Timer, PieChart, Activity, ArrowUpRight, ArrowDownRight, Printer, Download, Filter, ClipboardList, Wallet, DollarSign, Calendar } from 'lucide-react'
 
 export default async function ReportsPage() {
@@ -19,7 +19,8 @@ export default async function ReportsPage() {
     const companyId = user?.company_id
 
     const now = new Date()
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+    const startOfToday = getStartOfDay(now)
+    const monthStart = getStartOfMonth(now).toISOString()
 
     // Get company users for expense filtering
     const { data: companyUsers } = await db.from('users').select('id').eq('company_id', companyId)

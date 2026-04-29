@@ -16,6 +16,7 @@ interface Props {
     className?: string
     required?: boolean
     isAdding?: boolean
+    autoComplete?: string
 }
 
 export default function PremiumAutocomplete({
@@ -27,7 +28,8 @@ export default function PremiumAutocomplete({
     icon,
     className,
     required,
-    isAdding
+    isAdding,
+    autoComplete = "off"
 }: Props) {
     const [isOpen, setIsOpen] = useState(false)
     const [filteredOptions, setFilteredOptions] = useState<string[]>([])
@@ -95,6 +97,7 @@ export default function PremiumAutocomplete({
                 placeholder={placeholder}
                 icon={icon || <Search className="w-4 h-4" />}
                 required={required}
+                autoComplete={autoComplete}
             />
 
             {shouldShow && typeof document !== 'undefined' && createPortal(

@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, getStartOfDay, getLocalDateString, getStartOfMonth, getStartOfDaysAgo } from '@/lib/utils'
 import {
     ClipboardList,
     DollarSign,
@@ -47,16 +47,18 @@ async function getDashboardData(companyId: string) {
     const now = new Date()
 
     // Date ranges
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
-    const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()
-    const endOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString()
+    const startOfToday = getStartOfDay(now)
+    const startOfMonth = getStartOfMonth(now).toISOString()
+    const startOfPrevMonthDate = new Date(startOfToday.getFullYear(), startOfToday.getMonth() - 1, 1)
+    const startOfPrevMonth = getStartOfMonth(startOfPrevMonthDate).toISOString()
+    const endOfPrevMonth = new Date(getStartOfMonth(now).getTime() - 1).toISOString()
 
     // Get company users for expense filtering
     const { data: companyUsers } = await db.from('users').select('id').eq('company_id', companyId)
     const userIds = companyUsers?.map(u => u.id) || []
 
     // Date range for 7 days
-    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    const sevenDaysAgo = getStartOfDaysAgo(7, now).toISOString()
 
     const [
         { count: totalOS },
@@ -80,7 +82,7 @@ async function getDashboardData(companyId: string) {
     ] = await Promise.all([
         db.from('service_orders').select('*', { count: 'exact', head: true }).eq('company_id', companyId),
         db.from('service_orders').select('estimated_cost, final_cost, status').eq('company_id', companyId).in('status', ['aberta', 'agendada', 'em_andamento', 'aguardando_pecas']),
-        db.from('service_orders').select('*', { count: 'exact', head: true }).eq('company_id', companyId).gte('created_at', new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()),
+        db.from('service_orders').select('*', { count: 'exact', head: true }).eq('company_id', companyId).gte('created_at', startOfToday.toISOString()),
         db.from('service_orders').select('*, customers(name, company_name), technicians(name)').eq('company_id', companyId).order('created_at', { ascending: false }).limit(6),
         db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfMonth),
         db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfPrevMonth).lte('payment_date', endOfPrevMonth),
@@ -133,7 +135,7 @@ async function getDashboardData(companyId: string) {
     const chartData = Array.from({ length: 7 }, (_, i) => {
         const d = new Date()
         d.setDate(d.getDate() - (6 - i))
-        const dateStr = d.toISOString().split('T')[0]
+        const dateStr = getLocalDateString(d)
         
         const dayRevenue = chartPayments?.filter(p => p.payment_date.startsWith(dateStr)).reduce((sum, p) => sum + (p.amount || 0), 0) || 0
         

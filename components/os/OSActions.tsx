@@ -114,7 +114,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
     return (
         <div 
             ref={menuRef} 
-            className={cn("relative inline-block text-left", (mounted && isOpen) ? "z-[100]" : "z-auto")}
+            className={cn("relative inline-block text-left", (mounted && isOpen) ? "z-[1000]" : "z-auto")}
             suppressHydrationWarning
         >
             <button
@@ -137,7 +137,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-3 w-60 rounded-2xl border border-border bg-card shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[110] backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden divide-y divide-border/50">
+                <div className="absolute right-0 mt-3 w-60 rounded-2xl border border-border bg-card shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[1010] backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden divide-y divide-border/50">
                     <div className="p-1.5 space-y-1">
                         {/* View/Detail Action */}
                         <button

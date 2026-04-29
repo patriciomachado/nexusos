@@ -113,7 +113,7 @@ export default async function ServiceOrdersPage({
                 </div>
 
                 {/* Data Table */}
-                <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] shadow-2xl overflow-hidden">
+                <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] shadow-2xl overflow-visible">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
@@ -134,7 +134,7 @@ export default async function ServiceOrdersPage({
                                         return (
                                             <tr
                                                 key={order.id}
-                                                className="group hover:bg-white/5 transition-all duration-300 relative cursor-pointer select-none"
+                                                className="group hover:bg-white/5 transition-all duration-300 relative cursor-pointer select-none hover:z-50"
                                             >
                                                 <td className="p-6 align-middle hidden sm:table-cell">
                                                     <span className="text-xs font-black text-muted-foreground/40 font-mono tracking-tighter">
