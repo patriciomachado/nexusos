@@ -7,7 +7,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     MoreHorizontal, Eye, Edit2, MessageCircle,
-    CheckCircle, Clock, Ban,
+    CheckCircle, Clock, Ban, Trash,
     Settings, Printer, Share2, AlertTriangle, DollarSign,
     X, ChevronRight, LayoutGrid
 } from 'lucide-react'
@@ -198,22 +198,23 @@ export default function OSActions({ os, variant = 'list' }: Props) {
 
                 <button
                     onClick={() => {
+                        if (!confirm('Tem certeza que deseja excluir esta Ordem de Serviço? Esta ação é irreversível.')) return;
                         toast.promise(
                             fetch(`/api/service-orders/${os.id}`, { method: 'DELETE' }),
                             {
-                                loading: 'Cancelando OS...',
+                                loading: 'Excluindo OS...',
                                 success: () => {
                                     router.refresh()
-                                    return 'OS Cancelada'
+                                    return 'OS Excluída'
                                 },
-                                error: 'Erro ao cancelar'
+                                error: 'Erro ao excluir'
                             }
                         )
                     }}
                     className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[9px] font-bold transition-all text-red-500 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 outline-none cursor-pointer"
                 >
-                    <Ban className="w-3 h-3 opacity-70" />
-                    Cancelar
+                    <Trash className="w-3 h-3 opacity-70" />
+                    Excluir
                 </button>
             </div>
         </div>
