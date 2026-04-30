@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search')
 
     let query = db.from('inventory_items')
-        .select('*', { count: 'exact' })
+        .select('*, product_categories(name)', { count: 'exact' })
         .eq('company_id', companyId)
         .eq('is_active', true)
 
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
         query = query.or(`name.ilike.%${search}%,barcode.eq.${search},sku.eq.${search}`)
     }
 
-    const { data, error, count } = await query.order('name').limit(100)
+    const { data, error, count } = await query.order('name').limit(500)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ data, count })
 }

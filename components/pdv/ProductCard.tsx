@@ -49,7 +49,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                         "px-3 py-1 rounded-full backdrop-blur-md border border-white/10 text-[9px] font-black uppercase tracking-widest",
                         isService ? "bg-orange-500/20 text-orange-500" : "bg-background/50 text-foreground"
                     )}>
-                        {product.category || (isService ? 'Serviço' : 'Produto')}
+                        {(product as any).product_categories?.name || product.category || (isService ? 'Serviço' : 'Produto')}
                     </span>
                 </div>
             </div>
