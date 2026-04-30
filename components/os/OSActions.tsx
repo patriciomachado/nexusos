@@ -108,18 +108,18 @@ export default function OSActions({ os, variant = 'list' }: Props) {
     const ActionItems = ({ isMobile = false }: { isMobile?: boolean }) => (
         <div className={cn("p-2 space-y-4", isMobile && "p-6 pb-10")}>
             {/* Seção Principal de Ações */}
-            <div className={cn("grid gap-2", isMobile ? "grid-cols-2" : "grid-cols-1")}>
+            <div className="grid grid-cols-2 gap-2">
                 <button
                     onClick={() => {
                         setIsSheetOpen(false)
                         router.push(`/service-orders/${os.id}`)
                     }}
                     className={cn(
-                        "flex items-center gap-3 px-3 py-3 rounded-2xl text-sm transition-all text-foreground hover:bg-muted outline-none cursor-pointer border border-transparent",
-                        isMobile && "flex-col items-start gap-1 justify-center bg-muted/30 border-border/40"
+                        "flex flex-col items-start gap-1 justify-center px-3 py-3 rounded-2xl text-sm transition-all text-foreground hover:bg-muted outline-none cursor-pointer border border-transparent bg-muted/30 border-border/40",
+                        !isMobile && "py-2.5"
                     )}
                 >
-                    <div className={cn("p-1.5 rounded-lg bg-indigo-500/10 text-indigo-500", !isMobile && "p-0 bg-transparent")}>
+                    <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-500">
                         <Eye className="w-4 h-4" />
                     </div>
                     <span className="font-semibold">Ver OS</span>
@@ -131,11 +131,11 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                         router.push(`/service-orders/${os.id}/edit`)
                     }}
                     className={cn(
-                        "flex items-center gap-3 px-3 py-3 rounded-2xl text-sm transition-all text-foreground hover:bg-muted outline-none cursor-pointer border border-transparent",
-                        isMobile && "flex-col items-start gap-1 justify-center bg-muted/30 border-border/40"
+                        "flex flex-col items-start gap-1 justify-center px-3 py-3 rounded-2xl text-sm transition-all text-foreground hover:bg-muted outline-none cursor-pointer border border-transparent bg-muted/30 border-border/40",
+                        !isMobile && "py-2.5"
                     )}
                 >
-                    <div className={cn("p-1.5 rounded-lg bg-amber-500/10 text-amber-500", !isMobile && "p-0 bg-transparent")}>
+                    <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-500">
                         <Edit2 className="w-4 h-4" />
                     </div>
                     <span className="font-semibold">Editar</span>
@@ -144,11 +144,11 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                 <button
                     onClick={handleWhatsAppShare}
                     className={cn(
-                        "flex items-center gap-3 px-3 py-3 rounded-2xl text-sm transition-all text-green-600 dark:text-green-400 hover:bg-green-500/10 outline-none cursor-pointer border border-transparent",
-                        isMobile && "flex-col items-start gap-1 justify-center bg-green-500/5 border-green-500/10"
+                        "flex flex-col items-start gap-1 justify-center px-3 py-3 rounded-2xl text-sm transition-all text-green-600 dark:text-green-400 hover:bg-green-500/10 outline-none cursor-pointer border border-transparent bg-green-500/5 border-green-500/10",
+                        !isMobile && "py-2.5"
                     )}
                 >
-                    <div className={cn("p-1.5 rounded-lg bg-green-500/10", !isMobile && "p-0 bg-transparent")}>
+                    <div className="p-1.5 rounded-lg bg-green-500/10">
                         <MessageCircle className="w-4 h-4" />
                     </div>
                     <span className="font-semibold">WhatsApp</span>
@@ -157,11 +157,11 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                 <button
                     onClick={handleCopyLink}
                     className={cn(
-                        "flex items-center gap-3 px-3 py-3 rounded-2xl text-sm transition-all text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 outline-none cursor-pointer border border-transparent",
-                        isMobile && "flex-col items-start gap-1 justify-center bg-blue-500/5 border-blue-500/10"
+                        "flex flex-col items-start gap-1 justify-center px-3 py-3 rounded-2xl text-sm transition-all text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 outline-none cursor-pointer border border-transparent bg-blue-500/5 border-blue-500/10",
+                        !isMobile && "py-2.5"
                     )}
                 >
-                    <div className={cn("p-1.5 rounded-lg bg-blue-500/10", !isMobile && "p-0 bg-transparent")}>
+                    <div className="p-1.5 rounded-lg bg-blue-500/10">
                         <Share2 className="w-4 h-4" />
                     </div>
                     <span className="font-semibold">Link</span>
@@ -179,7 +179,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
             </div>
 
             {/* Grade de Status */}
-            <div className={cn("grid gap-1.5", isMobile ? "grid-cols-2" : "grid-cols-1")}>
+            <div className="grid grid-cols-2 gap-1.5">
                 {STATUS_OPTIONS.map((status) => {
                     const Icon = status.icon
                     const isActive = os.status === status.value
@@ -188,20 +188,19 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                             key={status.value}
                             onClick={() => handleStatusChange(status.value)}
                             className={cn(
-                                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition-all outline-none cursor-pointer border",
+                                "flex items-center gap-2 px-2.5 py-2 rounded-xl text-[11px] transition-all outline-none cursor-pointer border",
                                 isActive
                                     ? "bg-indigo-500 text-white border-indigo-500 shadow-lg shadow-indigo-500/20"
                                     : "bg-muted/20 border-transparent hover:bg-muted hover:border-border/50 text-foreground/70"
                             )}
                         >
                             <div className={cn(
-                                "p-1 rounded-md",
+                                "p-1 rounded-md shrink-0",
                                 isActive ? "bg-white/20" : status.bg
                             )}>
-                                <Icon className={cn("w-3.5 h-3.5", isActive ? "text-white" : status.color)} />
+                                <Icon className={cn("w-3 h-3", isActive ? "text-white" : status.color)} />
                             </div>
-                            <span className="font-bold">{status.label}</span>
-                            {isActive && <CheckCircle className="w-3.5 h-3.5 ml-auto opacity-70" />}
+                            <span className="font-bold truncate">{status.label}</span>
                         </button>
                     )
                 })}
@@ -222,9 +221,9 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                             }, 1000)
                         }
                     }}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-2xl text-xs font-bold transition-all text-foreground bg-muted/50 hover:bg-muted border border-border/50 outline-none cursor-pointer"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-2xl text-[10px] font-bold transition-all text-foreground bg-muted/50 hover:bg-muted border border-border/50 outline-none cursor-pointer"
                 >
-                    <Printer className="w-4 h-4 opacity-70" />
+                    <Printer className="w-3.5 h-3.5 opacity-70" />
                     Imprimir
                 </button>
 
@@ -243,9 +242,9 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                             }
                         )
                     }}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-2xl text-xs font-bold transition-all text-red-500 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 outline-none cursor-pointer"
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-2xl text-[10px] font-bold transition-all text-red-500 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 outline-none cursor-pointer"
                 >
-                    <Ban className="w-4 h-4 opacity-70" />
+                    <Ban className="w-3.5 h-3.5 opacity-70" />
                     Cancelar
                 </button>
             </div>
@@ -341,15 +340,15 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                             align="end" 
                             side="bottom"
                             sideOffset={12}
-                            avoidCollisions={true}
-                            collisionPadding={12}
-                            className="w-72 rounded-[1.5rem] border border-border bg-card shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_40px_80px_rgba(0,0,0,0.6)] z-[1010] backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden outline-none ring-1 ring-white/10"
+                            avoidCollisions={false}
+                            className="w-72 rounded-[1.5rem] border border-border bg-card shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_40px_80px_rgba(0,0,0,0.6)] z-[1010] backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200 overflow-y-auto max-h-[calc(100vh-100px)] outline-none ring-1 ring-white/10"
                         >
                             <ActionItems />
                         </DropdownMenu.Content>
                     </DropdownMenu.Portal>
                 </DropdownMenu.Root>
             )}
+
 
             <PayOSModal
                 isOpen={isPaymentModalOpen}
