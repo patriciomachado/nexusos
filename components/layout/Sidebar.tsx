@@ -55,15 +55,18 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
                 )}
             >
                 {/* Logo */}
-                <div className="h-14 lg:h-18 flex items-center px-3 lg:px-4 border-b border-border shrink-0 relative overflow-hidden bg-background/30" suppressHydrationWarning>
+                <div className="h-16 lg:h-20 flex items-center px-3 lg:px-4 border-b border-border shrink-0 relative overflow-hidden bg-background/30" suppressHydrationWarning>
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent" suppressHydrationWarning />
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 relative z-10 transition-transform hover:rotate-6 overflow-hidden" suppressHydrationWarning>
-                        <img src="/logo.png" alt="Nexus Logo" className="w-full h-full object-contain bg-background" />
+                    <div className={cn(
+                        "rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 relative z-10 transition-all duration-300 overflow-hidden bg-white dark:bg-white/95",
+                        effectiveOpen ? "w-12 h-12 lg:w-14 lg:h-14 p-1.5" : "w-10 h-10 p-1"
+                    )} suppressHydrationWarning>
+                        <img src="/logo.png" alt="Nexus Logo" className="w-full h-full object-contain hover:scale-110 transition-transform duration-300" />
                     </div>
                     {effectiveOpen && (
                         <div className="ml-4 flex flex-col relative z-10 animate-in fade-in slide-in-from-left-2 duration-300">
-                            <span className="font-black text-foreground tracking-widest text-lg leading-none">NEXUS<span className="text-primary">OS</span></span>
-                            <span className="text-[8px] font-black text-primary/50 uppercase tracking-[0.2em] mt-1">Sistemas Premium</span>
+                            <span className="font-black text-foreground tracking-widest text-lg lg:text-xl leading-none drop-shadow-sm">NEXUS<span className="text-primary">OS</span></span>
+                            <span className="text-[9px] font-black text-primary/60 uppercase tracking-[0.2em] mt-1">Sistemas Premium</span>
                         </div>
                     )}
                 </div>
