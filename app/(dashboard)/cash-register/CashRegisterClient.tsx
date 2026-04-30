@@ -204,7 +204,7 @@ export default function CashRegisterClient() {
                                 className="flex items-center gap-2 px-6 py-2.5 bg-rose-500 hover:bg-rose-400 text-white font-bold rounded-xl transition-all shadow-lg shadow-rose-500/20 active:scale-95"
                             >
                                 <Lock className="w-4 h-4" />
-                                Encerrar Expediente
+                                Encerrar Caixa
                             </button>
                         )}
                     </div>
