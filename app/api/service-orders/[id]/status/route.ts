@@ -23,12 +23,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const { data: os } = await db
         .from('service_orders')
-        .select('status, final_cost, estimated_cost, order_number, customer_id, parts_cost')
+        .select('status, final_cost, estimated_cost, order_number, customer_id, parts_cost, labor_cost')
         .eq('id', id)
         .eq('company_id', companyId)
         .single()
 
     if (!os) return NextResponse.json({ error: 'OS not found' }, { status: 404 })
+
+    // Buscar custos dos itens diretamente para garantir precisão
+    const { data: osItems } = await db
+        .from('service_order_items')
+        .select('total_cost')
+        .eq('service_order_id', id)
+
+    const calculatedPartsCost = osItems?.reduce((sum, item) => sum + (Number(item.total_cost) || 0), 0) || os.parts_cost || 0
 
     const updateData: Record<string, any> = { status }
     if (status === 'em_andamento' && !os.status.includes('andamento')) {
@@ -108,15 +116,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                 if (payment_method_id) {
                     updateData.payment_method_id = payment_method_id
                 }
+                
+                // Atualizar custos na OS com valores calculados dos itens
+                updateData.parts_cost = calculatedPartsCost
 
-                // NEW: Register parts cost as an exit (despesa) in the cash register
-                if (os.parts_cost && Number(os.parts_cost) > 0) {
+                // Registrar custo de peças como saída (despesa) no caixa
+                if (calculatedPartsCost > 0) {
                     await db.from('cash_transactions').insert({
                         cash_register_id: openRegister.id,
                         company_id: companyId,
                         user_id: dbUser.id,
                         type: 'exit',
-                        amount: Number(os.parts_cost),
+                        amount: calculatedPartsCost,
                         payment_method_id: payment_method_id,
                         description: `Custo de Peças OS #${os.order_number}`,
                         source_type: 'service_order',

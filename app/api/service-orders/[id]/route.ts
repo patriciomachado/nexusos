@@ -115,20 +115,92 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
 
-    const { db, companyId } = ctx
+    const { db, companyId, dbUser } = ctx
     const { id } = await params
     
     if (!idSchema.safeParse(id).success) {
         return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
     }
 
-    const { error } = await db
-        .from('service_orders')
-        .update({ status: 'cancelada' })
-        .eq('id', id)
-        .eq('company_id', companyId)
+    try {
+        // 1. Buscar OS completa para calcular custos a estornar
+        const { data: osToDelete } = await db
+            .from('service_orders')
+            .select('order_number, final_cost, estimated_cost, parts_cost, labor_cost')
+            .eq('id', id)
+            .eq('company_id', companyId)
+            .single()
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+        // 2. Apagar itens da OS
+        await db.from('service_order_items').delete().eq('service_order_id', id)
+        
+        // 3. Apagar histórico e anexos (se existirem, para evitar erro de FK)
+        await db.from('service_order_history').delete().eq('service_order_id', id)
+        await db.from('service_order_attachments').delete().eq('service_order_id', id)
 
-    return NextResponse.json({ success: true })
+        // 4. Apagar pagamentos vinculados
+        await db.from('payments').delete().eq('service_order_id', id).eq('company_id', companyId)
+
+        // 5. Buscar registro de caixa aberto
+        const { data: openRegisters } = await db
+            .from('cash_registers')
+            .select('id')
+            .eq('company_id', companyId)
+            .eq('status', 'open')
+            .order('opened_at', { ascending: false })
+
+        const openRegister = openRegisters && openRegisters.length > 0 ? openRegisters[0] : null
+
+        // 6. Estornar receitas e custos do caixa - CRÍTICO!
+        const { data: existingTransactions } = await db
+            .from('cash_transactions')
+            .select('id, type, amount')
+            .eq('source_type', 'service_order')
+            .eq('source_id', id)
+            .eq('company_id', companyId)
+
+        if (openRegister && existingTransactions && existingTransactions.length > 0) {
+            for (const trans of existingTransactions) {
+                const newType = trans.type === 'entry' ? 'exit' : 'entry'
+                const osNumber = osToDelete?.order_number || 'OS'
+                const descPrefix = trans.type === 'entry' ? 'Estorno Receita' : 'Estorno Custo'
+                
+                await db.from('cash_transactions').insert({
+                    cash_register_id: openRegister.id,
+                    company_id: companyId,
+                    user_id: dbUser.id,
+                    type: newType,
+                    amount: trans.amount,
+                    description: `${descPrefix} - ${osNumber} (_EXCLUIDA_)`,
+                    source_type: 'service_order',
+                    source_id: id,
+                    reference_transaction_id: trans.id
+                })
+            }
+        }
+
+        // 7. Deletar transações antigas do caixa (depois de criar estorno)
+        await db.from('cash_transactions')
+            .delete()
+            .eq('source_type', 'service_order')
+            .eq('source_id', id)
+            .eq('company_id', companyId)
+
+        // 8. Apagar a OS em si
+        const { error } = await db
+            .from('service_orders')
+            .delete()
+            .eq('id', id)
+            .eq('company_id', companyId)
+
+        if (error) {
+            console.error('Erro ao excluir OS:', error)
+            return NextResponse.json({ error: error.message }, { status: 500 })
+        }
+
+        return NextResponse.json({ success: true })
+    } catch (err: any) {
+        console.error('Exceção ao excluir OS:', err)
+        return NextResponse.json({ error: err.message }, { status: 500 })
+    }
 }
