@@ -428,7 +428,7 @@ export default function CashRegisterClient() {
                                         <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
                                     </button>
                                 </div>
-           </div>
+                            </div>
 
                                 {!currentRegister && (
                                     <div className="p-4 bg-primary/5 border border-primary/20 rounded-2xl">
@@ -447,8 +447,7 @@ export default function CashRegisterClient() {
                                         </button>
                                     </div>
                                 )}
-                            </div>
-
+                            
                             {/* Performance Insights */}
                             <div className="bg-card/40 border border-border rounded-3xl p-6 space-y-6">
                                 <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
@@ -473,14 +472,14 @@ export default function CashRegisterClient() {
                                             <span className="text-[10px] font-bold text-muted-foreground uppercase">Ticket Médio</span>
                                         </div>
                                         <span className="text-lg font-black text-foreground">
-                                            {formatCurrency(transactions.length > 0 ? stats.entries / transactions.length : 0)}
+                                            {formatCurrency(transactions.length > 0 ? (stats.entries / transactions.length) : 0)}
                                         </span>
                                     </div>
 
                                     <div className="flex items-center justify-between p-3 bg-muted/60 rounded-2xl border border-border">
                                         <div className="flex items-center gap-3">
                                             <TrendingUp className="w-4 h-4 text-emerald-500" />
-                                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Vendas OS/PDV</span>
+                                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Vendas OS e PDV</span>
                                         </div>
                                         <span className="text-lg font-black text-foreground">
                                             {transactions.filter(t => t.source_type === 'service_order' || t.source_type === 'product_sale').length}
@@ -496,12 +495,12 @@ export default function CashRegisterClient() {
                         animate={{ opacity: 1, y: 0 }}
                     >
                         <div className="bg-card/40 rounded-3xl border border-border p-2 overflow-hidden backdrop-blur-xl">
-                        <TransactionHistory 
-                            companyId={companyId || ''} 
-                            initialPayments={payments}
-                            allTransactions={allTransactions}
-                            registers={registers}
-                        />
+                            <TransactionHistory 
+                                companyId={companyId || ''} 
+                                initialPayments={payments}
+                                allTransactions={allTransactions}
+                                registers={registers}
+                            />
                         </div>
                     </motion.div>
                 )}
