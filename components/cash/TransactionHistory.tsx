@@ -59,8 +59,16 @@ export default function TransactionHistory({
         })
 
         // Map payments (Global Revenue) - Filter out ones already in cash transactions to avoid duplication
+        // We match by source_id AND amount to avoid filtering out legitimate split payments
         const paymentHistory = initialPayments
-            .filter(p => !allTransactions.some(tx => tx.source_id === (p.reference_id || p.service_order_id || p.id)))
+            .filter(p => {
+                const sourceId = p.reference_id || p.service_order_id || p.id;
+                return !allTransactions.some(tx => 
+                    tx.source_id === sourceId && 
+                    Number(tx.amount) === Number(p.amount) &&
+                    Math.abs(new Date(tx.created_at).getTime() - new Date(p.payment_date || p.created_at).getTime()) < 60000 // Within 1 minute
+                );
+            })
             .map(p => ({
                 id: `pay-${p.id}`,
                 description: `Pagamento: ${p.customers?.name || 'Cliente'} ${p.service_orders?.order_number ? `(OS #${p.service_orders.order_number})` : ''}`,
@@ -70,6 +78,7 @@ export default function TransactionHistory({
                 method: p.payment_method || 'PIX/Cartão',
                 category: 'Faturamento Externo',
                 sourceType: 'payment',
+                sourceId: p.reference_id || p.service_order_id || p.id,
                 originalData: p
             }))
 
@@ -128,9 +137,18 @@ export default function TransactionHistory({
             .reduce((sum, item) => sum + item.amount, 0)
 
         // 4. Total Cost of Goods (Parts Cost)
+        const processedSourceIds = new Set<string>()
         const totalCost = dateFilteredHistory.reduce((sum, item) => {
             const data = item.originalData
             if (!data || item.type !== 'entry') return sum
+
+            const sourceId = item.sourceId
+            if (sourceId) {
+                if (processedSourceIds.has(sourceId)) {
+                    return sum // Skip if we already added the cost for this OS/Sale
+                }
+                processedSourceIds.add(sourceId)
+            }
 
             let cost = 0
 
