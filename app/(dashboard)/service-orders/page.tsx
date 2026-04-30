@@ -134,7 +134,7 @@ export default async function ServiceOrdersPage({
                                         return (
                                             <tr
                                                 key={order.id}
-                                                className="group hover:bg-white/5 transition-all duration-300 relative cursor-pointer select-none hover:z-50"
+                                                className="group hover:bg-white/5 transition-all duration-300 relative cursor-pointer select-none"
                                             >
                                                 <td className="p-6 align-middle hidden sm:table-cell">
                                                     <span className="text-xs font-black text-muted-foreground/40 font-mono tracking-tighter">
