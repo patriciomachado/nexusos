@@ -57,8 +57,8 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
                 {/* Logo */}
                 <div className="h-14 lg:h-18 flex items-center px-3 lg:px-4 border-b border-border shrink-0 relative overflow-hidden bg-background/30" suppressHydrationWarning>
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent" suppressHydrationWarning />
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 relative z-10 transition-transform hover:rotate-6" suppressHydrationWarning>
-                        <Zap className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 relative z-10 transition-transform hover:rotate-6 overflow-hidden" suppressHydrationWarning>
+                        <img src="/logo.png" alt="Nexus Logo" className="w-full h-full object-contain bg-background" />
                     </div>
                     {effectiveOpen && (
                         <div className="ml-4 flex flex-col relative z-10 animate-in fade-in slide-in-from-left-2 duration-300">

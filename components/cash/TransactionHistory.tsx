@@ -62,12 +62,21 @@ export default function TransactionHistory({
         // We match by source_id AND amount to avoid filtering out legitimate split payments
         const paymentHistory = initialPayments
             .filter(p => {
-                const sourceId = p.reference_id || p.service_order_id || p.id;
-                return !allTransactions.some(tx => 
-                    tx.source_id === sourceId && 
-                    Number(tx.amount) === Number(p.amount) &&
-                    Math.abs(new Date(tx.created_at).getTime() - new Date(p.payment_date || p.created_at).getTime()) < 60000 // Within 1 minute
-                );
+                const sourceId = p.reference_id || p.service_order_id || p.sale_id || p.id;
+                return !allTransactions.some(tx => {
+                    // Match by source_id and amount
+                    if (tx.source_id === sourceId && Number(tx.amount) === Number(p.amount)) {
+                        return true;
+                    }
+                    // Fallback for older payments that don't have source_id linked properly
+                    // Compare DB timestamps (created_at) which are reliable. 
+                    // If created within 5 seconds with same amount, they are the same transaction
+                    const timeDiff = Math.abs(new Date(tx.created_at).getTime() - new Date(p.created_at).getTime());
+                    if (Number(tx.amount) === Number(p.amount) && timeDiff < 5000) {
+                        return true;
+                    }
+                    return false;
+                });
             })
             .map(p => ({
                 id: `pay-${p.id}`,
