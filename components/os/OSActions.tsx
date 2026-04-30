@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useEffect, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
     MoreHorizontal, Eye, Edit2, MessageCircle,
     CheckCircle, Clock, Ban,
-    Settings, Printer, Share2, AlertTriangle, DollarSign
+    Settings, Printer, Share2, AlertTriangle, DollarSign,
+    X, ChevronRight, LayoutGrid
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import PayOSModal from './PayOSModal'
@@ -33,19 +35,29 @@ interface Props {
 }
 
 const STATUS_OPTIONS = [
-    { value: 'aberta', label: 'Aberta', icon: AlertTriangle, color: 'text-blue-400' },
-    { value: 'em_andamento', label: 'Em Andamento', icon: Clock, color: 'text-yellow-400' },
-    { value: 'concluida', label: 'Concluída', icon: CheckCircle, color: 'text-emerald-400' },
-    { value: 'faturada', label: 'Faturada (Paga)', icon: DollarSign, color: 'text-emerald-600' },
-    { value: 'cancelada', label: 'Cancelada', icon: Ban, color: 'text-red-400' },
+    { value: 'aberta', label: 'Aberta', icon: AlertTriangle, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+    { value: 'em_andamento', label: 'Andamento', icon: Clock, color: 'text-yellow-500', bg: 'bg-yellow-500/10' },
+    { value: 'concluida', label: 'Concluída', icon: CheckCircle, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+    { value: 'faturada', label: 'Paga', icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-600/10' },
+    { value: 'cancelada', label: 'Cancelada', icon: Ban, color: 'text-red-500', bg: 'bg-red-500/10' },
 ]
 
 export default function OSActions({ os, variant = 'list' }: Props) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
+    const [isSheetOpen, setIsSheetOpen] = useState(false)
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768)
+        checkMobile()
+        window.addEventListener('resize', checkMobile)
+        return () => window.removeEventListener('resize', checkMobile)
+    }, [])
 
     async function handleStatusChange(newStatus: string) {
+        setIsSheetOpen(false)
         if (newStatus === os.status) return
 
         if (newStatus === 'faturada') {
@@ -69,6 +81,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
     }
 
     function handleWhatsAppShare() {
+        setIsSheetOpen(false)
         const customer = os.customers
         const phone = customer?.phone?.replace(/\D/g, '')
 
@@ -82,6 +95,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
     }
 
     function handleCopyLink() {
+        setIsSheetOpen(false)
         if (!os.tracking_token) {
             toast.error('Link de acompanhamento não disponível.')
             return
@@ -91,20 +105,168 @@ export default function OSActions({ os, variant = 'list' }: Props) {
         toast.success('Link copiado para a área de transferência!')
     }
 
+    const ActionItems = ({ isMobile = false }: { isMobile?: boolean }) => (
+        <div className={cn("p-2 space-y-4", isMobile && "p-6 pb-10")}>
+            {/* Seção Principal de Ações */}
+            <div className={cn("grid gap-2", isMobile ? "grid-cols-2" : "grid-cols-1")}>
+                <button
+                    onClick={() => {
+                        setIsSheetOpen(false)
+                        router.push(`/service-orders/${os.id}`)
+                    }}
+                    className={cn(
+                        "flex items-center gap-3 px-3 py-3 rounded-2xl text-sm transition-all text-foreground hover:bg-muted outline-none cursor-pointer border border-transparent",
+                        isMobile && "flex-col items-start gap-1 justify-center bg-muted/30 border-border/40"
+                    )}
+                >
+                    <div className={cn("p-1.5 rounded-lg bg-indigo-500/10 text-indigo-500", !isMobile && "p-0 bg-transparent")}>
+                        <Eye className="w-4 h-4" />
+                    </div>
+                    <span className="font-semibold">Ver OS</span>
+                </button>
+
+                <button
+                    onClick={() => {
+                        setIsSheetOpen(false)
+                        router.push(`/service-orders/${os.id}/edit`)
+                    }}
+                    className={cn(
+                        "flex items-center gap-3 px-3 py-3 rounded-2xl text-sm transition-all text-foreground hover:bg-muted outline-none cursor-pointer border border-transparent",
+                        isMobile && "flex-col items-start gap-1 justify-center bg-muted/30 border-border/40"
+                    )}
+                >
+                    <div className={cn("p-1.5 rounded-lg bg-amber-500/10 text-amber-500", !isMobile && "p-0 bg-transparent")}>
+                        <Edit2 className="w-4 h-4" />
+                    </div>
+                    <span className="font-semibold">Editar</span>
+                </button>
+
+                <button
+                    onClick={handleWhatsAppShare}
+                    className={cn(
+                        "flex items-center gap-3 px-3 py-3 rounded-2xl text-sm transition-all text-green-600 dark:text-green-400 hover:bg-green-500/10 outline-none cursor-pointer border border-transparent",
+                        isMobile && "flex-col items-start gap-1 justify-center bg-green-500/5 border-green-500/10"
+                    )}
+                >
+                    <div className={cn("p-1.5 rounded-lg bg-green-500/10", !isMobile && "p-0 bg-transparent")}>
+                        <MessageCircle className="w-4 h-4" />
+                    </div>
+                    <span className="font-semibold">WhatsApp</span>
+                </button>
+
+                <button
+                    onClick={handleCopyLink}
+                    className={cn(
+                        "flex items-center gap-3 px-3 py-3 rounded-2xl text-sm transition-all text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 outline-none cursor-pointer border border-transparent",
+                        isMobile && "flex-col items-start gap-1 justify-center bg-blue-500/5 border-blue-500/10"
+                    )}
+                >
+                    <div className={cn("p-1.5 rounded-lg bg-blue-500/10", !isMobile && "p-0 bg-transparent")}>
+                        <Share2 className="w-4 h-4" />
+                    </div>
+                    <span className="font-semibold">Link</span>
+                </button>
+            </div>
+
+            {/* Divisor Visual */}
+            <div className="relative">
+                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div className="w-full border-t border-border/50"></div>
+                </div>
+                <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-black text-muted-foreground/50">
+                    <span className="bg-card px-3">Status</span>
+                </div>
+            </div>
+
+            {/* Grade de Status */}
+            <div className={cn("grid gap-1.5", isMobile ? "grid-cols-2" : "grid-cols-1")}>
+                {STATUS_OPTIONS.map((status) => {
+                    const Icon = status.icon
+                    const isActive = os.status === status.value
+                    return (
+                        <button
+                            key={status.value}
+                            onClick={() => handleStatusChange(status.value)}
+                            className={cn(
+                                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition-all outline-none cursor-pointer border",
+                                isActive
+                                    ? "bg-indigo-500 text-white border-indigo-500 shadow-lg shadow-indigo-500/20"
+                                    : "bg-muted/20 border-transparent hover:bg-muted hover:border-border/50 text-foreground/70"
+                            )}
+                        >
+                            <div className={cn(
+                                "p-1 rounded-md",
+                                isActive ? "bg-white/20" : status.bg
+                            )}>
+                                <Icon className={cn("w-3.5 h-3.5", isActive ? "text-white" : status.color)} />
+                            </div>
+                            <span className="font-bold">{status.label}</span>
+                            {isActive && <CheckCircle className="w-3.5 h-3.5 ml-auto opacity-70" />}
+                        </button>
+                    )
+                })}
+            </div>
+
+            {/* Ações Secundárias */}
+            <div className="flex gap-2">
+                <button
+                    onClick={() => {
+                        setIsSheetOpen(false)
+                        const iframe = document.createElement('iframe')
+                        iframe.style.display = 'none'
+                        iframe.src = `/print/os/${os.id}`
+                        document.body.appendChild(iframe)
+                        iframe.onload = () => {
+                            setTimeout(() => {
+                                setTimeout(() => document.body.removeChild(iframe), 60000)
+                            }, 1000)
+                        }
+                    }}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-2xl text-xs font-bold transition-all text-foreground bg-muted/50 hover:bg-muted border border-border/50 outline-none cursor-pointer"
+                >
+                    <Printer className="w-4 h-4 opacity-70" />
+                    Imprimir
+                </button>
+
+                <button
+                    onClick={() => {
+                        setIsSheetOpen(false)
+                        toast.promise(
+                            fetch(`/api/service-orders/${os.id}`, { method: 'DELETE' }),
+                            {
+                                loading: 'Cancelando OS...',
+                                success: () => {
+                                    router.refresh()
+                                    return 'OS Cancelada'
+                                },
+                                error: 'Erro ao cancelar'
+                            }
+                        )
+                    }}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-2xl text-xs font-bold transition-all text-red-500 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 outline-none cursor-pointer"
+                >
+                    <Ban className="w-4 h-4 opacity-70" />
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    )
+
     return (
         <>
-            <DropdownMenu.Root>
-                <DropdownMenu.Trigger asChild>
+            {isMobile ? (
+                <>
                     <button
+                        onClick={() => setIsSheetOpen(true)}
                         className={cn(
                             "flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 outline-none",
                             variant === 'list'
-                                ? "p-2 rounded-lg text-muted-foreground/60 hover:text-foreground hover:bg-muted"
+                                ? "p-2 rounded-xl text-muted-foreground/60 hover:text-foreground hover:bg-muted border border-transparent active:bg-muted"
                                 : "px-5 py-2.5 rounded-2xl border border-border bg-card text-foreground hover:bg-muted font-bold text-xs uppercase tracking-[0.2em]"
                         )}
                     >
                         {variant === 'list' ? (
-                            <MoreHorizontal className="w-5 h-5" />
+                            <LayoutGrid className="w-5 h-5" />
                         ) : (
                             <>
                                 <Settings className="w-4 h-4" />
@@ -112,128 +274,82 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                             </>
                         )}
                     </button>
-                </DropdownMenu.Trigger>
 
-                <DropdownMenu.Portal>
-                    <DropdownMenu.Content 
-                        align="end" 
-                        sideOffset={8}
-                        className="w-64 rounded-2xl border border-border bg-card shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[1010] backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden divide-y divide-border/50 outline-none"
-                    >
-                        <div className="p-1.5 space-y-1">
-                            <DropdownMenu.Item asChild>
-                                <button
-                                    onClick={() => router.push(`/service-orders/${os.id}`)}
-                                    className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm transition-all text-foreground hover:bg-muted group outline-none cursor-pointer"
+                    <AnimatePresence>
+                        {isSheetOpen && (
+                            <>
+                                <div 
+                                    className="fixed inset-0 bg-black/60 backdrop-blur-md z-[2000] animate-in fade-in duration-300"
+                                    onClick={() => setIsSheetOpen(false)}
+                                />
+                                <motion.div
+                                    {...({
+                                        initial: { y: "100%" },
+                                        animate: { y: 0 },
+                                        exit: { y: "100%" },
+                                        transition: { type: "spring", damping: 30, stiffness: 300 },
+                                        className: "fixed inset-x-0 bottom-0 bg-card border-t border-border rounded-t-[2.5rem] z-[2001] shadow-2xl pb-safe ring-1 ring-white/10"
+                                    } as any)}
                                 >
-                                    <Eye className="w-4 h-4 opacity-70 group-hover:opacity-100" />
-                                    <span>Ver Detalhes</span>
-                                </button>
-                            </DropdownMenu.Item>
-
-                            <DropdownMenu.Item asChild>
-                                <button
-                                    onClick={() => router.push(`/service-orders/${os.id}/edit`)}
-                                    className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm transition-all text-foreground hover:bg-muted group outline-none cursor-pointer"
-                                >
-                                    <Edit2 className="w-4 h-4 opacity-70 group-hover:opacity-100" />
-                                    <span>Editar Ordem</span>
-                                </button>
-                            </DropdownMenu.Item>
-
-                            <DropdownMenu.Item asChild>
-                                <button
-                                    onClick={handleWhatsAppShare}
-                                    className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm transition-all text-green-600/80 dark:text-green-400/60 hover:bg-green-500/10 hover:text-green-700 dark:hover:text-green-400 group outline-none cursor-pointer"
-                                >
-                                    <MessageCircle className="w-4 h-4 opacity-50 group-hover:opacity-100" />
-                                    <span>Enviar WhatsApp</span>
-                                </button>
-                            </DropdownMenu.Item>
-
-                            <DropdownMenu.Item asChild>
-                                <button
-                                    onClick={handleCopyLink}
-                                    className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm transition-all text-blue-600/80 dark:text-blue-400/60 hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-400 group outline-none cursor-pointer"
-                                >
-                                    <Share2 className="w-4 h-4 opacity-50 group-hover:opacity-100" />
-                                    <span>Copiar Link</span>
-                                </button>
-                            </DropdownMenu.Item>
-
-                            <div className="my-1 border-t border-border/50" />
-
-                            <div className="px-3.5 py-2 text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">
-                                Alterar Status
-                            </div>
-
-                            {STATUS_OPTIONS.map((status) => {
-                                const Icon = status.icon
-                                return (
-                                    <DropdownMenu.Item key={status.value} asChild>
-                                        <button
-                                            onClick={() => handleStatusChange(status.value)}
-                                            className={cn(
-                                                "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm transition-all group outline-none cursor-pointer",
-                                                os.status === status.value
-                                                    ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
-                                                    : "text-foreground/70 hover:bg-muted hover:text-foreground"
-                                            )}
+                                    <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mt-4 mb-2 opacity-50" />
+                                    
+                                    <div className="flex items-center justify-between px-6 py-4">
+                                        <div className="space-y-0.5">
+                                            <h3 className="text-xl font-black tracking-tighter bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent">Nexus Ações</h3>
+                                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em]">OS #{os.order_number}</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => setIsSheetOpen(false)}
+                                            className="p-2.5 rounded-2xl bg-muted/80 text-muted-foreground hover:text-foreground transition-colors"
                                         >
-                                            <Icon className={cn("w-4 h-4 opacity-50 group-hover:opacity-100", status.color)} />
-                                            <span>{status.label}</span>
+                                            <X className="w-5 h-5" />
                                         </button>
-                                    </DropdownMenu.Item>
-                                )
-                            })}
+                                    </div>
 
-                            <div className="my-1 border-t border-border/50" />
+                                    <div className="max-h-[80vh] overflow-y-auto overflow-x-hidden">
+                                        <ActionItems isMobile />
+                                    </div>
+                                </motion.div>
+                            </>
+                        )}
+                    </AnimatePresence>
+                </>
+            ) : (
+                <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                        <button
+                            className={cn(
+                                "flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 outline-none",
+                                variant === 'list'
+                                    ? "p-2 rounded-lg text-muted-foreground/60 hover:text-foreground hover:bg-muted"
+                                    : "px-5 py-2.5 rounded-2xl border border-border bg-card text-foreground hover:bg-muted font-bold text-xs uppercase tracking-[0.2em]"
+                            )}
+                        >
+                            {variant === 'list' ? (
+                                <MoreHorizontal className="w-5 h-5" />
+                            ) : (
+                                <>
+                                    <Settings className="w-4 h-4" />
+                                    Ações
+                                </>
+                            )}
+                        </button>
+                    </DropdownMenu.Trigger>
 
-                            <DropdownMenu.Item asChild>
-                                <button
-                                    onClick={() => {
-                                        const iframe = document.createElement('iframe')
-                                        iframe.style.display = 'none'
-                                        iframe.src = `/print/os/${os.id}`
-                                        document.body.appendChild(iframe)
-                                        iframe.onload = () => {
-                                            setTimeout(() => {
-                                                setTimeout(() => document.body.removeChild(iframe), 60000)
-                                            }, 1000)
-                                        }
-                                    }}
-                                    className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm transition-all text-foreground hover:bg-muted group outline-none cursor-pointer"
-                                >
-                                    <Printer className="w-4 h-4" />
-                                    <span>Imprimir OS</span>
-                                </button>
-                            </DropdownMenu.Item>
-
-                            <DropdownMenu.Item asChild>
-                                <button
-                                    onClick={() => {
-                                        toast.promise(
-                                            fetch(`/api/service-orders/${os.id}`, { method: 'DELETE' }),
-                                            {
-                                                loading: 'Cancelando OS...',
-                                                success: () => {
-                                                    router.refresh()
-                                                    return 'OS Cancelada'
-                                                },
-                                                error: 'Erro ao cancelar'
-                                            }
-                                        )
-                                    }}
-                                    className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm transition-all text-red-600/80 dark:text-red-400/60 hover:bg-red-500/10 hover:text-red-700 dark:hover:text-red-400 group outline-none cursor-pointer"
-                                >
-                                    <Ban className="w-4 h-4" />
-                                    <span>Cancelar OS</span>
-                                </button>
-                            </DropdownMenu.Item>
-                        </div>
-                    </DropdownMenu.Content>
-                </DropdownMenu.Portal>
-            </DropdownMenu.Root>
+                    <DropdownMenu.Portal>
+                        <DropdownMenu.Content 
+                            align="end" 
+                            side="bottom"
+                            sideOffset={12}
+                            avoidCollisions={true}
+                            collisionPadding={12}
+                            className="w-72 rounded-[1.5rem] border border-border bg-card shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_40px_80px_rgba(0,0,0,0.6)] z-[1010] backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden outline-none ring-1 ring-white/10"
+                        >
+                            <ActionItems />
+                        </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                </DropdownMenu.Root>
+            )}
 
             <PayOSModal
                 isOpen={isPaymentModalOpen}
