@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
 
-    const { db, companyId, userId: dbUserId } = ctx
+    const { db, companyId, dbUser } = ctx
 
     // Check if there's already an open cash register for this company
     const { data: openRegisters, error: checkError } = await db
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     const { data, error } = await db
         .from('cash_registers')
         .insert({
-            user_id: dbUserId,
+            user_id: dbUser.id,
             company_id: companyId,
             opening_balance: validation.data.opening_balance,
             status: 'open',

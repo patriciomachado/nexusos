@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
 
-    const { db, companyId, userId: dbUserId } = ctx
+    const { db, companyId, dbUser } = ctx
     const body = await req.json()
 
     // 1. Validate request body
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
             .insert({
                 ...saleData,
                 company_id: companyId,
-                user_id: dbUserId,
+                user_id: dbUser.id,
                 cash_register_id: registerId,
                 status: 'completed',
             })
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
                 description: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
                 source_type: 'product_sale',
                 source_id: sale.id,
-                user_id: dbUserId
+                user_id: dbUser.id
             })
 
         if (cashError) throw cashError
@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
                 reference_id: sale.id,
                 sale_id: sale.id,
                 notes: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
-                created_by: dbUserId
+                created_by: dbUser.id
             })
 
         if (paymentError) console.error('Error creating payment record:', paymentError)

@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
 
-    const { db, companyId, userId: dbUserId } = ctx
+    const { db, companyId, dbUser } = ctx
     const body = await req.json()
     
     const validation = paymentSchema.safeParse(body)
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
         .insert({ 
             ...validation.data, 
             company_id: companyId, 
-            created_by: dbUserId 
+            created_by: dbUser.id 
         })
         .select()
         .single()
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
             await db.from('cash_transactions').insert({
                 cash_register_id: openRegister.id,
                 company_id: companyId,
-                user_id: dbUserId,
+                user_id: dbUser.id,
                 type: 'entry',
                 amount: validation.data.amount,
                 payment_method_id: pmId,
