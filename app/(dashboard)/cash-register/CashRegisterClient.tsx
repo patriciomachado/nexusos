@@ -19,6 +19,7 @@ import CloseCashModal from '../../../components/financeiro/CloseCashModal'
 import TransactionHistory from '@/components/cash/TransactionHistory'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import RecurringExpensesModal from '@/components/financeiro/RecurringExpensesModal'
 
 export default function CashRegisterClient() {
     const [activeTab, setActiveTab] = useState<'daily' | 'history'>('daily')
@@ -33,6 +34,7 @@ export default function CashRegisterClient() {
     const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false)
     const [isClosingModalOpen, setIsClosingModalOpen] = useState(false)
     const [transactionType, setTransactionType] = useState<'entry' | 'exit'>('entry')
+    const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false)
 
     const fetchData = async () => {
         setLoading(true)
@@ -86,38 +88,10 @@ export default function CashRegisterClient() {
         }
     }
 
-    useEffect(() => {
-        const checkMidnightClosure = async () => {
-            if (currentRegister && currentRegister.status === 'open') {
-                const openedAt = new Date(currentRegister.opened_at)
-                const now = new Date()
-                
-                // If it was opened on a previous day, auto-close it
-                if (openedAt.getDate() !== now.getDate() || openedAt.getMonth() !== now.getMonth() || openedAt.getFullYear() !== now.getFullYear()) {
-                    try {
-                        console.log('Auto-closing register from previous day...')
-                        const res = await fetch(`/api/cash-registers/${currentRegister.id}/close`, { 
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' }
-                        })
-                        
-                        if (res.ok) {
-                            toast.success('Caixa do dia anterior foi encerrado automaticamente.')
-                            fetchData()
-                        } else {
-                            toast.error('Detectamos um caixa aberto do dia anterior, mas houve um erro ao encerrá-lo automaticamente.')
-                        }
-                    } catch (error) {
-                        console.error('Error auto-closing register:', error)
-                    }
-                }
-            }
-        }
-
-        fetchData().then(() => {
-            checkMidnightClosure()
-        })
+     useEffect(() => {
+        fetchData()
     }, [])
+
 
     const handleSuccess = () => {
         setTimeout(() => fetchData(), 500)
@@ -437,7 +411,24 @@ export default function CashRegisterClient() {
                                         </div>
                                         <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-rose-500 transition-colors" />
                                     </button>
+
+                                    <button
+                                        onClick={() => setIsRecurringModalOpen(true)}
+                                        className="w-full flex items-center justify-between p-4 rounded-2xl bg-muted border border-border hover:border-primary/30 hover:bg-primary/5 transition-all group"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="p-2.5 bg-primary/10 rounded-xl text-primary group-hover:scale-110 transition-transform">
+                                                <Calendar className="w-5 h-5" />
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="text-sm font-bold text-foreground">Contas Fixas</p>
+                                                <p className="text-[10px] text-muted-foreground uppercase font-medium">Gerenciar gastos mensais</p>
+                                            </div>
+                                        </div>
+                                        <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
+                                    </button>
                                 </div>
+           </div>
 
                                 {!currentRegister && (
                                     <div className="p-4 bg-primary/5 border border-primary/20 rounded-2xl">
@@ -542,6 +533,12 @@ export default function CashRegisterClient() {
                         onSuccess={handleSuccess}
                         cashRegister={currentRegister}
                         balance={calculateBalance}
+                    />
+                )}
+                {isRecurringModalOpen && (
+                    <RecurringExpensesModal
+                        isOpen={isRecurringModalOpen}
+                        onClose={() => setIsRecurringModalOpen(false)}
                     />
                 )}
             </AnimatePresence>

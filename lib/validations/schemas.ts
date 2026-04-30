@@ -134,11 +134,17 @@ export const cashRegisterOpenSchema = z.object({
 // Company Schema
 export const companyUpdateSchema = z.object({
   name: z.string().min(2, 'Nome muito curto').optional(),
-  phone: z.string().optional().nullable(),
+  cnpj: z.string().optional().nullable(),
   email: z.string().email('E-mail inválido').optional().nullable(),
+  phone: z.string().optional().nullable(),
   address: z.string().optional().nullable(),
-  document: z.string().optional().nullable(),
+  city: z.string().optional().nullable(),
+  state: z.string().optional().nullable(),
+  zip_code: z.string().optional().nullable(),
   logo_url: z.string().url().optional().nullable(),
+  warranty_terms: z.string().optional().nullable(),
+  cash_cycle: z.enum(['daily', 'monthly']).optional(),
+  auto_close_cash: z.boolean().optional(),
   settings: z.record(z.string(), z.any()).optional(),
 })
 
@@ -173,6 +179,16 @@ export const osStatusUpdateSchema = z.object({
 // Category Schema
 export const categorySchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
+})
+
+// Recurring Expense Schema
+export const recurringExpenseSchema = z.object({
+  description: z.string().min(1, 'Descrição é obrigatória'),
+  amount: z.number().min(0, 'Valor não pode ser negativo'),
+  day_of_month: z.number().int().min(1).max(31, 'Dia inválido'),
+  transaction_type_id: z.string().uuid('Tipo de transação inválido').nullable().optional(),
+  payment_method_id: z.string().uuid('Método de pagamento inválido').nullable().optional(),
+  is_active: z.boolean().default(true),
 })
 
 

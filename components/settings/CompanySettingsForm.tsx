@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Save, Building2, MapPin, Mail, Phone, Hash, ShieldCheck, Sparkles, Loader2 } from 'lucide-react'
+import { Save, Building2, MapPin, Mail, Phone, Hash, ShieldCheck, Sparkles, Loader2, DollarSign } from 'lucide-react'
 import { PremiumInput } from '@/components/ui/PremiumInput'
 import { PremiumTextarea } from '@/components/ui/PremiumTextarea'
 
@@ -25,6 +25,8 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
         state: company?.state || '',
         zip_code: company?.zip_code || '',
         warranty_terms: company?.warranty_terms || '',
+        cash_cycle: company?.cash_cycle || 'monthly',
+        auto_close_cash: company?.auto_close_cash ?? true,
     })
 
     async function handleSubmit(e: React.FormEvent) {
@@ -130,6 +132,42 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                     </div>
                 </div>
 
+                {/* Financial Management Section */}
+                <div className="sm:col-span-2 space-y-8 pt-8 border-t border-white/5">
+                    <div className="flex items-center gap-2 mb-3 ml-2">
+                        <DollarSign className="w-3.5 h-3.5 text-emerald-500" />
+                        <label className="block text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] font-black italic">Gestão Financeira & Caixa</label>
+                    </div>
+                    
+                    <div className="grid sm:grid-cols-2 gap-10">
+                        <div>
+                            <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Ciclo de Fechamento</label>
+                            <select
+                                name="cash_cycle"
+                                value={form.cash_cycle}
+                                onChange={e => setForm(p => ({ ...p, cash_cycle: e.target.value }))}
+                                className="w-full bg-white/5 border border-white/5 rounded-2xl h-14 px-6 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary transition-all appearance-none"
+                            >
+                                <option value="daily" className="bg-zinc-900">Diário (Fecha todo dia à meia-noite)</option>
+                                <option value="monthly" className="bg-zinc-900">Mensal (Fecha no último dia do mês)</option>
+                            </select>
+                        </div>
+
+                        <div className="flex items-center gap-4 h-14 px-6 bg-white/5 border border-white/5 rounded-2xl">
+                            <input
+                                type="checkbox"
+                                id="auto_close_cash"
+                                checked={form.auto_close_cash}
+                                onChange={e => setForm(p => ({ ...p, auto_close_cash: e.target.checked }))}
+                                className="w-5 h-5 rounded border-white/10 bg-white/5 text-primary focus:ring-primary"
+                            />
+                            <label htmlFor="auto_close_cash" className="text-xs font-black uppercase tracking-[0.1em] text-muted-foreground cursor-pointer">
+                                Fechar caixa automaticamente ao fim do ciclo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="sm:col-span-2">
                     <div className="flex items-center gap-2 mb-3 ml-2">
                         <ShieldCheck className="w-3.5 h-3.5 text-rose-500" />
@@ -138,7 +176,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                     <PremiumTextarea
                         name="warranty_terms"
                         value={form.warranty_terms}
-                        onChange={e => setForm(p => ({ ...p, [e.target.name]: e.target.value }))}
+                        onChange={e => setForm(p => ({ ...p, warranty_terms: e.target.value }))}
                         rows={8}
                         placeholder="Defina as cláusulas contratuais de garantia e suporte..."
                         className="min-h-[250px] bg-white/5 border-white/5 focus:border-rose-500/30 text-base leading-relaxed p-8"
