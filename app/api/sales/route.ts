@@ -127,22 +127,16 @@ export async function POST(req: NextRequest) {
         if (cashError) throw cashError
 
         // 5.1 Register Product Cost as Expense (if cost > 0)
-        if (totalCost > 0) {
-            const { data: expenseType } = await db
-                .from('transaction_types')
-                .select('id')
-                .eq('code', 'EXPENSE')
-                .single()
-
+        const costValue = Number(totalCost) || 0
+        if (costValue > 0) {
             const { error: costError } = await db
                 .from('cash_transactions')
                 .insert({
                     cash_register_id: registerId,
                     company_id: companyId,
                     type: 'exit',
-                    amount: totalCost,
+                    amount: costValue,
                     payment_method_id: saleData.payment_method_id,
-                    transaction_type_id: expenseType?.id,
                     description: `Custo Produtos - Venda ID: ${sale.id.substring(0, 8)}`,
                     source_type: 'product_sale',
                     source_id: sale.id,
