@@ -1,16 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
+import { idSchema } from '@/lib/validations/schemas'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    if (!idSchema.safeParse(id).success) {
+        return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
+    }
 
-    const db = createAdminClient()
-    const { data: currentUser } = await db.from('users').select('company_id, role').eq('clerk_id', userId).single()
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
-    if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'manager')) {
+    const { db, companyId, dbUser: currentUser } = ctx
+
+    if (currentUser.role !== 'admin' && currentUser.role !== 'manager') {
         return NextResponse.json({ error: 'Only admins or managers can update team members' }, { status: 403 })
     }
 
@@ -21,7 +24,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         .from('users')
         .update({ role, is_active, updated_at: new Date().toISOString() })
         .eq('id', id)
-        .eq('company_id', currentUser.company_id)
+        .eq('company_id', companyId) // IDOR PROTECTION
         .select()
         .single()
 
@@ -31,26 +34,27 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-
-    const db = createAdminClient()
-    const { data: currentUser } = await db.from('users').select('company_id, role').eq('clerk_id', userId).single()
-
-    if (!currentUser || currentUser.role !== 'admin') {
-        return NextResponse.json({ error: 'Only admins can remove team members' }, { status: 403 })
+    if (!idSchema.safeParse(id).success) {
+        return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
     }
 
-    // Instead of deleting, we usually deactivate or just unlink.
-    // For this implementation, we'll allow deleting if they are not the owner.
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+
+    const { db, companyId, dbUser: currentUser } = ctx
+
+    if (currentUser.role !== 'admin') {
+        return NextResponse.json({ error: 'Only admins can remove team members' }, { status: 403 })
+    }
 
     const { error } = await db
         .from('users')
         .delete()
         .eq('id', id)
-        .eq('company_id', currentUser.company_id)
-        .neq('clerk_id', userId) // Cannot delete yourself
+        .eq('company_id', companyId) // IDOR PROTECTION
+        .neq('id', currentUser.id) // Cannot delete yourself
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ success: true })
 }
+

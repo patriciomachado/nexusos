@@ -9,7 +9,7 @@ export async function getContext() {
     const db = createAdminClient()
     const { data: user, error } = await db
         .from('users')
-        .select('id, company_id, role')
+        .select('id, company_id, role, full_name')
         .eq('clerk_id', userId)
         .single()
 

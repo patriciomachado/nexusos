@@ -1,32 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
+import { paymentSchema } from '@/lib/validations/schemas'
 
 export async function GET(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
-    const { data, error, count } = await db.from('payments').select('*, customers(name), service_orders(order_number, title, parts_cost), sales(total_cost)', { count: 'exact' }).eq('company_id', user?.company_id).order('payment_date', { ascending: false }).limit(100)
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+
+    const { db, companyId } = ctx
+    
+    const { data, error, count } = await db
+        .from('payments')
+        .select('*, customers(name), service_orders(order_number, title, parts_cost), sales(total_cost)', { count: 'exact' })
+        .eq('company_id', companyId)
+        .order('payment_date', { ascending: false })
+        .limit(100)
+
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ data, count })
 }
 
 export async function POST(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+
+    const { db, companyId, userId: dbUserId } = ctx
     const body = await req.json()
-    const { data, error } = await db.from('payments').insert({ ...body, company_id: user?.company_id, created_by: user?.id }).select().single()
+    
+    const validation = paymentSchema.safeParse(body)
+    if (!validation.success) {
+        return NextResponse.json({ error: validation.error.format() }, { status: 400 })
+    }
+
+    const { data, error } = await db
+        .from('payments')
+        .insert({ 
+            ...validation.data, 
+            company_id: companyId, 
+            created_by: dbUserId 
+        })
+        .select()
+        .single()
+
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
     // 1. If there's an open cash register, record a transaction there too
-    if (body.payment_status === 'completed') {
+    if (validation.data.payment_status === 'completed') {
         const { data: openRegister } = await db
             .from('cash_registers')
             .select('id')
-            .eq('company_id', user?.company_id)
+            .eq('company_id', companyId)
             .eq('status', 'open')
             .maybeSingle()
 
@@ -35,7 +57,7 @@ export async function POST(req: NextRequest) {
             const { data: pm } = await db
                 .from('payment_methods')
                 .select('id')
-                .ilike('code', body.payment_method === 'dinheiro' ? 'CASH' : body.payment_method === 'pix' ? 'PIX' : body.payment_method)
+                .ilike('code', validation.data.payment_method === 'dinheiro' ? 'CASH' : validation.data.payment_method === 'pix' ? 'PIX' : validation.data.payment_method)
                 .maybeSingle()
 
             // If still no pm, fallback to CASH method for the company or a default one
@@ -47,23 +69,33 @@ export async function POST(req: NextRequest) {
 
             await db.from('cash_transactions').insert({
                 cash_register_id: openRegister.id,
-                company_id: user?.company_id,
-                user_id: user?.id,
+                company_id: companyId,
+                user_id: dbUserId,
                 type: 'entry',
-                amount: body.amount,
+                amount: validation.data.amount,
                 payment_method_id: pmId,
-                description: `Recebimento: ${body.notes || 'Manual'}`,
-                source_type: body.service_order_id ? 'service_order' : 'manual',
-                source_id: body.service_order_id || null
+                description: `Recebimento: ${validation.data.notes || 'Manual'}`,
+                source_type: validation.data.service_order_id ? 'service_order' : 'manual',
+                source_id: validation.data.service_order_id || null
             })
         }
     }
 
     // Update OS final_cost if linked
-    if (body.service_order_id && body.payment_status === 'completed') {
-        const { data: existingPayments } = await db.from('payments').select('amount').eq('service_order_id', body.service_order_id).eq('payment_status', 'completed')
+    if (validation.data.service_order_id && validation.data.payment_status === 'completed') {
+        const { data: existingPayments } = await db
+            .from('payments')
+            .select('amount')
+            .eq('service_order_id', validation.data.service_order_id)
+            .eq('payment_status', 'completed')
+            .eq('company_id', companyId)
+        
         const total = existingPayments?.reduce((s, p) => s + p.amount, 0) || 0
-        await db.from('service_orders').update({ final_cost: total }).eq('id', body.service_order_id)
+        await db
+            .from('service_orders')
+            .update({ final_cost: total })
+            .eq('id', validation.data.service_order_id)
+            .eq('company_id', companyId)
     }
 
     return NextResponse.json(data, { status: 201 })

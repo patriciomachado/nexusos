@@ -1,20 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
+import { cashRegisterOpenSchema } from '@/lib/validations/schemas'
 
 export async function POST(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    const { db, companyId, userId: dbUserId } = ctx
 
     // Check if there's already an open cash register for this company
     const { data: openRegisters, error: checkError } = await db
         .from('cash_registers')
         .select('id')
-        .eq('company_id', user.company_id)
+        .eq('company_id', companyId)
         .eq('status', 'open')
 
     if (checkError) {
@@ -32,20 +30,22 @@ export async function POST(req: NextRequest) {
                 final_balance: 0
             })
             .in('id', openRegisters.map(r => r.id))
+            .eq('company_id', companyId)
     }
 
-    const { opening_balance } = await req.json()
-
-    if (typeof opening_balance !== 'number' || opening_balance < 0) {
-        return NextResponse.json({ error: 'Saldo inicial inválido.' }, { status: 400 })
+    const body = await req.json()
+    const validation = cashRegisterOpenSchema.safeParse(body)
+    
+    if (!validation.success) {
+        return NextResponse.json({ error: validation.error.format() }, { status: 400 })
     }
 
     const { data, error } = await db
         .from('cash_registers')
         .insert({
-            user_id: user.id,
-            company_id: user.company_id,
-            opening_balance,
+            user_id: dbUserId,
+            company_id: companyId,
+            opening_balance: validation.data.opening_balance,
             status: 'open',
             opened_at: new Date().toISOString()
         })

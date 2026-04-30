@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
 
 export async function GET(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
-    if (!user) return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
+    const { db, companyId } = ctx
 
     // Find the currently open cash register for this company
     const { data: cashRegister, error } = await db
         .from('cash_registers')
         .select('*')
-        .eq('company_id', user.company_id)
+        .eq('company_id', companyId)
         .eq('status', 'open')
         .order('opened_at', { ascending: false })
         .limit(1)
@@ -28,3 +25,4 @@ export async function GET(req: NextRequest) {
         }
     })
 }
+

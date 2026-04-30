@@ -1,62 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
+import { cashTransactionSchema } from '@/lib/validations/schemas'
 
 export async function POST(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
-
-    const {
-        cash_register_id,
-        type,
-        amount,
-        payment_method_id,
-        transaction_type_id,
-        description,
-        source_type,
-        source_id,
-        justification
-    } = await req.json()
-
-    // Required fields
-    if (!cash_register_id || !type || !amount || !payment_method_id) {
-        return NextResponse.json({ error: 'Campos obrigatórios ausentes.' }, { status: 400 })
+    const body = await req.json()
+    
+    // Validate body
+    const result = cashTransactionSchema.safeParse(body)
+    if (!result.success) {
+        return NextResponse.json({ 
+            error: 'Dados inválidos', 
+            details: result.error.format() 
+        }, { status: 400 })
     }
 
+    const validatedData = result.data
+
     // Manual sangria/suprimento requires justification
-    if ((source_type === 'manual_sangria' || source_type === 'manual_suprimento') && !justification) {
+    if ((validatedData.source_type === 'manual_sangria' || validatedData.source_type === 'manual_suprimento') && !validatedData.justification) {
         return NextResponse.json({ error: 'Justificativa é obrigatória para movimentações manuais.' }, { status: 400 })
     }
 
-    // Verify cash register state
-    const { data: cashRegister } = await db
+    // Verify cash register state and ownership
+    const { data: cashRegister } = await ctx.db
         .from('cash_registers')
         .select('status, company_id')
-        .eq('id', cash_register_id)
+        .eq('id', validatedData.cash_register_id)
         .single()
 
-    if (!cashRegister || cashRegister.status === 'closed' || cashRegister.company_id !== user.company_id) {
-        return NextResponse.json({ error: 'Caixa inválido ou já fechado.' }, { status: 400 })
+    if (!cashRegister || cashRegister.status === 'closed' || cashRegister.company_id !== ctx.companyId) {
+        return NextResponse.json({ error: 'Caixa inválido, já fechado ou pertence a outra empresa.' }, { status: 400 })
     }
 
-    const { data, error } = await db
+    const { data, error } = await ctx.db
         .from('cash_transactions')
         .insert({
-            cash_register_id,
-            company_id: user.company_id,
-            type,
-            amount,
-            payment_method_id,
-            transaction_type_id,
-            description,
-            source_type,
-            source_id,
-            user_id: user.id,
-            justification
+            ...validatedData,
+            company_id: ctx.companyId,
+            user_id: ctx.dbUser.id,
         })
         .select()
         .single()
@@ -67,27 +51,23 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
     const { searchParams } = new URL(req.url)
     const registerId = searchParams.get('cash_register_id')
     const date = searchParams.get('date')
     const limit = searchParams.get('limit')
 
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
-
     // We need to fetch transactions where the cash_register belongs to the user's company
-    let query = db
+    let query = ctx.db
         .from('cash_transactions')
         .select(`
             *,
             payment_methods(name),
             transaction_types(name)
         `)
-        .eq('company_id', user.company_id)
+        .eq('company_id', ctx.companyId)
         .order('created_at', { ascending: false })
 
     if (registerId) {
@@ -117,8 +97,8 @@ export async function GET(req: NextRequest) {
     const saleIds = transactions.filter(t => t.source_type === 'product_sale' && t.source_id).map(t => t.source_id)
 
     const [soRes, saleRes] = await Promise.all([
-        soIds.length > 0 ? db.from('service_orders').select('id, parts_cost').in('id', soIds) : Promise.resolve({ data: [] }),
-        saleIds.length > 0 ? db.from('sales').select('id, total_cost').in('id', saleIds) : Promise.resolve({ data: [] })
+        soIds.length > 0 ? ctx.db.from('service_orders').select('id, parts_cost').in('id', soIds) : Promise.resolve({ data: [] }),
+        saleIds.length > 0 ? ctx.db.from('sales').select('id, total_cost').in('id', saleIds) : Promise.resolve({ data: [] })
     ])
 
     const enrichedTransactions = transactions.map(t => {
@@ -133,3 +113,4 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ data: enrichedTransactions, count: enrichedTransactions.length })
 }
+

@@ -1,19 +1,17 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
 
 export async function GET() {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
-    const db = createAdminClient()
-    const { data, error } = await db
+    const { data, error } = await ctx.db
         .from('users')
         .select(`
             *,
             company:companies(*)
         `)
-        .eq('clerk_id', userId)
+        .eq('id', ctx.dbUser.id)
         .single()
 
     if (error) {
@@ -27,3 +25,4 @@ export async function GET() {
 
     return NextResponse.json(data)
 }
+

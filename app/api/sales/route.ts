@@ -1,73 +1,75 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
-import { CreateSaleForm } from '@/types'
+import { getContext, unauthorizedResponse } from '@/lib/security'
+import { saleSchema } from '@/lib/validations/schemas'
 
 export async function POST(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    const { db, companyId, userId: dbUserId } = ctx
+    const body = await req.json()
 
-    const body: CreateSaleForm = await req.json()
+    // 1. Validate request body
+    const validation = saleSchema.safeParse(body)
+    if (!validation.success) {
+        return NextResponse.json({ error: validation.error.format() }, { status: 400 })
+    }
 
-    // 1. Check if cash register is open
-    let registerId = body.cash_register_id
+    const { items, ...saleData } = validation.data
 
-    const { data: openRegisters } = await db
+    // 2. Ensure cash register is open and belongs to the company
+    let registerId = saleData.cash_register_id
+
+    const { data: activeRegister, error: registerError } = await db
         .from('cash_registers')
         .select('id')
-        .eq('company_id', user.company_id)
+        .eq('company_id', companyId)
         .eq('status', 'open')
         .order('opened_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
 
-    const activeRegister = openRegisters && openRegisters.length > 0 ? openRegisters[0] : null
-
-    if (!activeRegister) {
+    if (registerError || !activeRegister) {
         return NextResponse.json({ error: 'Nenhum caixa aberto encontrado para esta empresa.' }, { status: 400 })
     }
 
-    // Use the active register found in DB to avoid issues with stale IDs from frontend
+    // Use the active register found in DB to ensure tenancy and prevent stale IDs
     registerId = activeRegister.id
 
     try {
-        // 2. Create Sale
+        // 3. Create Sale
         const { data: sale, error: saleError } = await db
             .from('sales')
             .insert({
-                company_id: user.company_id,
-                user_id: user.id,
-                customer_id: body.customer_id || null,
+                ...saleData,
+                company_id: companyId,
+                user_id: dbUserId,
                 cash_register_id: registerId,
-                total_amount: body.total_amount,
-                discount_amount: body.discount_amount,
-                final_amount: body.final_amount,
-                payment_method_id: body.payment_method_id,
                 status: 'completed',
-                notes: body.notes
             })
             .select()
             .single()
 
         if (saleError) throw saleError
 
-        // 3. Create Sale Items and Update Stock
+        // 4. Create Sale Items and Update Stock
         let totalCost = 0;
-        for (const item of body.items) {
-            // Get item cost
+        for (const item of items) {
+            // Get item cost - ensure it belongs to the company
             const { data: stockItem } = await db
                 .from('inventory_items')
                 .select('quantity_in_stock, cost_price')
                 .eq('id', item.inventory_item_id)
+                .eq('company_id', companyId)
                 .single()
 
-            const unitCost = stockItem?.cost_price || 0;
+            if (!stockItem) throw new Error(`Item de estoque não encontrado ou não pertence à empresa: ${item.item_name}`)
+
+            const unitCost = stockItem.cost_price || 0;
             const itemTotalCost = unitCost * item.quantity;
             totalCost += itemTotalCost;
 
-            // Create item with costs
+            // Create item
             const { error: itemError } = await db
                 .from('sale_items')
                 .insert({
@@ -84,14 +86,13 @@ export async function POST(req: NextRequest) {
             if (itemError) throw itemError
 
             // Update Stock
-            if (stockItem) {
-                await db
-                    .from('inventory_items')
-                    .update({
-                        quantity_in_stock: Number(stockItem.quantity_in_stock) - Number(item.quantity)
-                    })
-                    .eq('id', item.inventory_item_id)
-            }
+            await db
+                .from('inventory_items')
+                .update({
+                    quantity_in_stock: Number(stockItem.quantity_in_stock) - Number(item.quantity)
+                })
+                .eq('id', item.inventory_item_id)
+                .eq('company_id', companyId)
         }
 
         // Update total cost on sale header
@@ -99,8 +100,9 @@ export async function POST(req: NextRequest) {
             .from('sales')
             .update({ total_cost: totalCost })
             .eq('id', sale.id)
+            .eq('company_id', companyId)
 
-        // 4. Register Cash Transaction
+        // 5. Register Cash Transaction
         const { data: transType } = await db
             .from('transaction_types')
             .select('id')
@@ -111,24 +113,24 @@ export async function POST(req: NextRequest) {
             .from('cash_transactions')
             .insert({
                 cash_register_id: registerId,
-                company_id: user.company_id,
+                company_id: companyId,
                 type: 'entry',
-                amount: body.final_amount,
-                payment_method_id: body.payment_method_id,
+                amount: saleData.final_amount,
+                payment_method_id: saleData.payment_method_id,
                 transaction_type_id: transType?.id,
                 description: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
                 source_type: 'product_sale',
                 source_id: sale.id,
-                user_id: user.id
+                user_id: dbUserId
             })
 
         if (cashError) throw cashError
 
-        // 5. Register Payment (Financial History)
+        // 6. Register Payment (Financial History)
         const { data: pm } = await db
             .from('payment_methods')
             .select('code')
-            .eq('id', body.payment_method_id)
+            .eq('id', saleData.payment_method_id)
             .single()
 
         const methodMap: Record<string, string> = {
@@ -143,16 +145,16 @@ export async function POST(req: NextRequest) {
         const { error: paymentError } = await db
             .from('payments')
             .insert({
-                company_id: user.company_id,
-                customer_id: body.customer_id || null,
-                amount: body.final_amount,
+                company_id: companyId,
+                customer_id: saleData.customer_id || null,
+                amount: saleData.final_amount,
                 payment_method: methodMap[pm?.code || ''] || 'dinheiro',
                 payment_status: 'completed',
                 payment_date: new Date().toISOString(),
                 reference_id: sale.id,
                 sale_id: sale.id,
                 notes: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
-                created_by: user.id
+                created_by: dbUserId
             })
 
         if (paymentError) console.error('Error creating payment record:', paymentError)

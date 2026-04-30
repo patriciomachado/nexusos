@@ -13,7 +13,11 @@ const supabaseAdmin = createClient(
     }
 )
 
-export const tools = {
+/**
+ * Retorna as ferramentas de IA configuradas para uma empresa específica.
+ * Isso evita que o LLM forneça o company_id, prevenindo IDOR.
+ */
+export const getTools = (companyId: string, userId?: string) => ({
     manage_os: tool({
         description: 'Gerencia ordens de serviço (criar, atualizar, buscar)',
         inputSchema: z.object({
@@ -29,16 +33,15 @@ export const tools = {
                 problem_description: z.string().optional(),
                 estimated_cost: z.number().optional(),
             }),
-            company_id: z.string(),
         }),
-        execute: async ({ action, data, company_id }) => {
-            console.log(`[TOOL:manage_os] Action: ${action}, Company: ${company_id}`)
+        execute: async ({ action, data }) => {
+            console.log(`[TOOL:manage_os] Action: ${action}, Company: ${companyId}`)
             try {
                 if (action === 'search') {
                     const { data: os, error } = await supabaseAdmin
                         .from('service_orders')
                         .select('*, customers(name)')
-                        .eq('company_id', company_id)
+                        .eq('company_id', companyId)
                         .or(`title.ilike.%${data.title || ''}%,order_number.ilike.%${data.title || ''}%`)
                         .limit(10)
                     if (error) throw error
@@ -50,7 +53,7 @@ export const tools = {
                         .from('service_orders')
                         .select('*, customers(*), technicians(*), service_order_items(*)')
                         .eq('id', data.id)
-                        .eq('company_id', company_id)
+                        .eq('company_id', companyId)
                         .single()
                     if (error) throw error
                     return { os }
@@ -60,7 +63,7 @@ export const tools = {
                     const { data: lastOS } = await supabaseAdmin
                         .from('service_orders')
                         .select('order_number')
-                        .eq('company_id', company_id)
+                        .eq('company_id', companyId)
                         .order('order_number', { ascending: false })
                         .limit(1)
                         .maybeSingle()
@@ -76,9 +79,10 @@ export const tools = {
                         .from('service_orders')
                         .insert({
                             ...data,
-                            company_id,
+                            company_id: companyId,
                             order_number: orderNumber,
                             status: data.status || 'aberta',
+                            created_by: userId,
                         })
                         .select()
                         .single()
@@ -91,7 +95,7 @@ export const tools = {
                         .from('service_orders')
                         .update(data)
                         .eq('id', data.id)
-                        .eq('company_id', company_id)
+                        .eq('company_id', companyId)
                         .select()
                         .single()
                     if (error) throw error
@@ -117,16 +121,15 @@ export const tools = {
                 phone: z.string().optional(),
                 document: z.string().optional(),
             }),
-            company_id: z.string(),
         }),
-        execute: async ({ action, data, company_id }) => {
-            console.log(`[TOOL:manage_customers] Action: ${action}, Company: ${company_id}`)
+        execute: async ({ action, data }) => {
+            console.log(`[TOOL:manage_customers] Action: ${action}, Company: ${companyId}`)
             try {
                 if (action === 'search') {
                     const { data: customers, error } = await supabaseAdmin
                         .from('customers')
                         .select('*')
-                        .eq('company_id', company_id)
+                        .eq('company_id', companyId)
                         .or(`name.ilike.%${data.name || ''}%,phone.ilike.%${data.name || ''}%`)
                         .limit(5)
                     if (error) throw error
@@ -136,7 +139,7 @@ export const tools = {
                 if (action === 'create') {
                     const { data: customer, error } = await supabaseAdmin
                         .from('customers')
-                        .insert({ ...data, company_id })
+                        .insert({ ...data, company_id: companyId })
                         .select()
                         .single()
                     if (error) throw error
@@ -148,7 +151,7 @@ export const tools = {
                         .from('customers')
                         .update(data)
                         .eq('id', data.id)
-                        .eq('company_id', company_id)
+                        .eq('company_id', companyId)
                         .select()
                         .single()
                     if (error) throw error
@@ -173,18 +176,16 @@ export const tools = {
                 cash_register_id: z.string().optional(),
                 payment_method_id: z.string().optional(),
             }).optional(),
-            company_id: z.string(),
-            user_id: z.string().optional(),
         }),
-        execute: async ({ action, data, company_id, user_id }) => {
-            console.log(`[TOOL:manage_finance] Action: ${action}, Company: ${company_id}`)
+        execute: async ({ action, data }) => {
+            console.log(`[TOOL:manage_finance] Action: ${action}, Company: ${companyId}`)
             try {
                 if (action === 'get_balance') {
                     // First find users for this company
                     const { data: companyUsers } = await supabaseAdmin
                         .from('users')
                         .select('id')
-                        .eq('company_id', company_id)
+                        .eq('company_id', companyId)
                     
                     const userIds = companyUsers?.map(u => u.id) || []
 
@@ -215,7 +216,8 @@ export const tools = {
                     .insert({
                         ...data,
                         type,
-                        user_id,
+                        user_id: userId,
+                        company_id: companyId,
                         payment_method_id: paymentMethodId,
                         source_type: 'manual_suprimento',
                     })
@@ -240,16 +242,15 @@ export const tools = {
                 name: z.string().optional(),
                 quantity: z.number().optional(),
             }),
-            company_id: z.string(),
         }),
-        execute: async ({ action, data, company_id }) => {
-            console.log(`[TOOL:manage_inventory] Action: ${action}, Company: ${company_id}`)
+        execute: async ({ action, data }) => {
+            console.log(`[TOOL:manage_inventory] Action: ${action}, Company: ${companyId}`)
             try {
                 if (action === 'search') {
                     const { data: items, error } = await supabaseAdmin
                         .from('inventory_items')
                         .select('*')
-                        .eq('company_id', company_id)
+                        .eq('company_id', companyId)
                         .ilike('name', `%${data.name || ''}%`)
                         .limit(10)
                     if (error) throw error
@@ -264,7 +265,7 @@ export const tools = {
                     .from('inventory_items')
                     .select('quantity_in_stock')
                     .eq('id', data.item_id)
-                    .eq('company_id', company_id)
+                    .eq('company_id', companyId)
                     .single()
 
                 if (!item) return { error: 'Item não encontrado' }
@@ -275,7 +276,7 @@ export const tools = {
                     .from('inventory_items')
                     .update({ quantity_in_stock: newQuantity })
                     .eq('id', data.item_id)
-                    .eq('company_id', company_id)
+                    .eq('company_id', companyId)
                     .select()
                     .single()
 
@@ -292,10 +293,9 @@ export const tools = {
         description: 'Obtém um resumo do negócio (OS abertas, faturamento no período)',
         inputSchema: z.object({
             period: z.enum(['today', 'week', 'month']),
-            company_id: z.string(),
         }),
-        execute: async ({ period, company_id }) => {
-            console.log(`[TOOL:get_business_summary] Period: ${period}, Company: ${company_id}`)
+        execute: async ({ period }) => {
+            console.log(`[TOOL:get_business_summary] Period: ${period}, Company: ${companyId}`)
             try {
                 const startDate = new Date()
                 startDate.setHours(0, 0, 0, 0)
@@ -310,7 +310,7 @@ export const tools = {
                 const { data: companyUsers } = await supabaseAdmin
                     .from('users')
                     .select('id')
-                    .eq('company_id', company_id)
+                    .eq('company_id', companyId)
                 
                 const userIds = companyUsers?.map(u => u.id) || []
 
@@ -327,7 +327,7 @@ export const tools = {
                     supabaseAdmin
                         .from('service_orders')
                         .select('*', { count: 'exact', head: true })
-                        .eq('company_id', company_id)
+                        .eq('company_id', companyId)
                         .eq('status', 'aberta'),
                     registerIds.length > 0 
                         ? supabaseAdmin
@@ -360,15 +360,14 @@ export const tools = {
     list_technicians: tool({
         description: 'Lista todos os técnicos da empresa',
         inputSchema: z.object({
-            company_id: z.string(),
         }),
-        execute: async ({ company_id }) => {
-            console.log(`[TOOL:list_technicians] Company: ${company_id}`)
+        execute: async () => {
+            console.log(`[TOOL:list_technicians] Company: ${companyId}`)
             try {
                 const { data: technicians, error } = await supabaseAdmin
                     .from('technicians')
                     .select('*')
-                    .eq('company_id', company_id)
+                    .eq('company_id', companyId)
                     .eq('is_active', true)
                 
                 if (error) throw error
@@ -379,4 +378,5 @@ export const tools = {
             }
         },
     }),
-}
+})
+

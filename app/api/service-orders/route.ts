@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
+import { serviceOrderSchema } from '@/lib/validations/schemas'
 
 export async function GET(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
-    if (!user?.company_id) return NextResponse.json({ error: 'Company not found' }, { status: 404 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
     const { searchParams } = new URL(req.url)
     const status = searchParams.get('status')
@@ -17,10 +13,10 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
 
-    let query = db
+    let query = ctx.db
         .from('service_orders')
         .select('*, customers(name, phone), technicians(name)', { count: 'exact' })
-        .eq('company_id', user.company_id)
+        .eq('company_id', ctx.companyId)
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1)
 
@@ -35,20 +31,27 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
-    if (!user?.company_id) return NextResponse.json({ error: 'Company not found' }, { status: 404 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
     const body = await req.json()
+    
+    // Validate body
+    const result = serviceOrderSchema.safeParse(body)
+    if (!result.success) {
+        return NextResponse.json({ 
+            error: 'Dados inválidos', 
+            details: result.error.format() 
+        }, { status: 400 })
+    }
+
+    const validatedData = result.data
 
     // Generate order number based on the highest existing one
-    const { data: lastOS } = await db
+    const { data: lastOS } = await ctx.db
         .from('service_orders')
         .select('order_number')
-        .eq('company_id', user.company_id)
+        .eq('company_id', ctx.companyId)
         .order('order_number', { ascending: false })
         .limit(1)
         .maybeSingle()
@@ -62,33 +65,17 @@ export async function POST(req: NextRequest) {
     }
     const orderNumber = `OS-${String(nextNum).padStart(5, '0')}`
 
-    const { data, error } = await db
+    const { data, error } = await ctx.db
         .from('service_orders')
         .insert({
-            company_id: user.company_id,
+            ...validatedData,
+            company_id: ctx.companyId,
             order_number: orderNumber,
-            customer_id: body.customer_id || null,
-            technician_id: body.technician_id || null,
-            status: body.status || 'aberta',
-            priority: body.priority || 'normal',
-            title: body.title,
-            description: body.description,
-            problem_description: body.problem_description,
-            equipment_description: body.equipment_description,
-            equipment_serial: body.equipment_serial,
-            estimated_time_minutes: body.estimated_time_minutes || null,
-            estimated_cost: body.estimated_cost || 0,
-            parts_cost: body.parts_cost || 0,
-            labor_cost: body.labor_cost || 0,
-            scheduled_date: body.scheduled_date,
-            internal_notes: body.internal_notes,
-            warranty_months: body.warranty_months || 0,
-            device_condition: body.device_condition || null,
-            turns_on: body.turns_on ?? true,
-            discount_amount: body.discount_amount || 0,
-            photo_front_url: body.photo_front_url || null,
-            photo_back_url: body.photo_back_url || null,
-            created_by: user.id,
+            created_by: ctx.dbUser.id,
+            // Ensure status/priority have defaults if not provided (though schema handles defaults)
+            status: validatedData.status || 'aberta',
+            priority: validatedData.priority || 'normal',
+            items: undefined // Items handled separately
         })
         .select()
         .single()
@@ -96,8 +83,8 @@ export async function POST(req: NextRequest) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
     // Insert items if present
-    if (body.items && Array.isArray(body.items) && body.items.length > 0) {
-        const itemsToInsert = body.items.map((item: any) => ({
+    if (validatedData.items && validatedData.items.length > 0) {
+        const itemsToInsert = validatedData.items.map((item: any) => ({
             service_order_id: data.id,
             inventory_item_id: item.inventory_item_id || null,
             item_name: item.item_name,
@@ -108,22 +95,22 @@ export async function POST(req: NextRequest) {
             total_cost: item.total_cost || 0,
         }))
 
-        const { error: itemsError } = await db.from('service_order_items').insert(itemsToInsert)
+        const { error: itemsError } = await ctx.db.from('service_order_items').insert(itemsToInsert)
         if (itemsError) {
             console.error('Error inserting OS items:', itemsError)
-            // We don't fail the whole OS creation, but maybe we should log it
         }
     }
 
     // Log history
-    await db.from('service_order_history').insert({
+    await ctx.db.from('service_order_history').insert({
         service_order_id: data.id,
-        changed_by: user.id,
+        changed_by: ctx.dbUser.id,
         changed_by_name: 'Sistema',
         field_name: 'status',
-        new_value: body.status || 'aberta',
+        new_value: validatedData.status || 'aberta',
         change_reason: 'OS criada',
     })
 
     return NextResponse.json(data, { status: 201 })
 }
+

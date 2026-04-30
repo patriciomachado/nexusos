@@ -1,59 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
+import { serviceTypeSchema } from '@/lib/validations/schemas'
 
 export async function GET(req: NextRequest) {
-    try {
-        const { userId } = await auth()
-        if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
-        const db = createAdminClient()
-        const { data: user, error: userError } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
+    const { db, companyId } = ctx
+    const { data, error } = await db
+        .from('service_types')
+        .select('*')
+        .eq('company_id', companyId)
+        .order('name')
 
-        if (userError || !user?.company_id) {
-            return NextResponse.json({ error: 'Empresa não encontrada' }, { status: 404 })
-        }
-
-        const { data, error } = await db
-            .from('service_types')
-            .select('*')
-            .eq('company_id', user.company_id)
-            .order('name')
-
-        if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-        return NextResponse.json(data)
-    } catch (e: any) {
-        return NextResponse.json({ error: e.message }, { status: 500 })
-    }
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json(data)
 }
 
 export async function POST(req: NextRequest) {
-    try {
-        const { userId } = await auth()
-        if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
-        const body = await req.json()
-        const db = createAdminClient()
-        const { data: user, error: userError } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
-
-        if (userError || !user?.company_id) {
-            return NextResponse.json({ error: 'Empresa não encontrada' }, { status: 404 })
-        }
-
-        const { data, error } = await db
-            .from('service_types')
-            .insert({
-                name: body.name,
-                description: body.description,
-                base_price: body.base_price || 0,
-                company_id: user.company_id
-            })
-            .select()
-            .single()
-
-        if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-        return NextResponse.json(data)
-    } catch (e: any) {
-        return NextResponse.json({ error: e.message }, { status: 500 })
+    const { db, companyId } = ctx
+    const body = await req.json()
+    
+    const validation = serviceTypeSchema.safeParse(body)
+    if (!validation.success) {
+        return NextResponse.json({ error: validation.error.format() }, { status: 400 })
     }
+
+    const { data, error } = await db
+        .from('service_types')
+        .insert({
+            ...validation.data,
+            company_id: companyId
+        })
+        .select()
+        .single()
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json(data, { status: 201 })
 }

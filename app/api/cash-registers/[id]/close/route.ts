@@ -1,25 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
+import { idSchema } from '@/lib/validations/schemas'
 
 export async function POST(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    
+    if (!idSchema.safeParse(id).success) {
+        return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
+    }
 
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
-    if (!user) return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+
+    const { db, companyId } = ctx
 
     // Verify ownership and status
     const { data: cashRegister, error: fetchError } = await db
         .from('cash_registers')
         .select('*')
         .eq('id', id)
-        .eq('company_id', user.company_id)
+        .eq('company_id', companyId)
         .single()
 
     if (fetchError || !cashRegister) {
@@ -35,6 +38,7 @@ export async function POST(
         .from('cash_transactions')
         .select('type, amount')
         .eq('cash_register_id', id)
+        .eq('company_id', companyId) // Extra safety
 
     if (transError) return NextResponse.json({ error: transError.message }, { status: 500 })
 
@@ -56,6 +60,7 @@ export async function POST(
             closing_balance: currentBalance
         })
         .eq('id', id)
+        .eq('company_id', companyId) // IDOR PROTECTION
         .select()
         .single()
 
@@ -63,3 +68,4 @@ export async function POST(
 
     return NextResponse.json(updated)
 }
+

@@ -1,22 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
+import { serviceOrderSchema, idSchema } from '@/lib/validations/schemas'
 
 type Params = { params: Promise<{ id: string }> }
 
 export async function GET(req: NextRequest, { params }: Params) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
+    const { db, companyId } = ctx
     const { id } = await params
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
+    
+    if (!idSchema.safeParse(id).success) {
+        return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
+    }
 
     const { data, error } = await db
         .from('service_orders')
         .select('*, customers(*), technicians(*), service_order_items(*), service_order_attachments(*), service_order_history(*), payments(*)')
         .eq('id', id)
-        .eq('company_id', user?.company_id)
+        .eq('company_id', companyId)
         .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 404 })
@@ -24,20 +27,30 @@ export async function GET(req: NextRequest, { params }: Params) {
 }
 
 export async function PUT(req: NextRequest, { params }: Params) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
+    const { db, companyId } = ctx
     const { id } = await params
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('id, company_id').eq('clerk_id', userId).single()
+    
+    if (!idSchema.safeParse(id).success) {
+        return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
+    }
     const body = await req.json()
-    const { items, customers, technicians, service_order_items, service_order_attachments, service_order_history, payments, ...updateData } = body
+    
+    // Validate body
+    const validation = serviceOrderSchema.partial().safeParse(body)
+    if (!validation.success) {
+        return NextResponse.json({ error: validation.error.format() }, { status: 400 })
+    }
+
+    const { items, ...updateData } = validation.data
 
     const { data, error } = await db
         .from('service_orders')
         .update({ ...updateData, updated_at: new Date().toISOString() })
         .eq('id', id)
-        .eq('company_id', user?.company_id)
+        .eq('company_id', companyId)
         .select()
         .single()
 
@@ -45,7 +58,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
     // Sync items if present in body
     if (body.items && Array.isArray(body.items)) {
-        // 1. Delete existing items
+        // 1. Delete existing items - ensure they belong to this SO
         await db.from('service_order_items').delete().eq('service_order_id', id)
 
         // 2. Insert new items with cost tracking
@@ -62,6 +75,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
                         .from('inventory_items')
                         .select('cost_price')
                         .eq('id', item.inventory_item_id)
+                        .eq('company_id', companyId)
                         .single()
                     if (invItem) unitCost = invItem.cost_price || 0
                 }
@@ -91,24 +105,30 @@ export async function PUT(req: NextRequest, { params }: Params) {
             .from('service_orders')
             .update({ parts_cost: totalPartsCost })
             .eq('id', id)
+            .eq('company_id', companyId)
     }
 
     return NextResponse.json(data)
 }
 
 export async function DELETE(req: NextRequest, { params }: Params) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
+    const { db, companyId } = ctx
     const { id } = await params
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
+    
+    if (!idSchema.safeParse(id).success) {
+        return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
+    }
 
-    await db
+    const { error } = await db
         .from('service_orders')
         .update({ status: 'cancelada' })
         .eq('id', id)
-        .eq('company_id', user?.company_id)
+        .eq('company_id', companyId)
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
     return NextResponse.json({ success: true })
 }

@@ -1,24 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
+import { technicianSchema } from '@/lib/validations/schemas'
 
 export async function GET(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
-    const { data, error } = await db.from('technicians').select('*').eq('company_id', user?.company_id).order('name')
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+
+    const { db, companyId } = ctx
+    
+    const { data, error } = await db
+        .from('technicians')
+        .select('*')
+        .eq('company_id', companyId)
+        .order('name')
+
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ data })
 }
 
 export async function POST(req: NextRequest) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+
+    const { db, companyId } = ctx
     const body = await req.json()
-    const { data, error } = await db.from('technicians').insert({ ...body, company_id: user?.company_id }).select().single()
+    
+    const validation = technicianSchema.safeParse(body)
+    if (!validation.success) {
+        return NextResponse.json({ error: validation.error.format() }, { status: 400 })
+    }
+
+    const { data, error } = await db
+        .from('technicians')
+        .insert({ ...validation.data, company_id: companyId })
+        .select()
+        .single()
+        
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json(data, { status: 201 })
 }

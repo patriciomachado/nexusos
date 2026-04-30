@@ -1,0 +1,613 @@
+﻿{
+  "framework": "nextjs",
+  "root": "C:\\Users\\Support\\Desktop\\Nexus\\nexus-os",
+  "summary": {
+    "total": 50,
+    "critical": 0,
+    "high": 50,
+    "medium": 0,
+    "low": 0
+  },
+  "findings": [
+    {
+      "title": "Server boundary without obvious input validation",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "Request input usage without common validation markers",
+      "impact": "Malformed or hostile input may reach sensitive logic",
+      "affectedFiles": [
+        "app\\api\\cash-registers\\route.ts"
+      ],
+      "recommendedFix": "Validate request data at the server boundary with a schema."
+    },
+    {
+      "title": "Server boundary without obvious input validation",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "Request input usage without common validation markers",
+      "impact": "Malformed or hostile input may reach sensitive logic",
+      "affectedFiles": [
+        "app\\api\\cash-transactions\\route.ts"
+      ],
+      "recommendedFix": "Validate request data at the server boundary with a schema."
+    },
+    {
+      "title": "Potential SSRF pattern",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "Server-side outbound request appears influenced by request parameters",
+      "impact": "Attacker may force calls to internal or unintended hosts",
+      "affectedFiles": [
+        "app\\api\\cash-transactions\\route.ts"
+      ],
+      "recommendedFix": "Enforce host allowlists and validate URLs before outbound requests."
+    },
+    {
+      "title": "Server boundary without obvious input validation",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "Request input usage without common validation markers",
+      "impact": "Malformed or hostile input may reach sensitive logic",
+      "affectedFiles": [
+        "app\\api\\service-orders\\route.ts"
+      ],
+      "recommendedFix": "Validate request data at the server boundary with a schema."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "app\\layout.tsx"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "check-patricio-data.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "check-schema.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Server boundary without obvious input validation",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "Request input usage without common validation markers",
+      "impact": "Malformed or hostile input may reach sensitive logic",
+      "affectedFiles": [
+        "components\\forms\\CustomerForm.tsx"
+      ],
+      "recommendedFix": "Validate request data at the server boundary with a schema."
+    },
+    {
+      "title": "Server boundary without obvious input validation",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "Request input usage without common validation markers",
+      "impact": "Malformed or hostile input may reach sensitive logic",
+      "affectedFiles": [
+        "components\\ui\\SearchInput.tsx"
+      ],
+      "recommendedFix": "Validate request data at the server boundary with a schema."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "debug-dashboard-data.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "debug-db.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "diag-data.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "diagnostic-db.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "find-company.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "get-constraints.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "get-os-schema.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "global-check.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "import-data-node.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "lib\\ai\\tools.ts"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "lib\\supabase\\server.ts"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "lib\\supabase.ts"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "link-patricio.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "list-companies.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "list-pay-methods.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "list-users.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\check-raw-date.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\check-time.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\check_cfrag_data.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\check_companies.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\check_current_counts.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\check_data_v2.js"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\check_db.js"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\check_db_v2.js"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\check_other_personal.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\comprehensive_audit.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\comprehensive_audit_v2.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\count_by_company.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\diag-time.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\emergency_data_check.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\find_patricio.js"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\find_patricio_v2.js"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\get_patricio_id.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\global_customer_check.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\identify_patricio.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\list_all_users.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scratch\\list_tables.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "scripts\\import_data.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "seed-data.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "test-db.mjs"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    },
+    {
+      "title": "Potential secret exposure via client environment",
+      "severity": "high",
+      "confidence": "low",
+      "status": "manual-review",
+      "evidence": "NEXT_PUBLIC variable and secret-like naming found",
+      "impact": "Sensitive values may be exposed to the browser bundle",
+      "affectedFiles": [
+        "test-db.ts"
+      ],
+      "recommendedFix": "Verify that only public, non-sensitive values use NEXT_PUBLIC variables."
+    }
+  ]
+}

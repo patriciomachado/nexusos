@@ -1,16 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
+import { getContext, unauthorizedResponse } from '@/lib/security'
+import { companyUpdateSchema, idSchema } from '@/lib/validations/schemas'
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    const { userId } = await auth()
-    if (!userId) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+type P = { params: Promise<{ id: string }> }
+
+export async function PUT(req: NextRequest, { params }: P) {
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+    
     const { id } = await params
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId).single()
-    if (user?.company_id !== id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const { db, companyId } = ctx
+    
+    if (id !== companyId) {
+        return NextResponse.json({ error: 'Acesso negado' }, { status: 403 })
+    }
+
     const body = await req.json()
-    const { data, error } = await db.from('companies').update(body).eq('id', id).select().single()
+    const validation = companyUpdateSchema.safeParse(body)
+    if (!validation.success) {
+        return NextResponse.json({ error: validation.error.format() }, { status: 400 })
+    }
+
+    const { data, error } = await db
+        .from('companies')
+        .update(validation.data)
+        .eq('id', id)
+        .select()
+        .single()
+        
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json(data)
 }

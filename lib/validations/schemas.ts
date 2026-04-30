@@ -36,17 +36,143 @@ export const inventoryItemSchema = z.object({
 
 // Service Order Schema
 export const serviceOrderSchema = z.object({
-  customer_id: z.string().uuid('Cliente inválido'),
+  customer_id: z.string().uuid('Cliente inválido').nullable().optional(),
+  technician_id: z.string().uuid('Técnico inválido').nullable().optional(),
   title: z.string().min(1, 'Título é obrigatório'),
-  description: z.string().optional(),
-  status: z.enum(['open', 'in_progress', 'waiting_parts', 'completed', 'cancelled']).default('open'),
-  total_amount: z.number().min(0).default(0),
-  payment_status: z.enum(['pending', 'paid', 'partially_paid']).default('pending')
+  description: z.string().optional().nullable(),
+  problem_description: z.string().optional().nullable(),
+  equipment_description: z.string().optional().nullable(),
+  equipment_serial: z.string().optional().nullable(),
+  status: z.string().optional().default('aberta'),
+  priority: z.string().optional().default('normal'),
+  estimated_time_minutes: z.number().int().optional().nullable(),
+  estimated_cost: z.number().min(0).optional().default(0),
+  parts_cost: z.number().min(0).optional().default(0),
+  labor_cost: z.number().min(0).optional().default(0),
+  scheduled_date: z.string().optional().nullable(),
+  internal_notes: z.string().optional().nullable(),
+  warranty_months: z.number().int().min(0).optional().default(0),
+  device_condition: z.string().optional().nullable(),
+  turns_on: z.boolean().optional().default(true),
+  discount_amount: z.number().min(0).optional().default(0),
+  items: z.array(z.object({
+    inventory_item_id: z.string().uuid().nullable().optional(),
+    item_name: z.string(),
+    quantity: z.number().min(1),
+    unit_price: z.number().min(0),
+    total_price: z.number().min(0),
+    unit_cost: z.number().min(0).optional().default(0),
+    total_cost: z.number().min(0).optional().default(0),
+  })).optional(),
 })
 
-// User Schema (Profile Updates)
-export const userProfileSchema = z.object({
-  name: z.string().min(2, 'Nome muito curto').optional(),
-  role: z.enum(['admin', 'technician', 'manager']).optional(),
-  is_active: z.boolean().optional()
+// Cash Transaction Schema
+export const cashTransactionSchema = z.object({
+  cash_register_id: z.string().uuid('Caixa inválido'),
+  type: z.enum(['entry', 'exit']),
+  amount: z.number().positive('Valor deve ser positivo'),
+  payment_method_id: z.string().uuid('Método de pagamento inválido'),
+  transaction_type_id: z.string().uuid('Tipo de transação inválido').optional().nullable(),
+  description: z.string().optional().nullable(),
+  source_type: z.string().optional().nullable(),
+  source_id: z.string().uuid().optional().nullable(),
+  justification: z.string().optional().nullable(),
 })
+
+// Sale Schema
+export const saleSchema = z.object({
+  customer_id: z.string().uuid('Cliente inválido').nullable().optional(),
+  cash_register_id: z.string().uuid('Caixa inválido').optional(),
+  total_amount: z.number().min(0),
+  discount_amount: z.number().min(0).default(0),
+  final_amount: z.number().min(0).optional(),
+  payment_method_id: z.string().uuid('Método de pagamento inválido').optional().nullable(),
+  notes: z.string().optional().nullable(),
+  items: z.array(z.object({
+    inventory_item_id: z.string().uuid('Item de estoque inválido'),
+    item_name: z.string(),
+    quantity: z.number().min(1),
+    unit_price: z.number().min(0),
+    total_price: z.number().min(0),
+  }))
+})
+
+// Payment Schema
+export const paymentSchema = z.object({
+  customer_id: z.string().uuid('Cliente inválido').nullable().optional(),
+  service_order_id: z.string().uuid('Ordem de serviço inválida').nullable().optional(),
+  sale_id: z.string().uuid('Venda inválida').nullable().optional(),
+  amount: z.number().positive('Valor deve ser positivo'),
+  payment_method: z.string().min(1, 'Método de pagamento é obrigatório'),
+  payment_status: z.enum(['pending', 'completed', 'cancelled']).default('completed'),
+  payment_date: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+})
+
+// Technician Schema
+export const technicianSchema = z.object({
+  name: z.string().min(2, 'Nome muito curto'),
+  email: z.string().email('E-mail inválido').optional().nullable(),
+  phone: z.string().optional().nullable(),
+  specialty: z.string().optional().nullable(),
+})
+
+// User Schema (Creation)
+export const createUserSchema = z.object({
+  email: z.string().email('E-mail inválido'),
+  full_name: z.string().min(2, 'Nome muito curto'),
+  role: z.enum(['admin', 'technician', 'manager']),
+  phone: z.string().optional().nullable(),
+  clerk_id: z.string().optional().nullable(),
+})
+
+// Cash Register Schema (Opening)
+export const cashRegisterOpenSchema = z.object({
+  opening_balance: z.number().min(0, 'Saldo inicial não pode ser negativo'),
+})
+
+// Company Schema
+export const companyUpdateSchema = z.object({
+  name: z.string().min(2, 'Nome muito curto').optional(),
+  phone: z.string().optional().nullable(),
+  email: z.string().email('E-mail inválido').optional().nullable(),
+  address: z.string().optional().nullable(),
+  document: z.string().optional().nullable(),
+  logo_url: z.string().url().optional().nullable(),
+  settings: z.record(z.string(), z.any()).optional(),
+})
+
+// Service Type Schema
+export const serviceTypeSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório'),
+  description: z.string().optional().nullable(),
+  base_price: z.number().min(0).default(0),
+  is_active: z.boolean().default(true).optional(),
+})
+
+// Payment Method Schema
+export const paymentMethodSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório'),
+  code: z.string().optional().nullable(),
+  is_active: z.boolean().default(true).optional(),
+})
+
+// Inventory Adjustment Schema
+export const inventoryAdjustSchema = z.object({
+  quantity: z.number().describe('Quantidade a ser adicionada ou removida'),
+})
+
+// OS Status Update Schema
+export const osStatusUpdateSchema = z.object({
+  status: z.string().min(1, 'Status é obrigatório'),
+  reason: z.string().optional().nullable(),
+  solution_applied: z.string().optional().nullable(),
+  payment_method_id: z.string().uuid().optional().nullable(),
+})
+
+// Category Schema
+export const categorySchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório'),
+})
+
+
