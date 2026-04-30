@@ -142,7 +142,7 @@ export default function TransactionHistory({
 
         // 3. Total Expenses (Sangrias and Exits)
         const totalExpenses = dateFilteredHistory
-            .filter(item => item.type === 'exit')
+            .filter(item => item.type === 'exit' && !item.description.startsWith('Custo de Peças OS'))
             .reduce((sum, item) => sum + item.amount, 0)
 
         // 4. Total Cost of Goods (Parts Cost)

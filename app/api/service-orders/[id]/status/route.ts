@@ -23,7 +23,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const { data: os } = await db
         .from('service_orders')
-        .select('status, final_cost, estimated_cost, order_number, customer_id')
+        .select('status, final_cost, estimated_cost, order_number, customer_id, parts_cost')
         .eq('id', id)
         .eq('company_id', companyId)
         .single()
@@ -107,6 +107,21 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                 updateData.cash_transaction_id = transaction.id
                 if (payment_method_id) {
                     updateData.payment_method_id = payment_method_id
+                }
+
+                // NEW: Register parts cost as an exit (despesa) in the cash register
+                if (os.parts_cost && Number(os.parts_cost) > 0) {
+                    await db.from('cash_transactions').insert({
+                        cash_register_id: openRegister.id,
+                        company_id: companyId,
+                        user_id: dbUser.id,
+                        type: 'exit',
+                        amount: Number(os.parts_cost),
+                        payment_method_id: payment_method_id,
+                        description: `Custo de Peças OS #${os.order_number}`,
+                        source_type: 'service_order',
+                        source_id: id
+                    })
                 }
             }
         }
