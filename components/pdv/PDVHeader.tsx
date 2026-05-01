@@ -32,8 +32,8 @@ export default function PDVHeader() {
                     <Grid3X3 className="w-5 h-5 lg:w-6 lg:h-6" />
                 </div>
                 <div className="flex flex-col">
-                    <span className="font-black text-lg lg:text-xl tracking-tighter leading-none">Nexus <span className="text-primary">OS</span></span>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5 hidden xs:block">Premium Systems</span>
+                    <span className="font-black text-lg lg:text-xl tracking-tighter leading-none">Nexus <span className="text-primary">PDV</span></span>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5 hidden xs:block">Ponto de Venda</span>
                 </div>
             </div>
 
