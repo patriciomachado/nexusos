@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import {
     LayoutDashboard, ClipboardList, Calendar, Users, Wrench,
     Package, CreditCard, BarChart3, Settings, Zap, Menu, X,
-    Bell, Wallet
+    Bell, Wallet, PanelLeft, PanelLeftClose, MousePointer2
 } from 'lucide-react'
 import { useAppStore } from '@/store/appStore'
 import { UserRole } from '@/types'
@@ -40,7 +40,14 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
     // Prevent hydration mismatch
     const sidebarOpen = mounted ? store.sidebarOpen : true
     const setSidebarOpen = store.setSidebarOpen
-    const effectiveOpen = mounted ? (sidebarOpen || isHovered) : true
+    const sidebarMode = mounted ? store.sidebarMode : 'hover'
+    const setSidebarMode = store.setSidebarMode
+
+    const effectiveOpen = mounted ? 
+        (sidebarMode === 'open' ? true : 
+         sidebarMode === 'closed' ? false : 
+         sidebarOpen || isHovered) 
+        : true
 
     return (
         <>
@@ -103,6 +110,42 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
                             )
                         })}
                 </nav>
+
+                {/* Sidebar Mode Toggle */}
+                <div className="px-2 py-2 border-t border-border" suppressHydrationWarning>
+                    <div className="flex items-center justify-center gap-1" suppressHydrationWarning>
+                        <button
+                            onClick={() => setSidebarMode('hover')}
+                            className={cn(
+                                "p-2 rounded-lg transition-all",
+                                sidebarMode === 'hover' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
+                            )}
+                            title="Hover"
+                        >
+                            <MousePointer2 className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => setSidebarMode('open')}
+                            className={cn(
+                                "p-2 rounded-lg transition-all",
+                                sidebarMode === 'open' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
+                            )}
+                            title="Sempre aberto"
+                        >
+                            <PanelLeft className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => setSidebarMode('closed')}
+                            className={cn(
+                                "p-2 rounded-lg transition-all",
+                                sidebarMode === 'closed' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
+                            )}
+                            title="Sempre fechado"
+                        >
+                            <PanelLeftClose className="w-4 h-4" />
+                        </button>
+                    </div>
+                </div>
 
                 {/* Bottom user area */}
                 <div className="p-3 border-t border-border shrink-0 bg-gradient-to-b from-transparent to-foreground/5 dark:to-black/20" suppressHydrationWarning>
