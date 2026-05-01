@@ -27,20 +27,24 @@ export default async function TechniciansPage() {
         <div className="animate-fade-in pb-12 bg-background min-h-screen transition-colors duration-300">
             <Header title="Equipe Técnica" />
 
-            <div className="p-6 max-w-7xl mx-auto space-y-6">
-                {/* Header Actions */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div>
-                        <h2 className="text-2xl font-bold text-foreground tracking-tight">Especialistas e Técnicos</h2>
-                        <p className="text-foreground/60 mt-1">
-                            Você tem <span className="text-orange-400 font-semibold">{technicians?.length || 0} profissionais ativos</span> na sua equipe.
+            <div className="p-6 max-w-7xl mx-auto space-y-12">
+                {/* Section Header */}
+                <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-6">
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-1 bg-orange-500 rounded-full" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-orange-500/60">Gestão de Equipe</span>
+                        </div>
+                        <h2 className="text-4xl lg:text-5xl font-black text-foreground tracking-tighter">Especialistas e Técnicos</h2>
+                        <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-xl">
+                            Gerencie os especialistas, acompanhe a performance individual e organize a disponibilidade da sua equipe. Atualmente existem <span className="text-orange-500 font-bold">{technicians?.length || 0} profissionais ativos</span>.
                         </p>
                     </div>
                     <Link
                         href="/technicians/new"
-                        className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-foreground px-6 py-3 rounded-xl font-medium shadow-[0_4px_20px_rgba(245,158,11,0.3)] transition-all hover:-translate-y-0.5"
+                        className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-foreground px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-[0_10px_25px_-5px_rgba(245,158,11,0.4)] transition-all hover:-translate-y-1 active:scale-95"
                     >
-                        <Plus className="w-5 h-5" />
+                        <Plus className="w-4 h-4" />
                         Novo Técnico
                     </Link>
                 </div>

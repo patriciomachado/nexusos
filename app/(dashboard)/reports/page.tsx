@@ -83,7 +83,17 @@ export default async function ReportsPage() {
         <div className="animate-fade-in pb-20 bg-background min-h-screen transition-colors duration-300">
             <Header title="Análise e Performance" />
 
-            <div className="p-6 max-w-7xl mx-auto space-y-8">
+            <div className="p-6 max-w-7xl mx-auto space-y-12">
+                {/* Section Header */}
+                <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-1 bg-indigo-500 rounded-full" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500/60">Gestão de Performance</span>
+                    </div>
+                    <h2 className="text-4xl lg:text-5xl font-black text-foreground tracking-tighter">Análise e Relatórios</h2>
+                    <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-xl">Acompanhe o desempenho financeiro, produtividade da equipe e indicadores de crescimento em tempo real.</p>
+                </div>
+
                 {/* Profitability Detailing Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div className="p-8 rounded-[2rem] bg-card/40 border border-border/50 backdrop-blur-3xl shadow-2xl relative overflow-hidden group">

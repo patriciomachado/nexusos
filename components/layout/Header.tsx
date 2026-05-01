@@ -29,16 +29,10 @@ export default function Header({ title, subtitle, children }: HeaderProps) {
     return (
         <header className="h-14 lg:h-16 px-3 sm:px-4 lg:px-8 flex items-center justify-between sticky top-0 z-40 bg-background/40 backdrop-blur-3xl border-b border-border/40 transition-all duration-500" suppressHydrationWarning>
 
-            {/* Left: Branding & Breadcrumb */}
+            {/* Left: Breadcrumb */}
             <div className="flex items-center gap-2 lg:gap-6 shrink-0" suppressHydrationWarning>
                 <div className="flex flex-col" suppressHydrationWarning>
-                    <div className="flex items-center gap-1.5" suppressHydrationWarning>
-                        <span className="w-1 h-1 rounded-full bg-primary/40 animate-pulse" />
-                        <span className="text-[7px] font-black uppercase tracking-[0.25em] text-muted-foreground/30 leading-none">
-                            NEXUS <span className="text-primary">OS</span>
-                        </span>
-                    </div>
-                    <h1 className="text-xs font-black tracking-tight text-foreground/80 mt-0.5 whitespace-nowrap">{title}</h1>
+                    <h1 className="text-sm font-black tracking-tight text-foreground/80 whitespace-nowrap">{title}</h1>
                 </div>
             </div>
 
