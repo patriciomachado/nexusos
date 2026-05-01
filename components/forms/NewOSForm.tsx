@@ -238,23 +238,23 @@ export default function NewOSForm({
     return (
         <form onSubmit={handleSubmit} className="p-4 max-w-[1600px] mx-auto space-y-8 pb-32 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {/* Header Flutuante com Resumo de Custo */}
-            <div className="sticky top-2 md:top-20 z-[400] bg-background/60 backdrop-blur-3xl border border-white/10 p-3 md:p-4 rounded-2xl flex items-center justify-between shadow-2xl shadow-black/40 transition-all">
+            <div className="sticky top-2 md:top-20 z-[400] bg-background/60 backdrop-blur-3xl border border-white/10 p-3 md:p-4 rounded-2xl flex items-center justify-between shadow-2xl shadow-black/40 transition-all gap-4">
                 <div className="flex items-center gap-3 md:gap-4 min-w-0">
                     <div className="p-2.5 md:p-3 rounded-xl bg-indigo-500/20 text-indigo-400 shrink-0">
                         <Zap className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />
                     </div>
-                    <div className="min-w-0">
-                        <h1 className="text-[10px] md:text-sm font-black uppercase tracking-widest text-foreground/80 flex items-center gap-2 truncate">
+                    <div className="flex flex-col justify-center min-w-0">
+                        <h1 className="text-[11px] md:text-sm font-black uppercase tracking-widest text-foreground/80 flex items-center gap-2 leading-none mb-1">
                             {initialData ? 'Edição de OS' : 'Nova Abertura'}
                             {isQuickMode && (
                                 <span className="bg-amber-500/10 text-amber-500 text-[8px] px-2 py-0.5 rounded-full border border-amber-500/20 animate-pulse hidden xs:inline-block">RAIO</span>
                             )}
                         </h1>
-                        <p className="text-[8px] md:text-[10px] font-medium text-muted-foreground uppercase tracking-widest truncate">Preencha os dados com atenção</p>
+                        <p className="text-[8px] md:text-[10px] font-medium text-muted-foreground uppercase tracking-widest leading-none truncate">Check-in de Equipamento</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2 md:gap-6 shrink-0">
                     <div className="hidden md:flex flex-col items-end">
                         <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Subtotal</span>
                         <span className="text-sm font-bold text-foreground/60 tabular-nums leading-none">
