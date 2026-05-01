@@ -284,7 +284,6 @@ export default function NewOSForm({
                         >
                             <XCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
                             <span className="hidden xs:inline">Cancelar</span>
-                            <span className="xs:hidden">X</span>
                         </button>
                         <button
                             type="submit"

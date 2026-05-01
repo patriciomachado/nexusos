@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import PayOSModal from './PayOSModal'
+import PremiumConfirmDialog from '../ui/PremiumConfirmDialog'
 
 interface OS {
     id: string
@@ -46,6 +47,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
     async function handleStatusChange(newStatus: string) {
         if (newStatus === os.status) return
@@ -197,20 +199,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                 </button>
 
                 <button
-                    onClick={() => {
-                        if (!confirm('Tem certeza que deseja excluir esta Ordem de Serviço? Esta ação é irreversível.')) return;
-                        toast.promise(
-                            fetch(`/api/service-orders/${os.id}`, { method: 'DELETE' }),
-                            {
-                                loading: 'Excluindo OS...',
-                                success: () => {
-                                    router.refresh()
-                                    return 'OS Excluída'
-                                },
-                                error: 'Erro ao excluir'
-                            }
-                        )
-                    }}
+                    onClick={() => setIsDeleteModalOpen(true)}
                     className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[9px] font-bold transition-all text-red-500 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 outline-none cursor-pointer"
                 >
                     <Trash className="w-3 h-3 opacity-70" />
@@ -273,6 +262,29 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                 osId={os.id}
                 osNumber={os.order_number}
                 amount={os.final_cost || os.estimated_cost || 0}
+            />
+            <PremiumConfirmDialog
+                isOpen={isDeleteModalOpen}
+                title="Excluir Ordem de Serviço"
+                description={`Tem certeza que deseja excluir a OS #${os.order_number}? Esta ação não pode ser desfeita.`}
+                confirmLabel="Excluir Agora"
+                cancelLabel="Cancelar"
+                onConfirm={() => {
+                    setIsDeleteModalOpen(false)
+                    toast.promise(
+                        fetch(`/api/service-orders/${os.id}`, { method: 'DELETE' }),
+                        {
+                            loading: 'Excluindo OS...',
+                            success: () => {
+                                router.refresh()
+                                return 'OS Excluída com sucesso'
+                            },
+                            error: 'Erro ao excluir'
+                        }
+                    )
+                }}
+                onCancel={() => setIsDeleteModalOpen(false)}
+                variant="danger"
             />
         </>
     )
