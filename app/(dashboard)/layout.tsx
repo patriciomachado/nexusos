@@ -9,13 +9,27 @@ import { supabase as db } from '@/lib/supabase'
 import { UserRole } from '@/types'
 
 async function ensureUserExists(clerkId: string, email: string, name: string): Promise<UserRole> {
-    const { data: existingUser } = await db
-        .from('users')
-        .select('id, company_id, role')
-        .eq('clerk_id', clerkId)
-        .single()
+    try {
+        const { data: existingUser, error } = await db
+            .from('users')
+            .select('id, company_id, role')
+            .eq('clerk_id', clerkId)
+            .single()
 
-    if (!existingUser) {
+        if (error && error.code !== 'PGRST116') {
+            console.error('Error fetching user:', error)
+            throw new Error('User fetch failed')
+        }
+
+        if (existingUser && existingUser.role) {
+            return existingUser.role as UserRole
+        }
+
+        // Se usuário existe mas sem role, retorna attendant como padrão
+        if (existingUser && !existingUser.role) {
+            return 'attendant' as UserRole
+        }
+
         // Primeiro, verifica se o usuário foi convidado e já existe na base pelo email
         const { data: invitedUser } = await db
             .from('users')
@@ -23,13 +37,13 @@ async function ensureUserExists(clerkId: string, email: string, name: string): P
             .eq('email', email)
             .single()
 
-        if (invitedUser) {
+        if (invitedUser && invitedUser.role) {
             // Se encontrou, atualiza o clerk_id do convite com o ID oficial do Clerk
             await db.from('users').update({ clerk_id: clerkId }).eq('id', invitedUser.id)
             return invitedUser.role as UserRole
         }
 
-        // Se não foi convidado, cria uma nova empresa (novo Admin)
+        // Se não foi convidado e não existe empresa, cria uma nova empresa (novo Admin)
         const { data: company } = await db
             .from('companies')
             .insert({
@@ -53,8 +67,10 @@ async function ensureUserExists(clerkId: string, email: string, name: string): P
             })
         }
         return 'admin' as UserRole
+    } catch (error) {
+        console.error('Error in ensureUserExists:', error)
+        return 'admin' as UserRole
     }
-    return existingUser.role as UserRole
 }
 
 export default async function DashboardLayout({
@@ -76,7 +92,7 @@ export default async function DashboardLayout({
         <div className="flex h-screen bg-background overflow-hidden transition-colors duration-300" suppressHydrationWarning>
             <Sidebar userRole={userRole} />
             <main className="flex-1 overflow-y-auto relative pb-20 lg:pb-0" suppressHydrationWarning>
-                {/* NotificationGenerator - commented due to mobile errors */}
+                <NotificationGenerator />
                 {children}
             </main>
             <BottomNav userRole={userRole} />
