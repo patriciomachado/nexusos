@@ -238,19 +238,19 @@ export default function NewOSForm({
     return (
         <form onSubmit={handleSubmit} className="p-4 max-w-[1600px] mx-auto space-y-8 pb-32 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {/* Header Flutuante com Resumo de Custo */}
-            <div className="sticky top-[72px] md:top-20 z-[400] bg-background/60 backdrop-blur-3xl border border-white/10 p-3 md:p-4 rounded-2xl flex items-center justify-between shadow-2xl shadow-black/40">
-                <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-indigo-500/20 text-indigo-400">
-                        <Zap className="w-5 h-5 animate-pulse" />
+            <div className="sticky top-2 md:top-20 z-[400] bg-background/60 backdrop-blur-3xl border border-white/10 p-3 md:p-4 rounded-2xl flex items-center justify-between shadow-2xl shadow-black/40 transition-all">
+                <div className="flex items-center gap-3 md:gap-4 min-w-0">
+                    <div className="p-2.5 md:p-3 rounded-xl bg-indigo-500/20 text-indigo-400 shrink-0">
+                        <Zap className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />
                     </div>
-                    <div>
-                        <h1 className="text-sm font-black uppercase tracking-widest text-foreground/80 flex items-center gap-2">
+                    <div className="min-w-0">
+                        <h1 className="text-[10px] md:text-sm font-black uppercase tracking-widest text-foreground/80 flex items-center gap-2 truncate">
                             {initialData ? 'Edição de OS' : 'Nova Abertura'}
                             {isQuickMode && (
-                                <span className="bg-amber-500/10 text-amber-500 text-[8px] px-2 py-0.5 rounded-full border border-amber-500/20 animate-pulse">MODO RAIO</span>
+                                <span className="bg-amber-500/10 text-amber-500 text-[8px] px-2 py-0.5 rounded-full border border-amber-500/20 animate-pulse hidden xs:inline-block">RAIO</span>
                             )}
                         </h1>
-                        <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest">Preencha os dados com atenção</p>
+                        <p className="text-[8px] md:text-[10px] font-medium text-muted-foreground uppercase tracking-widest truncate">Preencha os dados com atenção</p>
                     </div>
                 </div>
 
@@ -304,7 +304,7 @@ export default function NewOSForm({
                     
                     {/* CARD 1: IDENTIFICAÇÃO (CHUNKING) */}
                     <div className={cn(
-                        "bg-card/40 border rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group z-[300] overflow-visible transition-all duration-500",
+                        "bg-card/40 border rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[300] overflow-visible transition-all duration-500",
                         isQuickMode ? "border-amber-500/40 bg-amber-500/[0.03]" : "border-white/5"
                     )}>
                         {isQuickMode && (
@@ -494,7 +494,7 @@ export default function NewOSForm({
                     </div>
 
                     {/* CARD 2: GESTÃO DE ITENS (O RAIO) */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative group z-[20] overflow-visible">
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[200] overflow-visible">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full" />
                         
 
@@ -544,7 +544,7 @@ export default function NewOSForm({
                     </div>
 
                     {/* CARD 3: DIAGNÓSTICO & NOTAS */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner relative overflow-visible group z-[30]">
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner relative overflow-visible group z-[30]">
                         <div className="relative flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
                             <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
                                 <FileText className="w-5 h-5" />
@@ -581,7 +581,7 @@ export default function NewOSForm({
                 <div className="lg:col-span-4 space-y-8">
                     
                     {/* CARD 4: DETALHES DO APARELHO */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner">
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner relative group">
                         <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
                             <div className="p-2 rounded-xl bg-orange-500/10 text-orange-400">
                                 <Smartphone className="w-5 h-5" />
@@ -682,7 +682,7 @@ export default function NewOSForm({
                     </div>
 
                     {/* CARD 5: AGENDAMENTO & GARANTIA */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-8 backdrop-blur-xl shadow-inner">
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner">
                         <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
                             <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
                                 <Clock className="w-5 h-5" />

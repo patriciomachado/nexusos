@@ -183,9 +183,12 @@ body {
 }
 
 /* Prevent mobile zoom on focus */
-@media (max-width: 768px) {
-  input, 
-  select, 
+@media screen and (max-width: 768px) {
+  input:focus,
+  select:focus,
+  textarea:focus,
+  input,
+  select,
   textarea {
     font-size: 16px !important;
   }
