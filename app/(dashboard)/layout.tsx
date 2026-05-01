@@ -76,7 +76,7 @@ export default async function DashboardLayout({
         <div className="flex h-screen bg-background overflow-hidden transition-colors duration-300" suppressHydrationWarning>
             <Sidebar userRole={userRole} />
             <main className="flex-1 overflow-y-auto relative pb-20 lg:pb-0" suppressHydrationWarning>
-                <NotificationGenerator />
+                {/* NotificationGenerator - commented due to mobile errors */}
                 {children}
             </main>
             <BottomNav userRole={userRole} />
