@@ -87,6 +87,7 @@ export default async function DashboardLayout({
 
     // Ensure user exists in DB and get their role
     const userRole = await ensureUserExists(userId, email, name)
+    console.log('DEBUG: userRole =', userRole, 'email:', email)
 
     return (
         <div className="flex h-screen bg-background overflow-hidden transition-colors duration-300" suppressHydrationWarning>
