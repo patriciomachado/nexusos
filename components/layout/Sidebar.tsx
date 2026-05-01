@@ -38,6 +38,7 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
     }, [])
 
     // Prevent hydration mismatch
+    const safeRole = userRole || 'admin'
     const sidebarOpen = mounted ? store.sidebarOpen : true
     const setSidebarOpen = store.setSidebarOpen
     const sidebarMode = mounted ? store.sidebarMode : 'hover'
@@ -81,7 +82,7 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
                 {/* Nav */}
                 <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
                     {navItems
-                        .filter(item => item.roles.includes(userRole))
+                        .filter(item => item.roles.includes(safeRole))
                         .map((item) => {
                             const Icon = item.icon
                             const isActive = pathname === item.href || pathname.startsWith(item.href + '/')

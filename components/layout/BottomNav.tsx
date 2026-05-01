@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import {
     LayoutDashboard,
@@ -20,12 +21,21 @@ const mobileNavItems = [
 
 export default function BottomNav({ userRole = 'admin' }: { userRole?: UserRole }) {
     const pathname = usePathname()
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    if (!mounted) return null
+
+    const safeRole = userRole || 'admin'
 
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-background/80 backdrop-blur-xl border-t border-border px-2 pb-safe-area-inset-bottom">
             <div className="flex items-center justify-around h-16 max-w-md mx-auto">
                 {mobileNavItems
-                    .filter(item => item.roles.includes(userRole))
+                    .filter(item => item.roles.includes(safeRole))
                     .map((item) => {
                         const Icon = item.icon
                         const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
