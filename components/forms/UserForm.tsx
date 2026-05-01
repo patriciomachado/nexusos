@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { X, User, Mail, Phone, ShieldCheck, Save, Loader2 } from 'lucide-react'
 import { PremiumInput } from '@/components/ui/PremiumInput'
 import { User as UserType } from '@/types'
+import { cn } from '@/lib/utils'
 
 interface UserFormProps {
     initial?: Partial<UserType>
