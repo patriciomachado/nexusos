@@ -82,23 +82,51 @@ export async function POST(req: NextRequest) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    // Insert items if present
+    // Insert items if present with cost tracking
     if (validatedData.items && validatedData.items.length > 0) {
-        const itemsToInsert = validatedData.items.map((item: any) => ({
-            service_order_id: data.id,
-            inventory_item_id: item.inventory_item_id || null,
-            item_name: item.item_name,
-            quantity: item.quantity,
-            unit_price: item.unit_price,
-            total_price: item.total_price,
-            unit_cost: item.unit_cost || 0,
-            total_cost: item.total_cost || 0,
-        }))
+        let totalPartsCost = 0
+        const itemsToInsert = []
+
+        for (const item of validatedData.items) {
+            let unitCost = item.unit_cost || 0
+            
+            // If inventory item, try to get cost if not provided
+            if (item.inventory_item_id && unitCost === 0) {
+                const { data: invItem } = await ctx.db
+                    .from('inventory_items')
+                    .select('cost_price')
+                    .eq('id', item.inventory_item_id)
+                    .eq('company_id', ctx.companyId)
+                    .single()
+                if (invItem) unitCost = invItem.cost_price || 0
+            }
+
+            const itemTotalCost = unitCost * item.quantity
+            totalPartsCost += itemTotalCost
+
+            itemsToInsert.push({
+                service_order_id: data.id,
+                inventory_item_id: item.inventory_item_id || null,
+                item_name: item.item_name,
+                quantity: item.quantity,
+                unit_price: item.unit_price,
+                total_price: item.total_price,
+                unit_cost: unitCost,
+                total_cost: itemTotalCost
+            })
+        }
 
         const { error: itemsError } = await ctx.db.from('service_order_items').insert(itemsToInsert)
         if (itemsError) {
             console.error('Error inserting OS items:', itemsError)
         }
+
+        // Update the header parts_cost
+        await ctx.db
+            .from('service_orders')
+            .update({ parts_cost: totalPartsCost })
+            .eq('id', data.id)
+            .eq('company_id', ctx.companyId)
     }
 
     // Log history

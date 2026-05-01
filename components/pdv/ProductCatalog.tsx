@@ -62,6 +62,12 @@ export default function ProductCatalog() {
         const fetchCatalog = async () => {
             setLoading(true)
             try {
+                // Determine category details
+                const selectedCat = categories.find(c => c.id === activeCategory)
+                const catName = (selectedCat ? selectedCat.name : activeCategory).toLowerCase().trim()
+                const isServiceCategory = activeCategory === 'servicos' || catName === 'serviços' || catName === 'servicos'
+                const isAllCategory = activeCategory === 'all'
+
                 // Fetch inventory products
                 const resInv = await fetch(`/api/inventory?search=${encodeURIComponent(searchQuery)}`)
                 const dataInv = await resInv.json()
@@ -70,7 +76,7 @@ export default function ProductCatalog() {
                 let mergedItems = [...inventoryItems]
 
                 // Fetch service types if needed
-                if (activeCategory === 'all' || activeCategory === 'servicos' || activeCategory === 'Serviços') {
+                if (isAllCategory || isServiceCategory) {
                     const resSvc = await fetch('/api/settings/service-types')
                     const dataSvc = await resSvc.json()
 
@@ -99,18 +105,32 @@ export default function ProductCatalog() {
                         ? serviceItems.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
                         : serviceItems
 
-                    if (activeCategory === 'servicos' || activeCategory === 'Serviços') {
+                    if (isServiceCategory) {
                         mergedItems = [...inventoryItems.filter((p: InventoryItem) => 
                             p.category?.toLowerCase().includes('serviço') || p.category_id === 'servicos'
                         ), ...filteredServices]
                     } else {
                         mergedItems = [...inventoryItems, ...filteredServices]
                     }
-                } else if (activeCategory !== 'all') {
+                } else if (!isAllCategory) {
                     // Filter by specific category ID or Name
-                    mergedItems = inventoryItems.filter((p: InventoryItem) =>
-                        p.category_id === activeCategory || p.category === activeCategory
-                    )
+                    mergedItems = inventoryItems.filter((p: InventoryItem) => {
+                        const itemCategory = (p.category || '').toLowerCase().trim()
+                        const itemCategoryId = (p.category_id || '').toLowerCase().trim()
+                        const itemName = p.name.toLowerCase()
+                        const targetId = activeCategory.toLowerCase().trim()
+                        
+                        // 1. Direct ID or Name match
+                        if (itemCategoryId === targetId || itemCategory === targetId || itemCategory === catName) return true
+                        
+                        // 2. Fuzzy match (plural/singular and partials)
+                        if (itemCategory && (itemCategory.includes(catName) || catName.includes(itemCategory))) return true
+                        
+                        // 3. Fallback: If item has no category string, check if product name contains category name
+                        if (!itemCategory && catName.length > 3 && itemName.includes(catName)) return true
+                        
+                        return false
+                    })
                 }
 
                 setProducts(mergedItems)
@@ -123,7 +143,7 @@ export default function ProductCatalog() {
 
         const debounce = setTimeout(fetchCatalog, 300)
         return () => clearTimeout(debounce)
-    }, [searchQuery, activeCategory])
+    }, [searchQuery, activeCategory, categories])
 
     return (
         <div className="flex flex-col h-full space-y-8 animate-in fade-in duration-700">

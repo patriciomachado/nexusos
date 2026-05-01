@@ -122,6 +122,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
                 // Registrar custo de peças como saída (despesa) no caixa
                 if (calculatedPartsCost > 0) {
+                    const { data: expType } = await db
+                        .from('transaction_types')
+                        .select('id')
+                        .eq('code', 'EXPENSE')
+                        .single()
+
                     await db.from('cash_transactions').insert({
                         cash_register_id: openRegister.id,
                         company_id: companyId,
@@ -129,6 +135,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                         type: 'exit',
                         amount: calculatedPartsCost,
                         payment_method_id: payment_method_id,
+                        transaction_type_id: expType?.id,
                         description: `Custo de Peças OS #${os.order_number}`,
                         source_type: 'service_order',
                         source_id: id

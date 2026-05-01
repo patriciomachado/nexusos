@@ -179,12 +179,8 @@ export async function DELETE(req: NextRequest, { params }: Params) {
             }
         }
 
-        // 7. Deletar transações antigas do caixa (depois de criar estorno)
-        await db.from('cash_transactions')
-            .delete()
-            .eq('source_type', 'service_order')
-            .eq('source_id', id)
-            .eq('company_id', companyId)
+        // 7. Deletar transações antigas do caixa (REMOVIDO: Manter para histórico com estorno)
+        // O estorno já foi criado acima se necessário. Deletar aqui causaria discrepância dupla no saldo.
 
         // 8. Apagar a OS em si
         const { error } = await db
