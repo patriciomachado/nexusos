@@ -1,14 +1,30 @@
 'use client'
 
-import PDVHeader from '@/components/pdv/PDVHeader'
+import Header from '@/components/layout/Header'
 import ProductCatalog from '@/components/pdv/ProductCatalog'
 import CartSidebar from '@/components/pdv/CartSidebar'
 import PDVFooter from '@/components/pdv/PDVFooter'
 import FinishSaleModal from '@/components/pdv/FinishSaleModal'
 import { usePDVStore } from '@/store/usePDVStore'
+import { Search, ShoppingCart, Grid3X3, Package, BarChart3 } from 'lucide-react'
+import { useState } from 'react'
+import { Drawer } from '@/components/ui/Drawer'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export default function PDVPage() {
-    const { isFinishModalOpen, setIsFinishModalOpen, subtotal, discount, total } = usePDVStore()
+    const pathname = usePathname()
+    const { isFinishModalOpen, setIsFinishModalOpen, subtotal, discount, total, searchQuery, setSearchQuery, cart } = usePDVStore()
+    const [isCartOpen, setIsCartOpen] = useState(false)
+    const [isSearchOpen, setIsSearchOpen] = useState(false)
+
+    const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0)
+
+    const navItems = [
+        { label: 'PDV', path: '/pdv', icon: Grid3X3 },
+        { label: 'Estoque', path: '/inventory', icon: Package },
+        { label: 'Relatórios', path: '/reports', icon: BarChart3 },
+    ]
 
     return (
         <div className="flex flex-col h-[100dvh] max-h-[100dvh] bg-background text-foreground overflow-hidden">
@@ -40,8 +56,73 @@ export default function PDVPage() {
                 }
             `}</style>
 
-            {/* Premium Header */}
-            <PDVHeader />
+            {/* Standard Header with PDV Actions */}
+            <Header title="Ponto de Venda" subtitle="Frente de Caixa">
+                <div className="flex items-center gap-4 w-full">
+                    {/* Desktop Search */}
+                    <div className="hidden lg:block relative flex-1 max-w-md group">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
+                        <input
+                            type="text"
+                            placeholder="Pesquisar produtos... (F2)"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-muted/20 border border-border/40 rounded-xl py-2 pl-9 pr-4 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                        />
+                    </div>
+
+                    {/* Desktop Nav */}
+                    <nav className="hidden xl:flex items-center gap-4 border-l border-border/40 pl-4">
+                        {navItems.map((item) => (
+                            <Link
+                                key={item.path}
+                                href={item.path}
+                                className={`text-[10px] font-black uppercase tracking-widest transition-all hover:text-primary ${pathname === item.path ? 'text-primary' : 'text-muted-foreground/60'
+                                    }`}
+                            >
+                                {item.label}
+                            </Link>
+                        ))}
+                    </nav>
+
+                    {/* Mobile Controls */}
+                    <div className="flex lg:hidden items-center gap-2 ml-auto">
+                        <button 
+                            onClick={() => setIsSearchOpen(true)}
+                            className="w-9 h-9 flex items-center justify-center rounded-lg bg-muted/40 text-muted-foreground border border-border/40"
+                        >
+                            <Search className="w-4 h-4" />
+                        </button>
+                        <button 
+                            onClick={() => setIsCartOpen(true)}
+                            className="w-9 h-9 flex items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/20 relative"
+                        >
+                            <ShoppingCart className="w-4 h-4" />
+                            {cartCount > 0 && (
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-background">
+                                    {cartCount}
+                                </span>
+                            )}
+                        </button>
+                    </div>
+                </div>
+            </Header>
+
+            {/* Mobile Drawers */}
+            <Drawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} title="Carrinho">
+                <CartSidebar />
+            </Drawer>
+            <Drawer isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} title="Pesquisar">
+                <div className="p-4">
+                    <input
+                        type="text"
+                        placeholder="Nome do produto..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-muted/50 border border-border/50 rounded-xl py-3 px-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                    />
+                </div>
+            </Drawer>
 
             {/* Main PDV Area */}
             <main className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">

@@ -44,11 +44,11 @@ export default function TeamList({ users, onEdit, onRefresh }: TeamListProps) {
         setDeletingId(id)
         try {
             const res = await fetch(`/api/users/${id}`, { method: 'DELETE' })
+            const data = await res.json()
             if (res.ok) {
-                toast.success('Membro removido!')
+                toast.success(data.message || 'Membro removido!')
                 onRefresh()
             } else {
-                const data = await res.json()
                 throw new Error(data.error || 'Erro ao remover membro')
             }
         } catch (error: any) {

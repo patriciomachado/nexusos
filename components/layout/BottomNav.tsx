@@ -19,7 +19,7 @@ const mobileNavItems = [
     { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager', 'cashier'] },
 ]
 
-export default function BottomNav({ userRole = 'admin' }: { userRole?: UserRole }) {
+export default function BottomNav({ userRole = 'attendant' }: { userRole?: UserRole }) {
     const pathname = usePathname()
     const [mounted, setMounted] = useState(false)
 
@@ -29,14 +29,21 @@ export default function BottomNav({ userRole = 'admin' }: { userRole?: UserRole 
 
     if (!mounted) return null
 
-    const validRoles = ['admin', 'manager', 'technician', 'cashier', 'attendant']
+    const validRoles = ['admin', 'owner', 'manager', 'technician', 'cashier', 'attendant']
     const safeRole = (userRole && validRoles.includes(userRole)) ? userRole : 'attendant'
 
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-background/80 backdrop-blur-xl border-t border-border px-2 pb-safe-area-inset-bottom">
             <div className="flex items-center justify-around h-16 max-w-md mx-auto">
                 {mobileNavItems
-                    .filter(item => item.roles.includes(safeRole))
+                    .filter(item => {
+                        // FORCED SECURITY: Attendants ONLY see OS and PDV. No exceptions.
+                        if (safeRole === 'attendant') {
+                            return ['/service-orders', '/pdv'].includes(item.href);
+                        }
+                        // Other roles follow their defined permissions
+                        return item.roles.includes(safeRole);
+                    })
                     .map((item) => {
                         const Icon = item.icon
                         const isActive = pathname === item.href || pathname.startsWith(item.href + '/')

@@ -11,9 +11,10 @@ import { useState, useEffect } from 'react'
 interface HeaderProps {
     title: string
     subtitle?: string
+    children?: React.ReactNode
 }
 
-export default function Header({ title, subtitle }: HeaderProps) {
+export default function Header({ title, subtitle, children }: HeaderProps) {
     const { user: appUser } = useAppStore()
     const { user: clerkUser, isLoaded: clerkLoaded } = useUser()
     const router = useRouter()
@@ -26,22 +27,28 @@ export default function Header({ title, subtitle }: HeaderProps) {
     if (!mounted) return null
 
     return (
-        <header className="h-14 lg:h-18 px-4 lg:px-8 flex items-center justify-between sticky top-0 z-40 bg-background/40 backdrop-blur-3xl border-b border-border/40 transition-all duration-500" suppressHydrationWarning>
+        <header className="h-14 lg:h-16 px-4 lg:px-8 flex items-center justify-between sticky top-0 z-40 bg-background/40 backdrop-blur-3xl border-b border-border/40 transition-all duration-500" suppressHydrationWarning>
 
-            {/* Left: Mobile Title / Breadcrumb */}
-            <div className="flex items-center gap-6" suppressHydrationWarning>
-                <div className="flex flex-col" suppressHydrationWarning>
-                    <div className="flex items-center gap-2" suppressHydrationWarning>
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 leading-none">Nexus OS 2.0</span>
+            {/* Left: Branding & Breadcrumb */}
+            <div className="flex items-center gap-4 lg:gap-6" suppressHydrationWarning>
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-white/95 border border-primary/10 p-1 flex items-center justify-center shadow-lg shadow-primary/5">
+                        <img src="/logo.png" alt="Nexus Logo" className="w-full h-full object-contain" />
                     </div>
-                    <h1 className="text-base font-black tracking-tighter text-foreground mt-0.5">{title}</h1>
-                    {subtitle && <p className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest mt-0.5">{subtitle}</p>}
+                    <div className="flex flex-col" suppressHydrationWarning>
+                        <div className="flex items-center gap-1.5" suppressHydrationWarning>
+                            <span className="w-1 h-1 rounded-full bg-primary animate-pulse" />
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 leading-none">Nexus OS 2.0</span>
+                        </div>
+                        <h1 className="text-sm font-black tracking-tight text-foreground mt-0.5">{title}</h1>
+                    </div>
                 </div>
             </div>
 
-            {/* Space for layout balance */}
-            <div className="flex-1" />
+            {/* Center: Search / Custom Content */}
+            <div className="flex-1 max-w-xl mx-4">
+                {children}
+            </div>
 
             {/* Right: Actions & Profile */}
             <div className="flex items-center gap-6 lg:gap-8" suppressHydrationWarning>

@@ -47,14 +47,35 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         return NextResponse.json({ error: 'Only admins can remove team members' }, { status: 403 })
     }
 
-    const { error } = await db
-        .from('users')
-        .delete()
-        .eq('id', id)
-        .eq('company_id', companyId) // IDOR PROTECTION
-        .neq('id', currentUser.id) // Cannot delete yourself
+    try {
+        const { error } = await db
+            .from('users')
+            .delete()
+            .eq('id', id)
+            .eq('company_id', companyId) // IDOR PROTECTION
+            .neq('id', currentUser.id) // Cannot delete yourself
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ success: true })
+        if (error) {
+            // Se houver erro de constraint (23503), desativa o usuário em vez de apagar
+            if (error.code === '23503') {
+                const { error: updateError } = await db
+                    .from('users')
+                    .update({ is_active: false, updated_at: new Date().toISOString() })
+                    .eq('id', id)
+                    .eq('company_id', companyId)
+
+                if (updateError) throw updateError
+                return NextResponse.json({ 
+                    success: true, 
+                    message: 'O usuário possui histórico e foi desativado em vez de excluído para preservar os dados.' 
+                })
+            }
+            throw error
+        }
+
+        return NextResponse.json({ success: true })
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 })
+    }
 }
 

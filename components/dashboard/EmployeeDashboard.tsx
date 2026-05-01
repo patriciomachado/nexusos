@@ -29,7 +29,11 @@ interface EmployeeDashboardProps {
 }
 
 export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardProps) {
-    const isTechnician = role === 'technician' || role === 'attendant';
+    const isTechnician = role === 'technician';
+    const isAttendant = role === 'attendant';
+
+    console.log('EmployeeDashboard role:', role);
+    console.log('isAttendant:', isAttendant);
 
     return (
         <div className="bg-[#0f172a] min-h-screen text-foreground pb-20 lg:pb-8 transition-colors duration-500">
@@ -50,24 +54,28 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                     </div>
 
                     <div className="flex gap-3">
-                        <button className="px-5 py-3 rounded-2xl bg-card/40 backdrop-blur-xl border border-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
-                            Relatórios
-                        </button>
-                        <button className="px-5 py-3 rounded-2xl bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all">
+                        {!isAttendant && (
+                            <button className="px-5 py-3 rounded-2xl bg-card/40 backdrop-blur-xl border border-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
+                                Relatórios
+                            </button>
+                        )}
+                        <Link href="/service-orders/new" className="px-5 py-3 rounded-2xl bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all flex items-center justify-center">
                             Nova OS
-                        </button>
+                        </Link>
                     </div>
                 </div>
 
                 {/* KPI Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <StatsCard
-                        title="Vendas Hoje"
-                        value="R$ 1.248,50"
-                        icon={TrendingUp}
-                        trend={{ value: '12%', isUp: true }}
-                        color="emerald"
-                    />
+                    {!isAttendant && (
+                        <StatsCard
+                            title="Vendas Hoje"
+                            value="R$ 1.248,50"
+                            icon={TrendingUp}
+                            trend={{ value: '12%', isUp: true }}
+                            color="emerald"
+                        />
+                    )}
                     <StatsCard
                         title="OS em Aberto"
                         value={recentOS.filter(os => os.status === 'aberta').length + 8} // Fake count for visual
@@ -75,19 +83,23 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                         trend={{ value: '3', isUp: true }}
                         color="blue"
                     />
-                    <StatsCard
-                        title="Estoque Baixo"
-                        value="12"
-                        icon={Package}
-                        color="orange"
-                    />
-                    <StatsCard
-                        title="Novos Clientes"
-                        value="4"
-                        icon={Users}
-                        trend={{ value: '2', isUp: true }}
-                        color="purple"
-                    />
+                    {!isAttendant && (
+                        <>
+                            <StatsCard
+                                title="Estoque Baixo"
+                                value="12"
+                                icon={Package}
+                                color="orange"
+                            />
+                            <StatsCard
+                                title="Novos Clientes"
+                                value="4"
+                                icon={Users}
+                                trend={{ value: '2', isUp: true }}
+                                color="purple"
+                            />
+                        </>
+                    )}
                 </div>
 
                 {/* Secondary Layout: Quick Access & Recent Services */}

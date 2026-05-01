@@ -109,6 +109,32 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                         placeholder="(00) 00000-0000"
                     />
                 </div>
+
+                <div>
+                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest ml-2">Status da Conta</label>
+                    <div 
+                        onClick={() => setForm(p => ({ ...p, is_active: !p.is_active }))}
+                        className={cn(
+                            "w-full h-12 px-4 rounded-xl border flex items-center justify-between cursor-pointer transition-all",
+                            form.is_active 
+                                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" 
+                                : "bg-rose-500/10 border-rose-500/20 text-rose-500"
+                        )}
+                    >
+                        <span className="text-xs font-black uppercase tracking-widest">
+                            {form.is_active ? 'Totalmente Ativo' : 'Inativo / Bloqueado'}
+                        </span>
+                        <div className={cn(
+                            "w-10 h-5 rounded-full relative transition-colors p-1",
+                            form.is_active ? "bg-emerald-500" : "bg-rose-500"
+                        )}>
+                            <div className={cn(
+                                "w-3 h-3 bg-white rounded-full transition-all",
+                                form.is_active ? "ml-5" : "ml-0"
+                            )} />
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div className="flex items-center gap-4 pt-4 border-t border-border">

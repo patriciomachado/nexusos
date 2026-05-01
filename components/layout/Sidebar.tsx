@@ -22,12 +22,12 @@ const navItems = [
     { href: '/inventory', label: 'Produtos', icon: Package, roles: ['admin', 'manager'] },
     { href: '/pdv', label: 'PDV', icon: Zap, roles: ['admin', 'manager', 'cashier', 'attendant'] },
     { href: '/team', label: 'Equipe', icon: Users, roles: ['admin', 'manager'] },
-    { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager'] },
+    { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager', 'cashier'] }, // Cashier can see cash register too
     { href: '/reports', label: 'Relatórios', icon: BarChart3, roles: ['admin', 'manager'] },
     { href: '/settings', label: 'Configurações', icon: Settings, roles: ['admin'] },
 ]
 
-export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole }) {
+export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRole }) {
     const pathname = usePathname()
     const store = useAppStore()
     const [mounted, setMounted] = useState(false)
@@ -38,8 +38,9 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
     }, [])
 
     // Prevent hydration mismatch
-    const validRoles = ['admin', 'manager', 'technician', 'cashier', 'attendant']
+    const validRoles = ['admin', 'owner', 'manager', 'technician', 'cashier', 'attendant']
     const safeRole = (userRole && validRoles.includes(userRole)) ? userRole : 'attendant'
+    
     const sidebarOpen = mounted ? store.sidebarOpen : true
     const setSidebarOpen = store.setSidebarOpen
     const sidebarMode = mounted ? store.sidebarMode : 'hover'
@@ -74,8 +75,8 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
                     </div>
                     {effectiveOpen && (
                         <div className="ml-4 flex flex-col relative z-10 animate-in fade-in slide-in-from-left-4 duration-500">
-                            <span className="font-black text-foreground dark:text-white tracking-[0.1em] text-xl lg:text-2xl leading-none drop-shadow-md">NEXUS<span className="text-primary">OS</span></span>
-                            <span className="text-[9px] font-black text-primary uppercase tracking-[0.15em] mt-1.5 opacity-80">Premium Systems</span>
+                            <span className="font-black text-foreground dark:text-white tracking-[0.1em] text-lg lg:text-xl leading-none drop-shadow-md">NEXUS<span className="text-primary">OS</span></span>
+                            <span className="text-[8px] font-black text-primary uppercase tracking-[0.15em] mt-1.5 opacity-80">Premium Systems</span>
                         </div>
                     )}
                 </div>
@@ -83,7 +84,14 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
                 {/* Nav */}
                 <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
                     {navItems
-                        .filter(item => item.roles.includes(safeRole))
+                        .filter(item => {
+                            // FORCED SECURITY: Attendants ONLY see OS and PDV. No exceptions.
+                            if (safeRole === 'attendant') {
+                                return ['/service-orders', '/pdv'].includes(item.href);
+                            }
+                            // Other roles follow their defined permissions
+                            return item.roles.includes(safeRole);
+                        })
                         .map((item) => {
                             const Icon = item.icon
                             const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
@@ -176,8 +184,9 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
                             </div>
                             {effectiveOpen && (
                                 <div className="flex-1 min-w-0 animate-in fade-in slide-in-from-left-2 duration-300">
-                                    <p className="text-sm font-medium text-foreground truncate drop-shadow-md">Logado</p>
-                                    <Link href="/profile" className="text-xs text-primary truncate hover:underline block">Configurar Perfil</Link>
+                                    <p className="text-sm font-bold text-foreground truncate drop-shadow-md capitalize">{safeRole}</p>
+                                    <p className="text-[10px] text-muted-foreground truncate uppercase tracking-tighter">Acesso Restrito</p>
+                                    <Link href="/profile" className="text-xs text-primary truncate hover:underline block mt-1">Configurar Perfil</Link>
                                 </div>
                             )}
                         </div>

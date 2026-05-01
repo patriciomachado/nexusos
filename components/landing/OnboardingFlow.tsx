@@ -34,8 +34,8 @@ export default function OnboardingFlow() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
                     <div className="flex items-center justify-between px-6 py-3 bg-[#0A0A1F]/40 backdrop-blur-2xl border border-white/5 rounded-2xl">
                         <div className="flex items-center gap-2 group">
-                            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                                <Zap className="w-5 h-5 text-white" />
+                            <div className="w-8 h-8 rounded-lg bg-white p-1 flex items-center justify-center shadow-lg shadow-primary/10">
+                                <img src="/logo.png" alt="Nexus Logo" className="w-full h-full object-contain" />
                             </div>
                             <span className="text-lg font-black tracking-tighter text-white">Nexus<span className="text-primary italic">OS</span></span>
                         </div>
@@ -189,8 +189,8 @@ function StepFinal() {
         <div className="text-center space-y-16">
             <div className="relative inline-block">
                 <div className="absolute inset-0 bg-primary blur-[80px] opacity-20 scale-150 animate-pulse" />
-                <div className="relative w-32 h-32 rounded-[2.5rem] bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-2xl mx-auto transform rotate-12 hover:rotate-0 transition-transform duration-700">
-                    <Zap className="w-16 h-16 text-white" />
+                <div className="relative w-32 h-32 rounded-[2.5rem] bg-white flex items-center justify-center shadow-2xl mx-auto transform rotate-12 hover:rotate-0 transition-transform duration-700 p-6">
+                    <img src="/logo.png" alt="Nexus Logo" className="w-full h-full object-contain" />
                 </div>
             </div>
 

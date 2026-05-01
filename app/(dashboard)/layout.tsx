@@ -4,47 +4,47 @@ import ClientAIWrapper from '@/components/ai/client-wrapper'
 import NotificationGenerator from '@/components/dashboard/NotificationGenerator'
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import { supabase as db } from '@/lib/supabase'
+import { createAdminClient } from '@/lib/supabase'
 
 import { UserRole } from '@/types'
+import { unstable_noStore as noStore } from 'next/cache'
 
 async function ensureUserExists(clerkId: string, email: string, name: string): Promise<UserRole> {
+    const db = createAdminClient()
+    const normalizedEmail = email.toLowerCase().trim()
+    
     try {
+        // 1. Tentar buscar pelo clerk_id (mais rápido e seguro)
         const { data: existingUser, error } = await db
             .from('users')
             .select('id, company_id, role')
             .eq('clerk_id', clerkId)
             .single()
 
-        if (error && error.code !== 'PGRST116') {
-            console.error('Error fetching user:', error)
-            throw new Error('User fetch failed')
-        }
-
         if (existingUser && existingUser.role) {
+            console.log(`[AUTH] User found by clerkId: ${clerkId}, role: ${existingUser.role}`)
             return existingUser.role as UserRole
         }
 
-        // Se usuário existe mas sem role, retorna attendant como padrão
-        if (existingUser && !existingUser.role) {
-            return 'attendant' as UserRole
-        }
-
-        // Primeiro, verifica se o usuário foi convidado e já existe na base pelo email
+        // 2. Se não achou pelo clerk_id, tentar pelo email (caso de convite ou troca de conta clerk)
+        // Usando ilike para garantir case-insensitivity
         const { data: invitedUser } = await db
             .from('users')
             .select('id, company_id, role')
-            .eq('email', email)
+            .ilike('email', normalizedEmail)
             .single()
 
         if (invitedUser && invitedUser.role) {
-            // Se encontrou, atualiza o clerk_id do convite com o ID oficial do Clerk
+            console.log(`[AUTH] User found by email: ${normalizedEmail}, role: ${invitedUser.role}. Updating clerkId.`)
+            // Atualiza o clerk_id para o novo ID oficial
             await db.from('users').update({ clerk_id: clerkId }).eq('id', invitedUser.id)
             return invitedUser.role as UserRole
         }
 
-        // Se não foi convidado e não existe empresa, cria uma nova empresa (novo Admin)
-        const { data: company } = await db
+        // 3. Se realmente não existe, cria uma nova empresa e o usuário vira admin
+        console.log(`[AUTH] User not found. Creating new company and admin for: ${normalizedEmail}`)
+        
+        const { data: company, error: companyError } = await db
             .from('companies')
             .insert({
                 name: `Empresa de ${name}`,
@@ -56,20 +56,27 @@ async function ensureUserExists(clerkId: string, email: string, name: string): P
             .select()
             .single()
 
+        if (companyError) {
+            console.error('Error creating company:', companyError)
+            return 'attendant' as UserRole
+        }
+
         if (company) {
             await db.from('users').insert({
                 clerk_id: clerkId,
-                email,
+                email: normalizedEmail,
                 full_name: name,
                 role: 'admin',
                 company_id: company.id,
                 is_active: true,
             })
+            return 'admin' as UserRole
         }
-        return 'admin' as UserRole
+        
+        return 'attendant' as UserRole
     } catch (error) {
         console.error('Error in ensureUserExists:', error)
-        return 'admin' as UserRole
+        return 'attendant' as UserRole
     }
 }
 
@@ -78,6 +85,7 @@ export default async function DashboardLayout({
 }: {
     children: React.ReactNode
 }) {
+    noStore()
     const clerkUser = await currentUser()
     if (!clerkUser) redirect('/sign-in')
 
@@ -87,7 +95,6 @@ export default async function DashboardLayout({
 
     // Ensure user exists in DB and get their role
     const userRole = await ensureUserExists(userId, email, name)
-    console.log('LAYOUT userRole:', userRole)
 
     return (
         <div className="flex h-screen bg-background overflow-hidden transition-colors duration-300" suppressHydrationWarning>
