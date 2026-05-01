@@ -138,7 +138,7 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                         <h2 className="text-xl font-black uppercase tracking-widest">Ações Rápidas</h2>
 
                         <div className="grid grid-cols-1 gap-4">
-                            <Link href="/pdv" className="group glass-premium border-emerald-500/20 rounded-[2rem] p-8 flex flex-col items-center justify-center gap-6 transition-all hover:scale-[1.02] relative overflow-hidden">
+                            <Link href="/pdv" className="group glass-premium border-emerald-500/20 rounded-[2rem] p-8 hidden md:flex flex-col items-center justify-center gap-6 transition-all hover:scale-[1.02] relative overflow-hidden">
                                 <div className="w-20 h-20 rounded-[1.5rem] bg-emerald-500 text-emerald-50 shadow-2xl flex items-center justify-center group-hover:rotate-12 transition-transform">
                                     <Zap className="w-10 h-10 fill-current" />
                                 </div>
@@ -148,7 +148,7 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                                 </div>
                             </Link>
 
-                            <Link href="/service-orders/new" className="group glass-premium border-blue-500/20 rounded-[2rem] p-8 flex flex-col items-center justify-center gap-6 transition-all hover:scale-[1.02] relative overflow-hidden">
+                            <Link href="/service-orders/new" className="group glass-premium border-blue-500/20 rounded-[2rem] p-8 hidden md:flex flex-col items-center justify-center gap-6 transition-all hover:scale-[1.02] relative overflow-hidden">
                                 <div className="w-20 h-20 rounded-[1.5rem] bg-blue-500 text-blue-50 shadow-2xl flex items-center justify-center group-hover:-rotate-12 transition-transform">
                                     <ClipboardList className="w-10 h-10" />
                                 </div>

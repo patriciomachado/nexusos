@@ -288,27 +288,6 @@ export default async function DashboardPage() {
                             </div>
                         </div>
 
-                        {/* Quick Commands - High Affordance */}
-                        <div className="grid grid-cols-3 gap-4">
-                            <Link href="/service-orders/new" className="flex flex-col items-center justify-center gap-2 p-5 rounded-[2rem] glass-premium border-white/5 active:scale-95 transition-all shadow-xl group">
-                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
-                                    <PlusCircle className="w-6 h-6" />
-                                </div>
-                                <span className="text-[8px] font-black uppercase tracking-[0.1em] text-muted-foreground group-hover:text-foreground">Nova OS</span>
-                            </Link>
-                            <Link href="/pdv" className="flex flex-col items-center justify-center gap-2 p-5 rounded-[2rem] glass-premium border-white/5 active:scale-95 transition-all shadow-xl group">
-                                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
-                                    <Store className="w-6 h-6" />
-                                </div>
-                                <span className="text-[8px] font-black uppercase tracking-[0.1em] text-muted-foreground group-hover:text-foreground">Venda</span>
-                            </Link>
-                            <Link href="/cash-register" className="flex flex-col items-center justify-center gap-2 p-5 rounded-[2rem] glass-premium border-white/5 active:scale-95 transition-all shadow-xl group">
-                                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
-                                    <Calculator className="w-6 h-6" />
-                                </div>
-                                <span className="text-[8px] font-black uppercase tracking-[0.1em] text-muted-foreground group-hover:text-foreground">Caixa</span>
-                            </Link>
-                        </div>
 
                         {/* Operational Stats - Ultra Compact Row */}
                         <div className="flex gap-4">
@@ -444,15 +423,18 @@ export default async function DashboardPage() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4" suppressHydrationWarning>
                                     {[
-                                        { label: 'Nova OS', icon: ClipboardList, href: '/service-orders/new' },
+                                        { label: 'Nova OS', icon: ClipboardList, href: '/service-orders/new', mobileHidden: true },
                                         { label: 'Clientes', icon: Users, href: '/customers' },
-                                        { label: 'Financeiro', icon: DollarSign, href: '/cash-register' },
+                                        { label: 'Financeiro', icon: DollarSign, href: '/cash-register', mobileHidden: true },
                                         { label: 'Ajustes', icon: Settings, href: '/settings' },
                                     ].map(action => (
                                         <Link
                                             key={action.label}
                                             href={action.href}
-                                            className="flex flex-col items-center justify-center gap-4 p-8 rounded-3xl bg-white/10 hover:bg-white/20 border border-white/5 transition-all hover:-translate-y-1 shadow-inner group/action"
+                                            className={cn(
+                                                "flex flex-col items-center justify-center gap-4 p-8 rounded-3xl bg-white/10 hover:bg-white/20 border border-white/5 transition-all hover:-translate-y-1 shadow-inner group/action",
+                                                action.mobileHidden && "hidden md:flex"
+                                            )}
                                         >
                                             <action.icon className="w-8 h-8 text-white transition-transform group-hover/action:scale-110" />
                                             <span className="text-[10px] font-black uppercase tracking-widest text-white/90">{action.label}</span>
