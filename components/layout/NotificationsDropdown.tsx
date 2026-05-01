@@ -26,6 +26,7 @@ export default function NotificationsDropdown() {
     }, [])
 
     const handleNotificationClick = async (notification: any) => {
+        if (!mounted) return
         await markAsRead(notification.id)
         
         if (notification.related_entity_type === 'service_order' && notification.related_entity_id) {

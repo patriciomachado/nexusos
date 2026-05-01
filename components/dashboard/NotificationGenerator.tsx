@@ -1,9 +1,17 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function NotificationGenerator() {
+    const [mounted, setMounted] = useState(false)
+
     useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    useEffect(() => {
+        if (!mounted) return
+        
         const generateNotifications = async () => {
             try {
                 await fetch('/api/notifications?generate=true', { method: 'GET' })
@@ -13,7 +21,9 @@ export default function NotificationGenerator() {
         }
         
         generateNotifications()
-    }, [])
+    }, [mounted])
+
+    if (!mounted) return null
 
     return null
 }
