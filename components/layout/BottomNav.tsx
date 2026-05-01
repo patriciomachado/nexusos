@@ -13,10 +13,8 @@ import {
 import { UserRole } from '@/types'
 
 const mobileNavItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier', 'attendant'] },
     { href: '/service-orders', label: 'OS', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant'] },
-    { href: '/pdv', label: 'PDV', icon: ShoppingCart, roles: ['admin', 'manager', 'cashier'] },
-    { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager', 'cashier'] },
+    { href: '/pdv', label: 'PDV', icon: ShoppingCart, roles: ['admin', 'manager', 'cashier', 'attendant'] },
 ]
 
 export default function BottomNav({ userRole = 'admin' }: { userRole?: UserRole }) {
@@ -29,7 +27,8 @@ export default function BottomNav({ userRole = 'admin' }: { userRole?: UserRole 
 
     if (!mounted) return null
 
-    const safeRole = userRole || 'admin'
+    const validRoles = ['admin', 'manager', 'technician', 'cashier', 'attendant']
+    const safeRole = (userRole && validRoles.includes(userRole)) ? userRole : 'attendant'
 
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-background/80 backdrop-blur-xl border-t border-border px-2 pb-safe-area-inset-bottom">
