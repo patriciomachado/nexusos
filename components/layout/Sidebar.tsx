@@ -38,7 +38,8 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
     }, [])
 
     // Prevent hydration mismatch
-    const safeRole = (userRole && userRole !== 'undefined') ? userRole : 'attendant'
+    const validRoles = ['admin', 'manager', 'technician', 'cashier', 'attendant']
+    const safeRole = (userRole && validRoles.includes(userRole)) ? userRole : 'attendant'
     const sidebarOpen = mounted ? store.sidebarOpen : true
     const setSidebarOpen = store.setSidebarOpen
     const sidebarMode = mounted ? store.sidebarMode : 'hover'
