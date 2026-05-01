@@ -170,7 +170,7 @@ async function generateNotifications(db: any, companyId: string) {
         .lte('due_date', fiveDaysFromNow)
 
     if (pendingPayments && pendingPayments.length > 0) {
-        const totalPending = pendingPayments.reduce<number>((sum, p) => sum + (Number(p.amount) || 0), 0)
+        const totalPending: number = pendingPayments.reduce((sum: number, p: any) => sum + (Number(p.amount) || 0), 0)
         
         const existingPayNotif = await db
             .from('notifications')
