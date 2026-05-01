@@ -48,7 +48,7 @@ export default function PremiumConfirmDialog({
 
     return createPortal(
         <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-card w-full max-w-sm rounded-[2.5rem] border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col animate-in zoom-in-95 duration-300 relative">
+            <div className="bg-card w-full max-w-sm rounded-[2.5rem] border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col animate-in duration-300 relative">
                 <div className="p-8 pb-4 flex flex-col items-center text-center">
                     <div className={cn("p-4 rounded-3xl border mb-6", iconStyles[variant])}>
                         <AlertTriangle className="w-8 h-8" />

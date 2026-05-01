@@ -259,7 +259,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                         side="bottom"
                         sideOffset={8}
                         collisionPadding={16}
-                        className="rounded-[1.5rem] border border-white/10 bg-card/95 shadow-[0_20px_50px_rgba(0,0,0,0.4)] z-[2005] backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200 overflow-y-auto max-h-[calc(100vh-40px)] outline-none ring-1 ring-white/10"
+                        className="rounded-[1.5rem] border border-white/10 bg-card/95 shadow-[0_20px_50px_rgba(0,0,0,0.4)] z-[2005] backdrop-blur-3xl animate-in fade-in duration-200 overflow-y-auto max-h-[calc(100vh-40px)] outline-none ring-1 ring-white/10"
                     >
                         <ActionItems />
                     </DropdownMenu.Content>

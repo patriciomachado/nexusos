@@ -113,7 +113,7 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
                             type="datetime-local"
                             value={value}
                             onChange={(e) => onChange(e.target.value)}
-                            className="w-full bg-muted/40 border border-border rounded-lg p-2.5 text-foreground focus:outline-none focus:border-primary/50 transition-all font-mono text-xs"
+                            className="w-full bg-muted/40 border border-border rounded-lg p-2.5 text-foreground focus:outline-none focus:border-primary/50 transition-all font-mono md:text-xs text-base"
                         />
                     </div>
                 )}

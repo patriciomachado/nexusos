@@ -238,7 +238,7 @@ export default function NewOSForm({
     return (
         <form onSubmit={handleSubmit} className="p-4 max-w-[1600px] mx-auto space-y-8 pb-32 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {/* Header Flutuante com Resumo de Custo */}
-            <div className="sticky top-20 z-[400] bg-background/60 backdrop-blur-3xl border border-white/10 p-4 rounded-2xl flex items-center justify-between shadow-2xl shadow-black/40">
+            <div className="sticky top-[72px] md:top-20 z-[400] bg-background/60 backdrop-blur-3xl border border-white/10 p-3 md:p-4 rounded-2xl flex items-center justify-between shadow-2xl shadow-black/40">
                 <div className="flex items-center gap-4">
                     <div className="p-3 rounded-xl bg-indigo-500/20 text-indigo-400">
                         <Zap className="w-5 h-5 animate-pulse" />
@@ -280,18 +280,19 @@ export default function NewOSForm({
                         <button
                             type="button"
                             onClick={() => router.back()}
-                            className="px-6 py-3 rounded-xl border border-white/5 bg-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2"
+                            className="px-4 md:px-6 py-2.5 md:py-3 rounded-xl border border-white/5 bg-white/5 text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2"
                         >
-                            <XCircle className="w-4 h-4" />
-                            Cancelar
+                            <XCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                            <span className="hidden xs:inline">Cancelar</span>
+                            <span className="xs:hidden">X</span>
                         </button>
                         <button
                             type="submit"
                             disabled={isPending || isUploading}
-                            className="px-8 py-3 rounded-xl bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-2 disabled:opacity-50"
+                            className="px-5 md:px-8 py-2.5 md:py-3 rounded-xl bg-indigo-500 text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-2 disabled:opacity-50"
                         >
-                            {(isPending || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                            {initialData ? 'Salvar OS' : 'Criar OS'}
+                            {(isPending || isUploading) ? <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5 md:w-4 md:h-4" />}
+                            {initialData ? 'Salvar' : 'Criar'}
                         </button>
                     </div>
                 </div>
@@ -413,7 +414,7 @@ export default function NewOSForm({
                                                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-500/40">R$</span>
                                                         <input
                                                             type="number"
-                                                            className="w-full h-11 bg-white/5 border border-amber-500/20 rounded-xl pl-9 pr-4 text-xs font-bold focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
+                                                            className="w-full h-11 bg-white/5 border border-amber-500/20 rounded-xl pl-9 pr-4 md:text-xs text-base font-bold focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
                                                             value={quickService.price}
                                                             onChange={(e) => {
                                                                 const price = e.target.value;
@@ -439,7 +440,7 @@ export default function NewOSForm({
                                                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-500/40">R$</span>
                                                         <input
                                                             type="number"
-                                                            className="w-full h-11 bg-white/5 border border-amber-500/20 rounded-xl pl-9 pr-4 text-xs font-bold focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
+                                                            className="w-full h-11 bg-white/5 border border-amber-500/20 rounded-xl pl-9 pr-4 md:text-xs text-base font-bold focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
                                                             value={quickService.cost}
                                                             onChange={(e) => {
                                                                 const cost = e.target.value;
@@ -526,7 +527,7 @@ export default function NewOSForm({
                                                 }
                                             })
                                         }}
-                                        className="w-full h-14 bg-rose-500/5 border border-rose-500/10 rounded-2xl pl-12 pr-6 text-sm font-black text-rose-400 placeholder:text-rose-500/20 focus:ring-4 focus:ring-rose-500/10 outline-none transition-all tabular-nums"
+                                        className="w-full h-14 bg-rose-500/5 border border-rose-500/10 rounded-2xl pl-12 pr-6 md:text-sm text-base font-black text-rose-400 placeholder:text-rose-500/20 focus:ring-4 focus:ring-rose-500/10 outline-none transition-all tabular-nums"
                                         placeholder="0,00"
                                     />
                                 </div>
@@ -631,7 +632,7 @@ export default function NewOSForm({
                                     onChange={e => setForm(p => ({ ...p, device_condition: e.target.value }))}
                                     placeholder="Ex: Riscos na tela, batida no canto..."
                                     rows={3}
-                                    className="bg-white/5 border-white/5 text-xs p-4"
+                                    className="bg-white/5 border-white/5 md:text-xs text-base p-4"
                                 />
                             </div>
 

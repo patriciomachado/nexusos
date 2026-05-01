@@ -79,7 +79,7 @@ export default function PayOSModal({
 
     const modalContent = (
         <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 lg:p-8 bg-black/80 backdrop-blur-xl animate-in fade-in duration-500">
-            <div className="bg-card border border-border w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-10 duration-500 max-h-[90vh] flex flex-col -mt-20">
+            <div className="bg-card border border-border w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 duration-500 max-h-[90vh] flex flex-col -mt-20">
                 <div className="p-8 space-y-6 overflow-y-auto scrollbar-hide">
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-4">

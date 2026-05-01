@@ -31,7 +31,7 @@ export const inventoryItemSchema = z.object({
   category: z.string().optional().nullable(),
   cost_price: z.number().min(0).optional().default(0),
   selling_price: z.number().min(0).optional().default(0),
-  quantity_in_stock: z.number().min(0).default(0),
+  quantity_in_stock: z.number().default(0),
   minimum_quantity: z.number().min(0).default(0),
   maximum_quantity: z.number().min(0).default(999),
   unit: z.string().default('un'),

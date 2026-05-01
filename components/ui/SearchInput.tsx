@@ -14,7 +14,7 @@ interface SearchInputProps {
 
 export default function SearchInput({
     placeholder = "Pesquisar...",
-    className = "w-full bg-muted/40 border border-border rounded-3xl py-3 pl-11 pr-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 transition-all backdrop-blur-md",
+    className = "w-full bg-muted/40 border border-border rounded-3xl py-3 pl-11 pr-4 md:text-sm text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 transition-all backdrop-blur-md",
     value,
     onChange,
     syncWithUrl = true

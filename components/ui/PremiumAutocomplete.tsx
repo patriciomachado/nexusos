@@ -105,7 +105,7 @@ export default function PremiumAutocomplete({
                 <div
                     ref={dropdownRef}
                     style={dropdownStyle}
-                    className="overflow-hidden rounded-2xl bg-card/95 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200"
+                    className="overflow-hidden rounded-2xl bg-card/95 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-3xl animate-in fade-in duration-200"
                 >
                     <ul className="p-1 max-h-64 overflow-y-auto custom-scrollbar">
                         {filteredOptions.map((opt, i) => (
@@ -117,7 +117,7 @@ export default function PremiumAutocomplete({
                                         onChange(opt)
                                         setIsOpen(false)
                                     }}
-                                    className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition-all text-foreground/70 hover:bg-primary/10 hover:text-primary text-left"
+                                    className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl md:text-xs text-sm font-medium transition-all text-foreground/70 hover:bg-primary/10 hover:text-primary text-left"
                                 >
                                     <span className="truncate">{opt}</span>
                                 </button>

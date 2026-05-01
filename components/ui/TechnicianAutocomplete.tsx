@@ -52,7 +52,7 @@ export default function TechnicianAutocomplete({ technicians, selectedId, onSele
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "relative h-12 w-full bg-muted/40 border rounded-2xl py-3 pl-4 pr-10 text-left text-sm transition-all backdrop-blur-2xl",
+                    "relative h-12 w-full bg-muted/40 border rounded-2xl py-3 pl-4 pr-10 text-left md:text-sm text-base transition-all backdrop-blur-2xl",
                     error ? "border-destructive/50" : "border-border",
                     isOpen ? "ring-2 ring-primary/30 border-primary/50" : "hover:bg-muted/60 hover:border-border/80"
                 )}
@@ -69,14 +69,14 @@ export default function TechnicianAutocomplete({ technicians, selectedId, onSele
             </button>
 
             {isOpen && (
-                <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-[2rem] bg-card/95 border border-white/10 shadow-2xl backdrop-blur-3xl animate-in fade-in zoom-in-95 duration-200">
+                <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-[2rem] bg-card/95 border border-white/10 shadow-2xl backdrop-blur-3xl animate-in fade-in duration-200">
                     <div className="p-3 border-b border-white/5">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/30" />
                             <input
                                 autoFocus
                                 type="text"
-                                className="w-full h-10 bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 text-xs text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-bold"
+                                className="w-full h-10 bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 md:text-xs text-base text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-bold"
                                 placeholder="Procurar técnico..."
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}

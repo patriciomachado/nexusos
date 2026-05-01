@@ -87,7 +87,7 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "relative h-12 w-full bg-muted/40 border rounded-2xl py-3 pl-4 pr-10 text-left text-sm transition-all backdrop-blur-2xl",
+                    "relative h-12 w-full bg-muted/40 border rounded-2xl py-3 pl-4 pr-10 text-left md:text-sm text-base transition-all backdrop-blur-2xl",
                     error ? "border-destructive/50" : "border-border group-focus-within:border-primary/40",
                     isOpen ? "ring-2 ring-primary/30 border-primary/50" : "hover:bg-muted/60 hover:border-border/80"
                 )}
@@ -104,7 +104,7 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
                 <div
                     ref={dropdownRef}
                     style={dropdownStyle}
-                    className="overflow-hidden rounded-2xl bg-card border border-border shadow-2xl backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200"
+                    className="overflow-hidden rounded-2xl bg-card border border-border shadow-2xl backdrop-blur-2xl animate-in fade-in duration-200"
                 >
                     <ul className="max-h-60 overflow-y-auto p-1 py-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
                         {options.length > 0 ? (
@@ -117,7 +117,7 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
                                             setIsOpen(false)
                                         }}
                                         className={cn(
-                                            "relative w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm transition-all group",
+                                            "relative w-full flex items-center gap-3 px-4 py-3 rounded-2xl md:text-sm text-base transition-all group",
                                             o.id === selectedId
                                                 ? "bg-primary/10 text-primary font-bold"
                                                 : "text-muted-foreground hover:bg-muted hover:text-foreground"

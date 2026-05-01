@@ -136,7 +136,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                     }}
                                     onFocus={() => setIsOpen(true)}
                                     placeholder="Nome da peça ou serviço..."
-                                    className="w-full h-14 bg-card/40 border border-border rounded-2xl pl-12 pr-14 text-sm font-bold placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/40 transition-all"
+                                    className="w-full h-14 bg-card/40 border border-border rounded-2xl pl-12 pr-14 md:text-sm text-base font-bold placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/40 transition-all"
                                 />
                                 <button
                                     type="button"
@@ -197,7 +197,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                             )}
                         </div>
                     ) : (
-                        <div className="p-6 rounded-[2rem] bg-amber-500/5 border-2 border-amber-500/20 space-y-4 animate-in zoom-in-95 duration-200 shadow-xl shadow-amber-500/5 relative overflow-hidden">
+                        <div className="p-6 rounded-[2rem] bg-amber-500/5 border-2 border-amber-500/20 space-y-4 animate-in duration-200 shadow-xl shadow-amber-500/5 relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-4 opacity-5">
                                 <Zap className="w-24 h-24 fill-current text-amber-500" />
                             </div>
@@ -226,7 +226,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                         value={quickName}
                                         onChange={(e) => setQuickName(e.target.value)}
                                         placeholder="Ex: Troca de tela iPhone 13..."
-                                        className="w-full h-12 bg-white/40 border border-amber-500/20 rounded-xl px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                                        className="w-full h-12 bg-white/40 border border-amber-500/20 rounded-xl px-4 md:text-sm text-base font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
                                     />
                                 </div>
                                 
@@ -239,7 +239,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                 type="number"
                                                 value={quickCost}
                                                 onChange={(e) => setQuickCost(e.target.value)}
-                                                className="w-full h-12 bg-white/40 border border-amber-500/20 rounded-xl pl-10 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                                                className="w-full h-12 bg-white/40 border border-amber-500/20 rounded-xl pl-10 pr-4 md:text-sm text-base font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
                                             />
                                         </div>
                                     </div>
@@ -251,7 +251,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                 type="number"
                                                 value={quickPrice}
                                                 onChange={(e) => setQuickPrice(e.target.value)}
-                                                className="w-full h-12 bg-white/40 border border-amber-500/20 rounded-xl pl-10 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
+                                                className="w-full h-12 bg-white/40 border border-amber-500/20 rounded-xl pl-10 pr-4 md:text-sm text-base font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all"
                                             />
                                         </div>
                                     </div>
@@ -322,7 +322,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                     type="number"
                                                     value={item.quantity}
                                                     onChange={(e) => updateItem(index, { quantity: Number(e.target.value) })}
-                                                    className="w-16 h-8 bg-muted/30 border border-transparent focus:border-indigo-500/30 rounded-lg text-center text-xs font-black focus:outline-none transition-all"
+                                                    className="w-16 h-8 bg-muted/30 border border-transparent focus:border-indigo-500/30 rounded-lg text-center md:text-xs text-base font-black focus:outline-none transition-all"
                                                 />
                                             </td>
                                             <td className="p-4 text-right">
@@ -332,7 +332,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                         type="number"
                                                         value={item.unit_cost}
                                                         onChange={(e) => updateItem(index, { unit_cost: Number(e.target.value) })}
-                                                        className="w-full h-8 bg-muted/20 border border-transparent focus:border-amber-500/30 rounded-lg pl-6 pr-2 text-right text-xs font-black text-amber-600 focus:outline-none transition-all"
+                                                        className="w-full h-8 bg-muted/20 border border-transparent focus:border-amber-500/30 rounded-lg pl-6 pr-2 text-right md:text-xs text-base font-black text-amber-600 focus:outline-none transition-all"
                                                     />
                                                 </div>
                                             </td>
@@ -343,7 +343,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                         type="number"
                                                         value={item.unit_price}
                                                         onChange={(e) => updateItem(index, { unit_price: Number(e.target.value) })}
-                                                        className="w-full h-8 bg-muted/30 border border-transparent focus:border-indigo-500/30 rounded-lg pl-6 pr-2 text-right text-xs font-black text-indigo-600 focus:outline-none transition-all"
+                                                        className="w-full h-8 bg-muted/30 border border-transparent focus:border-indigo-500/30 rounded-lg pl-6 pr-2 text-right md:text-xs text-base font-black text-indigo-600 focus:outline-none transition-all"
                                                     />
                                                 </div>
                                             </td>
