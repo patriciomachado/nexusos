@@ -14,10 +14,10 @@ import { useAppStore } from '@/store/appStore'
 import { UserRole } from '@/types'
 
 const navItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier', 'attendant'] },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier'] },
     { href: '/service-orders', label: 'Ordens de Serviço', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant'] },
     { href: '/appointments', label: 'Agendamentos', icon: Calendar, roles: ['admin', 'manager'] },
-    { href: '/customers', label: 'Clientes', icon: Users, roles: ['admin', 'manager', 'technician', 'cashier', 'attendant'] },
+    { href: '/customers', label: 'Clientes', icon: Users, roles: ['admin', 'manager', 'technician', 'cashier'] },
     { href: '/technicians', label: 'Técnicos', icon: Wrench, roles: ['admin', 'manager'] },
     { href: '/inventory', label: 'Produtos', icon: Package, roles: ['admin', 'manager'] },
     { href: '/pdv', label: 'PDV', icon: Zap, roles: ['admin', 'manager', 'cashier', 'attendant'] },
@@ -38,7 +38,7 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
     }, [])
 
     // Prevent hydration mismatch
-    const safeRole = userRole || 'admin'
+    const safeRole = (userRole && userRole !== 'undefined') ? userRole : 'attendant'
     const sidebarOpen = mounted ? store.sidebarOpen : true
     const setSidebarOpen = store.setSidebarOpen
     const sidebarMode = mounted ? store.sidebarMode : 'hover'

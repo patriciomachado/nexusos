@@ -5,7 +5,8 @@ import {
     Search, Filter, ArrowUpRight, ArrowDownLeft, 
     Calendar, Receipt, MoreHorizontal, Wallet,
     TrendingUp, TrendingDown, Clock, History,
-    DollarSign, Activity, PieChart, Info, ShieldCheck
+    DollarSign, Activity, PieChart, Info, ShieldCheck,
+    Trash2, AlertTriangle
 } from 'lucide-react'
 import { formatCurrency, formatDateTime, cn } from '@/lib/utils'
 
@@ -26,6 +27,22 @@ export default function TransactionHistory({
     const [filterType, setFilterType] = useState<'all' | 'entry' | 'exit'>('all')
     const [timeRange, setTimeRange] = useState<string>('30')
     const [showMonthPicker, setShowMonthPicker] = useState(false)
+    const [deleteModal, setDeleteModal] = useState<{ open: boolean; register: any | null }>({ open: false, register: null })
+
+    const handleDeleteRegister = async () => {
+        if (!deleteModal.register) return
+        
+        try {
+            const response = await fetch(`/api/cash-registers/${deleteModal.register.id}`, {
+                method: 'DELETE'
+            })
+            if (response.ok) {
+                window.location.reload()
+            }
+        } catch (error) {
+            console.error('Error deleting register:', error)
+        }
+    }
 
     // Unified History Logic
     const unifiedHistory = useMemo(() => {
@@ -488,6 +505,7 @@ export default function TransactionHistory({
                                         <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right">Fechamento Esperado</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right">Real Informado</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center">Status</th>
+                                        <th className="px-4 py-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest text-center">Ação</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border/5">
@@ -525,6 +543,19 @@ export default function TransactionHistory({
                                                     </span>
                                                 </div>
                                             </td>
+                                            <td className="px-4 py-4">
+                                                <div className="flex justify-center">
+                                                    {reg.status !== 'open' && (
+                                                        <button
+                                                            onClick={() => setDeleteModal({ open: true, register: reg })}
+                                                            className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+                                                            title="Excluir fechamento"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -548,6 +579,41 @@ export default function TransactionHistory({
                     </p>
                 </div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            {deleteModal.open && (
+                <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-card border border-border rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="p-3 rounded-2xl bg-destructive/10 text-destructive">
+                                <AlertTriangle className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-black text-foreground">Excluir Fechamento?</h3>
+                                <p className="text-xs text-muted-foreground">Esta ação não pode ser desfeita</p>
+                            </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-6">
+                            Tem certeza que deseja excluir o fechamento de <strong className="text-foreground">{deleteModal.register ? formatDateTime(deleteModal.register.opened_at).split(',')[0] : ''}</strong>? 
+                            Isso permitirá ajustar vendas ou compras deste expediente.
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setDeleteModal({ open: false, register: null })}
+                                className="flex-1 py-3 rounded-xl bg-muted/50 text-sm font-bold text-foreground hover:bg-muted transition-all"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handleDeleteRegister}
+                                className="flex-1 py-3 rounded-xl bg-destructive text-destructive-foreground text-sm font-bold hover:bg-destructive/90 transition-all"
+                            >
+                                Excluir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
