@@ -17,6 +17,11 @@ export function Drawer({ isOpen, onClose, children, title }: DrawerProps) {
 
   React.useEffect(() => {
     setMounted(true)
+  }, [])
+
+  React.useEffect(() => {
+    if (!mounted) return
+    
     if (isOpen) {
       document.body.style.overflow = 'hidden'
     } else {
@@ -25,7 +30,7 @@ export function Drawer({ isOpen, onClose, children, title }: DrawerProps) {
     return () => {
       document.body.style.overflow = 'unset'
     }
-  }, [isOpen])
+  }, [isOpen, mounted])
 
   if (!mounted) return null
 
