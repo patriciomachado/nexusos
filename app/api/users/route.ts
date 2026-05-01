@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
     const validation = createUserSchema.safeParse(body)
     
     if (!validation.success) {
-        return NextResponse.json({ error: validation.error.format() }, { status: 400 })
+        const errors = Object.entries(validation.error.flatten().fieldErrors).map(([field, msgs]) => `${field}: ${msgs?.join(', ')}`).join('; ')
+        return NextResponse.json({ error: errors || 'Dados inválidos' }, { status: 400 })
     }
 
     const { data, error } = await db.from('users').insert({

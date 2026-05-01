@@ -48,7 +48,8 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                     throw new Error(data.error || 'Erro ao salvar membro')
                 }
             } catch (error: any) {
-                toast.error(error.message)
+                const errorMsg = error?.message || error?.error || 'Erro ao salvar membro da equipe'
+                toast.error(errorMsg)
             }
         })
     }
