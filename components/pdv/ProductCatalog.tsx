@@ -107,13 +107,10 @@ export default function ProductCatalog() {
                         mergedItems = [...inventoryItems, ...filteredServices]
                     }
                 } else if (activeCategory !== 'all') {
-                    // Filter by specific category ID or Name (including from product_categories relation)
-                    mergedItems = inventoryItems.filter((p: InventoryItem) => {
-                        const categoryName = (p as any).product_categories?.name
-                        return p.category_id === activeCategory || 
-                               p.category === activeCategory || 
-                               categoryName === activeCategory
-                    })
+                    // Filter by specific category ID or Name
+                    mergedItems = inventoryItems.filter((p: InventoryItem) =>
+                        p.category_id === activeCategory || p.category === activeCategory
+                    )
                 }
 
                 setProducts(mergedItems)

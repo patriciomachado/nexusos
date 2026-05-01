@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search')
 
     let query = db.from('inventory_items')
-        .select('*, product_categories(name)', { count: 'exact' })
+        .select('*', { count: 'exact' })
         .eq('company_id', companyId)
         .eq('is_active', true)
 
