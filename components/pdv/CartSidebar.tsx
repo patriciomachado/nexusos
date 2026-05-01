@@ -55,7 +55,7 @@ export default function CartSidebar() {
                                 <img
                                     src={item.product.image_url}
                                     alt={item.product.name}
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                    className="w-full h-full object-cover"
                                 />
                             ) : (
                                 <div className="flex flex-col items-center gap-1 opacity-20">

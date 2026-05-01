@@ -14,6 +14,7 @@ export default function PDVHeader() {
     const pathname = usePathname()
     const { searchQuery, setSearchQuery, cart } = usePDVStore()
     const [isCartOpen, setIsCartOpen] = useState(false)
+    const [isSearchOpen, setIsSearchOpen] = useState(false)
 
     const navItems = [
         { label: 'PDV', path: '/pdv', icon: Grid3X3 },
@@ -66,6 +67,14 @@ export default function PDVHeader() {
                 </nav>
 
                 <div className="flex items-center gap-2 lg:gap-4">
+                    {/* Search Trigger (Mobile Only) */}
+                    <button 
+                        onClick={() => setIsSearchOpen(true)}
+                        className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-muted/50 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all border border-border"
+                    >
+                        <Search className="w-5 h-5" />
+                    </button>
+
                     {/* Cart Trigger (Mobile Only) */}
                     <div className="lg:hidden relative">
                         <button 
@@ -101,6 +110,41 @@ export default function PDVHeader() {
             >
                 <div className="h-full">
                     <CartSidebar />
+                </div>
+            </Drawer>
+
+            {/* Mobile Search Modal */}
+            <Drawer 
+                isOpen={isSearchOpen} 
+                onClose={() => setIsSearchOpen(false)}
+                title="Buscar Produtos"
+            >
+                <div className="p-4 space-y-4">
+                    <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <input
+                            type="text"
+                            placeholder="Digite o nome do produto..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            autoFocus
+                            className="w-full bg-muted/50 border border-border/50 rounded-2xl py-4 pl-12 pr-4 text-base font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/30 transition-all placeholder:text-muted-foreground/40"
+                        />
+                    </div>
+                    {searchQuery.length > 0 && (
+                        <button 
+                            onClick={() => {
+                                setSearchQuery('')
+                                setIsSearchOpen(false)
+                            }}
+                            className="w-full py-3 rounded-xl bg-muted/50 text-sm font-bold text-muted-foreground hover:bg-muted transition-all"
+                        >
+                            Limpar busca
+                        </button>
+                    )}
+                    <div className="text-xs text-muted-foreground/60 text-center pt-4">
+                        Resultados aparecem automaticamente na tela
+                    </div>
                 </div>
             </Drawer>
         </header>
