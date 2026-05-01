@@ -46,6 +46,35 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
     const { items, ...updateData } = validation.data
 
+    // Check if technician is being assigned
+    const newTechId = updateData.technician_id
+    let techNotification = null
+    if (newTechId) {
+        const { data: currentOS } = await db
+            .from('service_orders')
+            .select('technician_id, order_number, title')
+            .eq('id', id)
+            .single()
+        
+        if (currentOS && currentOS.technician_id !== newTechId) {
+            const { data: technician } = await db
+                .from('technicians')
+                .select('user_id, name')
+                .eq('id', newTechId)
+                .single()
+            
+            if (technician?.user_id) {
+                techNotification = {
+                    user_id: technician.user_id,
+                    title: 'Nova OS atribuída',
+                    message: `A OS #${currentOS.order_number} - ${currentOS.title} foi atribuída a você`,
+                    related_entity_type: 'service_order',
+                    related_entity_id: id
+                }
+            }
+        }
+    }
+
     const { data, error } = await db
         .from('service_orders')
         .update({ ...updateData, updated_at: new Date().toISOString() })
@@ -55,6 +84,16 @@ export async function PUT(req: NextRequest, { params }: Params) {
         .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Create notification for technician if assigned
+    if (techNotification) {
+        await db.from('notifications').insert({
+            company_id: companyId,
+            type: 'push',
+            ...techNotification,
+            status: 'pending'
+        })
+    }
 
     // Sync items if present in body
     if (body.items && Array.isArray(body.items)) {

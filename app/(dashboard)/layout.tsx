@@ -1,6 +1,7 @@
 import Sidebar from '@/components/layout/Sidebar'
 import BottomNav from '@/components/layout/BottomNav'
 import ClientAIWrapper from '@/components/ai/client-wrapper'
+import NotificationGenerator from '@/components/dashboard/NotificationGenerator'
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { supabase as db } from '@/lib/supabase'
@@ -75,6 +76,7 @@ export default async function DashboardLayout({
         <div className="flex h-screen bg-background overflow-hidden transition-colors duration-300" suppressHydrationWarning>
             <Sidebar userRole={userRole} />
             <main className="flex-1 overflow-y-auto relative pb-20 lg:pb-0" suppressHydrationWarning>
+                <NotificationGenerator />
                 {children}
             </main>
             <BottomNav userRole={userRole} />

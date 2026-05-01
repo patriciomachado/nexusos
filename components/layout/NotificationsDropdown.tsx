@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Bell, Check, Trash2, ExternalLink, Inbox, Clock } from 'lucide-react'
+import { Bell, Check, Trash2, ExternalLink, Inbox, Clock, ClipboardList, Package, Calendar, DollarSign, AlertTriangle } from 'lucide-react'
 import { useNotificationStore } from '@/store/notificationStore'
 import { useAppStore } from '@/store/appStore'
 import { useUser } from '@clerk/nextjs'
@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { useRouter } from 'next/navigation'
 
 export default function NotificationsDropdown() {
     const MotionDiv = motion.div as any
@@ -18,10 +19,38 @@ export default function NotificationsDropdown() {
     const { notifications, unreadCount, fetchNotifications, markAsRead, isLoading } = useNotificationStore()
     const dropdownRef = useRef<HTMLDivElement>(null)
     const [mounted, setMounted] = useState(false)
+    const router = useRouter()
 
     useEffect(() => {
         setMounted(true)
     }, [])
+
+    const handleNotificationClick = async (notification: any) => {
+        await markAsRead(notification.id)
+        
+        if (notification.related_entity_type === 'service_order' && notification.related_entity_id) {
+            router.push(`/service-orders/${notification.related_entity_id}`)
+        } else if (notification.related_entity_type === 'low_stock') {
+            router.push('/inventory?filter=low_stock')
+        } else if (notification.related_entity_type === 'appointments_tomorrow') {
+            router.push('/appointments')
+        } else if (notification.related_entity_type === 'pending_payments') {
+            router.push('/reports')
+        }
+    }
+
+    const getNotificationIcon = (notification: any) => {
+        if (notification.related_entity_type === 'service_order') {
+            return <ClipboardList className="w-4 h-4" />
+        } else if (notification.related_entity_type === 'low_stock') {
+            return <Package className="w-4 h-4" />
+        } else if (notification.related_entity_type === 'appointments_tomorrow') {
+            return <Calendar className="w-4 h-4" />
+        } else if (notification.related_entity_type === 'pending_payments') {
+            return <DollarSign className="w-4 h-4" />
+        }
+        return <Bell className="w-4 h-4" />
+    }
 
     useEffect(() => {
         const idToUse = appUser?.id || clerkUser?.id
@@ -103,7 +132,7 @@ export default function NotificationsDropdown() {
                                 notifications.map((notification) => (
                                     <div
                                         key={notification.id}
-                                        onClick={() => markAsRead(notification.id)}
+                                        onClick={() => handleNotificationClick(notification)}
                                         className={cn(
                                             "p-4 hover:bg-white/5 transition-all cursor-pointer relative group",
                                             notification.status !== 'read' && "bg-primary/5"
@@ -114,7 +143,7 @@ export default function NotificationsDropdown() {
                                                 "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-white/5",
                                                 notification.status !== 'read' ? "bg-primary/20 text-primary" : "bg-muted/40 text-muted-foreground"
                                             )}>
-                                                <Bell className="w-4 h-4" />
+                                                {getNotificationIcon(notification)}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center justify-between gap-2">

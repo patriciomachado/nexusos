@@ -112,13 +112,20 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
                 </nav>
 
                 {/* Sidebar Mode Toggle */}
-                <div className="px-2 py-2 border-t border-border" suppressHydrationWarning>
-                    <div className="flex items-center justify-center gap-1" suppressHydrationWarning>
+                <div className={cn(
+                    "px-2 py-2 border-t border-border",
+                    !effectiveOpen && "flex flex-col items-center gap-1"
+                )} suppressHydrationWarning>
+                    <div className={cn(
+                        "flex items-center justify-center gap-1",
+                        !effectiveOpen && "flex-col"
+                    )} suppressHydrationWarning>
                         <button
                             onClick={() => setSidebarMode('hover')}
                             className={cn(
                                 "p-2 rounded-lg transition-all",
-                                sidebarMode === 'hover' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
+                                sidebarMode === 'hover' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted",
+                                !effectiveOpen && "p-1.5"
                             )}
                             title="Hover"
                         >
@@ -128,7 +135,8 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
                             onClick={() => setSidebarMode('open')}
                             className={cn(
                                 "p-2 rounded-lg transition-all",
-                                sidebarMode === 'open' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
+                                sidebarMode === 'open' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted",
+                                !effectiveOpen && "p-1.5"
                             )}
                             title="Sempre aberto"
                         >
@@ -138,7 +146,8 @@ export default function Sidebar({ userRole = 'admin' }: { userRole?: UserRole })
                             onClick={() => setSidebarMode('closed')}
                             className={cn(
                                 "p-2 rounded-lg transition-all",
-                                sidebarMode === 'closed' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
+                                sidebarMode === 'closed' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted",
+                                !effectiveOpen && "p-1.5"
                             )}
                             title="Sempre fechado"
                         >
