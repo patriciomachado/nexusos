@@ -238,11 +238,105 @@ export default async function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Horizontal Stitch Metric Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6" suppressHydrationWarning>
-                    {kpis.map((kpi) => (
-                        <div key={kpi.label} className="flex flex-col gap-4">
-                            <div className="glass-premium rounded-[2rem] p-6 lg:p-8 transition-all group relative overflow-hidden active:scale-[0.98] h-full" suppressHydrationWarning>
+                {/* Metrics Section */}
+                <div className="space-y-6">
+                    {/* Mobile: Financial Hub & Quick Actions */}
+                    <div className="flex flex-col gap-6 md:hidden">
+                        {/* Financial Hub Card */}
+                        <div className="glass-premium rounded-[2.5rem] p-8 border border-white/10 relative overflow-hidden bg-gradient-to-br from-blue-600/10 via-background to-emerald-600/10 shadow-2xl">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl rounded-full -translate-y-12 translate-x-12" />
+                            
+                            <div className="relative z-10 space-y-8">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1.5 h-4 bg-primary rounded-full" />
+                                        <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Saúde Financeira</h3>
+                                    </div>
+                                    <TrendingUp className="w-4 h-4 text-primary opacity-40" />
+                                </div>
+
+                                {/* Main Metric: Revenue */}
+                                <div className="space-y-1">
+                                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest opacity-70">Faturamento Mensal</p>
+                                    <div className="flex items-baseline gap-3">
+                                        <p className="text-4xl font-black text-foreground tracking-tighter leading-none">
+                                            {formatCurrency(data.stats.monthRevenue)}
+                                        </p>
+                                        <div className={cn(
+                                            "px-2 py-1 rounded-lg text-[10px] font-black flex items-center gap-1 border backdrop-blur-md",
+                                            data.stats.revenueTrend.trend === 'up' ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
+                                        )}>
+                                            {data.stats.revenueTrend.change}
+                                            {data.stats.revenueTrend.trend === 'up' ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Secondary Financial Metrics */}
+                                <div className="grid grid-cols-2 gap-8 pt-6 border-t border-white/5">
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest opacity-70">Lucro Bruto</p>
+                                        <p className="text-xl font-black text-foreground tracking-tight">{formatCurrency(data.stats.monthGrossProfit)}</p>
+                                        <p className="text-[8px] font-bold text-muted-foreground uppercase">{grossMargin}% margem</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest opacity-70">Lucro Líquido</p>
+                                        <p className="text-xl font-black text-foreground tracking-tight">{formatCurrency(data.stats.monthNetProfit)}</p>
+                                        <p className="text-[8px] font-bold text-muted-foreground uppercase">{netMargin}% líquido</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quick Commands - Integrated Experience */}
+                        <div className="grid grid-cols-3 gap-3 px-1">
+                            <Link href="/service-orders/new" className="flex flex-col items-center justify-center gap-3 p-5 rounded-[2rem] glass-premium border-white/5 text-primary active:scale-95 transition-all shadow-xl">
+                                <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                    <PlusCircle className="w-6 h-6" />
+                                </div>
+                                <span className="text-[8px] font-black uppercase tracking-[0.15em]">Nova OS</span>
+                            </Link>
+                            <Link href="/pdv" className="flex flex-col items-center justify-center gap-3 p-5 rounded-[2rem] glass-premium border-white/5 text-indigo-400 active:scale-95 transition-all shadow-xl">
+                                <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center">
+                                    <Store className="w-6 h-6" />
+                                </div>
+                                <span className="text-[8px] font-black uppercase tracking-[0.15em]">Venda PDV</span>
+                            </Link>
+                            <Link href="/cash-register" className="flex flex-col items-center justify-center gap-3 p-5 rounded-[2rem] glass-premium border-white/5 text-emerald-400 active:scale-95 transition-all shadow-xl">
+                                <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
+                                    <Calculator className="w-6 h-6" />
+                                </div>
+                                <span className="text-[8px] font-black uppercase tracking-[0.15em]">Caixa</span>
+                            </Link>
+                        </div>
+
+                        {/* Operational Small Metrics */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="glass-premium rounded-[2rem] p-5 border border-white/5 flex items-center gap-4 shadow-lg">
+                                <div className="w-10 h-10 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
+                                    <ClipboardList className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-1">OS Ativas</p>
+                                    <p className="text-xl font-black text-foreground tracking-tighter">{data.stats.openOS}</p>
+                                </div>
+                            </div>
+                            <div className="glass-premium rounded-[2rem] p-5 border border-white/5 flex items-center gap-4 shadow-lg">
+                                <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20">
+                                    <Users className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-1">Clientes</p>
+                                    <p className="text-xl font-black text-foreground tracking-tighter">{data.stats.totalCustomers}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Desktop: Original Grid Layout */}
+                    <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
+                        {kpis.map((kpi) => (
+                            <div key={kpi.label} className="glass-premium rounded-[2rem] p-6 lg:p-8 transition-all group relative overflow-hidden active:scale-[0.98] h-full" suppressHydrationWarning>
                                 <div className="flex flex-col justify-between h-full relative z-10" suppressHydrationWarning>
                                     <div className="space-y-4">
                                         <div className={cn(
@@ -268,27 +362,10 @@ export default async function DashboardPage() {
                                     </div>
                                 </div>
                             </div>
-                            
-                            {/* Quick Commands for Revenue Card (Mobile Only) */}
-                            {kpi.label === 'Receita Mensal' && (
-                                <div className="grid grid-cols-3 gap-3 md:hidden px-2 animate-in fade-in slide-in-from-top-4 duration-500">
-                                    <Link href="/service-orders/new" className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-primary/10 border border-primary/20 text-primary active:scale-95 transition-all">
-                                        <PlusCircle className="w-5 h-5" />
-                                        <span className="text-[8px] font-black uppercase tracking-widest">Nova OS</span>
-                                    </Link>
-                                    <Link href="/pdv" className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 active:scale-95 transition-all">
-                                        <Store className="w-5 h-5" />
-                                        <span className="text-[8px] font-black uppercase tracking-widest">Venda PDV</span>
-                                    </Link>
-                                    <Link href="/cash-register" className="flex flex-col items-center justify-center gap-2 p-4 rounded-3xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 active:scale-95 transition-all">
-                                        <Calculator className="w-5 h-5" />
-                                        <span className="text-[8px] font-black uppercase tracking-widest">Caixa</span>
-                                    </Link>
-                                </div>
-                            )}
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
+
 
                 {/* Primary Visualization Area - Optimization */}
                 <div className="grid lg:grid-cols-3 gap-6" suppressHydrationWarning>
