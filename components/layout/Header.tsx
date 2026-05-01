@@ -14,14 +14,16 @@ interface HeaderProps {
 }
 
 export default function Header({ title, subtitle }: HeaderProps) {
-    const { user } = useAppStore()
-    const { user: clerkUser } = useUser()
+    const { user: appUser } = useAppStore()
+    const { user: clerkUser, isLoaded: clerkLoaded } = useUser()
     const router = useRouter()
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
         setMounted(true)
     }, [])
+
+    if (!mounted) return null
 
     return (
         <header className="h-14 lg:h-18 px-4 lg:px-8 flex items-center justify-between sticky top-0 z-40 bg-background/40 backdrop-blur-3xl border-b border-border/40 transition-all duration-500" suppressHydrationWarning>
@@ -54,7 +56,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
                 <div className="flex items-center gap-3 group cursor-pointer" suppressHydrationWarning>
                     <div className="text-right hidden sm:block" suppressHydrationWarning>
                         <p className="text-[10px] font-black text-foreground uppercase tracking-tight group-hover:text-primary transition-colors">
-                            {mounted && clerkUser ? (clerkUser.fullName || 'Operador Nexus') : 'Operador Nexus'}
+                            {clerkLoaded && clerkUser ? (clerkUser.fullName || 'Operador Nexus') : 'Operador Nexus'}
                         </p>
                         <p className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest mt-0.5">Terminal Ativo</p>
                     </div>
