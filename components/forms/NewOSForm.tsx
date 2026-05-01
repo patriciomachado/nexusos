@@ -325,7 +325,7 @@ export default function NewOSForm({
                                     {isQuickMode ? <Zap className="w-5 h-5 fill-current" /> : <User className="w-5 h-5" />}
                                 </div>
                                 <h2 className="text-sm font-black uppercase tracking-widest text-foreground/60">
-                                    {isQuickMode ? 'Registro Express (Raio)' : 'Identificação'}
+                                    {isQuickMode ? 'Registro Expresso' : 'Identificação'}
                                 </h2>
                             </div>
                             <button
@@ -339,7 +339,7 @@ export default function NewOSForm({
                                 )}
                             >
                                 <Zap className={cn("w-3.5 h-3.5", isQuickMode && "fill-current")} />
-                                {isQuickMode ? 'Modo Raio Ativo' : 'Ativar Modo Raio'}
+                                {isQuickMode ? 'Modo Rápido Ativo' : 'Ativar Modo Rápido'}
                             </button>
                         </div>
 
@@ -350,7 +350,7 @@ export default function NewOSForm({
                                     <PremiumAutocomplete
                                         value={form.title}
                                         onChange={val => setForm(p => ({ ...p, title: val }))}
-                                        placeholder="Ex: iPhone 13 Pro Max"
+                                        placeholder="Ex: Celular"
                                         options={DEVICE_SUGGESTIONS}
                                     />
                                 </div>
