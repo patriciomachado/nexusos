@@ -29,7 +29,7 @@ interface EmployeeDashboardProps {
 }
 
 export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardProps) {
-    const isTechnician = role === 'technician';
+    const isTechnician = role === 'technician' || role === 'talento';
     const isAttendant = role === 'attendant';
 
     console.log('EmployeeDashboard role:', role);

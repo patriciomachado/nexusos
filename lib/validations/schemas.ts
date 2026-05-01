@@ -129,7 +129,7 @@ export const technicianSchema = z.object({
 export const createUserSchema = z.object({
   email: z.string().email('E-mail inválido'),
   full_name: z.string().min(2, 'Nome muito curto'),
-  role: z.enum(['admin', 'technician', 'manager', 'talento']),
+  role: z.enum(['admin', 'manager', 'technician', 'cashier', 'attendant', 'talento', 'customer']),
   phone: z.string().optional().nullable(),
   clerk_id: z.string().optional().nullable(),
 })

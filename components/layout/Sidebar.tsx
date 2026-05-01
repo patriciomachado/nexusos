@@ -14,13 +14,13 @@ import { useAppStore } from '@/store/appStore'
 import { UserRole } from '@/types'
 
 const navItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier'] },
-    { href: '/service-orders', label: 'Ordens de Serviço', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant'] },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'] },
+    { href: '/service-orders', label: 'Ordens de Serviço', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'] },
     { href: '/appointments', label: 'Agendamentos', icon: Calendar, roles: ['admin', 'manager'] },
-    { href: '/customers', label: 'Clientes', icon: Users, roles: ['admin', 'manager', 'technician', 'cashier'] },
+    { href: '/customers', label: 'Clientes', icon: Users, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'] },
     { href: '/technicians', label: 'Técnicos', icon: Wrench, roles: ['admin', 'manager'] },
     { href: '/inventory', label: 'Produtos', icon: Package, roles: ['admin', 'manager'] },
-    { href: '/pdv', label: 'PDV', icon: Zap, roles: ['admin', 'manager', 'cashier', 'attendant'] },
+    { href: '/pdv', label: 'PDV', icon: Zap, roles: ['admin', 'manager', 'cashier', 'attendant', 'talento'] },
     { href: '/team', label: 'Equipe', icon: Users, roles: ['admin', 'manager'] },
     { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager', 'cashier'] }, // Cashier can see cash register too
     { href: '/reports', label: 'Relatórios', icon: BarChart3, roles: ['admin', 'manager'] },
@@ -38,7 +38,7 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
     }, [])
 
     // Prevent hydration mismatch
-    const validRoles = ['admin', 'owner', 'manager', 'technician', 'cashier', 'attendant']
+    const validRoles = ['admin', 'owner', 'manager', 'technician', 'cashier', 'attendant', 'talento']
     const safeRole = (userRole && validRoles.includes(userRole)) ? userRole : 'attendant'
     
     const sidebarOpen = mounted ? store.sidebarOpen : true

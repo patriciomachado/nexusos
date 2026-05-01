@@ -93,6 +93,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                             className="w-full h-12 bg-muted/40 border border-border rounded-xl pl-11 pr-4 text-sm font-bold appearance-none outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
                         >
                             <option value="technician">Técnico</option>
+                            <option value="talento">Talento</option>
                             <option value="cashier">Operador de Caixa</option>
                             <option value="attendant">Atendente (OS e PDV)</option>
                             <option value="manager">Gerente</option>

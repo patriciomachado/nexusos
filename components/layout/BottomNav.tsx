@@ -13,9 +13,9 @@ import {
 import { UserRole } from '@/types'
 
 const mobileNavItems = [
-    { href: '/dashboard', label: 'Início', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier'] },
-    { href: '/service-orders', label: 'OS', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant'] },
-    { href: '/pdv', label: 'PDV', icon: ShoppingCart, roles: ['admin', 'manager', 'cashier', 'attendant'] },
+    { href: '/dashboard', label: 'Início', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'] },
+    { href: '/service-orders', label: 'OS', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'] },
+    { href: '/pdv', label: 'PDV', icon: ShoppingCart, roles: ['admin', 'manager', 'cashier', 'attendant', 'talento'] },
     { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager', 'cashier'] },
 ]
 
@@ -29,7 +29,7 @@ export default function BottomNav({ userRole = 'attendant' }: { userRole?: UserR
 
     if (!mounted) return null
 
-    const validRoles = ['admin', 'owner', 'manager', 'technician', 'cashier', 'attendant']
+    const validRoles = ['admin', 'owner', 'manager', 'technician', 'cashier', 'attendant', 'talento']
     const safeRole = (userRole && validRoles.includes(userRole)) ? userRole : 'attendant'
 
     return (
