@@ -27,40 +27,37 @@ export default function Header({ title, subtitle, children }: HeaderProps) {
     if (!mounted) return null
 
     return (
-        <header className="h-14 lg:h-16 px-4 lg:px-8 flex items-center justify-between sticky top-0 z-40 bg-background/40 backdrop-blur-3xl border-b border-border/40 transition-all duration-500" suppressHydrationWarning>
+        <header className="h-14 lg:h-16 px-3 sm:px-4 lg:px-8 flex items-center justify-between sticky top-0 z-40 bg-background/40 backdrop-blur-3xl border-b border-border/40 transition-all duration-500" suppressHydrationWarning>
 
             {/* Left: Branding & Breadcrumb */}
-            <div className="flex items-center gap-4 lg:gap-6" suppressHydrationWarning>
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-white/95 border border-primary/10 p-1 flex items-center justify-center shadow-lg shadow-primary/5">
-                        <img src="/logo.png" alt="Nexus Logo" className="w-full h-full object-contain" />
+            <div className="flex items-center gap-2 lg:gap-6 shrink-0" suppressHydrationWarning>
+                <div className="flex flex-col" suppressHydrationWarning>
+                    <div className="flex items-center gap-1.5" suppressHydrationWarning>
+                        <span className="w-1 h-1 rounded-full bg-primary/40 animate-pulse" />
+                        <span className="text-[7px] font-black uppercase tracking-[0.25em] text-muted-foreground/30 leading-none">
+                            NEXUS <span className="text-primary">OS</span>
+                        </span>
                     </div>
-                    <div className="flex flex-col" suppressHydrationWarning>
-                        <div className="flex items-center gap-1.5" suppressHydrationWarning>
-                            <span className="w-1 h-1 rounded-full bg-primary animate-pulse" />
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 leading-none">Nexus OS 2.0</span>
-                        </div>
-                        <h1 className="text-sm font-black tracking-tight text-foreground mt-0.5">{title}</h1>
-                    </div>
+                    <h1 className="text-xs font-black tracking-tight text-foreground/80 mt-0.5 whitespace-nowrap">{title}</h1>
                 </div>
             </div>
 
             {/* Center: Search / Custom Content */}
-            <div className="flex-1 max-w-xl mx-4">
+            <div className="flex-1 max-w-xl mx-2 sm:mx-4">
                 {children}
             </div>
 
             {/* Right: Actions & Profile */}
-            <div className="flex items-center gap-6 lg:gap-8" suppressHydrationWarning>
-                <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-6 lg:gap-8 shrink-0" suppressHydrationWarning>
+                <div className="flex items-center gap-1 sm:gap-3">
                     <NotificationsDropdown />
 
                     <ThemeToggle />
                 </div>
 
-                <div className="h-10 w-px bg-border/40" suppressHydrationWarning />
+                <div className="hidden sm:block h-10 w-px bg-border/40" suppressHydrationWarning />
 
-                <div className="flex items-center gap-3 group cursor-pointer" suppressHydrationWarning>
+                <div className="flex items-center gap-2 sm:gap-3 group cursor-pointer" suppressHydrationWarning>
                     <div className="text-right hidden sm:block" suppressHydrationWarning>
                         <p className="text-[10px] font-black text-foreground uppercase tracking-tight group-hover:text-primary transition-colors">
                             {clerkLoaded && clerkUser ? (clerkUser.fullName || 'Operador Nexus') : 'Operador Nexus'}

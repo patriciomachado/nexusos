@@ -75,8 +75,8 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
                     </div>
                     {effectiveOpen && (
                         <div className="ml-4 flex flex-col relative z-10 animate-in fade-in slide-in-from-left-4 duration-500">
-                            <span className="font-black text-foreground dark:text-white tracking-[0.1em] text-lg lg:text-xl leading-none drop-shadow-md">NEXUS<span className="text-primary">OS</span></span>
-                            <span className="text-[8px] font-black text-primary uppercase tracking-[0.15em] mt-1.5 opacity-80">Premium Systems</span>
+                            <span className="font-black text-foreground dark:text-white tracking-[0.05em] text-sm lg:text-base leading-none opacity-90">NEXUS<span className="text-primary">OS</span></span>
+                            <span className="text-[7px] font-bold text-primary uppercase tracking-[0.2em] mt-1 opacity-60">Premium Systems</span>
                         </div>
                     )}
                 </div>

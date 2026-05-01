@@ -40,11 +40,31 @@ export default function TeamClient() {
 
     return (
         <div className="animate-fade-in pb-20 bg-background min-h-screen transition-colors duration-300">
-            <Header title="Equipe & Segurança" />
+            <Header title="Equipe & Segurança">
+                <div className="flex items-center gap-4 w-full">
+                    <div className="relative flex-1 max-w-md group">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
+                        <input
+                            type="text"
+                            placeholder="Buscar por nome ou e-mail..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-muted/20 border border-border/40 rounded-xl py-2 pl-9 pr-4 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                        />
+                    </div>
+                    <button
+                        onClick={() => { setSelectedUser(undefined); setIsModalOpen(true); }}
+                        className="flex items-center gap-2 bg-primary text-primary-foreground h-9 px-4 rounded-lg font-black uppercase text-[10px] tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 group"
+                    >
+                        <Plus className="w-3.5 h-3.5 group-hover:rotate-90 transition-transform" />
+                        Novo Membro
+                    </button>
+                </div>
+            </Header>
 
             <div className="p-8 lg:p-12 max-w-screen-2xl mx-auto space-y-12">
 
-                {/* Header Actions */}
+                {/* Header Info */}
                 <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-10">
                     <div className="space-y-3">
                         <div className="flex items-center gap-2">
@@ -53,26 +73,6 @@ export default function TeamClient() {
                         </div>
                         <h2 className="text-4xl lg:text-5xl font-black text-foreground tracking-tighter">Gestão de Talentos</h2>
                         <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-xl">Gerencie as permissões, cargos e acessos da sua equipe operacional e administrativa.</p>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row items-center gap-6 w-full lg:w-auto">
-                        <div className="relative flex-1 sm:min-w-[400px] group">
-                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
-                            <input
-                                type="text"
-                                placeholder="Buscar por nome ou e-mail..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full h-16 pl-14 pr-6 bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[1.5rem] text-sm font-bold outline-none focus:border-primary/30 transition-all placeholder:opacity-30 shadow-2xl"
-                            />
-                        </div>
-                        <button
-                            onClick={() => { setSelectedUser(undefined); setIsModalOpen(true); }}
-                            className="w-full sm:w-auto flex items-center justify-center gap-3 bg-primary text-primary-foreground h-16 px-10 rounded-[2rem] font-black uppercase text-xs tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/20 group"
-                        >
-                            <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-                            Novo Membro
-                        </button>
                     </div>
                 </div>
 
