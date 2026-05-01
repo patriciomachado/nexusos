@@ -26,13 +26,21 @@ export const customerSchema = z.object({
 // Inventory Item Schema
 export const inventoryItemSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
-  sku: z.string().optional(),
-  barcode: z.string().optional(),
-  quantity_in_stock: z.number().int().min(0, 'Quantidade não pode ser negativa'),
-  minimum_quantity: z.number().int().min(0).default(0),
-  unit_price: z.number().min(0, 'Preço não pode ser negativo'),
+  sku: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
+  category: z.string().optional().nullable(),
+  cost_price: z.number().min(0).optional().default(0),
+  selling_price: z.number().min(0).optional().default(0),
+  quantity_in_stock: z.number().min(0).default(0),
+  minimum_quantity: z.number().min(0).default(0),
+  maximum_quantity: z.number().min(0).default(999),
+  unit: z.string().default('un'),
+  barcode: z.string().optional().nullable(),
+  image_url: z.string().optional().nullable(),
+  serial_number_required: z.boolean().optional().default(false),
   is_active: z.boolean().default(true)
 })
+
 
 // Service Order Schema
 export const serviceOrderSchema = z.object({

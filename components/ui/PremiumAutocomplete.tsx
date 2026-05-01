@@ -5,6 +5,7 @@ import { Search, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PremiumInput } from './PremiumInput'
 import { createPortal } from 'react-dom'
+import { toast } from 'sonner'
 
 interface Props {
     options: string[]
@@ -48,7 +49,7 @@ export default function PremiumAutocomplete({
         setFilteredOptions(filtered)
     }, [value, options])
 
-    const showAddOption = onAdd && value && !options.some(opt => opt.toLowerCase() === value.toLowerCase())
+    const showAddOption = !!onAdd
     const shouldShow = isOpen && (filteredOptions.length > 0 || showAddOption)
 
     // Position dropdown
@@ -123,15 +124,19 @@ export default function PremiumAutocomplete({
                             </li>
                         ))}
 
-                        {showAddOption && (
-                            <li className="mt-1 border-t border-border/50 pt-1">
+                        {onAdd && (
+                            <li className="mt-1 border-t border-border/50 pt-1 sticky bottom-0 bg-card/95">
                                 <button
                                     type="button"
                                     disabled={isAdding}
                                     onMouseDown={(e) => e.preventDefault()}
                                     onClick={() => {
-                                        onAdd!(value)
-                                        setIsOpen(false)
+                                        if (value.trim()) {
+                                            onAdd(value)
+                                            setIsOpen(false)
+                                        } else {
+                                            toast.error('Digite um nome para a categoria')
+                                        }
                                     }}
                                     className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black transition-all text-primary hover:bg-primary/5 text-left uppercase tracking-widest"
                                 >
@@ -140,10 +145,13 @@ export default function PremiumAutocomplete({
                                     ) : (
                                         <Plus className="w-4 h-4" />
                                     )}
-                                    <span className="truncate">Adicionar &quot;{value}&quot;</span>
+                                    <span className="truncate">
+                                        {value ? `Adicionar "${value}"` : 'Adicionar Nova'}
+                                    </span>
                                 </button>
                             </li>
                         )}
+
                     </ul>
                 </div>,
                 document.body

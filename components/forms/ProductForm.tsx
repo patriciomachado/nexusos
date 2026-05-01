@@ -47,9 +47,19 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
     })
 
     const [photo, setPhoto] = useState<File | null>(null)
+    const [preview, setPreview] = useState<string | null>(null)
     const [isUploading, setIsUploading] = useState(false)
     const [categories, setCategories] = useState<string[]>([])
     const [isAddingCategory, setIsAddingCategory] = useState(false)
+
+    useEffect(() => {
+        if (photo) {
+            const url = URL.createObjectURL(photo)
+            setPreview(url)
+            return () => URL.revokeObjectURL(url)
+        }
+        setPreview(null)
+    }, [photo])
 
     useEffect(() => {
         if (initialData) {
@@ -186,7 +196,31 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                 router.push('/inventory')
                 router.refresh()
             } else {
-                toast.error(data.error || 'Erro ao processar produto')
+                let errorMessage = 'Erro ao processar produto'
+                
+                if (typeof data.error === 'string') {
+                    errorMessage = data.error
+                } else if (typeof data.error === 'object' && data.error !== null) {
+                    // Tenta formatar erro do Zod (.format())
+                    const errorEntries = Object.entries(data.error)
+                        .filter(([key]) => key !== '_errors')
+                        .map(([key, val]: [string, any]) => {
+                            const field = key.toUpperCase()
+                            const messages = val._errors?.join(', ') || 'inválido'
+                            return `${field}: ${messages}`
+                        })
+                    
+                    if (errorEntries.length > 0) {
+                        errorMessage = errorEntries.join(' | ')
+                    } else {
+                        errorMessage = 'Verifique os campos obrigatórios'
+                    }
+                }
+                
+                toast.error(errorMessage, {
+                    duration: 5000,
+                    description: 'Por favor, revise os dados informados.'
+                })
             }
         })
     }
@@ -292,9 +326,10 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                                         onChange={e => setPhoto(e.target.files?.[0] || null)}
                                     />
                                     <div className="h-full min-h-[160px] rounded-3xl border-2 border-dashed border-border/50 bg-white/5 flex flex-col items-center justify-center gap-3 group-hover/photo:border-primary/30 transition-all overflow-hidden relative">
-                                        {photo ? (
-                                            <img src={URL.createObjectURL(photo)} alt="Preview" className="w-full h-full object-cover" />
+                                        {preview ? (
+                                            <img src={preview} alt="Preview" className="w-full h-full object-cover" />
                                         ) : form.image_url ? (
+
                                             <img src={form.image_url} alt="Produto" className="w-full h-full object-cover" />
                                         ) : (
                                             <>

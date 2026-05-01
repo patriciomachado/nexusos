@@ -38,3 +38,34 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(allCategories)
 }
 
+export async function POST(req: NextRequest) {
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+
+    const { db, companyId } = ctx
+    const body = await req.json()
+
+    if (!body.name) {
+        return NextResponse.json({ error: 'Nome da categoria é obrigatório' }, { status: 400 })
+    }
+
+    const { data, error } = await db
+        .from('product_categories')
+        .insert({
+            name: body.name,
+            company_id: companyId
+        })
+        .select()
+        .single()
+
+    if (error) {
+        // Handle unique constraint or other errors
+        if (error.code === '23505') {
+            return NextResponse.json({ error: 'Categoria já existe' }, { status: 400 })
+        }
+        return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json(data, { status: 201 })
+}
+
