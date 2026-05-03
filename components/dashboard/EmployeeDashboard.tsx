@@ -1,3 +1,5 @@
+'use client'
+
 import { ClipboardList, Zap, Clock, TrendingUp, Users, Package, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import Header from '@/components/layout/Header'
