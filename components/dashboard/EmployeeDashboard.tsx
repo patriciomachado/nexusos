@@ -1,19 +1,18 @@
 'use client'
 
-import { ClipboardList, Zap, Clock, TrendingUp, Users, Package, AlertCircle } from 'lucide-react'
+import { ClipboardList, Zap, Clock, CheckCircle2, AlertCircle, Circle, Wrench, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import { cn } from '@/lib/utils'
-import StatsCard from './StatsCard'
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-    aberta: { label: 'Aberta', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20 shadow-blue-500/10' },
-    agendada: { label: 'Agendada', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20 shadow-purple-500/10' },
-    em_andamento: { label: 'Execução', color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/20 shadow-yellow-500/10' },
-    aguardando_pecas: { label: 'Peças', color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/20 shadow-orange-500/10' },
-    concluida: { label: 'Concluída', color: 'text-green-400', bg: 'bg-green-500/10 border-green-500/20 shadow-green-500/10' },
-    faturada: { label: 'Faturada', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/10' },
-    cancelada: { label: 'Cancelada', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20 shadow-red-500/10' },
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
+    aberta:          { label: 'Aberta',     color: 'text-blue-400',    bg: 'bg-blue-500/10 border-blue-500/20',    icon: Circle },
+    agendada:        { label: 'Agendada',   color: 'text-purple-400',  bg: 'bg-purple-500/10 border-purple-500/20', icon: Clock },
+    em_andamento:    { label: 'Em andamento', color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/20', icon: Wrench },
+    aguardando_pecas:{ label: 'Aguardando', color: 'text-orange-400',  bg: 'bg-orange-500/10 border-orange-500/20', icon: AlertCircle },
+    concluida:       { label: 'Concluída',  color: 'text-green-400',   bg: 'bg-green-500/10 border-green-500/20',   icon: CheckCircle2 },
+    faturada:        { label: 'Faturada',   color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20', icon: CheckCircle2 },
+    cancelada:       { label: 'Cancelada',  color: 'text-red-400',     bg: 'bg-red-500/10 border-red-500/20',      icon: AlertCircle },
 }
 
 interface ServiceOrder {
@@ -26,161 +25,201 @@ interface ServiceOrder {
 }
 
 interface EmployeeDashboardProps {
-    role: string;
-    recentOS: ServiceOrder[];
+    role: string
+    recentOS: ServiceOrder[]
+}
+
+const ROLE_LABEL: Record<string, string> = {
+    technician: 'Técnico',
+    attendant:  'Atendente',
+    cashier:    'Caixa',
+    manager:    'Gerente',
+    talento:    'Talento',
 }
 
 export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardProps) {
-    const isTechnician = role === 'technician' || role === 'talento';
-    const isAttendant = role === 'attendant';
+    const isAttendant = role === 'attendant' || role === 'cashier'
 
-    console.log('EmployeeDashboard role:', role);
-    console.log('isAttendant:', isAttendant);
+    // Real stats from actual OS data
+    const openOS      = recentOS.filter(os => os.status === 'aberta').length
+    const inProgress  = recentOS.filter(os => os.status === 'em_andamento').length
+    const done        = recentOS.filter(os => os.status === 'concluida' || os.status === 'faturada').length
+    const waiting     = recentOS.filter(os => os.status === 'aguardando_pecas').length
+
+    const roleLabel = ROLE_LABEL[role] ?? role
 
     return (
-        <div className="bg-[#0f172a] min-h-screen text-foreground pb-20 lg:pb-8 transition-colors duration-500">
+        <div className="min-h-screen bg-background text-foreground pb-24 lg:pb-8">
             <Header title="Nexus Dashboard" />
 
-            <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="p-4 sm:p-6 lg:p-8 max-w-[1200px] mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-                {/* Dashboard Header: Welcome */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Terminal Ativo</span>
-                        </div>
-                        <h1 className="text-4xl font-black tracking-tighter leading-none">
-                            Olá, <span className="text-primary italic">Nexus Team</span>
+                {/* Welcome */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary opacity-70">
+                            {roleLabel}
+                        </span>
+                        <h1 className="text-3xl font-black tracking-tight mt-1">
+                            Olá, <span className="text-primary italic">Nexus Team</span> 👋
                         </h1>
-                        <p className="text-muted-foreground text-sm font-medium opacity-60">Aqui está o pulso operacional de hoje.</p>
+                        <p className="text-sm text-muted-foreground mt-1 opacity-60">
+                            Aqui está o que está acontecendo hoje.
+                        </p>
                     </div>
 
-                    <div className="flex gap-3">
-                        {!isAttendant && (
-                            <button className="px-5 py-3 rounded-2xl bg-card/40 backdrop-blur-xl border border-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
-                                Relatórios
-                            </button>
-                        )}
-                        <Link href="/service-orders/new" className="px-5 py-3 rounded-2xl bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all flex items-center justify-center">
-                            Nova OS
-                        </Link>
-                    </div>
+                    <Link
+                        href="/service-orders/new"
+                        className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all shrink-0"
+                    >
+                        <ClipboardList className="w-4 h-4" />
+                        Nova OS
+                    </Link>
                 </div>
 
-                {/* KPI Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {!isAttendant && (
-                        <StatsCard
-                            title="Vendas Hoje"
-                            value="R$ 1.248,50"
-                            icon={TrendingUp}
-                            trend={{ value: '12%', isUp: true }}
-                            color="emerald"
-                        />
-                    )}
-                    <StatsCard
-                        title="OS em Aberto"
-                        value={recentOS.filter(os => os.status === 'aberta').length + 8} // Fake count for visual
-                        icon={ClipboardList}
-                        trend={{ value: '3', isUp: true }}
-                        color="blue"
-                    />
-                    {!isAttendant && (
-                        <>
-                            <StatsCard
-                                title="Estoque Baixo"
-                                value="12"
-                                icon={Package}
-                                color="orange"
-                            />
-                            <StatsCard
-                                title="Novos Clientes"
-                                value="4"
-                                icon={Users}
-                                trend={{ value: '2', isUp: true }}
-                                color="purple"
-                            />
-                        </>
-                    )}
+                {/* Stats Row */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {[
+                        { label: 'Abertas',     value: openOS,     color: 'blue',   bg: 'bg-blue-500/10 border-blue-500/20',    icon: Circle },
+                        { label: 'Em andamento', value: inProgress, color: 'yellow', bg: 'bg-yellow-500/10 border-yellow-500/20', icon: Wrench },
+                        { label: 'Aguardando', value: waiting,    color: 'orange', bg: 'bg-orange-500/10 border-orange-500/20', icon: AlertCircle },
+                        { label: 'Concluídas',  value: done,       color: 'green',  bg: 'bg-green-500/10 border-green-500/20',   icon: CheckCircle2 },
+                    ].map(({ label, value, color, bg, icon: Icon }) => (
+                        <div key={label} className={cn(
+                            'rounded-2xl border p-4 flex flex-col gap-3 transition-all hover:scale-[1.02]',
+                            bg
+                        )}>
+                            <Icon className={cn('w-5 h-5', `text-${color}-400`)} />
+                            <div>
+                                <p className={cn('text-3xl font-black', `text-${color}-400`)}>{value}</p>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-0.5">{label}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Secondary Layout: Quick Access & Recent Services */}
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+                {/* Main Content */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                    {/* Column 1 & 2: Recent Services Table-like View */}
-                    <div className="xl:col-span-2 space-y-6">
+                    {/* OS List */}
+                    <div className="lg:col-span-2 space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xl font-black uppercase tracking-widest underline decoration-primary decoration-4 underline-offset-8">Ordens de Serviço</h2>
-                            <Link href="/service-orders" className="text-[10px] font-black uppercase tracking-[0.2em] text-primary hover:opacity-70 transition-opacity">Ver Tudo →</Link>
+                            <h2 className="text-sm font-black uppercase tracking-widest">
+                                Ordens de Serviço
+                            </h2>
+                            <Link
+                                href="/service-orders"
+                                className="text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity flex items-center gap-1"
+                            >
+                                Ver tudo <ChevronRight className="w-3 h-3" />
+                            </Link>
                         </div>
 
-                        <div className="glass-premium rounded-[2.5rem] overflow-hidden">
-                            <div className="divide-y divide-white/5">
-                                {recentOS && recentOS.length > 0 ? recentOS.map((os: ServiceOrder) => (
-                                    <Link href={`/service-orders/${os.id}`} key={os.id} className="p-6 flex items-center gap-6 group hover:bg-white/[0.03] transition-all block relative">
-                                        <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center justify-center shrink-0 group-hover:bg-primary/5 group-hover:border-primary/20 group-hover:text-primary transition-all shadow-inner overflow-hidden relative">
-                                            <span className="text-[8px] font-black uppercase tracking-tighter opacity-30">OS</span>
-                                            <span className="text-base font-black leading-none mt-0.5">{os.id.slice(0, 4)}</span>
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-lg font-black text-foreground group-hover:text-primary transition-colors truncate mb-1">{os.title}</p>
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] opacity-40 flex items-center gap-2">
-                                                <Users className="w-3 h-3" /> {os.customers?.name || 'Cliente Direto'}
-                                            </p>
-                                        </div>
-                                        <div className="flex flex-col items-end gap-2 shrink-0">
-                                            <div className={cn(
-                                                "px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border",
-                                                STATUS_CONFIG[os.status]?.bg || 'bg-muted border-border text-foreground/40'
-                                            )}>
-                                                {STATUS_CONFIG[os.status]?.label}
-                                            </div>
-                                        </div>
-                                    </Link>
-                                )) : (
-                                    <div className="p-20 text-center text-muted-foreground flex flex-col items-center justify-center space-y-4">
-                                        <ClipboardList className="w-16 h-16 opacity-10" />
-                                        <h3 className="text-base font-black uppercase tracking-tighter text-foreground">Sem Movimentação</h3>
+                        <div className="rounded-3xl border border-border bg-card overflow-hidden">
+                            {recentOS.length > 0 ? (
+                                <div className="divide-y divide-border">
+                                    {recentOS.slice(0, 8).map((os) => {
+                                        const cfg = STATUS_CONFIG[os.status]
+                                        const Icon = cfg?.icon ?? Circle
+                                        return (
+                                            <Link
+                                                key={os.id}
+                                                href={`/service-orders/${os.id}`}
+                                                className="flex items-center gap-4 p-4 hover:bg-muted/40 transition-all group"
+                                            >
+                                                {/* ID badge */}
+                                                <div className="w-12 h-12 rounded-xl bg-muted flex flex-col items-center justify-center shrink-0 group-hover:bg-primary/10 group-hover:text-primary transition-all">
+                                                    <span className="text-[8px] font-black uppercase opacity-40">OS</span>
+                                                    <span className="text-sm font-black leading-none">{os.id.slice(0, 4)}</span>
+                                                </div>
+
+                                                {/* Info */}
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">
+                                                        {os.title}
+                                                    </p>
+                                                    <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                                                        {os.customers?.name || 'Cliente Direto'} · {os.equipment_description}
+                                                    </p>
+                                                </div>
+
+                                                {/* Status badge */}
+                                                <div className={cn(
+                                                    'flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[9px] font-black uppercase tracking-widest shrink-0',
+                                                    cfg?.bg ?? 'bg-muted border-border',
+                                                    cfg?.color ?? 'text-muted-foreground'
+                                                )}>
+                                                    <Icon className="w-3 h-3" />
+                                                    {cfg?.label ?? os.status}
+                                                </div>
+                                            </Link>
+                                        )
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="p-16 flex flex-col items-center justify-center gap-4 text-center">
+                                    <ClipboardList className="w-12 h-12 text-muted-foreground opacity-20" />
+                                    <div>
+                                        <p className="font-black text-sm uppercase tracking-widest">Nenhuma OS</p>
+                                        <p className="text-xs text-muted-foreground mt-1 opacity-60">Crie a primeira ordem de serviço</p>
                                     </div>
-                                )}
-                            </div>
+                                    <Link
+                                        href="/service-orders/new"
+                                        className="mt-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest hover:scale-105 transition-all"
+                                    >
+                                        Nova OS
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                     </div>
 
-                    {/* Column 3: Quick Access Cards (Stitch Style) */}
-                    <div className="space-y-6">
-                        <h2 className="text-xl font-black uppercase tracking-widest">Ações Rápidas</h2>
+                    {/* Quick Actions */}
+                    <div className="space-y-4">
+                        <h2 className="text-sm font-black uppercase tracking-widest">Ações Rápidas</h2>
 
-                        <div className="grid grid-cols-1 gap-4">
-                            <Link href="/pdv" className="group glass-premium border-emerald-500/20 rounded-[2rem] p-8 hidden md:flex flex-col items-center justify-center gap-6 transition-all hover:scale-[1.02] relative overflow-hidden">
-                                <div className="w-20 h-20 rounded-[1.5rem] bg-emerald-500 text-emerald-50 shadow-2xl flex items-center justify-center group-hover:rotate-12 transition-transform">
-                                    <Zap className="w-10 h-10 fill-current" />
+                        <div className="space-y-3">
+                            <Link
+                                href="/service-orders/new"
+                                className="group flex flex-col items-center justify-center gap-4 p-8 rounded-3xl border border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 transition-all hover:scale-[1.02]"
+                            >
+                                <div className="w-16 h-16 rounded-2xl bg-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:-rotate-6 transition-transform">
+                                    <ClipboardList className="w-8 h-8" />
                                 </div>
                                 <div className="text-center">
-                                    <h3 className="text-xl font-black uppercase">PDV Caixa</h3>
-                                    <p className="text-[9px] text-emerald-500/60 font-black uppercase tracking-[0.2em]">Venda Expressa</p>
+                                    <p className="font-black uppercase text-sm">Nova OS</p>
+                                    <p className="text-[9px] text-blue-500/60 font-bold uppercase tracking-widest mt-0.5">Protocolo OS</p>
                                 </div>
                             </Link>
 
-                            <Link href="/service-orders/new" className="group glass-premium border-blue-500/20 rounded-[2rem] p-8 hidden md:flex flex-col items-center justify-center gap-6 transition-all hover:scale-[1.02] relative overflow-hidden">
-                                <div className="w-20 h-20 rounded-[1.5rem] bg-blue-500 text-blue-50 shadow-2xl flex items-center justify-center group-hover:-rotate-12 transition-transform">
-                                    <ClipboardList className="w-10 h-10" />
-                                </div>
-                                <div className="text-center">
-                                    <h3 className="text-xl font-black uppercase">Nova OS</h3>
-                                    <p className="text-[9px] text-blue-500/60 font-black uppercase tracking-[0.2em]">Protocolo OS</p>
-                                </div>
-                            </Link>
+                            {!isAttendant ? null : (
+                                <Link
+                                    href="/pdv"
+                                    className="group flex flex-col items-center justify-center gap-4 p-8 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 transition-all hover:scale-[1.02]"
+                                >
+                                    <div className="w-16 h-16 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:rotate-6 transition-transform">
+                                        <Zap className="w-8 h-8 fill-current" />
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="font-black uppercase text-sm">PDV Caixa</p>
+                                        <p className="text-[9px] text-emerald-500/60 font-bold uppercase tracking-widest mt-0.5">Venda Expressa</p>
+                                    </div>
+                                </Link>
+                            )}
 
-                            <div className="glass-premium rounded-[2rem] p-6 flex items-center gap-4 opacity-60">
-                                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-muted-foreground">
-                                    <AlertCircle className="w-6 h-6" />
+                            <Link
+                                href="/service-orders"
+                                className="flex items-center gap-4 p-5 rounded-2xl border border-border bg-card hover:bg-muted transition-all group"
+                            >
+                                <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                                    <Clock className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                                 </div>
-                                <div>
-                                    <h4 className="font-black text-xs uppercase tracking-widest text-foreground">Suporte</h4>
-                                    <p className="text-[9px] font-bold text-muted-foreground uppercase">Nexus OS</p>
+                                <div className="flex-1">
+                                    <p className="text-sm font-bold">Ver todas as OS</p>
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Histórico completo</p>
                                 </div>
-                            </div>
+                                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -188,4 +227,3 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
         </div>
     )
 }
-
