@@ -42,6 +42,17 @@ interface InventoryItem {
     minimum_quantity: number
 }
 
+async function getEmployeeData(companyId: string) {
+    const db = createAdminClient()
+    const { data: recentOS } = await db
+        .from('service_orders')
+        .select('*, customers(name)')
+        .eq('company_id', companyId)
+        .order('created_at', { ascending: false })
+        .limit(10)
+    return { recentOS }
+}
+
 async function getDashboardData(companyId: string) {
     const db = createAdminClient()
     const now = new Date()
@@ -94,7 +105,9 @@ async function getDashboardData(companyId: string) {
         // Profit queries
         db.from('sales').select('final_amount, sale_items(quantity, product:inventory_items(cost_price))').eq('company_id', companyId).eq('status', 'completed').gte('created_at', startOfMonth),
         db.from('service_orders').select('final_cost, parts_cost').eq('company_id', companyId).in('status', ['concluida', 'faturada']).gte('completed_at', startOfMonth),
-        db.from('cash_transactions').select('amount').eq('type', 'exit').in('user_id', userIds).gte('created_at', startOfMonth),
+        userIds.length > 0
+            ? db.from('cash_transactions').select('amount').eq('type', 'exit').in('user_id', userIds).gte('created_at', startOfMonth)
+            : Promise.resolve({ data: [] }),
         // Daily chart with profit details
         db.from('sales').select('final_amount, created_at, sale_items(quantity, product:inventory_items(cost_price))').eq('company_id', companyId).eq('status', 'completed').gte('created_at', sevenDaysAgo),
         db.from('service_orders').select('final_cost, parts_cost, completed_at').eq('company_id', companyId).in('status', ['concluida', 'faturada']).gte('completed_at', sevenDaysAgo)
@@ -190,16 +203,18 @@ export default async function DashboardPage() {
     if (!userId) return null
 
     const db = createAdminClient()
-    const { data: user } = await db.from('users').select('*, companies(*)').eq('clerk_id', userId).single()
+    const { data: user } = await db.from('users').select('id, role, company_id, full_name').eq('clerk_id', userId).single()
     const companyId = user?.company_id
 
     if (!companyId) return null
 
-    const data = await getDashboardData(companyId)
-
+    // Verificar role ANTES de carregar dados pesados
     if (user.role !== 'admin' && user.role !== 'owner') {
-        return <EmployeeDashboard role={user.role} recentOS={data.recentOS || []} />
+        const { recentOS } = await getEmployeeData(companyId)
+        return <EmployeeDashboard role={user.role} recentOS={recentOS || []} />
     }
+
+    const data = await getDashboardData(companyId)
 
     const hour = new Date().getHours()
     const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite'
