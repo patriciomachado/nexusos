@@ -20,7 +20,7 @@ interface ServiceOrder {
     title: string
     status: string
     equipment_description: string
-    customers?: { name: string; company_name: string } | null
+    customers?: { name: string } | null
 }
 
 interface EmployeeDashboardProps {

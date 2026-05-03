@@ -31,7 +31,7 @@ interface ServiceOrder {
     equipment_description: string
     estimated_cost: number | null
     final_cost: number | null
-    customers?: { name: string; company_name: string } | null
+    customers?: { name: string } | null
     technicians?: { name: string } | null
 }
 
@@ -83,14 +83,14 @@ async function getDashboardData(companyId: string) {
         db.from('service_orders').select('*', { count: 'exact', head: true }).eq('company_id', companyId),
         db.from('service_orders').select('estimated_cost, final_cost, status').eq('company_id', companyId).in('status', ['aberta', 'agendada', 'em_andamento', 'aguardando_pecas']),
         db.from('service_orders').select('*', { count: 'exact', head: true }).eq('company_id', companyId).gte('created_at', startOfToday.toISOString()),
-        db.from('service_orders').select('*, customers(name, company_name), technicians(name)').eq('company_id', companyId).order('created_at', { ascending: false }).limit(6),
+        db.from('service_orders').select('*, customers(name), technicians(name)').eq('company_id', companyId).order('created_at', { ascending: false }).limit(6),
         db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfMonth),
         db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfPrevMonth).lte('payment_date', endOfPrevMonth),
         db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', sevenDaysAgo),
         db.from('customers').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true),
         db.from('customers').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true).lt('created_at', startOfMonth),
         db.from('technicians').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true),
-        db.from('inventory_items').select('id, name, quantity_in_stock, minimum_quantity').eq('company_id', companyId).filter('quantity_in_stock', 'lte', 'minimum_quantity').limit(4),
+        db.from('inventory_items').select('id, name, quantity_in_stock, minimum_quantity').eq('company_id', companyId).limit(100),
         // Profit queries
         db.from('sales').select('final_amount, sale_items(quantity, product:inventory_items(cost_price))').eq('company_id', companyId).eq('status', 'completed').gte('created_at', startOfMonth),
         db.from('service_orders').select('final_cost, parts_cost').eq('company_id', companyId).in('status', ['concluida', 'faturada']).gte('completed_at', startOfMonth),
@@ -169,7 +169,9 @@ async function getDashboardData(companyId: string) {
         },
         recentOS: recentOS as ServiceOrder[] | null,
         chartData,
-        inventoryAlerts: inventoryAlerts as InventoryItem[] | null
+        inventoryAlerts: (inventoryAlerts || [])
+            .filter(item => Number(item.quantity_in_stock) <= Number(item.minimum_quantity))
+            .slice(0, 4) as InventoryItem[]
     }
 }
 
