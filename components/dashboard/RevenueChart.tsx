@@ -20,35 +20,44 @@ const defaultData = [
     { name: 'Dom', revenue: 0, profit: 0 },
 ]
 
-export default function RevenueChart({ data = defaultData, totalRevenue = 'R$ 0,00', totalProfit, height = 300 }: RevenueChartProps) {
+export default function RevenueChart({ data = defaultData, height = 300 }: RevenueChartProps) {
     const [mounted, setMounted] = useState(false)
+    const [days, setDays] = useState(7)
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true)
     }, [])
+
+    const filteredData = data.slice(-days)
+    const rangeRevenue = filteredData.reduce((sum, item) => sum + (item.revenue || 0), 0)
+    const rangeProfit = filteredData.reduce((sum, item) => sum + (item.profit || 0), 0)
+
+    const formatBRL = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val)
 
     return (
         <div style={{ height }} className="w-full p-3 sm:p-4 rounded-2xl bg-card border border-border relative overflow-hidden group" suppressHydrationWarning>
             <div className="flex items-center justify-between mb-4 relative z-10">
                 <div className="flex gap-6">
                     <div>
-                        <h3 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60">Receita (7 dias)</h3>
-                        <p className="text-lg font-black text-foreground">{totalRevenue}</p>
+                        <h3 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60">Receita ({days} dias)</h3>
+                        <p className="text-lg font-black text-foreground">{formatBRL(rangeRevenue)}</p>
                     </div>
-                    {totalProfit && (
-                        <div>
-                            <h3 className="text-[9px] font-black text-emerald-500/60 uppercase tracking-[0.2em]">Lucro Líquido</h3>
-                            <p className="text-lg font-black text-emerald-500">{totalProfit}</p>
-                        </div>
-                    )}
+                    <div>
+                        <h3 className="text-[9px] font-black text-emerald-500/60 uppercase tracking-[0.2em]">Lucro Líquido ({days}d)</h3>
+                        <p className={`text-lg font-black ${rangeProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                            {formatBRL(rangeProfit)}
+                        </p>
+                    </div>
                 </div>
                 <div className="flex gap-2">
-                    {['7 Dias', '30 Dias'].map(p => (
+                    {[7, 30].map(d => (
                         <button
-                            key={p}
-                            className={`px-2 py-1 lg:px-3 lg:py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${p === '7 Dias' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'}`}
+                            key={d}
+                            onClick={() => setDays(d)}
+                            className={`px-2 py-1 lg:px-3 lg:py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${days === d ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'}`}
                         >
-                            {p}
+                            {d} Dias
                         </button>
                     ))}
                 </div>
@@ -58,7 +67,7 @@ export default function RevenueChart({ data = defaultData, totalRevenue = 'R$ 0,
                 {mounted ? (
                     <ResponsiveContainer width="100%" height="80%">
                         <AreaChart
-                            data={data}
+                            data={filteredData}
                             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                         >
                             <defs>
@@ -76,7 +85,8 @@ export default function RevenueChart({ data = defaultData, totalRevenue = 'R$ 0,
                                 dataKey="name"
                                 axisLine={false}
                                 tickLine={false}
-                                tick={{ fill: 'currentColor', opacity: 0.3, fontSize: 10, fontWeight: 900 }}
+                                tick={{ fill: 'currentColor', opacity: 0.3, fontSize: 9, fontWeight: 900 }}
+                                interval={days === 30 ? 5 : 0}
                                 dy={10}
                             />
                             <YAxis hide />
@@ -90,7 +100,7 @@ export default function RevenueChart({ data = defaultData, totalRevenue = 'R$ 0,
                                     backdropFilter: 'blur(10px)'
                                 }}
                                 itemStyle={{ fontWeight: 900 }}
-                                formatter={(value: any, name: any) => [
+                                formatter={(value: number | string, name: string) => [
                                     `R$ ${Number(value).toFixed(2)}`, 
                                     name === 'revenue' ? 'Receita' : 'Lucro'
                                 ]}

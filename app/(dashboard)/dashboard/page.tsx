@@ -7,16 +7,10 @@ import {
     DollarSign,
     Users,
     TrendingUp,
-    AlertCircle,
-    Clock,
     CheckCircle,
     ArrowUpRight,
     ArrowDownRight,
-    Settings,
-    LayoutDashboard,
-    PlusCircle,
-    Store,
-    Calculator
+    Settings
 } from 'lucide-react'
 import Link from 'next/link'
 import RevenueChart from '@/components/dashboard/RevenueChart'
@@ -68,8 +62,8 @@ async function getDashboardData(companyId: string) {
     const { data: companyUsers } = await db.from('users').select('id').eq('company_id', companyId)
     const userIds = companyUsers?.map(u => u.id) || []
 
-    // Date range for 7 days
-    const sevenDaysAgo = getStartOfDaysAgo(7, now).toISOString()
+    // Date range for 30 days
+    const thirtyDaysAgo = getStartOfDaysAgo(30, now).toISOString()
 
     const [
         { count: totalOS },
@@ -83,13 +77,11 @@ async function getDashboardData(companyId: string) {
         { count: prevCustomersCount },
         { count: activeTechnicians },
         { data: inventoryAlerts },
-        // New data for profit calculation
+        // Profit queries
         { data: salesMonth },
         { data: osMonthData },
-        { data: expensesMonth },
-        // Daily chart data with costs
-        { data: chartSales },
-        { data: chartOS }
+        // Consolidated exits for chart and month
+        { data: allExits }
     ] = await Promise.all([
         db.from('service_orders').select('*', { count: 'exact', head: true }).eq('company_id', companyId),
         db.from('service_orders').select('estimated_cost, final_cost, status').eq('company_id', companyId).in('status', ['aberta', 'agendada', 'em_andamento', 'aguardando_pecas']),
@@ -97,35 +89,38 @@ async function getDashboardData(companyId: string) {
         db.from('service_orders').select('*, customers(name), technicians(name)').eq('company_id', companyId).order('created_at', { ascending: false }).limit(6),
         db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfMonth),
         db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfPrevMonth).lte('payment_date', endOfPrevMonth),
-        db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', sevenDaysAgo),
+        db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', thirtyDaysAgo),
         db.from('customers').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true),
         db.from('customers').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true).lt('created_at', startOfMonth),
         db.from('technicians').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true),
         db.from('inventory_items').select('id, name, quantity_in_stock, minimum_quantity').eq('company_id', companyId).limit(100),
         // Profit queries
-        db.from('sales').select('final_amount, sale_items(quantity, product:inventory_items(cost_price))').eq('company_id', companyId).eq('status', 'completed').gte('created_at', startOfMonth),
-        db.from('service_orders').select('final_cost, parts_cost').eq('company_id', companyId).in('status', ['concluida', 'faturada']).gte('completed_at', startOfMonth),
+        db.from('sales').select('final_amount, total_cost').eq('company_id', companyId).eq('status', 'completed').gte('created_at', startOfMonth),
+        db.from('service_orders').select('final_cost, estimated_cost, parts_cost').eq('company_id', companyId).in('status', ['concluida', 'faturada']).gte('completed_at', startOfMonth),
+        // Daily exits for chart (covers current month too)
         userIds.length > 0
-            ? db.from('cash_transactions').select('amount').eq('type', 'exit').in('user_id', userIds).gte('created_at', startOfMonth)
-            : Promise.resolve({ data: [] }),
-        // Daily chart with profit details
-        db.from('sales').select('final_amount, created_at, sale_items(quantity, product:inventory_items(cost_price))').eq('company_id', companyId).eq('status', 'completed').gte('created_at', sevenDaysAgo),
-        db.from('service_orders').select('final_cost, parts_cost, completed_at').eq('company_id', companyId).in('status', ['concluida', 'faturada']).gte('completed_at', sevenDaysAgo)
+            ? db.from('cash_transactions').select('amount, created_at').eq('type', 'exit').in('user_id', userIds).gte('created_at', thirtyDaysAgo)
+            : Promise.resolve({ data: [] })
     ])
 
     const monthRevenue = currentPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
     const prevMonthRevenue = prevPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
 
+    // Filter exits for current month
+    const monthExits = allExits?.filter(e => e.created_at >= startOfMonth) || []
+    const totalExpenses = monthExits.reduce((sum, exp) => sum + (exp.amount || 0), 0) || 0
+
     // Profit Calculation
-    const osGrossProfit = osMonthData?.reduce((sum, os) => sum + ((os.final_cost || 0) - (os.parts_cost || 0)), 0) || 0
-    const salesGrossProfit = salesMonth?.reduce((sum, sale) => {
-        const cost = (sale.sale_items as any[])?.reduce((iSum, item) => iSum + (Number(item.quantity) * Number(item.product?.cost_price || 0)), 0) || 0
-        return sum + (sale.final_amount - cost)
+    const osGrossProfit = osMonthData?.reduce((sum, os) => {
+        const revenue = os.final_cost || os.estimated_cost || 0
+        return sum + (revenue - (os.parts_cost || 0))
     }, 0) || 0
+    const salesGrossProfit = salesMonth?.reduce((sum, sale) => sum + (sale.final_amount - (sale.total_cost || 0)), 0) || 0
     
     const monthGrossProfit = osGrossProfit + salesGrossProfit
-    const totalExpenses = expensesMonth?.reduce((sum, exp) => sum + (exp.amount || 0), 0) || 0
-    const monthNetProfit = monthGrossProfit - totalExpenses
+    
+    // Net Profit: Total Revenue - Total Expenses (Cash Flow approach)
+    const monthNetProfit = monthRevenue - totalExpenses
 
     // Average Ticket (Current Month)
     const concludedOS = recentOS?.filter(os => os.status === 'concluida' || os.status === 'faturada') || []
@@ -144,25 +139,26 @@ async function getDashboardData(companyId: string) {
     const revenueTrend = calculateTrend(monthRevenue, prevMonthRevenue)
     const custTrend = calculateTrend(totalCustomers || 0, prevCustomersCount || 0)
 
-    // Chart Data (Last 7 Days)
-    const chartData = Array.from({ length: 7 }, (_, i) => {
+    // Chart Data (Last 30 Days)
+    const chartData = Array.from({ length: 30 }, (_, i) => {
         const d = new Date()
-        d.setDate(d.getDate() - (6 - i))
-        const dateStr = getLocalDateString(d)
+        d.setDate(d.getDate() - (29 - i))
+        const dateStr = getLocalDateString(d) // Localized YYYY-MM-DD
         
-        const dayRevenue = chartPayments?.filter(p => p.payment_date.startsWith(dateStr)).reduce((sum, p) => sum + (p.amount || 0), 0) || 0
-        
-        // Day Profit approximation
-        const dayOsProfit = chartOS?.filter(os => os.completed_at?.startsWith(dateStr)).reduce((sum, os) => sum + ((os.final_cost || 0) - (os.parts_cost || 0)), 0) || 0
-        const daySalesProfit = chartSales?.filter(s => s.created_at?.startsWith(dateStr)).reduce((sum, sale) => {
-            const cost = (sale.sale_items as any[])?.reduce((iSum, item) => iSum + (Number(item.quantity) * Number(item.product?.cost_price || 0)), 0) || 0
-            return sum + (sale.final_amount - cost)
-        }, 0) || 0
+        const dayRevenue = chartPayments?.filter(p => {
+            const pDate = new Date(p.payment_date)
+            return getLocalDateString(pDate) === dateStr
+        }).reduce((sum, p) => sum + (p.amount || 0), 0) || 0
+
+        const dayExits = (allExits as { amount: number; created_at: string }[])?.filter(e => {
+            const eDate = new Date(e.created_at)
+            return getLocalDateString(eDate) === dateStr
+        }).reduce((sum, e) => sum + (e.amount || 0), 0) || 0
 
         return {
-            name: d.toLocaleDateString('pt-BR', { weekday: 'short' }),
+            name: d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit' }),
             revenue: dayRevenue,
-            profit: dayOsProfit + daySalesProfit
+            profit: dayRevenue - dayExits 
         }
     })
 
@@ -370,8 +366,6 @@ export default async function DashboardPage() {
                         <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-lg transition-all h-[350px]" suppressHydrationWarning>
                             <RevenueChart 
                                 data={data.chartData} 
-                                totalRevenue={formatCurrency(data.stats.monthRevenue)} 
-                                totalProfit={formatCurrency(data.stats.monthNetProfit)}
                                 height={280} 
                             />
                         </div>

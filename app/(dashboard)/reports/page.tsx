@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
 import { formatCurrency, getStartOfDay, getStartOfMonth } from '@/lib/utils'
-import { BarChart3, TrendingUp, Users, Package, ClipboardCheck, Timer, PieChart, Activity, ArrowUpRight, ArrowDownRight, Printer, Download, Filter, ClipboardList, Wallet, DollarSign, Calendar } from 'lucide-react'
+import { BarChart3, TrendingUp, PieChart, Activity } from 'lucide-react'
 
 export default async function ReportsPage() {
     const { userId } = await auth()
@@ -46,25 +46,27 @@ export default async function ReportsPage() {
 
     const monthRevenue = monthPayments?.reduce((s, p) => s + Number(p.amount), 0) || 0
     const osThisMonth = recentOS?.length || 0
-    const osCompletedThisMonth = recentOS?.filter((o: any) => o.status === 'concluida' || o.status === 'faturada').length || 0
+    const osCompletedThisMonth = recentOS?.filter((o: { status: string }) => o.status === 'concluida' || o.status === 'faturada').length || 0
 
     // Profit Calculation
     const osGrossProfit = osMonthProfitData?.reduce((sum, os) => sum + ((os.final_cost || 0) - (os.parts_cost || 0)), 0) || 0
     const salesGrossProfit = salesMonth?.reduce((sum, sale) => {
-        const cost = (sale.sale_items as any[])?.reduce((iSum, item) => iSum + (Number(item.quantity) * Number(item.product?.cost_price || 0)), 0) || 0
+        const cost = (sale.sale_items as { quantity: number; product: { cost_price: number } | null }[])?.reduce((iSum, item) => iSum + (Number(item.quantity) * Number(item.product?.cost_price || 0)), 0) || 0
         return sum + (sale.final_amount - cost)
     }, 0) || 0
     
     const monthGrossProfit = osGrossProfit + salesGrossProfit
     const totalExpenses = expensesMonth?.reduce((sum, exp) => sum + (exp.amount || 0), 0) || 0
-    const monthNetProfit = monthGrossProfit - totalExpenses
+    
+    // Net Profit: Total Collected Revenue - Total Cash Out (Exits)
+    const monthNetProfit = monthRevenue - totalExpenses
 
-    const statusCounts = (osByStatus || []).reduce((acc: Record<string, number>, os: any) => {
+    const statusCounts = (osByStatus || []).reduce((acc: Record<string, number>, os: { status: string }) => {
         acc[os.status] = (acc[os.status] || 0) + 1
         return acc
     }, {})
 
-    const methodTotals = (monthPayments || []).reduce((acc: Record<string, number>, p: any) => {
+    const methodTotals = (monthPayments || []).reduce((acc: Record<string, number>, p: { payment_method: string; amount: number }) => {
         acc[p.payment_method] = (acc[p.payment_method] || 0) + Number(p.amount)
         return acc
     }, {})
@@ -196,7 +198,7 @@ export default async function ReportsPage() {
 
                         <div className="space-y-6">
                             {Object.entries(statusCounts).sort((a, b) => (b[1] as number) - (a[1] as number)).map(([status, count]) => {
-                                const total = Object.values(statusCounts).reduce((s: number, c: any) => s + (c as number), 0)
+                                const total = Object.values(statusCounts).reduce((s: number, c: number) => s + c, 0)
                                 const pct = total > 0 ? Math.round(((count as number) / total) * 100) : 0
                                 const color = statusColors[status] || 'bg-muted/20'
 
@@ -242,7 +244,7 @@ export default async function ReportsPage() {
 
                         <div className="space-y-6">
                             {Object.entries(methodTotals).sort((a, b) => (b[1] as number) - (a[1] as number)).map(([method, total]) => {
-                                const totalAll = Object.values(methodTotals).reduce((s: number, v: any) => s + (v as number), 0)
+                                const totalAll = Object.values(methodTotals).reduce((s: number, v: number) => s + v, 0)
                                 const pct = totalAll > 0 ? Math.round(((total as number) / totalAll) * 100) : 0
                                 const labels: Record<string, string> = {
                                     dinheiro: 'Dinheiro (Espécie)',

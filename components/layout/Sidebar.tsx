@@ -7,8 +7,8 @@ import { UserButton } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
 import {
     LayoutDashboard, ClipboardList, Calendar, Users, Wrench,
-    Package, CreditCard, BarChart3, Settings, Zap, Menu, X,
-    Bell, Wallet, PanelLeft, PanelLeftClose, MousePointer2
+    Package, BarChart3, Settings, Zap,
+    Wallet, PanelLeft, PanelLeftClose, MousePointer2
 } from 'lucide-react'
 import { useAppStore } from '@/store/appStore'
 import { UserRole } from '@/types'
@@ -34,6 +34,7 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
     const [isHovered, setIsHovered] = useState(false)
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true)
     }, [])
 
@@ -42,7 +43,6 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
     const safeRole = (userRole && validRoles.includes(userRole)) ? userRole : 'attendant'
     
     const sidebarOpen = mounted ? store.sidebarOpen : true
-    const setSidebarOpen = store.setSidebarOpen
     const sidebarMode = mounted ? store.sidebarMode : 'hover'
     const setSidebarMode = store.setSidebarMode
 
@@ -184,8 +184,15 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
                             </div>
                             {effectiveOpen && (
                                 <div className="flex-1 min-w-0 animate-in fade-in slide-in-from-left-2 duration-300">
-                                    <p className="text-sm font-bold text-foreground truncate drop-shadow-md capitalize">{safeRole}</p>
-                                    <p className="text-[10px] text-muted-foreground truncate uppercase tracking-tighter">Acesso Restrito</p>
+                                    <p className="text-sm font-bold text-foreground truncate drop-shadow-md capitalize">
+                                        {safeRole === 'admin' ? 'Administrador' :
+                                         safeRole === 'owner' ? 'Proprietário' :
+                                         safeRole === 'manager' ? 'Gerente' :
+                                         safeRole === 'technician' ? 'Técnico' :
+                                         safeRole === 'cashier' ? 'Caixa' :
+                                         safeRole === 'attendant' ? 'Atendente' :
+                                         safeRole === 'talento' ? 'Talento' : safeRole}
+                                    </p>
                                     <Link href="/profile" className="text-xs text-primary truncate hover:underline block mt-1">Configurar Perfil</Link>
                                 </div>
                             )}
