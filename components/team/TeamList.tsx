@@ -14,6 +14,7 @@ interface TeamListProps {
 
 const roleLabels: Record<UserRole, string> = {
     admin: 'Administrador',
+    owner: 'Proprietário',
     manager: 'Gerente',
     technician: 'Técnico Especialista',
     cashier: 'Operador de Fluxo',
@@ -24,6 +25,7 @@ const roleLabels: Record<UserRole, string> = {
 
 const roleColors: Record<UserRole, string> = {
     admin: 'bg-rose-500/10 text-rose-500 border-rose-500/20',
+    owner: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20',
     manager: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
     technician: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20',
     cashier: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',

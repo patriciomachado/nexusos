@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'manager' | 'technician' | 'customer' | 'cashier' | 'attendant' | 'talento'
+export type UserRole = 'admin' | 'owner' | 'manager' | 'technician' | 'customer' | 'cashier' | 'attendant' | 'talento'
 export type SubscriptionPlan = 'essencial' | 'profissional' | 'avancado'
 export type SubscriptionStatus = 'active' | 'inactive' | 'cancelled' | 'trial'
 export type OSStatus = 'aberta' | 'agendada' | 'em_andamento' | 'aguardando_pecas' | 'concluida' | 'faturada' | 'cancelada'

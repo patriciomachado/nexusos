@@ -51,7 +51,10 @@ export default async function ReportsPage() {
     // Profit Calculation
     const osGrossProfit = osMonthProfitData?.reduce((sum, os) => sum + ((os.final_cost || 0) - (os.parts_cost || 0)), 0) || 0
     const salesGrossProfit = salesMonth?.reduce((sum, sale) => {
-        const cost = (sale.sale_items as { quantity: number; product: { cost_price: number } | null }[])?.reduce((iSum, item) => iSum + (Number(item.quantity) * Number(item.product?.cost_price || 0)), 0) || 0
+        const cost = (sale.sale_items as unknown as { quantity: number; product: { cost_price: number } | { cost_price: number }[] | null }[])?.reduce((iSum, item) => {
+            const product = Array.isArray(item.product) ? item.product[0] : item.product
+            return iSum + (Number(item.quantity) * Number(product?.cost_price || 0))
+        }, 0) || 0
         return sum + (sale.final_amount - cost)
     }, 0) || 0
     

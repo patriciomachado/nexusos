@@ -100,8 +100,8 @@ export default function RevenueChart({ data = defaultData, height = 300 }: Reven
                                     backdropFilter: 'blur(10px)'
                                 }}
                                 itemStyle={{ fontWeight: 900 }}
-                                formatter={(value: number | string, name: string) => [
-                                    `R$ ${Number(value).toFixed(2)}`, 
+                                formatter={(value: any, name: any) => [
+                                    `R$ ${Number(value || 0).toFixed(2)}`, 
                                     name === 'revenue' ? 'Receita' : 'Lucro'
                                 ]}
                             />
