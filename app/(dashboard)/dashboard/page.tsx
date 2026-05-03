@@ -111,16 +111,15 @@ async function getDashboardData(companyId: string) {
     const totalExpenses = monthExits.reduce((sum, exp) => sum + (exp.amount || 0), 0) || 0
 
     // Profit Calculation
-    const osGrossProfit = osMonthData?.reduce((sum, os) => {
-        const revenue = os.final_cost || os.estimated_cost || 0
-        return sum + (revenue - (os.parts_cost || 0))
-    }, 0) || 0
+    // Parts cost of completed OS this month
+    const totalPartsCost = osMonthData?.reduce((sum, os) => sum + (os.parts_cost || 0), 0) || 0
     const salesGrossProfit = salesMonth?.reduce((sum, sale) => sum + (sale.final_amount - (sale.total_cost || 0)), 0) || 0
     
-    const monthGrossProfit = osGrossProfit + salesGrossProfit
+    // Gross Profit = Revenue (payments) - Parts Cost of completed OS - Product Cost of sales
+    const monthGrossProfit = monthRevenue - totalPartsCost + salesGrossProfit
     
-    // Net Profit: Total Revenue - Total Expenses (Cash Flow approach)
-    const monthNetProfit = monthRevenue - totalExpenses
+    // Net Profit: Gross Profit - Operational Expenses
+    const monthNetProfit = monthGrossProfit - totalExpenses
 
     // Average Ticket (Current Month)
     const concludedOS = recentOS?.filter(os => os.status === 'concluida' || os.status === 'faturada') || []

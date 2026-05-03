@@ -415,6 +415,8 @@ export default function NewOSForm({
                                                             type="number"
                                                             className="w-full h-11 bg-white/5 border border-amber-500/20 rounded-xl pl-9 pr-4 md:text-xs text-base font-bold focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
                                                             value={quickService.price}
+                                                            onFocus={(e) => e.target.value === '0' && setQuickService(prev => ({ ...prev, price: '' }))}
+                                                            inputMode="decimal"
                                                             onChange={(e) => {
                                                                 const price = e.target.value;
                                                                 setQuickService(prev => ({ ...prev, price }));
@@ -441,6 +443,8 @@ export default function NewOSForm({
                                                             type="number"
                                                             className="w-full h-11 bg-white/5 border border-amber-500/20 rounded-xl pl-9 pr-4 md:text-xs text-base font-bold focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
                                                             value={quickService.cost}
+                                                            onFocus={(e) => e.target.value === '0' && setQuickService(prev => ({ ...prev, cost: '' }))}
+                                                            inputMode="decimal"
                                                             onChange={(e) => {
                                                                 const cost = e.target.value;
                                                                 setQuickService(prev => ({ ...prev, cost }));

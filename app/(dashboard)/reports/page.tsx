@@ -48,8 +48,10 @@ export default async function ReportsPage() {
     const osThisMonth = recentOS?.length || 0
     const osCompletedThisMonth = recentOS?.filter((o: { status: string }) => o.status === 'concluida' || o.status === 'faturada').length || 0
 
-    // Profit Calculation
-    const osGrossProfit = osMonthProfitData?.reduce((sum, os) => sum + ((os.final_cost || 0) - (os.parts_cost || 0)), 0) || 0
+    // Cost of parts for completed OS this month
+    const totalPartsCost = osMonthProfitData?.reduce((sum, os) => sum + (os.parts_cost || 0), 0) || 0
+
+    // Sales gross profit: sale revenue - product cost
     const salesGrossProfit = salesMonth?.reduce((sum, sale) => {
         const cost = (sale.sale_items as unknown as { quantity: number; product: { cost_price: number } | { cost_price: number }[] | null }[])?.reduce((iSum, item) => {
             const product = Array.isArray(item.product) ? item.product[0] : item.product
@@ -57,12 +59,13 @@ export default async function ReportsPage() {
         }, 0) || 0
         return sum + (sale.final_amount - cost)
     }, 0) || 0
-    
-    const monthGrossProfit = osGrossProfit + salesGrossProfit
+
+    // Gross Profit = Total Revenue (payments) - Parts Cost - Product Cost
+    const monthGrossProfit = monthRevenue - totalPartsCost + salesGrossProfit
     const totalExpenses = expensesMonth?.reduce((sum, exp) => sum + (exp.amount || 0), 0) || 0
-    
-    // Net Profit: Total Collected Revenue - Total Cash Out (Exits)
-    const monthNetProfit = monthRevenue - totalExpenses
+
+    // Net Profit: Gross Profit - Operational Expenses
+    const monthNetProfit = monthGrossProfit - totalExpenses
 
     const statusCounts = (osByStatus || []).reduce((acc: Record<string, number>, os: { status: string }) => {
         acc[os.status] = (acc[os.status] || 0) + 1
@@ -128,7 +131,7 @@ export default async function ReportsPage() {
                             <div className="p-5 rounded-2xl bg-muted/20 border border-border/50 space-y-3">
                                 <div className="flex justify-between items-center text-xs">
                                     <span className="font-bold text-muted-foreground/60 uppercase">Custo de Peças (OS)</span>
-                                    <span className="font-black text-rose-500">-{formatCurrency(osMonthProfitData?.reduce((s, o) => s + (o.parts_cost || 0), 0) || 0)}</span>
+                                    <span className="font-black text-rose-500">-{formatCurrency(totalPartsCost)}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-xs">
                                     <span className="font-bold text-muted-foreground/60 uppercase">Custo de Produtos (PDV)</span>
