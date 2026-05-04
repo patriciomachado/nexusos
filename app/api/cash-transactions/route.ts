@@ -114,3 +114,110 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ data: enrichedTransactions, count: enrichedTransactions.length })
 }
 
+export async function DELETE(req: NextRequest) {
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+        return NextResponse.json({ error: 'ID da transação é obrigatório' }, { status: 400 })
+    }
+
+    // Verify the transaction belongs to the company
+    const { data: transaction } = await ctx.db
+        .from('cash_transactions')
+        .select('id, company_id, cash_register_id')
+        .eq('id', id)
+        .single()
+
+    if (!transaction || transaction.company_id !== ctx.companyId) {
+        return NextResponse.json({ error: 'Transação não encontrada' }, { status: 404 })
+    }
+
+    // Verify cash register is still open
+    const { data: cashRegister } = await ctx.db
+        .from('cash_registers')
+        .select('status')
+        .eq('id', transaction.cash_register_id)
+        .single()
+
+    if (!cashRegister || cashRegister.status === 'closed') {
+        return NextResponse.json({ error: 'Não é possível excluir transações de caixa fechado' }, { status: 400 })
+    }
+
+    // Clear any service_orders references first to avoid FK constraint errors
+    await ctx.db
+        .from('service_orders')
+        .update({ cash_transaction_id: null })
+        .eq('cash_transaction_id', id)
+
+    // Also clear any sale references if they exist
+    await ctx.db
+        .from('sales')
+        .update({ cash_transaction_id: null })
+        .eq('cash_transaction_id', id)
+
+    // Delete the transaction
+    const { error } = await ctx.db
+        .from('cash_transactions')
+        .delete()
+        .eq('id', id)
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    return NextResponse.json({ success: true, message: 'Transação removida com sucesso' })
+}
+
+export async function PUT(req: NextRequest) {
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+        return NextResponse.json({ error: 'ID da transação é obrigatório' }, { status: 400 })
+    }
+
+    const body = await req.json()
+    const { description, amount } = body
+
+    // Verify the transaction belongs to the company
+    const { data: transaction } = await ctx.db
+        .from('cash_transactions')
+        .select('id, company_id, cash_register_id, type')
+        .eq('id', id)
+        .single()
+
+    if (!transaction || transaction.company_id !== ctx.companyId) {
+        return NextResponse.json({ error: 'Transação não encontrada' }, { status: 404 })
+    }
+
+    // Verify cash register is still open
+    const { data: cashRegister } = await ctx.db
+        .from('cash_registers')
+        .select('status')
+        .eq('id', transaction.cash_register_id)
+        .single()
+
+    if (!cashRegister || cashRegister.status === 'closed') {
+        return NextResponse.json({ error: 'Não é possível editar transações de caixa fechado' }, { status: 400 })
+    }
+
+    // Update the transaction
+    const { error } = await ctx.db
+        .from('cash_transactions')
+        .update({
+            ...(description && { description }),
+            ...(amount && { amount })
+        })
+        .eq('id', id)
+        .eq('company_id', ctx.companyId)
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    return NextResponse.json({ success: true, message: 'Transação atualizada com sucesso' })
+}
+

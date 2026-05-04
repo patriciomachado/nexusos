@@ -38,24 +38,24 @@ export default function RevenueChart({ data = defaultData, height = 300 }: Reven
     return (
         <div style={{ height }} className="w-full p-3 sm:p-4 rounded-2xl bg-card border border-border relative overflow-hidden group" suppressHydrationWarning>
             <div className="flex items-center justify-between mb-4 relative z-10">
-                <div className="flex gap-6">
+                <div className="flex gap-4 sm:gap-6">
                     <div>
                         <h3 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60">Receita ({days} dias)</h3>
-                        <p className="text-lg font-black text-foreground">{formatBRL(rangeRevenue)}</p>
+                        <p className="text-base sm:text-lg font-black text-foreground">{formatBRL(rangeRevenue)}</p>
                     </div>
                     <div>
                         <h3 className="text-[9px] font-black text-emerald-500/60 uppercase tracking-[0.2em]">Lucro Líquido ({days}d)</h3>
-                        <p className={`text-lg font-black ${rangeProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                        <p className={`text-base sm:text-lg font-black ${rangeProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                             {formatBRL(rangeProfit)}
                         </p>
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1 sm:gap-2">
                     {[7, 30].map(d => (
                         <button
                             key={d}
                             onClick={() => setDays(d)}
-                            className={`px-2 py-1 lg:px-3 lg:py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${days === d ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'}`}
+                            className={`px-1.5 py-1 sm:px-2 sm:py-1 lg:px-3 lg:py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${days === d ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'}`}
                         >
                             {d} Dias
                         </button>

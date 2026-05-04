@@ -108,9 +108,9 @@ export default function NewOSForm({
         estimated_cost: initialData?.estimated_cost?.toString() || '0',
         scheduled_date: initialData?.scheduled_date ? getLocalDateTimePickerValue(new Date(initialData.scheduled_date)) : '',
         internal_notes: initialData?.internal_notes || '',
-        warranty_months: initialData?.warranty_months?.toString() || '3',
+        warranty_months: initialData?.warranty_months?.toString() || '',
         device_condition: initialData?.device_condition || '',
-        discount_amount: initialData?.discount_amount?.toString() || '0',
+        discount_amount: initialData?.discount_amount?.toString() || '',
         turns_on: initialData?.turns_on ?? true,
         terms_accepted: initialData?.terms_accepted || false,
     })
@@ -118,7 +118,7 @@ export default function NewOSForm({
     const [items, setItems] = useState<any[]>(initialData?.items || [])
     const [localCustomers, setLocalCustomers] = useState(customers)
     const [isQuickMode, setIsQuickMode] = useState(false)
-    const [quickService, setQuickService] = useState({ name: '', price: '0', cost: '0' })
+    const [quickService, setQuickService] = useState({ name: '', price: '', cost: '' })
 
     const [photos, setPhotos] = useState<{ front: File | null, back: File | null }>({
         front: null,
@@ -246,9 +246,6 @@ export default function NewOSForm({
                     <div className="flex flex-col justify-center min-w-0">
                         <h1 className="text-[11px] md:text-sm font-black uppercase tracking-widest text-foreground/80 flex items-center gap-2 leading-none mb-1">
                             {initialData ? 'Edição de OS' : 'Nova Abertura'}
-                            {isQuickMode && (
-                                <span className="bg-amber-500/10 text-amber-500 text-[8px] px-2 py-0.5 rounded-full border border-amber-500/20 animate-pulse hidden xs:inline-block">RAIO</span>
-                            )}
                         </h1>
                         <p className="text-[8px] md:text-[10px] font-medium text-muted-foreground uppercase tracking-widest leading-none truncate">Check-in de Equipamento</p>
                     </div>
@@ -265,14 +262,14 @@ export default function NewOSForm({
                     <div className="hidden md:flex flex-col items-end">
                         <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Desconto</span>
                         <span className="text-sm font-bold text-rose-400 tabular-nums leading-none">
-                            - R$ {parseFloat(form.discount_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            - R$ {(!form.discount_amount || isNaN(Number(form.discount_amount))) ? '0,00' : parseFloat(form.discount_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </span>
                     </div>
 
                     <div className="hidden md:flex flex-col items-end">
                         <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Total Estimado</span>
                         <span className="text-xl font-black text-emerald-400 tabular-nums leading-none">
-                            R$ {parseFloat(form.estimated_cost).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            R$ {(!form.estimated_cost || isNaN(Number(form.estimated_cost))) ? '0,00' : parseFloat(form.estimated_cost).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </span>
                     </div>
 
@@ -411,12 +408,15 @@ export default function NewOSForm({
                                                     <label className="block text-[9px] font-black text-amber-700/60 mb-1 uppercase tracking-widest px-1">Preço Venda</label>
                                                     <div className="relative">
                                                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-500/40">R$</span>
-                                                        <input
+<input
                                                             type="number"
+                                                            inputMode="numeric"
+                                                            pattern="[0-9]*"
                                                             className="w-full h-11 bg-white/5 border border-amber-500/20 rounded-xl pl-9 pr-4 md:text-xs text-base font-bold focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
                                                             value={quickService.price}
-                                                            onFocus={(e) => e.target.value === '0' && setQuickService(prev => ({ ...prev, price: '' }))}
-                                                            inputMode="decimal"
+                                                            onFocus={(e) => {
+                                                                if (e.target.value === '0') setQuickService(prev => ({ ...prev, price: '' }))
+                                                            }}
                                                             onChange={(e) => {
                                                                 const price = e.target.value;
                                                                 setQuickService(prev => ({ ...prev, price }));
@@ -439,12 +439,15 @@ export default function NewOSForm({
                                                     <label className="block text-[9px] font-black text-amber-700/60 mb-1 uppercase tracking-widest px-1">Custo</label>
                                                     <div className="relative">
                                                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-500/40">R$</span>
-                                                        <input
+<input
                                                             type="number"
+                                                            inputMode="numeric"
+                                                            pattern="[0-9]*"
                                                             className="w-full h-11 bg-white/5 border border-amber-500/20 rounded-xl pl-9 pr-4 md:text-xs text-base font-bold focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
                                                             value={quickService.cost}
-                                                            onFocus={(e) => e.target.value === '0' && setQuickService(prev => ({ ...prev, cost: '' }))}
-                                                            inputMode="decimal"
+                                                            onFocus={(e) => {
+                                                                if (e.target.value === '0') setQuickService(prev => ({ ...prev, cost: '' }))
+                                                            }}
                                                             onChange={(e) => {
                                                                 const cost = e.target.value;
                                                                 setQuickService(prev => ({ ...prev, cost }));
@@ -496,7 +499,7 @@ export default function NewOSForm({
                         </div>
                     </div>
 
-                    {/* CARD 2: GESTÃO DE ITENS (O RAIO) */}
+                    {/* CARD 2: GESTÃO DE ITENS */}
                     <div className="bg-card/40 border border-white/5 rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[200] overflow-visible">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full" />
                         
@@ -515,6 +518,8 @@ export default function NewOSForm({
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-rose-400/40 italic">R$</span>
                                     <input
                                         type="number"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
                                         step="0.01"
                                         value={form.discount_amount}
                                         onChange={(e) => {
@@ -530,6 +535,11 @@ export default function NewOSForm({
                                                 }
                                             })
                                         }}
+                                        onFocus={(e) => {
+                                            if (e.target.value === '0' || e.target.value === '0.00') {
+                                                setForm(p => ({ ...p, discount_amount: '' }))
+                                            }
+                                        }}
                                         className="w-full h-14 bg-rose-500/5 border border-rose-500/10 rounded-2xl pl-12 pr-6 md:text-sm text-base font-black text-rose-400 placeholder:text-rose-500/20 focus:ring-4 focus:ring-rose-500/10 outline-none transition-all tabular-nums"
                                         placeholder="0,00"
                                     />
@@ -539,7 +549,7 @@ export default function NewOSForm({
                             <div className="flex flex-col items-end gap-1">
                                 <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Total Geral</span>
                                 <span className="text-4xl font-black text-emerald-400 tabular-nums tracking-tighter">
-                                    R$ {parseFloat(form.estimated_cost).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                    R$ {(!form.estimated_cost || isNaN(Number(form.estimated_cost))) ? '0,00' : parseFloat(form.estimated_cost).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                 </span>
                                 <p className="text-[9px] font-bold text-muted-foreground italic uppercase tracking-widest">Sujeito a alterações conforme laudo técnico</p>
                             </div>
@@ -704,7 +714,12 @@ export default function NewOSForm({
                                 <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest italic">Meses de Garantia</label>
                                 <PremiumInput
                                     type="number"
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
                                     value={form.warranty_months}
+                                    onFocus={(e) => {
+                                        if (e.target.value === '0') setForm(p => ({ ...p, warranty_months: '' }))
+                                    }}
                                     onChange={e => setForm(p => ({ ...p, warranty_months: e.target.value }))}
                                 />
                             </div>

@@ -7,7 +7,8 @@ import {
     CreditCard, Calendar, DollarSign, Search, MoreHorizontal,
     ArrowUpCircle, ArrowDownCircle, ShieldCheck, Activity, BarChart3,
     ArrowRightLeft, Landmark, Zap, AlertCircle, TrendingDown,
-    Clock, Users, ArrowRight, LayoutDashboard, FileText, Settings
+    Clock, Users, ArrowRight, LayoutDashboard, FileText, Settings,
+    Pencil, Trash2
 } from 'lucide-react'
 import { formatCurrency, formatDateTime, cn, PAYMENT_METHOD_LABELS, SOURCE_TYPE_LABELS, getLocalDateString } from '@/lib/utils'
 import Header from '@/components/layout/Header'
@@ -35,6 +36,9 @@ export default function CashRegisterClient() {
     const [isClosingModalOpen, setIsClosingModalOpen] = useState(false)
     const [transactionType, setTransactionType] = useState<'entry' | 'exit'>('entry')
     const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false)
+    const [selectedTransaction, setSelectedTransaction] = useState<CashTransaction | null>(null)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
     const fetchData = async () => {
         setLoading(true)
@@ -95,6 +99,60 @@ export default function CashRegisterClient() {
 
     const handleSuccess = () => {
         setTimeout(() => fetchData(), 500)
+    }
+
+    const handleDeleteTransaction = async () => {
+        if (!selectedTransaction || !currentRegister) return
+        
+        try {
+            const response = await fetch(`/api/cash-transactions?id=${selectedTransaction.id}`, {
+                method: 'DELETE'
+            })
+            
+            if (response.ok) {
+                toast.success('Movimentação removida com sucesso')
+                setIsDeleteModalOpen(false)
+                setSelectedTransaction(null)
+                fetchData()
+            } else {
+                const data = await response.json()
+                toast.error(data.error || 'Erro ao remover transação')
+            }
+        } catch (error) {
+            console.error('Error deleting transaction:', error)
+            toast.error('Erro ao remover transação')
+        }
+    }
+
+    const handleUpdateTransaction = async () => {
+        if (!selectedTransaction || !currentRegister) return
+        
+        const description = (document.getElementById('edit-description') as HTMLInputElement)?.value
+        const amount = parseFloat((document.getElementById('edit-amount') as HTMLInputElement)?.value) || selectedTransaction.amount
+        
+        try {
+            const response = await fetch(`/api/cash-transactions?id=${selectedTransaction.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    description,
+                    amount
+                })
+            })
+            
+            if (response.ok) {
+                toast.success('Movimentação atualizada com sucesso')
+                setIsEditModalOpen(false)
+                setSelectedTransaction(null)
+                fetchData()
+            } else {
+                const data = await response.json()
+                toast.error(data.error || 'Erro ao atualizar transação')
+            }
+        } catch (error) {
+            console.error('Error updating transaction:', error)
+            toast.error('Erro ao atualizar transação')
+        }
     }
 
     const calculateBalance = useMemo(() => {
@@ -347,21 +405,39 @@ export default function CashRegisterClient() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-right space-y-0.5">
-                                                    <p className={cn(
-                                                        "text-base font-bold tabular-nums",
-                                                        tx.type === 'entry' ? "text-emerald-400" : "text-rose-400"
-                                                    )}>
-                                                        {tx.type === 'entry' ? '+' : '-'} {formatCurrency(tx.amount)}
-                                                    </p>
-                                                    <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest">
-                                                        {tx.source_type === 'manual_suprimento' ? 'Suprimento de Caixa' : 
-                                                         tx.source_type === 'manual_sangria' ? 'Sangria de Caixa' :
-                                                         SOURCE_TYPE_LABELS[tx.source_type as keyof typeof SOURCE_TYPE_LABELS] || tx.source_type}
-                                                    </p>
+                                                <div className="flex items-center gap-4">
+                                                    <div className="text-right space-y-0.5">
+                                                        <p className={cn(
+                                                            "text-base font-bold tabular-nums",
+                                                            tx.type === 'entry' ? "text-emerald-400" : "text-rose-400"
+                                                        )}>
+                                                            {tx.type === 'entry' ? '+' : '-'} {formatCurrency(tx.amount)}
+                                                        </p>
+                                                        <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest">
+                                                            {tx.source_type === 'manual_suprimento' ? 'Suprimento de Caixa' : 
+                                                             tx.source_type === 'manual_sangria' ? 'Sangria de Caixa' :
+                                                             SOURCE_TYPE_LABELS[tx.source_type as keyof typeof SOURCE_TYPE_LABELS] || tx.source_type}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <button
+                                                            onClick={() => { setSelectedTransaction(tx); setIsEditModalOpen(true); }}
+                                                            className="p-2 hover:bg-muted rounded-lg transition-all text-muted-foreground hover:text-primary"
+                                                            title="Editar"
+                                                        >
+                                                            <Pencil className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => { setSelectedTransaction(tx); setIsDeleteModalOpen(true); }}
+                                                            className="p-2 hover:bg-muted rounded-lg transition-all text-muted-foreground hover:text-destructive"
+                                                            title="Excluir"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            </motion.div>
+                                        </motion.div>
                                         ))
                                     )}
                                 </div>
@@ -539,6 +615,96 @@ export default function CashRegisterClient() {
                         isOpen={isRecurringModalOpen}
                         onClose={() => setIsRecurringModalOpen(false)}
                     />
+                )}
+
+                {/* Delete Transaction Modal */}
+                {isDeleteModalOpen && selectedTransaction && (
+                    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <div className="bg-card border border-border rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="p-3 rounded-2xl bg-destructive/10 text-destructive">
+                                    <AlertCircle className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-black text-foreground">Excluir Movimentação?</h3>
+                                    <p className="text-xs text-muted-foreground">Esta ação não pode ser desfeita</p>
+                                </div>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-6">
+                                Tem certeza que deseja excluir a movimentação <strong className="text-foreground">{selectedTransaction.description}</strong> de <strong className="text-foreground">{formatCurrency(selectedTransaction.amount)}</strong>?
+                            </p>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => { setIsDeleteModalOpen(false); setSelectedTransaction(null); }}
+                                    className="flex-1 py-3 rounded-xl bg-muted/50 text-sm font-bold text-foreground hover:bg-muted transition-all"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={handleDeleteTransaction}
+                                    className="flex-1 py-3 rounded-xl bg-destructive text-destructive-foreground text-sm font-bold hover:bg-destructive/90 transition-all"
+                                >
+                                    Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Edit Transaction Modal */}
+                {isEditModalOpen && selectedTransaction && (
+                    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <div className="bg-card border border-border rounded-3xl p-6 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-lg font-black text-foreground flex items-center gap-2">
+                                    <Pencil className="w-5 h-5" />
+                                    Editar Movimentação
+                                </h3>
+                                <button
+                                    onClick={() => { setIsEditModalOpen(false); setSelectedTransaction(null); }}
+                                    className="p-2 hover:bg-muted rounded-lg transition-all"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-muted-foreground uppercase mb-2">Descrição</label>
+                                    <input
+                                        id="edit-description"
+                                        type="text"
+                                        defaultValue={selectedTransaction.description}
+                                        className="w-full bg-muted border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-muted-foreground uppercase mb-2">Valor</label>
+                                    <input
+                                        id="edit-amount"
+                                        type="number"
+                                        step="0.01"
+                                        defaultValue={selectedTransaction.amount}
+                                        className="w-full bg-muted border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex gap-3 mt-6">
+                                <button
+                                    onClick={() => { setIsEditModalOpen(false); setSelectedTransaction(null); }}
+                                    className="flex-1 py-3 rounded-xl bg-muted/50 text-sm font-bold text-foreground hover:bg-muted transition-all"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={handleUpdateTransaction}
+                                    className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Pencil className="w-4 h-4" />
+                                    Salvar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </AnimatePresence>
 

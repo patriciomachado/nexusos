@@ -63,6 +63,8 @@ export const serviceOrderSchema = z.object({
   device_condition: z.string().optional().nullable(),
   turns_on: z.boolean().optional().default(true),
   discount_amount: z.number().min(0).optional().default(0),
+  photo_front_url: z.string().optional().nullable(),
+  photo_back_url: z.string().optional().nullable(),
   items: z.array(z.object({
     inventory_item_id: z.string().uuid().nullable().optional(),
     item_name: z.string(),

@@ -2,11 +2,12 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ShieldCheck, Zap, Info, Smartphone, CheckCircle2, Clock, MapPin, SearchCode, Wrench, AlertTriangle, MessageSquare, Star, MessageCircle, User, ClipboardList } from 'lucide-react'
+import { ShieldCheck, Zap, Info, Smartphone, CheckCircle2, Clock, MapPin, SearchCode, Wrench, AlertTriangle, MessageSquare, Star, MessageCircle, User, ClipboardList, Camera } from 'lucide-react'
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils'
 import Image from 'next/image'
 import CustomerRatingForm from './CustomerRatingForm'
 import { toast } from 'sonner'
+import TrackingGallery from './TrackingGallery'
 
 interface Props {
     os: any
@@ -169,6 +170,15 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
 
                 {/* Info Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    {/* Photo Gallery */}
+                    <TrackingGallery 
+                        devicesPhotos={{
+                            photo_front_url: os.photo_front_url,
+                            photo_back_url: os.photo_back_url
+                        }}
+                        attachments={os.service_order_attachments}
+                    />
+
                     {/* Customer Details */}
                     <div className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12121a] p-6 shadow-sm">
                         <div className="flex items-center gap-3 mb-6">

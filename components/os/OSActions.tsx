@@ -276,7 +276,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                         {
                             loading: 'Excluindo OS...',
                             success: () => {
-                                router.refresh()
+                                router.push('/service-orders')
                                 return 'OS Excluída com sucesso'
                             },
                             error: 'Erro ao excluir'

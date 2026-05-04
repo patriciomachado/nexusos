@@ -6,6 +6,7 @@ import { formatDateTime, formatCurrency, OS_STATUS_LABELS, OS_STATUS_COLORS, OS_
 import Link from 'next/link'
 import { ArrowLeft, Clock, MapPin, User, Wrench, DollarSign, Calendar, Info } from 'lucide-react'
 import OSActions from '@/components/os/OSActions'
+import OSGallery from '@/components/os/OSGallery'
 
 export default async function ServiceOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { userId } = await auth()
@@ -13,6 +14,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
     const db = createAdminClient()
 
     const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId!).single()
+    const { data: company } = await db.from('companies').select('name, logo_url, cnpj').eq('id', user?.company_id).single()
     const { data: os } = await db
         .from('service_orders')
         .select(`
@@ -43,8 +45,16 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                             <ArrowLeft className="w-4 h-4" />
                             Voltar para OS
                         </Link>
-                        <h1 className="text-2xl font-bold text-foreground">{os.title}</h1>
-                        <div className="flex items-center gap-3 mt-2">
+                        <div className="flex items-center gap-4">
+                            {company?.logo_url && (
+                                <img src={company.logo_url} alt={company.name} className="w-12 h-12 object-contain rounded-xl bg-white p-1" />
+                            )}
+                            <div>
+                                <h1 className="text-2xl font-bold text-foreground">{os.title}</h1>
+                                <p className="text-sm text-muted-foreground">{company?.name}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusClasses}`}>
                                 {OS_STATUS_LABELS[os.status]}
                             </span>
@@ -150,33 +160,14 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                             </div>
                         </div>
 
-                        {/* Device Photos if exist */}
-                        {(os.photo_front_url || os.photo_back_url) && (
-                            <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-6 shadow-sm">
-                                <h2 className="text-[10px] font-black text-muted-foreground/60 mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
-                                    <Info className="w-3 h-3" />
-                                    Fotos do Dispositivo
-                                </h2>
-                                <div className="grid grid-cols-2 gap-4">
-                                    {os.photo_front_url && (
-                                        <div className="space-y-2">
-                                            <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block text-center">Frontal</span>
-                                            <div className="aspect-video rounded-xl overflow-hidden border border-border bg-muted/50">
-                                                <img src={os.photo_front_url} alt="Frontal" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-zoom-in" />
-                                            </div>
-                                        </div>
-                                    )}
-                                    {os.photo_back_url && (
-                                        <div className="space-y-2">
-                                            <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block text-center">Traseira</span>
-                                            <div className="aspect-video rounded-xl overflow-hidden border border-border bg-muted/50">
-                                                <img src={os.photo_back_url} alt="Traseira" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-zoom-in" />
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
+                        {/* Device Photos and Attachments */}
+                        <OSGallery 
+                            devicesPhotos={{
+                                photo_front_url: os.photo_front_url,
+                                photo_back_url: os.photo_back_url
+                            }}
+                            attachments={os.service_order_attachments}
+                        />
 
                         {/* Items/Materials */}
                         <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-6 shadow-sm overflow-hidden">
@@ -416,7 +407,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                 <h3 className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-3">Link de Rastreio</h3>
                                 <div className="flex items-center gap-2">
                                     <div className="flex-1 bg-background/50 border border-border/50 rounded-xl px-3 py-2 text-[10px] font-mono text-muted-foreground/70 truncate select-all">
-                                        {`${typeof window !== 'undefined' ? window.location.origin : ''}/track/${os.tracking_token}`}
+                                        {`${typeof window !== 'undefined' ? window.location.origin : ''}/tracking/${os.tracking_token}`}
                                     </div>
                                 </div>
                                 <p className="text-[9px] text-muted-foreground/40 mt-3 text-center leading-tight">

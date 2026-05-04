@@ -9,6 +9,7 @@ import {
     Trash2, AlertTriangle
 } from 'lucide-react'
 import { formatCurrency, formatDateTime, cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 interface TransactionHistoryProps {
     companyId: string
@@ -27,20 +28,38 @@ export default function TransactionHistory({
     const [filterType, setFilterType] = useState<'all' | 'entry' | 'exit'>('all')
     const [timeRange, setTimeRange] = useState<string>('30')
     const [showMonthPicker, setShowMonthPicker] = useState(false)
-    const [deleteModal, setDeleteModal] = useState<{ open: boolean; register: any | null }>({ open: false, register: null })
+    const [deleteModal, setDeleteModal] = useState<{ open: boolean; transaction: any | null }>({ open: false, transaction: null })
+    const [deleting, setDeleting] = useState(false)
 
-    const handleDeleteRegister = async () => {
-        if (!deleteModal.register) return
+    const handleDeleteTransaction = async () => {
+        if (!deleteModal.transaction || deleting) return
         
+        setDeleting(true)
         try {
-            const response = await fetch(`/api/cash-registers/${deleteModal.register.id}`, {
+            const txId = deleteModal.transaction.originalData?.id
+            if (!txId) {
+                toast.error('ID da transação não encontrado')
+                return
+            }
+            
+            const response = await fetch(`/api/cash-transactions?id=${txId}`, {
                 method: 'DELETE'
             })
+            
+            const data = await response.json()
+            
             if (response.ok) {
+                toast.success('Movimentação removida com sucesso')
+                setDeleteModal({ open: false, transaction: null })
                 window.location.reload()
+            } else {
+                toast.error(data.error || 'Erro ao remover transação')
             }
         } catch (error) {
-            console.error('Error deleting register:', error)
+            console.error('Error deleting transaction:', error)
+            toast.error('Erro ao remover transação')
+        } finally {
+            setDeleting(false)
         }
     }
 
@@ -456,8 +475,12 @@ export default function TransactionHistory({
                                         </span>
                                     </td>
                                     <td className="px-6 py-5 text-center">
-                                        <button className="p-2 hover:bg-muted rounded-xl transition-all text-muted-foreground opacity-0 group-hover:opacity-100">
-                                            <MoreHorizontal className="w-4 h-4" />
+                                        <button 
+                                            onClick={() => setDeleteModal({ open: true, transaction: item })} 
+                                            className="p-2 hover:bg-muted rounded-xl transition-all text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive"
+                                            title="Excluir movimentação"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
                                         </button>
                                     </td>
                                 </tr>
@@ -547,7 +570,7 @@ export default function TransactionHistory({
                                                 <div className="flex justify-center">
                                                     {reg.status !== 'open' && (
                                                         <button
-                                                            onClick={() => setDeleteModal({ open: true, register: reg })}
+                                                            onClick={() => setDeleteModal({ open: true, transaction: { originalData: { id: reg.id, description: `Fechamento ${formatDateTime(reg.opened_at).split(',')[0]}`, amount: reg.closing_balance || 0 } } })}
                                                             className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
                                                             title="Excluir fechamento"
                                                         >
@@ -580,8 +603,8 @@ export default function TransactionHistory({
                 </div>
             </div>
 
-            {/* Delete Confirmation Modal */}
-            {deleteModal.open && (
+            {/* Delete Transaction Modal */}
+            {deleteModal.open && deleteModal.transaction && (
                 <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <div className="bg-card border border-border rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
                         <div className="flex items-center gap-4 mb-6">
@@ -589,26 +612,34 @@ export default function TransactionHistory({
                                 <AlertTriangle className="w-6 h-6" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-black text-foreground">Excluir Fechamento?</h3>
+                                <h3 className="text-lg font-black text-foreground">Excluir Movimentação?</h3>
                                 <p className="text-xs text-muted-foreground">Esta ação não pode ser desfeita</p>
                             </div>
                         </div>
                         <p className="text-sm text-muted-foreground mb-6">
-                            Tem certeza que deseja excluir o fechamento de <strong className="text-foreground">{deleteModal.register ? formatDateTime(deleteModal.register.opened_at).split(',')[0] : ''}</strong>? 
-                            Isso permitirá ajustar vendas ou compras deste expediente.
+                            Tem certeza que deseja excluir a movimentação <strong className="text-foreground">{deleteModal.transaction.originalData?.description}</strong> de <strong className="text-foreground">{formatCurrency(deleteModal.transaction.originalData?.amount)}</strong>?
                         </p>
                         <div className="flex gap-3">
                             <button
-                                onClick={() => setDeleteModal({ open: false, register: null })}
+                                onClick={() => setDeleteModal({ open: false, transaction: null })}
                                 className="flex-1 py-3 rounded-xl bg-muted/50 text-sm font-bold text-foreground hover:bg-muted transition-all"
+                                disabled={deleting}
                             >
                                 Cancelar
                             </button>
                             <button
-                                onClick={handleDeleteRegister}
-                                className="flex-1 py-3 rounded-xl bg-destructive text-destructive-foreground text-sm font-bold hover:bg-destructive/90 transition-all"
+                                onClick={handleDeleteTransaction}
+                                className="flex-1 py-3 rounded-xl bg-destructive text-destructive-foreground text-sm font-bold hover:bg-destructive/90 transition-all flex items-center justify-center gap-2"
+                                disabled={deleting}
                             >
-                                Excluir
+                                {deleting ? (
+                                    <span className="w-4 h-4 border-2 border-destructive-foreground/30 border-t-destructive-foreground rounded-full animate-spin" />
+                                ) : (
+                                    <>
+                                        <Trash2 className="w-4 h-4" />
+                                        Excluir
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>

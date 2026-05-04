@@ -3,9 +3,10 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Save, Building2, MapPin, Mail, Phone, Hash, ShieldCheck, Sparkles, Loader2, DollarSign } from 'lucide-react'
+import { Save, Building2, MapPin, Mail, Phone, Hash, ShieldCheck, Sparkles, Loader2, DollarSign, Image as ImageIcon, Upload, X } from 'lucide-react'
 import { PremiumInput } from '@/components/ui/PremiumInput'
 import { PremiumTextarea } from '@/components/ui/PremiumTextarea'
+import { supabase } from '@/lib/supabase'
 
 interface Props {
     company: any
@@ -15,6 +16,9 @@ interface Props {
 export default function CompanySettingsForm({ company, companyId }: Props) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
+    const [logo, setLogo] = useState<File | null>(null)
+    const [logoPreview, setLogoPreview] = useState(company?.logo_url || '')
+    const [isUploading, setIsUploading] = useState(false)
     const [form, setForm] = useState({
         name: company?.name || '',
         cnpj: company?.cnpj || '',
@@ -29,13 +33,54 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
         auto_close_cash: company?.auto_close_cash ?? true,
     })
 
+    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            setLogo(file)
+            setLogoPreview(URL.createObjectURL(file))
+        }
+    }
+
+    const removeLogo = () => {
+        setLogo(null)
+        setLogoPreview('')
+    }
+
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
         startTransition(async () => {
+            let finalLogoUrl = logoPreview === company?.logo_url ? company?.logo_url : null
+            
+            if (logo) {
+                setIsUploading(true)
+                try {
+                    const fileExt = logo.name.split('.').pop()
+                    const fileName = `company-${companyId}-logo.${fileExt}`
+                    const filePath = `company-logos/${fileName}`
+
+                    const { data, error } = await supabase.storage
+                        .from('product-images')
+                        .upload(filePath, logo, { upsert: true })
+
+                    if (error) throw error
+
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('product-images')
+                        .getPublicUrl(data.path)
+
+                    finalLogoUrl = publicUrl
+                } catch (err: any) {
+                    toast.error('Erro no upload da logo: ' + err.message)
+                    setIsUploading(false)
+                    return
+                }
+                setIsUploading(false)
+            }
+
             const res = await fetch(`/api/company/${companyId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(form),
+                body: JSON.stringify({ ...form, logo_url: finalLogoUrl }),
             })
             if (res.ok) {
                 toast.success('Perfil da empresa atualizado!')
@@ -49,6 +94,33 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
     return (
         <form onSubmit={handleSubmit} className="space-y-12 animate-in fade-in duration-700">
             <div className="grid sm:grid-cols-2 gap-10">
+                <div className="sm:col-span-2">
+                    <label className="block text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-3 ml-2 italic">Logo da Empresa</label>
+                    <div className="flex items-center gap-6 p-6 rounded-3xl border border-dashed border-border bg-card/30">
+                        {logoPreview ? (
+                            <div className="relative group">
+                                <img src={logoPreview} alt="Logo" className="w-32 h-32 object-contain rounded-2xl bg-white p-2" />
+                                <button
+                                    type="button"
+                                    onClick={removeLogo}
+                                    className="absolute -top-2 -right-2 p-1.5 bg-destructive text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
+                        ) : (
+                            <label className="cursor-pointer flex flex-col items-center gap-3 p-8 rounded-2xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 transition-all">
+                                <input type="file" accept="image/*" onChange={handleLogoChange} className="hidden" />
+                                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                    <Upload className="w-8 h-8" />
+                                </div>
+                                <span className="text-sm font-medium text-muted-foreground">Clique ou arraste a imagem</span>
+                                <span className="text-xs text-muted-foreground/60">PNG, JPG ou WEBP até 2MB</span>
+                            </label>
+                        )}
+                    </div>
+                </div>
+
                 <div className="sm:col-span-2">
                     <label className="block text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-3 ml-2 italic">Entidade Jurídica / Nome</label>
                     <PremiumInput
@@ -79,130 +151,91 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                         value={form.email}
                         onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
                         icon={<Mail className="w-4 h-4" />}
-                        placeholder="corporativo@nexus.com"
+                        placeholder="contato@empresa.com.br"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Contato Oficial</label>
+                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Telefone</label>
                     <PremiumInput
                         name="phone"
                         value={form.phone}
                         onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
                         icon={<Phone className="w-4 h-4" />}
-                        placeholder="+55 (00) 00000-0000"
+                        placeholder="(00) 00000-0000"
                     />
                 </div>
 
-                <div className="sm:col-span-1">
-                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Endereço Principal</label>
+                <div className="sm:col-span-2">
+                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Endereço</label>
                     <PremiumInput
                         name="address"
                         value={form.address}
                         onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
                         icon={<MapPin className="w-4 h-4" />}
-                        placeholder="Rua das Inovações, 1000"
+                        placeholder="Rua Example, 123"
                     />
                 </div>
 
-                <div className="grid grid-cols-3 sm:col-span-2 gap-6">
-                    <div className="col-span-1">
-                        <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-1">Cidade</label>
-                        <PremiumInput
-                            name="city"
-                            value={form.city}
-                            onChange={e => setForm(p => ({ ...p, city: e.target.value }))}
-                        />
-                    </div>
-                    <div className="col-span-1">
-                        <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-1">Estado</label>
-                        <PremiumInput
-                            name="state"
-                            value={form.state}
-                            onChange={e => setForm(p => ({ ...p, state: e.target.value }))}
-                        />
-                    </div>
-                    <div className="col-span-1">
-                        <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-1">CEP</label>
-                        <PremiumInput
-                            name="zip_code"
-                            value={form.zip_code}
-                            onChange={e => setForm(p => ({ ...p, zip_code: e.target.value }))}
-                        />
-                    </div>
-                </div>
-
-                {/* Financial Management Section */}
-                <div className="sm:col-span-2 space-y-8 pt-8 border-t border-white/5">
-                    <div className="flex items-center gap-2 mb-3 ml-2">
-                        <DollarSign className="w-3.5 h-3.5 text-emerald-500" />
-                        <label className="block text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] font-black italic">Gestão Financeira & Caixa</label>
-                    </div>
-                    
-                    <div className="grid sm:grid-cols-2 gap-10">
-                        <div>
-                            <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Ciclo de Fechamento</label>
-                            <select
-                                name="cash_cycle"
-                                value={form.cash_cycle}
-                                onChange={e => setForm(p => ({ ...p, cash_cycle: e.target.value }))}
-                                className="w-full bg-white/5 border border-white/5 rounded-2xl h-14 px-6 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary transition-all appearance-none"
-                            >
-                                <option value="daily" className="bg-zinc-900">Diário (Fecha todo dia à meia-noite)</option>
-                                <option value="monthly" className="bg-zinc-900">Mensal (Fecha no último dia do mês)</option>
-                            </select>
-                        </div>
-
-                        <div className="flex items-center gap-4 h-14 px-6 bg-white/5 border border-white/5 rounded-2xl">
-                            <input
-                                type="checkbox"
-                                id="auto_close_cash"
-                                checked={form.auto_close_cash}
-                                onChange={e => setForm(p => ({ ...p, auto_close_cash: e.target.checked }))}
-                                className="w-5 h-5 rounded border-white/10 bg-white/5 text-primary focus:ring-primary"
-                            />
-                            <label htmlFor="auto_close_cash" className="text-xs font-black uppercase tracking-[0.1em] text-muted-foreground cursor-pointer">
-                                Fechar caixa automaticamente ao fim do ciclo
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="sm:col-span-2">
-                    <div className="flex items-center gap-2 mb-3 ml-2">
-                        <ShieldCheck className="w-3.5 h-3.5 text-rose-500" />
-                        <label className="block text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] font-black italic">Políticas de Garantia & Termos de Uso</label>
-                    </div>
-                    <PremiumTextarea
-                        name="warranty_terms"
-                        value={form.warranty_terms}
-                        onChange={e => setForm(p => ({ ...p, warranty_terms: e.target.value }))}
-                        rows={8}
-                        placeholder="Defina as cláusulas contratuais de garantia e suporte..."
-                        className="min-h-[250px] bg-white/5 border-white/5 focus:border-rose-500/30 text-base leading-relaxed p-8"
+                <div>
+                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Cidade</label>
+                    <PremiumInput
+                        name="city"
+                        value={form.city}
+                        onChange={e => setForm(p => ({ ...p, city: e.target.value }))}
+                        icon={<MapPin className="w-4 h-4" />}
+                        placeholder="São Paulo"
                     />
-                    <div className="mt-4 flex items-center gap-3 p-4 rounded-2xl bg-rose-500/5 border border-rose-500/10">
-                        <Sparkles className="w-4 h-4 text-rose-500/40" />
-                        <p className="text-[10px] text-muted-foreground/40 font-bold uppercase tracking-widest leading-none">
-                            Essas cláusulas serão impressas automaticamente em todos os comprovantes de entrada.
-                        </p>
-                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Estado</label>
+                    <PremiumInput
+                        name="state"
+                        value={form.state}
+                        onChange={e => setForm(p => ({ ...p, state: e.target.value }))}
+                        icon={<MapPin className="w-4 h-4" />}
+                        placeholder="SP"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">CEP</label>
+                    <PremiumInput
+                        name="zip_code"
+                        value={form.zip_code}
+                        onChange={e => setForm(p => ({ ...p, zip_code: e.target.value }))}
+                        icon={<Hash className="w-4 h-4" />}
+                        placeholder="00000-000"
+                    />
                 </div>
             </div>
 
-            <div className="pt-10 border-t border-white/5 flex items-center justify-between gap-6">
-                <div className="hidden lg:block">
-                    <p className="text-[10px] font-black text-muted-foreground/20 uppercase tracking-[0.4em]">Autenticado via Nexus Matrix</p>
+            <div className="flex items-center justify-between pt-8 border-t border-border">
+                <div className="flex items-center gap-3">
+                    <input 
+                        type="checkbox" 
+                        id="auto_close_cash"
+                        checked={form.auto_close_cash}
+                        onChange={e => setForm(p => ({ ...p, auto_close_cash: e.target.checked }))}
+                        className="w-5 h-5 rounded border-border text-primary focus:ring-primary/20" 
+                    />
+                    <label htmlFor="auto_close_cash" className="text-sm font-medium text-muted-foreground">Fechamento automático do caixa</label>
                 </div>
                 <button
                     type="submit"
-                    disabled={isPending}
-                    className="w-full lg:w-auto flex items-center justify-center gap-4 bg-primary text-primary-foreground h-16 px-12 rounded-[2rem] text-xs font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                    disabled={isPending || isUploading}
+                    className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                    {isPending || isUploading ? (
+                        <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Salvando...
+                        </>
+                    ) : (
                         <>
                             <Save className="w-5 h-5" />
-                            IMPLEMENTAR ALTERAÇÕES
+                            Salvar Alterações
                         </>
                     )}
                 </button>
@@ -210,4 +243,3 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
         </form>
     )
 }
-

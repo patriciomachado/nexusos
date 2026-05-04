@@ -73,6 +73,7 @@ async function getDashboardData(companyId: string) {
         { data: currentPayments },
         { data: prevPayments },
         { data: chartPayments },
+        { data: todayPayments },
         { count: totalCustomers },
         { count: prevCustomersCount },
         { count: activeTechnicians },
@@ -90,6 +91,7 @@ async function getDashboardData(companyId: string) {
         db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfMonth),
         db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfPrevMonth).lte('payment_date', endOfPrevMonth),
         db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', thirtyDaysAgo),
+        db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfToday.toISOString()),
         db.from('customers').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true),
         db.from('customers').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true).lt('created_at', startOfMonth),
         db.from('technicians').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true),
@@ -105,6 +107,9 @@ async function getDashboardData(companyId: string) {
 
     const monthRevenue = currentPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
     const prevMonthRevenue = prevPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
+
+    // Today's earnings
+    const todayRevenue = todayPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
 
     // Filter exits for current month
     const monthExits = allExits?.filter(e => e.created_at >= startOfMonth) || []
@@ -166,6 +171,7 @@ async function getDashboardData(companyId: string) {
             totalOS,
             openOS: openOSData?.length || 0,
             todayOS,
+            todayRevenue,
             monthRevenue,
             monthGrossProfit,
             monthNetProfit,
@@ -218,7 +224,7 @@ export default async function DashboardPage() {
     const netMargin = data.stats.monthRevenue > 0 ? (data.stats.monthNetProfit / data.stats.monthRevenue * 100).toFixed(1) : '0'
 
     const kpis = [
-        { label: 'Receita Mensal', value: formatCurrency(data.stats.monthRevenue), icon: DollarSign, color: 'blue', change: data.stats.revenueTrend.change, trend: data.stats.revenueTrend.trend },
+        { label: 'Ganhos do Dia', value: formatCurrency(data.stats.todayRevenue), icon: DollarSign, color: 'emerald', change: data.stats.revenueTrend.change, trend: data.stats.revenueTrend.trend },
         { label: 'Lucro Bruto', value: formatCurrency(data.stats.monthGrossProfit), icon: TrendingUp, color: 'indigo', change: `${grossMargin}% margem`, trend: 'up' },
         { label: 'Lucro Líquido', value: formatCurrency(data.stats.monthNetProfit), icon: CheckCircle, color: 'emerald', change: `${netMargin}% líquido`, trend: 'up' },
         { label: 'Ordens Ativas', value: data.stats.openOS.toString(), icon: ClipboardList, color: 'purple', change: `+${data.stats.todayOS} hoje`, trend: 'up' },
@@ -229,7 +235,7 @@ export default async function DashboardPage() {
         <div className="bg-background min-h-screen text-foreground pb-20 lg:pb-8 transition-colors duration-500 overflow-x-hidden" suppressHydrationWarning>
             <Header title="Nexus Dashboard" />
 
-            <div className="p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700" suppressHydrationWarning>
+            <div className="p-3 sm:p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700" suppressHydrationWarning>
                 {/* Stitch Greeting Section */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-6" suppressHydrationWarning>
                     <div className="text-center sm:text-left" suppressHydrationWarning>
@@ -255,7 +261,7 @@ export default async function DashboardPage() {
                     {/* Mobile: Financial Hub & Quick Actions */}
                     <div className="flex flex-col gap-6 md:hidden">
                         {/* Financial Hub Card */}
-                        <div className="glass-premium rounded-[2.5rem] p-8 border border-white/10 relative overflow-hidden bg-gradient-to-br from-blue-600/20 via-background to-emerald-600/20 shadow-2xl">
+                        <div className="glass-premium rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 border border-white/10 relative overflow-hidden bg-gradient-to-br from-blue-600/20 via-background to-emerald-600/20 shadow-2xl">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-3xl rounded-full -translate-y-12 translate-x-12" />
                             
                             <div className="relative z-10 space-y-6">
@@ -269,32 +275,25 @@ export default async function DashboardPage() {
                                 
                                 {/* Main Metric: Revenue */}
                                 <div className="space-y-1">
-                                    <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest opacity-80 mb-1">Receita Mensal</p>
+                                    <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest opacity-80 mb-1">Ganhos do Dia</p>
                                     <div className="flex items-baseline justify-between">
-                                        <p className="text-4xl font-black text-foreground tracking-tighter leading-none">
-                                            {formatCurrency(data.stats.monthRevenue)}
+                                        <p className="text-3xl sm:text-4xl font-black text-foreground tracking-tighter leading-none">
+                                            {formatCurrency(data.stats.todayRevenue)}
                                         </p>
-                                        <div className={cn(
-                                            "px-2.5 py-1.5 rounded-xl text-[10px] font-black flex items-center gap-1.5 border backdrop-blur-md",
-                                            data.stats.revenueTrend.trend === 'up' ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
-                                        )}>
-                                            {data.stats.revenueTrend.change}
-                                            {data.stats.revenueTrend.trend === 'up' ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
-                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Secondary Financial Metrics - Refined spacing */}
-                                <div className="grid grid-cols-2 gap-6 pt-6 border-t border-white/5">
+                                {/* Secondary Financial Metrics - Líquido grande e Bruto abaixo */}
+                                <div className="grid grid-cols-2 gap-4 sm:gap-6 pt-3 border-t border-white/5">
                                     <div className="space-y-1">
-                                        <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest opacity-80">Lucro Bruto</p>
-                                        <p className="text-xl font-black text-foreground tracking-tight">{formatCurrency(data.stats.monthGrossProfit)}</p>
-                                        <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-50">{grossMargin}% margem</p>
+                                        <p className="text-[8px] font-black text-emerald-400 uppercase tracking-widest opacity-80">Líquido</p>
+                                        <p className="text-xl font-black text-foreground tracking-tight">{formatCurrency(data.stats.monthNetProfit)}</p>
+                                        <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-50">{netMargin}% margem</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[8px] font-black text-emerald-400 uppercase tracking-widest opacity-80">Lucro Líquido</p>
-                                        <p className="text-xl font-black text-foreground tracking-tight">{formatCurrency(data.stats.monthNetProfit)}</p>
-                                        <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-50">{netMargin}% líquido</p>
+                                        <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest opacity-80">Bruto</p>
+                                        <p className="text-xl font-black text-foreground tracking-tight">{formatCurrency(data.stats.monthGrossProfit)}</p>
+                                        <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-50">{grossMargin}% margem</p>
                                     </div>
                                 </div>
                             </div>
@@ -302,8 +301,8 @@ export default async function DashboardPage() {
 
 
                         {/* Operational Stats - Ultra Compact Row */}
-                        <div className="flex gap-4">
-                            <div className="flex-1 glass-premium rounded-3xl p-4 border border-white/5 flex items-center justify-between shadow-lg">
+                        <div className="flex gap-3 sm:gap-4">
+                            <div className="flex-1 glass-premium rounded-3xl p-3 sm:p-4 border border-white/5 flex items-center justify-between shadow-lg">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
                                         <ClipboardList className="w-4 h-4" />
@@ -312,7 +311,7 @@ export default async function DashboardPage() {
                                 </div>
                                 <p className="text-lg font-black text-foreground tracking-tighter">{data.stats.openOS}</p>
                             </div>
-                            <div className="flex-1 glass-premium rounded-3xl p-4 border border-white/5 flex items-center justify-between shadow-lg">
+                            <div className="flex-1 glass-premium rounded-3xl p-3 sm:p-4 border border-white/5 flex items-center justify-between shadow-lg">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20">
                                         <Users className="w-4 h-4" />
@@ -325,7 +324,7 @@ export default async function DashboardPage() {
                     </div>
 
                     {/* Desktop: Original Grid Layout */}
-                    <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
+                    <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-6">
                         {kpis.map((kpi) => (
                             <div key={kpi.label} className="glass-premium rounded-[2rem] p-6 lg:p-8 transition-all group relative overflow-hidden active:scale-[0.98] h-full" suppressHydrationWarning>
                                 <div className="flex flex-col justify-between h-full relative z-10" suppressHydrationWarning>
@@ -370,8 +369,8 @@ export default async function DashboardPage() {
                         </div>
 
                         {/* Recent Service Orders Table for Admin */}
-                        <div className="glass-premium rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl" suppressHydrationWarning>
-                            <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                        <div className="glass-premium rounded-3xl sm:rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl" suppressHydrationWarning>
+                            <div className="p-5 sm:p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
                                 <div>
                                     <h2 className="text-xl font-black uppercase tracking-widest leading-none">Ordens de Serviço Recentes</h2>
                                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-2 opacity-50">Últimas movimentações do sistema</p>
@@ -384,28 +383,28 @@ export default async function DashboardPage() {
                                 <table className="w-full border-collapse">
                                     <thead>
                                         <tr className="text-left border-b border-white/5 bg-white/[0.01]">
-                                            <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">ID</th>
-                                            <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">Título</th>
-                                            <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">Cliente</th>
-                                            <th className="p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 text-right">Status</th>
+                                            <th className="p-3 sm:p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 hidden md:table-cell">ID</th>
+                                            <th className="p-3 sm:p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">Título</th>
+                                            <th className="p-3 sm:p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">Cliente</th>
+                                            <th className="p-3 sm:p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 text-right">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
                                         {data.recentOS && data.recentOS.length > 0 ? data.recentOS.map((os) => (
                                             <tr key={os.id} className="hover:bg-white/[0.02] transition-colors group relative cursor-pointer select-none">
-                                                <td className="p-6 font-mono text-[10px] opacity-30">#{os.id.slice(0, 8)}</td>
-                                                <td className="p-6">
+                                                <td className="p-4 sm:p-6 font-mono text-[10px] opacity-30 hidden md:table-cell">#{os.id.slice(0, 8)}</td>
+                                                <td className="p-3 sm:p-6">
                                                     <Link 
                                                         href={`/service-orders/${os.id}`} 
-                                                        className="font-bold text-foreground group-hover:text-primary transition-colors block before:absolute before:inset-0 before:z-0"
+                                                        className="font-bold text-foreground group-hover:text-primary transition-colors block before:absolute before:inset-0 before:z-0 truncate max-w-[120px] sm:max-w-none"
                                                     >
                                                         {os.title}
                                                     </Link>
                                                 </td>
-                                                <td className="p-6 text-sm font-medium text-foreground/70">{os.customers?.name || 'Cliente Direto'}</td>
-                                                <td className="p-6 text-right relative z-10">
+                                                <td className="p-3 sm:p-6 text-sm font-medium text-foreground/70 truncate max-w-[100px] sm:max-w-none">{os.customers?.name || 'Cliente Direto'}</td>
+                                                <td className="p-3 sm:p-6 text-right relative z-10">
                                                     <span className={cn(
-                                                        "px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border",
+                                                        "px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[8px] sm:text-[9px] font-black uppercase tracking-widest border",
                                                         STATUS_CONFIG[os.status]?.bg || "bg-muted border-white/5 text-muted-foreground"
                                                     )}>
                                                         {STATUS_CONFIG[os.status]?.label || os.status}
@@ -424,14 +423,14 @@ export default async function DashboardPage() {
                     </div>
 
                     <div className="lg:col-span-1" suppressHydrationWarning>
-                        <div className="bg-gradient-to-br from-primary to-blue-600 rounded-[2.5rem] p-10 text-primary-foreground shadow-2xl relative overflow-hidden group border border-white/10 h-full min-h-[400px]" suppressHydrationWarning>
+                        <div className="bg-gradient-to-br from-primary to-blue-600 rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-10 text-primary-foreground shadow-2xl relative overflow-hidden group border border-white/10 h-full min-h-[400px]" suppressHydrationWarning>
                             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[100px] rounded-full translate-x-12 -translate-y-12 group-hover:scale-110 transition-transform duration-1000" suppressHydrationWarning />
                             <div className="relative z-10 space-y-8" suppressHydrationWarning>
                                 <div suppressHydrationWarning>
                                     <h3 className="text-xs font-black uppercase tracking-[0.3em] mb-2 opacity-60 text-white">Centro de Comando</h3>
                                     <p className="text-xl font-bold text-white">Acesso Rápido</p>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4" suppressHydrationWarning>
+                                <div className="grid grid-cols-2 gap-3 sm:gap-4" suppressHydrationWarning>
                                     {[
                                         { label: 'Nova OS', icon: ClipboardList, href: '/service-orders/new', mobileHidden: true },
                                         { label: 'Clientes', icon: Users, href: '/customers' },
@@ -442,7 +441,7 @@ export default async function DashboardPage() {
                                             key={action.label}
                                             href={action.href}
                                             className={cn(
-                                                "flex flex-col items-center justify-center gap-4 p-8 rounded-3xl bg-white/10 hover:bg-white/20 border border-white/5 transition-all hover:-translate-y-1 shadow-inner group/action",
+                                                "flex flex-col items-center justify-center gap-3 sm:gap-4 p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/20 border border-white/5 transition-all hover:-translate-y-1 shadow-inner group/action",
                                                 action.mobileHidden && "hidden md:flex"
                                             )}
                                         >

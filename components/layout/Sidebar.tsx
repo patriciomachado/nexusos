@@ -32,10 +32,20 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
     const store = useAppStore()
     const [mounted, setMounted] = useState(false)
     const [isHovered, setIsHovered] = useState(false)
+    const [company, setCompany] = useState<{ name: string; logo_url: string } | null>(null)
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true)
+        
+        fetch('/api/auth/me', { cache: 'no-store' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.company) {
+                    setCompany(data.company)
+                }
+            })
+            .catch(console.error)
     }, [])
 
     // Prevent hydration mismatch
@@ -71,11 +81,17 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
                         "rounded-2xl flex items-center justify-center shrink-0 shadow-xl shadow-primary/20 relative z-10 transition-all duration-500 overflow-hidden bg-white dark:bg-white/95 border border-primary/10",
                         effectiveOpen ? "w-14 h-14 lg:w-16 lg:h-16 p-2" : "w-10 h-10 p-1"
                     )} suppressHydrationWarning>
-                        <img src="/logo.png" alt="Nexus Logo" className="w-full h-full object-contain hover:scale-110 transition-transform duration-500" />
+                        {company?.logo_url ? (
+                            <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain hover:scale-110 transition-transform duration-500" />
+                        ) : (
+                            <img src="/logo.png" alt="Nexus Logo" className="w-full h-full object-contain hover:scale-110 transition-transform duration-500" />
+                        )}
                     </div>
                     {effectiveOpen && (
                         <div className="ml-4 flex flex-col relative z-10 animate-in fade-in slide-in-from-left-4 duration-500">
-                            <span className="font-black text-foreground dark:text-white tracking-[0.05em] text-sm lg:text-base leading-none opacity-90">NEXUS<span className="text-primary">OS</span></span>
+                            <span className="font-black text-foreground dark:text-white tracking-[0.05em] text-sm lg:text-base leading-none opacity-90">
+                                {company?.name || 'NEXUS'}<span className="text-primary">OS</span>
+                            </span>
                             <span className="text-[7px] font-bold text-primary uppercase tracking-[0.2em] mt-1 opacity-60">Premium Systems</span>
                         </div>
                     )}
