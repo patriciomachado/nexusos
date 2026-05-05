@@ -6,17 +6,51 @@ import CartSidebar from '@/components/pdv/CartSidebar'
 import PDVFooter from '@/components/pdv/PDVFooter'
 import FinishSaleModal from '@/components/pdv/FinishSaleModal'
 import { usePDVStore } from '@/store/usePDVStore'
-import { Search, ShoppingCart, Grid3X3, Package, BarChart3 } from 'lucide-react'
-import { useState } from 'react'
+import { InventoryItem } from '@/types'
+import { Search, ShoppingCart, Grid3X3, Package, BarChart3, Loader2, Plus, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { formatCurrency } from '@/lib/utils'
 
 export default function PDVPage() {
     const pathname = usePathname()
-    const { isFinishModalOpen, setIsFinishModalOpen, subtotal, discount, total, searchQuery, setSearchQuery, cart } = usePDVStore()
+    const { isFinishModalOpen, setIsFinishModalOpen, subtotal, discount, total, searchQuery, setSearchQuery, cart, addItem } = usePDVStore()
     const [isCartOpen, setIsCartOpen] = useState(false)
     const [isSearchOpen, setIsSearchOpen] = useState(false)
+    const [mobileResults, setMobileResults] = useState<InventoryItem[]>([])
+    const [mobileLoading, setMobileLoading] = useState(false)
+
+    // Fetch search results for mobile
+    useEffect(() => {
+        const fetchMobileResults = async () => {
+            if (!isSearchOpen || searchQuery.length < 1) {
+                setMobileResults([])
+                return
+            }
+            setMobileLoading(true)
+            try {
+                const res = await fetch(`/api/inventory?search=${encodeURIComponent(searchQuery)}`)
+                const data = await res.json()
+                setMobileResults(data.data || [])
+            } catch (error) {
+                console.error('Error fetching mobile results:', error)
+            } finally {
+                setMobileLoading(false)
+            }
+        }
+
+        const debounce = setTimeout(fetchMobileResults, 300)
+        return () => clearTimeout(debounce)
+    }, [searchQuery, isSearchOpen])
+
+    const handleAddMobileItem = (product: InventoryItem) => {
+        addItem(product)
+        setSearchQuery('')
+        setMobileResults([])
+        setIsSearchOpen(false)
+    }
 
     const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0)
 
@@ -112,15 +146,47 @@ export default function PDVPage() {
             <Drawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} title="Carrinho">
                 <CartSidebar />
             </Drawer>
-            <Drawer isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} title="Pesquisar">
-                <div className="p-4">
+            <Drawer isOpen={isSearchOpen} onClose={() => { setIsSearchOpen(false); setSearchQuery(''); }} title="Pesquisar">
+                <div className="p-4 space-y-4">
                     <input
                         type="text"
                         placeholder="Nome do produto..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
+                        autoFocus
                         className="w-full bg-muted/50 border border-border/50 rounded-xl py-3 px-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                     />
+                    
+                    {/* Mobile Search Results */}
+                    {mobileLoading && (
+                        <div className="flex items-center justify-center p-8">
+                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                        </div>
+                    )}
+                    
+                    {!mobileLoading && mobileResults.length > 0 && (
+                        <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+                            {mobileResults.map((product) => (
+                                <button
+                                    key={product.id}
+                                    onClick={() => handleAddMobileItem(product)}
+                                    className="w-full flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted transition-all"
+                                >
+                                    <div className="text-left">
+                                        <p className="font-bold text-sm text-foreground">{product.name}</p>
+                                        <p className="text-[10px] text-muted-foreground">Stock: {Number(product.quantity_in_stock)} {product.unit}</p>
+                                    </div>
+                                    <p className="font-black text-primary">{formatCurrency(Number(product.selling_price))}</p>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                    
+                    {!mobileLoading && searchQuery && mobileResults.length === 0 && (
+                        <div className="p-8 text-center">
+                            <p className="text-sm text-muted-foreground">Nenhum produto encontrado</p>
+                        </div>
+                    )}
                 </div>
             </Drawer>
 

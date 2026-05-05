@@ -37,10 +37,10 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
     return (
         <div className="animate-fade-in bg-background min-h-screen transition-colors duration-300">
             <Header title={`OS Nº ${os.order_number}`} />
-            <div className="p-6 max-w-6xl mx-auto">
+            <div className="p-4 md:p-6 max-w-6xl mx-auto">
                 {/* Back + Header */}
-                <div className="flex items-start justify-between mb-6">
-                    <div>
+                <div className="flex items-start justify-between mb-6 gap-4">
+                    <div className="min-w-0 flex-1">
                         <Link href="/service-orders" className="flex items-center gap-1.5 text-sm text-foreground/40 hover:text-muted-foreground/70 transition-colors mb-3">
                             <ArrowLeft className="w-4 h-4" />
                             Voltar para OS
@@ -65,16 +65,16 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                     <OSActions os={os as any} variant="detail" />
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                     {/* Main info */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="md:col-span-2 space-y-4 md:space-y-6">
                         {/* Details card */}
-                        <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-6 shadow-sm">
-                            <h2 className="text-[10px] font-black text-muted-foreground/60 mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
+                        <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm">
+                            <h2 className="text-[10px] font-black text-muted-foreground/60 mb-4 md:mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
                                 <Info className="w-3 h-3" />
                                 Informações Gerais
                             </h2>
-                            <div className="grid sm:grid-cols-2 gap-6 text-sm">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 text-sm">
                                 <div className="sm:col-span-2 flex flex-wrap items-center gap-3 mb-2">
                                     <span className={cn(
                                         "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl transition-all duration-300",
@@ -170,19 +170,19 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                         />
 
                         {/* Items/Materials */}
-                        <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-6 shadow-sm overflow-hidden">
-                            <div className="flex items-center justify-between mb-6">
+                        <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm overflow-x-auto">
+                            <div className="flex items-center justify-between mb-4 md:mb-6 gap-2">
                                 <h2 className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] flex items-center gap-2">
                                     <DollarSign className="w-3 h-3" />
                                     Itens e Serviços
                                 </h2>
-                                <span className="text-[10px] font-black px-2 py-1 bg-primary/10 text-primary rounded-md uppercase tracking-tighter">
+                                <span className="text-[10px] font-black px-2 py-1 bg-primary/10 text-primary rounded-md uppercase tracking-tighter shrink-0">
                                     {os.service_order_items?.length || 0} ITENS
                                 </span>
                             </div>
                             
-                            <div className="overflow-x-auto -mx-6">
-                                <table className="w-full text-sm">
+                            <div className="overflow-x-auto -mx-4 md:-mx-6">
+                                <table className="w-full text-sm min-w-[500px]">
                                     <thead>
                                         <tr className="border-b border-border/50 text-[10px] font-black text-muted-foreground/30 uppercase tracking-widest">
                                             <th className="text-left px-6 pb-3">Descrição do Item/Serviço</th>
@@ -237,8 +237,8 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                         </div>
 
                         {/* History */}
-                        <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-6 shadow-sm">
-                            <h2 className="text-[10px] font-black text-muted-foreground/60 mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
+                        <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm">
+                            <h2 className="text-[10px] font-black text-muted-foreground/60 mb-4 md:mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
                                 <Clock className="w-3 h-3" />
                                 Jornada da OS
                             </h2>
@@ -280,10 +280,10 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                     </div>
 
                     {/* Sidebar info */}
-                    <div className="space-y-6">
+                    <div className="space-y-4 md:space-y-6">
                         {/* Customer */}
                         {os.customers && (
-                            <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-5 shadow-sm hover:border-primary/30 transition-colors">
+                            <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-5 shadow-sm hover:border-primary/30 transition-colors">
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="p-2 rounded-lg bg-primary/10">
                                         <User className="w-4 h-4 text-primary" />
@@ -318,7 +318,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
 
                         {/* Technician */}
                         {os.technicians && (
-                            <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-5 shadow-sm hover:border-amber-500/30 transition-colors">
+                            <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-5 shadow-sm hover:border-amber-500/30 transition-colors">
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500">
                                         <Wrench className="w-4 h-4" />

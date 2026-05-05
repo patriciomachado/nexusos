@@ -358,9 +358,9 @@ export default async function DashboardPage() {
 
 
                 {/* Primary Visualization Area - Optimization */}
-                <div className="grid lg:grid-cols-3 gap-6" suppressHydrationWarning>
-                    {/* Main Row: Chart & Command Center */}
-                    <div className="lg:col-span-2 space-y-6" suppressHydrationWarning>
+                <div className="space-y-6" suppressHydrationWarning>
+                    {/* Main Row: Chart */}
+                    <div className="space-y-6" suppressHydrationWarning>
                         <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-lg transition-all h-[350px]" suppressHydrationWarning>
                             <RevenueChart 
                                 data={data.chartData} 
@@ -418,38 +418,6 @@ export default async function DashboardPage() {
                                         )}
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="lg:col-span-1" suppressHydrationWarning>
-                        <div className="bg-gradient-to-br from-primary to-blue-600 rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-10 text-primary-foreground shadow-2xl relative overflow-hidden group border border-white/10 h-full min-h-[400px]" suppressHydrationWarning>
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[100px] rounded-full translate-x-12 -translate-y-12 group-hover:scale-110 transition-transform duration-1000" suppressHydrationWarning />
-                            <div className="relative z-10 space-y-8" suppressHydrationWarning>
-                                <div suppressHydrationWarning>
-                                    <h3 className="text-xs font-black uppercase tracking-[0.3em] mb-2 opacity-60 text-white">Centro de Comando</h3>
-                                    <p className="text-xl font-bold text-white">Acesso Rápido</p>
-                                </div>
-                                <div className="grid grid-cols-2 gap-3 sm:gap-4" suppressHydrationWarning>
-                                    {[
-                                        { label: 'Nova OS', icon: ClipboardList, href: '/service-orders/new', mobileHidden: true },
-                                        { label: 'Clientes', icon: Users, href: '/customers' },
-                                        { label: 'Financeiro', icon: DollarSign, href: '/cash-register', mobileHidden: true },
-                                        { label: 'Ajustes', icon: Settings, href: '/settings' },
-                                    ].map(action => (
-                                        <Link
-                                            key={action.label}
-                                            href={action.href}
-                                            className={cn(
-                                                "flex flex-col items-center justify-center gap-3 sm:gap-4 p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-white/10 hover:bg-white/20 border border-white/5 transition-all hover:-translate-y-1 shadow-inner group/action",
-                                                action.mobileHidden && "hidden md:flex"
-                                            )}
-                                        >
-                                            <action.icon className="w-8 h-8 text-white transition-transform group-hover/action:scale-110" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/90">{action.label}</span>
-                                        </Link>
-                                    ))}
-                                </div>
                             </div>
                         </div>
                     </div>

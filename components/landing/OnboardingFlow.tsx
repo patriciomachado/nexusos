@@ -45,7 +45,9 @@ export default function OnboardingFlow() {
                                 <div className="w-4 h-px bg-white/10" />
                                 <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${step === 2 ? 'text-primary' : 'text-white/20'}`}>Recursos</span>
                                 <div className="w-4 h-px bg-white/10" />
-                                <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${step === 3 ? 'text-primary' : 'text-white/20'}`}>Pronto</span>
+                                <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${step === 3 ? 'text-primary' : 'text-white/20'}`}>Preços</span>
+                                <div className="w-4 h-px bg-white/10" />
+                                <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${step === 4 ? 'text-primary' : 'text-white/20'}`}>Pronto</span>
                             </div>
                             <div className="h-6 w-px bg-white/10 mx-2 hidden sm:block" />
                             <Link href="/sign-in" className="text-[10px] font-black uppercase tracking-widest text-[#A0A0B5] hover:text-white transition-colors">Entrar</Link>
@@ -58,7 +60,8 @@ export default function OnboardingFlow() {
                 <div className={`max-w-4xl w-full transition-all duration-500 transform ${isExiting ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0'}`}>
                     {step === 1 && <StepWelcome onNext={nextStep} />}
                     {step === 2 && <StepFeatures onNext={nextStep} />}
-                    {step === 3 && <StepFinal />}
+                    {step === 3 && <StepPricing onNext={nextStep} />}
+                    {step === 4 && <StepFinal />}
                 </div>
             </main>
 
@@ -66,7 +69,7 @@ export default function OnboardingFlow() {
             <div className="fixed bottom-0 left-0 w-full h-1 bg-white/5 z-50">
                 <div
                     className="h-full bg-primary transition-all duration-1000 ease-out"
-                    style={{ width: `${(step / 3) * 100}%` }}
+                    style={{ width: `${(step / 4) * 100}%` }}
                 />
             </div>
         </div>
@@ -78,7 +81,7 @@ function StepWelcome({ onNext }: { onNext: () => void }) {
         <div className="text-center space-y-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest mb-4">
                 <Sparkles className="w-3 h-3" />
-                <span>Onboarding • Etapa 1 de 3</span>
+                <span>Onboarding • Etapa 1 de 4</span>
             </div>
 
             <div className="space-y-6">
@@ -177,9 +180,102 @@ function StepFeatures({ onNext }: { onNext: () => void }) {
                 onClick={onNext}
                 className="group flex items-center gap-3 bg-white text-[#050510] px-12 py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:scale-105 mx-auto"
             >
-                Prosseguir para o App
+                Ver Planos e Preços
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
+        </div>
+    )
+}
+
+function StepPricing({ onNext }: { onNext: () => void }) {
+    const plans = [
+        {
+            name: "Plano Pro",
+            price: "99",
+            period: "mês",
+            features: [
+                "Gestão completa de OS",
+                "Controle de Estoque",
+                "PDV Integrado",
+                "Relatórios Financeiros",
+                "Suporte Prioritário",
+                "Acesso Multi-usuário"
+            ],
+            recommended: true
+        }
+    ]
+
+    return (
+        <div className="space-y-12 animate-in fade-in zoom-in-95 duration-500">
+            <div className="text-center space-y-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest mb-4">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Investimento • Etapa 3 de 4</span>
+                </div>
+                <h2 className="text-5xl sm:text-6xl font-black tracking-tighter text-white leading-tight">
+                    O Melhor Custo-Benefício <br /> do Mercado.
+                </h2>
+                <p className="text-lg text-[#A0A0B5] max-w-2xl mx-auto font-medium">
+                    Comece com 15 dias totalmente grátis. Sem letras miúdas, sem compromisso inicial.
+                </p>
+            </div>
+
+            <div className="flex justify-center">
+                <div className="max-w-sm w-full relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-600 rounded-[2.5rem] blur opacity-25 group-hover:opacity-40 transition duration-1000" />
+                    <div className="relative bg-[#0A0A1F] border border-white/10 rounded-[2rem] overflow-hidden">
+                        <div className="p-8 pb-4 bg-gradient-to-br from-primary/10 to-transparent">
+                            <div className="flex justify-between items-start mb-6">
+                                <div className="p-3 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20">
+                                    <ZapIcon className="w-6 h-6" />
+                                </div>
+                                <div className="bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-primary/20">
+                                    Recomendado
+                                </div>
+                            </div>
+                            <h3 className="text-xl font-black uppercase tracking-wider mb-2 text-white">Nexus Pro</h3>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-sm font-bold text-[#A0A0B5] italic">12x de</span>
+                                <span className="text-5xl font-black tracking-tighter text-white font-mono">R$ 99</span>
+                                <span className="text-sm font-bold text-[#A0A0B5] uppercase ml-1">/mês</span>
+                            </div>
+                        </div>
+
+                        <div className="p-8 pt-6 space-y-8">
+                            <div className="space-y-4">
+                                {plans[0].features.map((f, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <CheckCircle2 className="w-3 h-3 text-primary" />
+                                        </div>
+                                        <span className="text-xs font-bold text-[#D0D0D5] uppercase tracking-wide">{f}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <button
+                                onClick={onNext}
+                                className="w-full py-5 rounded-2xl bg-primary text-white text-[11px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-2xl shadow-primary/40 relative overflow-hidden group/btn"
+                            >
+                                <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700 skew-x-[20deg]" />
+                                Garantir 15 Dias Grátis <ArrowRight className="w-4 h-4" />
+                            </button>
+
+                            <div className="flex items-center justify-center gap-4 pt-4 border-t border-white/5 opacity-50">
+                                <div className="flex items-center gap-2">
+                                    <Shield className="w-3 h-3" />
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">Stripe Secure</span>
+                                </div>
+                                <div className="w-1 h-1 rounded-full bg-white/20" />
+                                <div className="flex items-center gap-2">
+                                    <Clock className="w-3 h-3" />
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">Setup em 1 min</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
@@ -205,7 +301,7 @@ function StepFinal() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <Link href="/sign-up" className="bg-primary hover:bg-primary/90 text-white px-12 py-6 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:scale-105 shadow-2xl shadow-primary/40 relative overflow-hidden group">
-                    <span className="relative z-10">Experimentar 30 Dias Grátis</span>
+                    <span className="relative z-10">Experimentar 15 Dias Grátis</span>
                     <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform" />
                 </Link>
                 <Link href="/sign-in" className="bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 text-white px-12 py-6 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all">

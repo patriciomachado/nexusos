@@ -9,25 +9,23 @@ import { createAdminClient } from '@/lib/supabase'
 import { UserRole } from '@/types'
 import { unstable_noStore as noStore } from 'next/cache'
 
-async function ensureUserExists(clerkId: string, email: string, name: string): Promise<UserRole> {
+async function ensureUserExists(clerkId: string, email: string, name: string): Promise<{ role: UserRole, companyId: string | null }> {
     const db = createAdminClient()
     const normalizedEmail = email.toLowerCase().trim()
     
     try {
-        // 1. Tentar buscar pelo clerk_id (mais rápido e seguro)
-        const { data: existingUser, error } = await db
+        // 1. Tentar buscar pelo clerk_id
+        const { data: existingUser } = await db
             .from('users')
             .select('id, company_id, role')
             .eq('clerk_id', clerkId)
             .single()
 
         if (existingUser && existingUser.role) {
-            console.log(`[AUTH] User found by clerkId: ${clerkId}, role: ${existingUser.role}`)
-            return existingUser.role as UserRole
+            return { role: existingUser.role as UserRole, companyId: existingUser.company_id }
         }
 
-        // 2. Se não achou pelo clerk_id, tentar pelo email (caso de convite ou troca de conta clerk)
-        // Usando ilike para garantir case-insensitivity
+        // 2. Se não achou pelo clerk_id, tentar pelo email
         const { data: invitedUser } = await db
             .from('users')
             .select('id, company_id, role')
@@ -35,15 +33,11 @@ async function ensureUserExists(clerkId: string, email: string, name: string): P
             .single()
 
         if (invitedUser && invitedUser.role) {
-            console.log(`[AUTH] User found by email: ${normalizedEmail}, role: ${invitedUser.role}. Updating clerkId.`)
-            // Atualiza o clerk_id para o novo ID oficial
             await db.from('users').update({ clerk_id: clerkId }).eq('id', invitedUser.id)
-            return invitedUser.role as UserRole
+            return { role: invitedUser.role as UserRole, companyId: invitedUser.company_id }
         }
 
-        // 3. Se realmente não existe, cria uma nova empresa e o usuário vira admin
-        console.log(`[AUTH] User not found. Creating new company and admin for: ${normalizedEmail}`)
-        
+        // 3. Criar nova empresa e admin
         const { data: company, error: companyError } = await db
             .from('companies')
             .insert({
@@ -56,29 +50,38 @@ async function ensureUserExists(clerkId: string, email: string, name: string): P
             .select()
             .single()
 
-        if (companyError) {
+        if (companyError || !company) {
             console.error('Error creating company:', companyError)
-            return 'attendant' as UserRole
+            return { role: 'attendant' as UserRole, companyId: null }
         }
 
-        if (company) {
-            await db.from('users').insert({
-                clerk_id: clerkId,
-                email: normalizedEmail,
-                full_name: name,
-                role: 'admin',
-                company_id: company.id,
-                is_active: true,
-            })
-            return 'admin' as UserRole
-        }
-        
-        return 'attendant' as UserRole
+        // Initialize subscription record for the new company
+        await db.from('subscriptions').insert({
+            company_id: company.id,
+            status: 'trial',
+            trial_started_at: new Date().toISOString(),
+            current_period_start: new Date().toISOString(),
+            current_period_end: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString() // 15 days trial
+        })
+
+        await db.from('users').insert({
+            clerk_id: clerkId,
+            email: normalizedEmail,
+            full_name: name,
+            role: 'admin',
+            company_id: company.id,
+            is_active: true,
+        })
+
+        return { role: 'admin' as UserRole, companyId: company.id }
     } catch (error) {
         console.error('Error in ensureUserExists:', error)
-        return 'attendant' as UserRole
+        return { role: 'attendant' as UserRole, companyId: null }
     }
 }
+
+import { getSubscriptionStatus } from '@/lib/subscription'
+import { SubscriptionStatusGuard } from '@/components/subscription/SubscriptionStatusGuard'
 
 export default async function DashboardLayout({
     children,
@@ -93,17 +96,29 @@ export default async function DashboardLayout({
     const email = clerkUser.emailAddresses[0]?.emailAddress || ''
     const name = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || email.split('@')[0]
 
-    // Ensure user exists in DB and get their role
-    const userRole = await ensureUserExists(userId, email, name)
+    // Ensure user exists and get their company info
+    const { role, companyId } = await ensureUserExists(userId, email, name)
+
+    // Check subscription status
+    let subscription = { isValid: true, isTrialing: true, daysRemaining: 15 }
+    if (companyId) {
+        subscription = await getSubscriptionStatus(companyId)
+    }
 
     return (
         <div className="flex h-screen bg-background overflow-hidden transition-colors duration-300" suppressHydrationWarning>
-            <Sidebar userRole={userRole} />
+            <Sidebar userRole={role} />
             <main className="flex-1 overflow-y-auto relative pb-20 lg:pb-0" suppressHydrationWarning>
                 <NotificationGenerator />
-                {children}
+                <SubscriptionStatusGuard 
+                    isValid={subscription.isValid} 
+                    isTrialing={subscription.isTrialing} 
+                    daysRemaining={subscription.daysRemaining}
+                >
+                    {children}
+                </SubscriptionStatusGuard>
             </main>
-            <BottomNav userRole={userRole} />
+            <BottomNav userRole={role} />
             {/* <ClientAIWrapper /> */}
         </div>
     )
