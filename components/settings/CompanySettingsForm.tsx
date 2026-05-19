@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Save, Building2, MapPin, Mail, Phone, Hash, ShieldCheck, Sparkles, Loader2, DollarSign, Image as ImageIcon, Upload, X } from 'lucide-react'
+import { Save, Building2, MapPin, Mail, Phone, Hash, ShieldCheck, Sparkles, Loader2, DollarSign, Image as ImageIcon, Upload, X, Globe } from 'lucide-react'
 import { PremiumInput } from '@/components/ui/PremiumInput'
 import { PremiumTextarea } from '@/components/ui/PremiumTextarea'
 import { supabase } from '@/lib/supabase'
@@ -31,6 +31,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
         warranty_terms: company?.warranty_terms || '',
         cash_cycle: company?.cash_cycle || 'monthly',
         auto_close_cash: company?.auto_close_cash ?? true,
+        google_review_url: company?.google_review_url || '',
     })
 
     const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -208,6 +209,20 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                         icon={<Hash className="w-4 h-4" />}
                         placeholder="00000-000"
                     />
+                </div>
+
+                <div className="sm:col-span-2">
+                    <label className="block text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-3 ml-2 italic">Link de Avaliação do Google (Google Reviews)</label>
+                    <PremiumInput
+                        name="google_review_url"
+                        value={form.google_review_url}
+                        onChange={e => setForm(p => ({ ...p, google_review_url: e.target.value }))}
+                        icon={<Globe className="w-4 h-4" />}
+                        placeholder="https://g.page/r/YOUR_BUSINESS_ID/review"
+                    />
+                    <p className="text-xs text-muted-foreground/60 mt-2 ml-2">
+                        Insira a URL direta do seu perfil do Google para redirecionar clientes satisfeitos (que avaliarem com 4 ou 5 estrelas).
+                    </p>
                 </div>
             </div>
 

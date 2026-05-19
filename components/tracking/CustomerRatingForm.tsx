@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Star, Send, Loader2 } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Star, Send, Loader2, ExternalLink, CheckCircle2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -14,7 +14,19 @@ export default function CustomerRatingForm({ token }: CustomerRatingFormProps) {
     const [hoverRating, setHoverRating] = useState(0)
     const [comment, setComment] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [isSubmitted, setIsSubmitted] = useState(false)
+    const [countdown, setCountdown] = useState(5)
+    const [reviewUrl, setReviewUrl] = useState('')
+    const intervalRef = useRef<any>(null)
     const router = useRouter()
+
+    useEffect(() => {
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current)
+            }
+        }
+    }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -38,11 +50,127 @@ export default function CustomerRatingForm({ token }: CustomerRatingFormProps) {
             }
 
             toast.success('Avaliação enviada com sucesso! Muito obrigado.')
-            router.refresh() // Refresh the page to show the "Already Rated" state
+            
+            if (data.googleReviewUrl) {
+                setReviewUrl(data.googleReviewUrl)
+                setIsSubmitted(true)
+                let count = 5
+                setCountdown(count)
+                
+                intervalRef.current = setInterval(() => {
+                    count -= 1
+                    setCountdown(count)
+                    if (count <= 0) {
+                        if (intervalRef.current) clearInterval(intervalRef.current)
+                        window.location.href = data.googleReviewUrl
+                    }
+                }, 1000)
+            } else {
+                setIsSubmitted(true)
+                setTimeout(() => {
+                    router.refresh()
+                }, 3000)
+            }
         } catch (error: any) {
             toast.error(error.message)
-            setIsLoading(false) // Only reset if failed. If success, it refreshes anyway.
+            setIsLoading(false)
         }
+    }
+
+    if (isSubmitted && reviewUrl) {
+        return (
+            <div className="bg-white/70 dark:bg-white/[0.02] backdrop-blur-xl rounded-3xl p-8 border border-slate-200 dark:border-white/10 shadow-xl relative z-10 animate-in fade-in zoom-in duration-500 flex flex-col items-center text-center gap-6 max-w-md mx-auto">
+                <div className="relative">
+                    <div className="absolute inset-0 bg-yellow-400/20 blur-xl rounded-full animate-pulse" />
+                    <div className="w-20 h-20 bg-gradient-to-tr from-yellow-400 to-amber-500 rounded-full flex items-center justify-center shadow-lg relative animate-bounce">
+                        <Star className="w-10 h-10 text-white fill-white" />
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <h3 className="text-xl font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent uppercase tracking-wider">
+                        Sua opinião vale muito!
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                        Ficamos muito felizes que teve uma boa experiência! Que tal nos apoiar compartilhando isso no Google?
+                    </p>
+                </div>
+
+                {/* Progress Circle Visual Timer */}
+                <div className="flex flex-col items-center gap-2 py-2">
+                    <div className="relative w-16 h-16 flex items-center justify-center">
+                        <svg className="absolute w-full h-full transform -rotate-90">
+                            <circle
+                                cx="32"
+                                cy="32"
+                                r="28"
+                                className="stroke-slate-200 dark:stroke-slate-800"
+                                strokeWidth="4"
+                                fill="transparent"
+                            />
+                            <circle
+                                cx="32"
+                                cy="32"
+                                r="28"
+                                className="stroke-indigo-600 dark:stroke-indigo-400 transition-all duration-1000 ease-linear"
+                                strokeWidth="4"
+                                fill="transparent"
+                                strokeDasharray={176}
+                                strokeDashoffset={176 - (176 * countdown) / 5}
+                            />
+                        </svg>
+                        <span className="text-lg font-black text-indigo-600 dark:text-indigo-400">{countdown}s</span>
+                    </div>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">Redirecionando automaticamente...</span>
+                </div>
+
+                <div className="w-full space-y-3">
+                    <a
+                        href={reviewUrl}
+                        className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl py-4 px-6 font-black text-sm shadow-[0_4px_25px_rgba(79,70,229,0.35)] transition-all hover:-translate-y-0.5"
+                    >
+                        Avaliar no Google Agora
+                        <ExternalLink className="w-4 h-4" />
+                    </a>
+                    
+                    <button
+                        onClick={() => router.refresh()}
+                        className="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+                    >
+                        Voltar para a Ordem de Serviço
+                    </button>
+                </div>
+            </div>
+        )
+    }
+
+    if (isSubmitted) {
+        return (
+            <div className="bg-white/70 dark:bg-white/[0.02] backdrop-blur-xl rounded-3xl p-8 border border-slate-200 dark:border-white/10 shadow-xl relative z-10 animate-in fade-in zoom-in duration-500 flex flex-col items-center text-center gap-6 max-w-md mx-auto">
+                <div className="relative">
+                    <div className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full animate-pulse" />
+                    <div className="w-20 h-20 bg-gradient-to-tr from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-lg relative">
+                        <CheckCircle2 className="w-10 h-10 text-white" />
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <h3 className="text-xl font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent uppercase tracking-wider">
+                        Muito Obrigado!
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                        Sua avaliação foi enviada com sucesso e será utilizada para melhorarmos continuamente nossos serviços.
+                    </p>
+                </div>
+
+                <button
+                    onClick={() => router.refresh()}
+                    className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-2xl py-4 px-6 font-bold text-sm transition-all"
+                >
+                    Voltar para a Ordem de Serviço
+                </button>
+            </div>
+        )
     }
 
     return (

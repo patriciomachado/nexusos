@@ -66,7 +66,19 @@ export async function POST(
             return NextResponse.json({ error: 'Falha ao salvar a avaliação no banco de dados.' }, { status: 500 })
         }
 
-        return NextResponse.json({ success: true })
+        // 5. Fetch Google Review URL if rating is positive (>= 4)
+        let googleReviewUrl: string | null = null
+        if (rating >= 4) {
+            const { data: companyData } = await db
+                .from('companies')
+                .select('google_review_url')
+                .eq('id', os.company_id)
+                .single()
+
+            googleReviewUrl = companyData?.google_review_url || null
+        }
+
+        return NextResponse.json({ success: true, googleReviewUrl })
 
     } catch (error) {
         console.error('Rating API Error:', error)

@@ -156,6 +156,7 @@ export const companyUpdateSchema = z.object({
   cash_cycle: z.enum(['daily', 'monthly']).optional(),
   auto_close_cash: z.boolean().optional(),
   settings: z.record(z.string(), z.any()).optional(),
+  google_review_url: z.string().optional().nullable(),
 })
 
 // Service Type Schema
