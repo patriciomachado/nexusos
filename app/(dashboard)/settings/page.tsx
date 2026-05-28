@@ -4,6 +4,7 @@ import Header from '@/components/layout/Header'
 import CompanySettingsForm from '@/components/settings/CompanySettingsForm'
 import SubscriptionSettings from '@/components/settings/SubscriptionSettings'
 import PaymentMethodsSettings from '@/components/settings/PaymentMethodsSettings'
+import AliceIntegrationSettings from '@/components/settings/AliceIntegrationSettings'
 import { Building2, Globe, ShieldCheck } from 'lucide-react'
 
 export default async function SettingsPage() {
@@ -60,6 +61,11 @@ export default async function SettingsPage() {
                         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/3 group-hover:bg-indigo-500/10 transition-colors duration-700" />
                         <CompanySettingsForm company={company} companyId={user?.company_id} />
                     </div>
+                </div>
+
+                {/* Section: Alice AI Integration */}
+                <div className="space-y-8">
+                    <AliceIntegrationSettings company={company} companyId={user?.company_id} />
                 </div>
 
                 <div className="grid lg:grid-cols-2 gap-12">

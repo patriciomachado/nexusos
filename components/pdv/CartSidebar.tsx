@@ -3,11 +3,9 @@
 import { Trash2, Plus, Minus, CreditCard, Banknote, QrCode, ShoppingCart, ShoppingBag, Wrench, Package } from 'lucide-react'
 import { usePDVStore } from '@/store/usePDVStore'
 import { formatCurrency } from '@/lib/utils'
-import { useState } from 'react'
 
 export default function CartSidebar() {
-    const { cart, subtotal, discount, total, removeItem, updateQuantity, clearCart, setDiscount, setIsFinishModalOpen } = usePDVStore()
-    const [paymentMethod, setPaymentMethod] = useState<'dinheiro' | 'cartao' | 'pix'>('dinheiro')
+    const { cart, subtotal, discount, total, removeItem, updateQuantity, clearCart, setDiscount, setIsFinishModalOpen, paymentMethod, setPaymentMethod } = usePDVStore()
 
     if (cart.length === 0) {
         return (

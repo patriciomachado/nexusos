@@ -295,16 +295,15 @@ export default function CashRegisterClient() {
                                                 <span>Abertura: {formatCurrency(currentRegister.opening_balance)}</span>
                                             </div>
                                         )}
-                                    </div>
-
-                                    <div className="flex gap-4">
-                                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-5 py-3 text-right">
-                                            <span className="block text-[9px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Entradas</span>
-                                            <span className="text-xl font-bold text-emerald-400 tabular-nums">{formatCurrency(stats.entries)}</span>
-                                        </div>
-                                        <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl px-5 py-3 text-right">
-                                            <span className="block text-[9px] font-bold text-rose-500 uppercase tracking-widest mb-1">Saídas</span>
-                                            <span className="text-xl font-bold text-rose-400 tabular-nums">{formatCurrency(stats.exits)}</span>
+                                        <div className="flex gap-2 sm:gap-4 w-full md:w-auto">
+                                            <div className="flex-1 md:flex-initial bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-3 py-2.5 sm:px-5 sm:py-3 text-right min-w-[110px] sm:min-w-0">
+                                                <span className="block text-[9px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Entradas</span>
+                                                <span className="text-base sm:text-xl font-bold text-emerald-400 tabular-nums">{formatCurrency(stats.entries)}</span>
+                                            </div>
+                                            <div className="flex-1 md:flex-initial bg-rose-500/10 border border-rose-500/20 rounded-2xl px-3 py-2.5 sm:px-5 sm:py-3 text-right min-w-[110px] sm:min-w-0">
+                                                <span className="block text-[9px] font-bold text-rose-500 uppercase tracking-widest mb-1">Saídas</span>
+                                                <span className="text-base sm:text-xl font-bold text-rose-400 tabular-nums">{formatCurrency(stats.exits)}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

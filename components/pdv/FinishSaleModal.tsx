@@ -17,7 +17,7 @@ interface FinishSaleModalProps {
 }
 
 export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, finalAmount }: FinishSaleModalProps) {
-    const { cart, clearCart } = usePDVStore()
+    const { cart, clearCart, paymentMethod } = usePDVStore()
     const [mounted, setMounted] = useState(false)
     const [loading, setLoading] = useState(false)
     const [loadingInit, setLoadingInit] = useState(true)
@@ -66,7 +66,29 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
             setCashRegister(crData)
             setCustomers(custData.data || [])
 
-            if (pmData.length > 0) setSelectedPaymentMethod(pmData[0].id)
+            let matchedId = pmData[0]?.id || ''
+            if (paymentMethod && pmData.length > 0) {
+                const matched = pmData.find((pm: any) => {
+                    const code = pm.code?.toLowerCase() || ''
+                    const name = pm.name?.toLowerCase() || ''
+                    if (paymentMethod === 'dinheiro') {
+                        return code === 'money' || code === 'cash' || code === 'dinheiro' || 
+                               name.includes('dinheiro') || name.includes('money') || name.includes('cash')
+                    }
+                    if (paymentMethod === 'pix') {
+                        return code === 'pix' || name.includes('pix')
+                    }
+                    if (paymentMethod === 'cartao') {
+                        return code.includes('card') || code.includes('cartao') || code.includes('credit') || code.includes('debit') ||
+                               name.includes('cartao') || name.includes('cartão') || name.includes('credito') || name.includes('crédito') || name.includes('debito') || name.includes('débito')
+                    }
+                    return false
+                })
+                if (matched) {
+                    matchedId = matched.id
+                }
+            }
+            setSelectedPaymentMethod(matchedId)
         } catch (error) {
             console.error('Error initializing finish sale modal:', error)
             toast.error('Erro ao carregar dados de checkout.')

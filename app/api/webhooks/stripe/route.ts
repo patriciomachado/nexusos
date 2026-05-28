@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
                 await db
                     .from('subscriptions')
                     .update({ 
-                        status: 'canceled',
+                        status: 'cancelled',
                         updated_at: new Date().toISOString()
                     })
                     .eq('stripe_subscription_id', subscriptionAny.id)

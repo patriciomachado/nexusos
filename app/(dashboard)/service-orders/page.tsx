@@ -114,77 +114,69 @@ export default async function ServiceOrdersPage({
 
                 {/* Data Table */}
                 <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] shadow-2xl overflow-visible">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="border-b border-white/5 bg-muted/20 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">
-                                    <th className="p-6 w-32 hidden sm:table-cell">ID #</th>
-                                    <th className="p-6">Serviço / Dispositivo</th>
-                                    <th className="p-6">Cliente</th>
-                                    <th className="p-6 hidden sm:table-cell">Técnico</th>
-                                    <th className="p-6">Status</th>
-                                    <th className="p-6 text-right hidden lg:table-cell"></th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {orders && orders.length > 0 ? (
-                                    orders.map((order: any) => {
-                                        const statusCfg = STATUS_CONFIG[order.status]
-                                        const priorityCfg = PRIORITY_CONFIG[order.priority]
-                                        return (
-                                            <tr
-                                                key={order.id}
-                                                className="group hover:bg-white/5 transition-all duration-300 relative cursor-pointer select-none"
-                                            >
-                                                <td className="p-6 align-middle hidden sm:table-cell">
-                                                    <span className="text-xs font-black text-muted-foreground/40 font-mono tracking-tighter">
-                                                        {order.order_number}
-                                                    </span>
-                                                </td>
-                                                <td className="p-6 align-middle">
-                                                    <div className="space-y-1">
-                                                        <Link 
-                                                            href={`/service-orders/${order.id}`} 
-                                                            className="text-base font-black text-foreground group-hover:text-primary transition-colors tracking-tight block before:absolute before:inset-0 before:z-[1]"
-                                                        >
-                                                            {order.title}
-                                                        </Link>
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">
-                                                                <Calendar className="w-3 h-3" />
-                                                                {formatDate(order.created_at)}
-                                                            </div>
-                                                            <div className={cn(
-                                                                "h-1 w-1 rounded-full",
-                                                                priorityCfg?.color === 'text-primary' ? 'bg-primary' :
-                                                                    priorityCfg?.color === 'text-orange-400' ? 'bg-orange-400' :
-                                                                        priorityCfg?.color === 'text-rose-400' ? 'bg-rose-400' : 'bg-slate-400'
-                                                            )} />
-                                                            <span className={cn("text-[9px] font-black uppercase tracking-widest", priorityCfg?.color)}>
-                                                                {priorityCfg?.label}
-                                                            </span>
+                    {/* Desktop/Tablet Grid-based Table */}
+                    <div className="hidden md:block">
+                        {/* Table Header */}
+                        <div className="grid grid-cols-12 gap-4 border-b border-white/5 bg-muted/20 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em] p-6 items-center">
+                            <div className="col-span-1">ID #</div>
+                            <div className="col-span-4">Serviço / Dispositivo</div>
+                            <div className="col-span-3">Cliente</div>
+                            <div className="col-span-2">Técnico</div>
+                            <div className="col-span-2">Status</div>
+                        </div>
+                        {/* Table Body */}
+                        <div className="divide-y divide-white/5">
+                            {orders && orders.length > 0 ? (
+                                orders.map((order: any) => {
+                                    const statusCfg = STATUS_CONFIG[order.status]
+                                    const priorityCfg = PRIORITY_CONFIG[order.priority]
+                                    return (
+                                        <div
+                                            key={order.id}
+                                            className="relative block w-full hover:bg-white/5 transition-all duration-300 cursor-pointer select-none group"
+                                        >
+                                            <div className="grid grid-cols-12 gap-4 p-6 items-center">
+                                                <div className="col-span-1 font-mono text-xs font-black text-muted-foreground/40 tracking-tighter">
+                                                    {order.order_number}
+                                                </div>
+                                                <div className="col-span-4 space-y-1">
+                                                    <Link 
+                                                        href={`/service-orders/${order.id}`} 
+                                                        className="text-base font-black text-foreground group-hover:text-primary transition-colors tracking-tight block before:absolute before:inset-0 before:z-[1] truncate"
+                                                    >
+                                                        {order.title}
+                                                    </Link>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">
+                                                            <Calendar className="w-3 h-3" />
+                                                            {formatDate(order.created_at)}
                                                         </div>
+                                                        <div className={cn(
+                                                            "h-1 w-1 rounded-full",
+                                                            priorityCfg?.color === 'text-primary' ? 'bg-primary' :
+                                                                priorityCfg?.color === 'text-orange-400' ? 'bg-orange-400' :
+                                                                    priorityCfg?.color === 'text-rose-400' ? 'bg-rose-400' : 'bg-slate-400'
+                                                        )} />
+                                                        <span className={cn("text-[9px] font-black uppercase tracking-widest", priorityCfg?.color)}>
+                                                            {priorityCfg?.label}
+                                                        </span>
                                                     </div>
-                                                </td>
-                                                <td className="p-6 align-middle">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-                                                            <User className="w-5 h-5 text-primary" />
-                                                        </div>
-                                                        <div className="flex flex-col">
-                                                            <span className="text-sm text-foreground font-black group-hover:translate-x-1 transition-transform">
-                                                                {order.customers?.name || 'Cliente Avulso'}
-                                                            </span>
-                                                            <span className="text-[10px] text-muted-foreground/40 font-medium">{order.customers?.phone || 'Sem contato'}</span>
-                                                        </div>
+                                                </div>
+                                                <div className="col-span-3 flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                                                        <User className="w-5 h-5 text-primary" />
                                                     </div>
-                                                </td>
-                                                <td className="p-6 align-middle hidden sm:table-cell">
-                                                    <span className="text-xs font-bold text-foreground/60 italic">
-                                                        {order.technicians?.name || 'Não atribuído'}
-                                                    </span>
-                                                </td>
-                                                <td className="p-6 align-middle">
+                                                    <div className="flex flex-col min-w-0">
+                                                        <span className="text-sm text-foreground font-black group-hover:translate-x-1 transition-transform truncate">
+                                                            {order.customers?.name || 'Cliente Avulso'}
+                                                        </span>
+                                                        <span className="text-[10px] text-muted-foreground/40 font-medium truncate">{order.customers?.phone || 'Sem contato'}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="col-span-2 text-xs font-bold text-foreground/60 italic truncate">
+                                                    {order.technicians?.name || 'Não atribuído'}
+                                                </div>
+                                                <div className="col-span-2 flex items-center justify-between">
                                                     {statusCfg && (
                                                         <div className={cn(
                                                             "inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all",
@@ -194,8 +186,6 @@ export default async function ServiceOrdersPage({
                                                             {statusCfg.label}
                                                         </div>
                                                     )}
-                                                </td>
-                                                <td className="p-6 align-middle text-right hidden lg:table-cell">
                                                     <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity relative z-10">
                                                         <Link
                                                             href={`/service-orders/${order.id}`}
@@ -205,30 +195,104 @@ export default async function ServiceOrdersPage({
                                                         </Link>
                                                         <OSActions os={order} variant="list" />
                                                     </div>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })
-                                ) : (
-                                    <tr>
-                                        <td colSpan={6} className="p-32 text-center">
-                                            <div className="w-24 h-24 rounded-[2rem] bg-muted/20 border border-white/5 flex items-center justify-center mx-auto mb-6">
-                                                <Wrench className="w-10 h-10 text-muted-foreground/20" />
+                                                </div>
                                             </div>
-                                            <h3 className="text-2xl font-black tracking-tight text-foreground/60">Silêncio na Oficina...</h3>
-                                            <p className="text-muted-foreground/40 text-sm mt-2 mb-10 max-w-xs mx-auto">Você ainda não possui ordens de serviço. Clique abaixo para iniciar.</p>
-                                            <Link
-                                                href="/service-orders/new"
-                                                className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-[2rem] font-black uppercase text-xs tracking-widest shadow-2xl shadow-primary/20 transition-all hover:scale-105"
-                                            >
-                                                <Plus className="w-5 h-5" />
-                                                Abrir minha 1ª OS
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                        </div>
+                                    )
+                                })
+                            ) : (
+                                <div className="p-32 text-center">
+                                    <div className="w-24 h-24 rounded-[2rem] bg-muted/20 border border-white/5 flex items-center justify-center mx-auto mb-6">
+                                        <Wrench className="w-10 h-10 text-muted-foreground/20" />
+                                    </div>
+                                    <h3 className="text-2xl font-black tracking-tight text-foreground/60">Silêncio na Oficina...</h3>
+                                    <p className="text-muted-foreground/40 text-sm mt-2 mb-10 max-w-xs mx-auto">Você ainda não possui ordens de serviço. Clique abaixo para iniciar.</p>
+                                    <Link
+                                        href="/service-orders/new"
+                                        className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-[2rem] font-black uppercase text-xs tracking-widest shadow-2xl shadow-primary/20 transition-all hover:scale-105"
+                                    >
+                                        <Plus className="w-5 h-5" />
+                                        Abrir minha 1ª OS
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Responsive Mobile Cards View */}
+                    <div className="md:hidden p-4 space-y-4">
+                        {orders && orders.length > 0 ? (
+                            orders.map((order: any) => {
+                                const statusCfg = STATUS_CONFIG[order.status]
+                                const priorityCfg = PRIORITY_CONFIG[order.priority]
+                                return (
+                                    <Link
+                                        key={order.id}
+                                        href={`/service-orders/${order.id}`}
+                                        className="block p-5 rounded-3xl bg-card/60 backdrop-blur-xl border border-white/5 hover:border-primary/30 transition-all hover:bg-white/[0.02] active:scale-98"
+                                    >
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className="text-xs font-mono font-black text-muted-foreground/50">
+                                                #{order.order_number}
+                                            </span>
+                                            {statusCfg && (
+                                                <div className={cn(
+                                                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all",
+                                                    statusCfg.bg, statusCfg.text, statusCfg.border, statusCfg.glow
+                                                )}>
+                                                    <span className="w-1 h-1 rounded-full bg-current animate-pulse" />
+                                                    {statusCfg.label}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <h4 className="text-lg font-black text-foreground tracking-tight mb-2 truncate">
+                                            {order.title}
+                                        </h4>
+
+                                        <div className="space-y-2 pt-2 border-t border-white/5">
+                                            <div className="flex items-center gap-2 text-sm text-foreground/80">
+                                                <User className="w-4 h-4 text-primary shrink-0" />
+                                                <span className="font-bold truncate">{order.customers?.name || 'Cliente Avulso'}</span>
+                                            </div>
+                                            
+                                            {order.technicians?.name && (
+                                                <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
+                                                    <Wrench className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                                                    <span>Técnico: <span className="font-semibold">{order.technicians.name}</span></span>
+                                                </div>
+                                            )}
+
+                                            <div className="flex items-center justify-between text-xs text-muted-foreground/50 pt-1">
+                                                <div className="flex items-center gap-1">
+                                                    <Calendar className="w-3.5 h-3.5" />
+                                                    <span>{formatDate(order.created_at)}</span>
+                                                </div>
+                                                {priorityCfg && (
+                                                    <span className={cn("text-[9px] font-black uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-md", priorityCfg.color)}>
+                                                        {priorityCfg.label}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                )
+                            })
+                        ) : (
+                            <div className="p-12 text-center">
+                                <div className="w-16 h-16 rounded-[1.5rem] bg-muted/20 border border-white/5 flex items-center justify-center mx-auto mb-4">
+                                    <Wrench className="w-6 h-6 text-muted-foreground/20" />
+                                </div>
+                                <p className="text-sm font-bold text-muted-foreground/60">Nenhuma ordem de serviço encontrada.</p>
+                                <Link
+                                    href="/service-orders/new"
+                                    className="inline-flex items-center gap-2 mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 transition-all hover:scale-105"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    Nova OS
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
 

@@ -24,6 +24,8 @@ interface PDVStore {
     total: number
     isFinishModalOpen: boolean
     setIsFinishModalOpen: (open: boolean) => void
+    paymentMethod: 'dinheiro' | 'cartao' | 'pix'
+    setPaymentMethod: (method: 'dinheiro' | 'cartao' | 'pix') => void
 }
 
 export const usePDVStore = create<PDVStore>((set, get) => ({
@@ -98,6 +100,8 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
     setSearchQuery: (query) => set({ searchQuery: query }),
     isFinishModalOpen: false,
     setIsFinishModalOpen: (open) => set({ isFinishModalOpen: open }),
-    clearCart: () => set({ cart: [], subtotal: 0, total: 0, discount: 0, searchQuery: '', isFinishModalOpen: false }),
+    paymentMethod: 'dinheiro',
+    setPaymentMethod: (method) => set({ paymentMethod: method }),
+    clearCart: () => set({ cart: [], subtotal: 0, total: 0, discount: 0, searchQuery: '', isFinishModalOpen: false, paymentMethod: 'dinheiro' }),
 }))
 

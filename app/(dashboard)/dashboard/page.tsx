@@ -97,8 +97,8 @@ async function getDashboardData(companyId: string) {
         db.from('technicians').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true),
         db.from('inventory_items').select('id, name, quantity_in_stock, minimum_quantity').eq('company_id', companyId).limit(100),
         // Profit queries
-        db.from('sales').select('final_amount, total_cost').eq('company_id', companyId).eq('status', 'completed').gte('created_at', startOfMonth),
-        db.from('service_orders').select('final_cost, estimated_cost, parts_cost').eq('company_id', companyId).in('status', ['concluida', 'faturada']).gte('completed_at', startOfMonth),
+        db.from('sales').select('final_amount, total_cost, created_at').eq('company_id', companyId).eq('status', 'completed').gte('created_at', startOfMonth),
+        db.from('service_orders').select('final_cost, estimated_cost, parts_cost, completed_at').eq('company_id', companyId).in('status', ['concluida', 'faturada']).gte('completed_at', startOfMonth),
         // Daily exits for chart (covers current month too)
         userIds.length > 0
             ? db.from('cash_transactions').select('amount, created_at').eq('type', 'exit').in('user_id', userIds).gte('created_at', thirtyDaysAgo)
@@ -110,6 +110,20 @@ async function getDashboardData(companyId: string) {
 
     // Today's earnings
     const todayRevenue = todayPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
+
+    // Filter exits, parts cost and products cost for today
+    const startOfTodayISO = startOfToday.toISOString()
+    const todayExits = allExits?.filter(e => e.created_at >= startOfTodayISO) || []
+    const todayExpenses = todayExits.reduce((sum, exp) => sum + (exp.amount || 0), 0) || 0
+
+    const todayOSCompleted = osMonthData?.filter(os => os.completed_at && os.completed_at >= startOfTodayISO) || []
+    const todayPartsCost = todayOSCompleted.reduce((sum, os) => sum + (os.parts_cost || 0), 0) || 0
+
+    const todaySales = salesMonth?.filter(sale => sale.created_at && sale.created_at >= startOfTodayISO) || []
+    const todayProductsCost = todaySales.reduce((sum, sale) => sum + (sale.total_cost || 0), 0) || 0
+
+    // Today's Net Profit: Today's Revenue - Today's Expenses - Today's Parts Cost - Today's Products Cost
+    const todayNetProfit = todayRevenue - todayExpenses - todayPartsCost - todayProductsCost
 
     // Filter exits for current month
     const monthExits = allExits?.filter(e => e.created_at >= startOfMonth) || []
@@ -172,6 +186,7 @@ async function getDashboardData(companyId: string) {
             openOS: openOSData?.length || 0,
             todayOS,
             todayRevenue,
+            todayNetProfit,
             monthRevenue,
             monthGrossProfit,
             monthNetProfit,
@@ -224,7 +239,15 @@ export default async function DashboardPage() {
     const netMargin = data.stats.monthRevenue > 0 ? (data.stats.monthNetProfit / data.stats.monthRevenue * 100).toFixed(1) : '0'
 
     const kpis = [
-        { label: 'Ganhos do Dia', value: formatCurrency(data.stats.todayRevenue), icon: DollarSign, color: 'emerald', change: data.stats.revenueTrend.change, trend: data.stats.revenueTrend.trend },
+        { 
+            label: 'Ganhos do Dia', 
+            value: formatCurrency(data.stats.todayRevenue), 
+            subValue: `Líquido: ${formatCurrency(data.stats.todayNetProfit)}`, 
+            icon: DollarSign, 
+            color: 'emerald', 
+            change: data.stats.revenueTrend.change, 
+            trend: data.stats.revenueTrend.trend 
+        },
         { label: 'Lucro Bruto', value: formatCurrency(data.stats.monthGrossProfit), icon: TrendingUp, color: 'indigo', change: `${grossMargin}% margem`, trend: 'up' },
         { label: 'Lucro Líquido', value: formatCurrency(data.stats.monthNetProfit), icon: CheckCircle, color: 'emerald', change: `${netMargin}% líquido`, trend: 'up' },
         { label: 'Ordens Ativas', value: data.stats.openOS.toString(), icon: ClipboardList, color: 'purple', change: `+${data.stats.todayOS} hoje`, trend: 'up' },
@@ -275,10 +298,13 @@ export default async function DashboardPage() {
                                 
                                 {/* Main Metric: Revenue */}
                                 <div className="space-y-1">
-                                    <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest opacity-80 mb-1">Ganhos do Dia</p>
-                                    <div className="flex items-baseline justify-between">
+                                    <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest opacity-80 mb-1">Ganhos do Dia (Bruto)</p>
+                                    <div className="flex flex-col gap-1">
                                         <p className="text-3xl sm:text-4xl font-black text-foreground tracking-tighter leading-none">
                                             {formatCurrency(data.stats.todayRevenue)}
+                                        </p>
+                                        <p className="text-xs font-semibold text-emerald-400/85">
+                                            Líquido: <span className="font-black text-foreground">{formatCurrency(data.stats.todayNetProfit)}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -341,6 +367,11 @@ export default async function DashboardPage() {
                                         <div suppressHydrationWarning>
                                             <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] leading-none mb-2">{kpi.label}</h3>
                                             <p className="text-2xl lg:text-3xl font-black text-foreground tracking-tighter">{kpi.value}</p>
+                                            {kpi.subValue && (
+                                                <p className="text-xs font-semibold text-muted-foreground mt-1.5 opacity-80">
+                                                    {kpi.subValue}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
                                     <div className={cn(
@@ -370,54 +401,87 @@ export default async function DashboardPage() {
 
                         {/* Recent Service Orders Table for Admin */}
                         <div className="glass-premium rounded-3xl sm:rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl" suppressHydrationWarning>
-                            <div className="p-5 sm:p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                            <div className="p-5 sm:p-8 border-b border-white/5 flex flex-col sm:flex-row items-start sm:justify-between gap-3 bg-white/[0.02]">
                                 <div>
                                     <h2 className="text-xl font-black uppercase tracking-widest leading-none">Ordens de Serviço Recentes</h2>
                                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-2 opacity-50">Últimas movimentações do sistema</p>
                                 </div>
-                                <Link href="/service-orders" className="px-6 py-3 rounded-2xl bg-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5">
+                                <Link href="/service-orders" className="px-6 py-3 rounded-2xl bg-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5 w-full sm:w-auto text-center">
                                     Ver Tudo
                                 </Link>
                             </div>
-                            <div className="overflow-x-auto">
-                                <table className="w-full border-collapse">
-                                    <thead>
-                                        <tr className="text-left border-b border-white/5 bg-white/[0.01]">
-                                            <th className="p-3 sm:p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 hidden md:table-cell">ID</th>
-                                            <th className="p-3 sm:p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">Título</th>
-                                            <th className="p-3 sm:p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">Cliente</th>
-                                            <th className="p-3 sm:p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 text-right">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-white/5">
-                                        {data.recentOS && data.recentOS.length > 0 ? data.recentOS.map((os) => (
-                                            <tr key={os.id} className="hover:bg-white/[0.02] transition-colors group relative cursor-pointer select-none">
-                                                <td className="p-4 sm:p-6 font-mono text-[10px] opacity-30 hidden md:table-cell">#{os.id.slice(0, 8)}</td>
-                                                <td className="p-3 sm:p-6">
+                            {/* Desktop/Tablet Grid-based Table */}
+                            <div className="hidden md:block">
+                                {/* Table Header */}
+                                <div className="grid grid-cols-12 gap-4 border-b border-white/5 bg-white/[0.01] p-4 sm:p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 items-center">
+                                    <div className="col-span-2">ID</div>
+                                    <div className="col-span-5">Título</div>
+                                    <div className="col-span-3">Cliente</div>
+                                    <div className="col-span-2 text-right">Status</div>
+                                </div>
+                                {/* Table Body */}
+                                <div className="divide-y divide-white/5">
+                                    {data.recentOS && data.recentOS.length > 0 ? data.recentOS.map((os) => (
+                                        <div
+                                            key={os.id}
+                                            className="relative block w-full hover:bg-white/[0.02] transition-colors group cursor-pointer select-none"
+                                        >
+                                            <div className="grid grid-cols-12 gap-4 p-4 sm:p-6 items-center">
+                                                <div className="col-span-2 font-mono text-[10px] opacity-30">
+                                                    #{os.id.slice(0, 8)}
+                                                </div>
+                                                <div className="col-span-5">
                                                     <Link 
                                                         href={`/service-orders/${os.id}`} 
-                                                        className="font-bold text-foreground group-hover:text-primary transition-colors block before:absolute before:inset-0 before:z-0 truncate max-w-[120px] sm:max-w-none"
+                                                        className="font-bold text-foreground group-hover:text-primary transition-colors block before:absolute before:inset-0 before:z-0 truncate"
                                                     >
                                                         {os.title}
                                                     </Link>
-                                                </td>
-                                                <td className="p-3 sm:p-6 text-sm font-medium text-foreground/70 truncate max-w-[100px] sm:max-w-none">{os.customers?.name || 'Cliente Direto'}</td>
-                                                <td className="p-3 sm:p-6 text-right relative z-10">
+                                                </div>
+                                                <div className="col-span-3 text-sm font-medium text-foreground/70 truncate">
+                                                    {os.customers?.name || 'Cliente Direto'}
+                                                </div>
+                                                <div className="col-span-2 text-right relative z-10">
                                                     <span className={cn(
                                                         "px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[8px] sm:text-[9px] font-black uppercase tracking-widest border",
                                                         STATUS_CONFIG[os.status]?.bg || "bg-muted border-white/5 text-muted-foreground"
                                                     )}>
                                                         {STATUS_CONFIG[os.status]?.label || os.status}
                                                     </span>
-                                                </td>
-                                            </tr>
-                                        )) : (
-                                            <tr>
-                                                <td colSpan={4} className="p-12 text-center text-muted-foreground/40 text-xs italic">Nenhuma ordem de serviço recente.</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )) : (
+                                        <div className="p-12 text-center text-muted-foreground/40 text-xs italic">
+                                            Nenhuma ordem de serviço recente.
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            
+                            {/* Mobile Cards View */}
+                            <div className="md:hidden p-4 space-y-3">
+                                {data.recentOS && data.recentOS.length > 0 ? data.recentOS.map((os) => (
+                                    <Link 
+                                        key={os.id}
+                                        href={`/service-orders/${os.id}`}
+                                        className="block p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-colors"
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="font-mono text-[10px] opacity-30">#{os.id.slice(0, 8)}</span>
+                                            <span className={cn(
+                                                "px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border",
+                                                STATUS_CONFIG[os.status]?.bg || "bg-muted border-white/5 text-muted-foreground"
+                                            )}>
+                                                {STATUS_CONFIG[os.status]?.label || os.status}
+                                            </span>
+                                        </div>
+                                        <p className="font-bold text-foreground truncate">{os.title}</p>
+                                        <p className="text-xs text-muted-foreground/70 mt-1">{os.customers?.name || 'Cliente Direto'}</p>
+                                    </Link>
+                                )) : (
+                                    <p className="p-8 text-center text-muted-foreground/40 text-xs italic">Nenhuma ordem de serviço recente.</p>
+                                )}
                             </div>
                         </div>
                     </div>
