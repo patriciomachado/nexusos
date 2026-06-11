@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Search, Plus, Trash2, Zap, ShoppingBag, Wrench, Package, Info } from 'lucide-react'
+import { Search, Plus, Trash2, Zap, ShoppingBag, Wrench, Package, Info, Pencil } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import PremiumModal from '@/components/ui/PremiumModal'
 
 interface InventoryItem {
     id: string
@@ -14,6 +15,7 @@ interface InventoryItem {
 
 export interface OSItem {
     id?: string
+    client_key?: string
     inventory_item_id: string | null
     item_name: string
     quantity: number
@@ -36,6 +38,8 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
     const [quickCost, setQuickCost] = useState('0')
     const [query, setQuery] = useState('')
     const [isOpen, setIsOpen] = useState(false)
+    const [editingIndex, setEditingIndex] = useState<number | null>(null)
+    const [editingItem, setEditingItem] = useState<OSItem | null>(null)
     const containerRef = useRef<HTMLDivElement>(null)
 
     const filteredItems = query === ''
@@ -57,6 +61,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
 
     const addItem = (invItem: InventoryItem) => {
         const newItem: OSItem = {
+            client_key: 'key-' + Math.random().toString(36).substring(2, 9) + '-' + Date.now(),
             inventory_item_id: invItem.id,
             item_name: invItem.name,
             quantity: 1,
@@ -73,6 +78,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
     const handleQuickAdd = () => {
         if (!quickName.trim()) return
         const newItem: OSItem = {
+            client_key: 'key-' + Math.random().toString(36).substring(2, 9) + '-' + Date.now(),
             inventory_item_id: null,
             item_name: quickName,
             quantity: 1,
@@ -101,6 +107,26 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
         updatedItem.total_cost = (updatedItem.quantity || 0) * (updatedItem.unit_cost || 0)
         newItems[index] = updatedItem
         onChange(newItems)
+    }
+
+    const openEditModal = (index: number) => {
+        setEditingIndex(index)
+        setEditingItem({ ...items[index] })
+    }
+
+    const handleSaveEdit = () => {
+        if (editingIndex !== null && editingItem) {
+            if (!editingItem.item_name.trim()) return
+            const newItems = [...items]
+            newItems[editingIndex] = {
+                ...editingItem,
+                total_price: editingItem.quantity * editingItem.unit_price,
+                total_cost: editingItem.quantity * editingItem.unit_cost
+            }
+            onChange(newItems)
+            setEditingIndex(null)
+            setEditingItem(null)
+        }
     }
 
     const total = items.reduce((acc, item) => acc + (item.total_price || 0), 0)
@@ -282,102 +308,268 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
 
                 {/* Items List Section */}
                 <div className="lg:col-span-7">
-                    <div className="bg-card/20 border border-border/50 rounded-[2.5rem] overflow-hidden">
-                        <table className="w-full border-collapse">
-                            <thead>
-                                <tr className="border-b border-border/50">
-                                    <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-left">Item</th>
-                                    <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-center w-20">Qtd</th>
-                                    <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-28">Custo Unit.</th>
-                                    <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-28">Preço Venda</th>
-                                    <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-28">Total</th>
-                                    <th className="w-12 p-4"></th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border/30">
-                                {items.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={6} className="p-12 text-center">
-                                            <div className="flex flex-col items-center gap-3 opacity-20">
-                                                <ShoppingBag className="w-8 h-8" />
-                                                <p className="text-[10px] font-black uppercase tracking-[0.3em]">Nenhum item adicionado</p>
-                                            </div>
-                                        </td>
+                    <div className="space-y-4">
+                        {/* Desktop Table */}
+                        <div className="hidden md:block bg-card/20 border border-border/50 rounded-[2.5rem] overflow-hidden">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="border-b border-border/50">
+                                        <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-left">Item</th>
+                                        <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-center w-20">Qtd</th>
+                                        <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-28">Custo Unit.</th>
+                                        <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-28">Preço Venda</th>
+                                        <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-28">Total</th>
+                                        <th className="w-24 p-4"></th>
                                     </tr>
-                                ) : (
-                                    items.map((item, index) => (
-                                        <tr key={index} className="group hover:bg-white/5 transition-all">
-                                            <td className="p-4">
-                                                <div className="flex items-center gap-3">
-                                                    {item.inventory_item_id ? (
-                                                        <Package className="w-3 h-3 text-indigo-400" />
-                                                    ) : (
-                                                        <Zap className="w-3 h-3 text-amber-500 fill-current" />
-                                                    )}
-                                                    <span className="text-xs font-bold text-foreground/80">{item.item_name}</span>
+                                </thead>
+                                <tbody className="divide-y divide-border/30">
+                                    {items.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={6} className="p-12 text-center">
+                                                <div className="flex flex-col items-center gap-3 opacity-20">
+                                                    <ShoppingBag className="w-8 h-8" />
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.3em]">Nenhum item adicionado</p>
                                                 </div>
-                                            </td>
-                                            <td className="p-4">
-                                                <input
-                                                    type="number"
-                                                    value={item.quantity}
-                                                    onChange={(e) => updateItem(index, { quantity: Number(e.target.value) })}
-                                                    className="w-16 h-8 bg-muted/30 border border-transparent focus:border-indigo-500/30 rounded-lg text-center md:text-xs text-base font-black focus:outline-none transition-all"
-                                                />
-                                            </td>
-                                            <td className="p-4 text-right">
-                                                <div className="relative">
-                                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[8px] text-muted-foreground/50 font-black">R$</span>
-                                                    <input
-                                                        type="number"
-                                                        value={item.unit_cost}
-                                                        onChange={(e) => updateItem(index, { unit_cost: Number(e.target.value) })}
-                                                        className="w-full h-8 bg-muted/20 border border-transparent focus:border-amber-500/30 rounded-lg pl-6 pr-2 text-right md:text-xs text-base font-black text-amber-600 focus:outline-none transition-all"
-                                                    />
-                                                </div>
-                                            </td>
-                                            <td className="p-4 text-right">
-                                                <div className="relative">
-                                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[8px] text-muted-foreground/50 font-black">R$</span>
-                                                    <input
-                                                        type="number"
-                                                        value={item.unit_price}
-                                                        onChange={(e) => updateItem(index, { unit_price: Number(e.target.value) })}
-                                                        className="w-full h-8 bg-muted/30 border border-transparent focus:border-indigo-500/30 rounded-lg pl-6 pr-2 text-right md:text-xs text-base font-black text-indigo-600 focus:outline-none transition-all"
-                                                    />
-                                                </div>
-                                            </td>
-                                            <td className="p-4 text-right text-xs font-black text-foreground">
-                                                R$ {item.total_price.toFixed(2)}
-                                            </td>
-                                            <td className="p-4 text-right">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeItem(index)}
-                                                    className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground/20 hover:text-rose-500 hover:bg-rose-500/10 transition-all opacity-0 group-hover:opacity-100"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
                                             </td>
                                         </tr>
-                                    ))
+                                    ) : (
+                                        items.map((item, index) => (
+                                            <tr key={item.client_key || item.id || `item-${index}`} className="group hover:bg-white/5 transition-all">
+                                                <td className="p-4">
+                                                    <div className="flex items-center gap-3">
+                                                        {item.inventory_item_id ? (
+                                                            <Package className="w-3 h-3 text-indigo-400" />
+                                                        ) : (
+                                                            <Zap className="w-3 h-3 text-amber-500 fill-current" />
+                                                        )}
+                                                        <span className="text-xs font-bold text-foreground/80">{item.item_name}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="p-4 text-center text-xs font-black text-foreground">
+                                                    {item.quantity}
+                                                </td>
+                                                <td className="p-4 text-right text-xs font-bold text-amber-600">
+                                                    R$ {item.unit_cost.toFixed(2)}
+                                                </td>
+                                                <td className="p-4 text-right text-xs font-bold text-indigo-500">
+                                                    R$ {item.unit_price.toFixed(2)}
+                                                </td>
+                                                <td className="p-4 text-right text-xs font-black text-foreground">
+                                                    R$ {item.total_price.toFixed(2)}
+                                                </td>
+                                                <td className="p-4 text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => openEditModal(index)}
+                                                            className="w-8 h-8 flex items-center justify-center rounded-lg text-indigo-500/60 hover:text-indigo-500 hover:bg-indigo-500/10 transition-all"
+                                                        >
+                                                            <Pencil className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeItem(index)}
+                                                            className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground/40 hover:text-rose-500 hover:bg-rose-500/10 transition-all"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                                {items.length > 0 && (
+                                    <tfoot className="bg-muted/5 border-t border-border/50">
+                                        <tr>
+                                            <td colSpan={4} className="p-6 text-right text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Subtotal Geral</td>
+                                            <td className="p-6 text-right whitespace-nowrap">
+                                                <span className="text-lg font-black text-indigo-500 tracking-tighter">R$ {total.toFixed(2)}</span>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
                                 )}
-                            </tbody>
-                            {items.length > 0 && (
-                                <tfoot className="bg-muted/5 border-t border-border/50">
-                                    <tr>
-                                        <td colSpan={4} className="p-6 text-right text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Subtotal Geral</td>
-                                        <td className="p-6 text-right whitespace-nowrap">
-                                            <span className="text-lg font-black text-indigo-500 tracking-tighter">R$ {total.toFixed(2)}</span>
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                </tfoot>
+                            </table>
+                        </div>
+
+                        {/* Mobile List Card View */}
+                        <div className="md:hidden space-y-4">
+                            {items.length === 0 ? (
+                                <div className="p-12 text-center bg-card/20 border border-border/50 rounded-[2.5rem]">
+                                    <div className="flex flex-col items-center gap-3 opacity-20">
+                                        <ShoppingBag className="w-8 h-8" />
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em]">Nenhum item adicionado</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {items.map((item, index) => (
+                                        <div key={item.client_key || item.id || `item-${index}`} className="p-5 rounded-[2rem] bg-card/40 border border-border/50 relative overflow-hidden space-y-4">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    {item.inventory_item_id ? (
+                                                        <Package className="w-4 h-4 text-indigo-400" />
+                                                    ) : (
+                                                        <Zap className="w-4 h-4 text-amber-500 fill-current" />
+                                                    )}
+                                                    <div>
+                                                        <p className="text-xs font-bold text-foreground">{item.item_name}</p>
+                                                        <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-wider">
+                                                            {item.inventory_item_id ? 'Estoque' : 'Serviço Rápido'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openEditModal(index)}
+                                                        className="w-8 h-8 flex items-center justify-center text-indigo-500 rounded-lg hover:bg-indigo-500/10 transition-all"
+                                                    >
+                                                        <Pencil className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeItem(index)}
+                                                        className="w-8 h-8 flex items-center justify-center text-rose-500 rounded-lg hover:bg-rose-500/10 transition-all"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/5 text-center">
+                                                <div>
+                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Custo</span>
+                                                    <span className="text-xs font-black text-amber-600">R$ {item.unit_cost.toFixed(2)}</span>
+                                                </div>
+                                                <div>
+                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Venda</span>
+                                                    <span className="text-xs font-black text-indigo-500">R$ {item.unit_price.toFixed(2)}</span>
+                                                </div>
+                                                <div>
+                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Total</span>
+                                                    <span className="text-xs font-black text-foreground">R$ {item.total_price.toFixed(2)}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                                                <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Quantidade</span>
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        type="button"
+                                                        disabled={item.quantity <= 1}
+                                                        onClick={() => updateItem(index, { quantity: Math.max(1, item.quantity - 1) })}
+                                                        className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center font-black text-foreground hover:bg-white/10 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all text-xs"
+                                                    >
+                                                        -
+                                                    </button>
+                                                    <span className="text-xs font-black text-foreground tabular-nums w-4 text-center">{item.quantity}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => updateItem(index, { quantity: item.quantity + 1 })}
+                                                        className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center font-black text-foreground hover:bg-white/10 active:scale-95 transition-all text-xs"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    
+                                    <div className="p-5 rounded-[2rem] bg-muted/5 border border-border/50 flex justify-between items-center">
+                                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Subtotal Geral</span>
+                                        <span className="text-lg font-black text-indigo-500 tracking-tighter">R$ {total.toFixed(2)}</span>
+                                    </div>
+                                </div>
                             )}
-                        </table>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            {/* Premium Edit Modal */}
+            <PremiumModal
+                isOpen={editingIndex !== null}
+                onClose={() => {
+                    setEditingIndex(null)
+                    setEditingItem(null)
+                }}
+                title="Editar Item"
+                subtitle={editingItem?.inventory_item_id ? "Peça de Estoque" : "Serviço Rápido"}
+            >
+                {editingItem && (
+                    <div className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block">Nome / Descrição</label>
+                            <input
+                                type="text"
+                                disabled={!!editingItem.inventory_item_id}
+                                value={editingItem.item_name}
+                                onChange={(e) => setEditingItem({ ...editingItem, item_name: e.target.value })}
+                                className="w-full h-12 bg-white/5 border border-border rounded-xl px-4 md:text-sm text-base font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50 disabled:bg-transparent transition-all"
+                            />
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block font-black text-amber-600">Custo Unitário</label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-600/40">R$</span>
+                                    <input
+                                        type="number"
+                                        value={editingItem.unit_cost ?? ''}
+                                        onChange={(e) => setEditingItem({ ...editingItem, unit_cost: Number(e.target.value) })}
+                                        className="w-full h-12 bg-white/5 border border-border rounded-xl pl-10 pr-4 md:text-sm text-base font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all text-amber-600"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block font-black text-indigo-500">Preço de Venda</label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-indigo-500/40">R$</span>
+                                    <input
+                                        type="number"
+                                        value={editingItem.unit_price ?? ''}
+                                        onChange={(e) => setEditingItem({ ...editingItem, unit_price: Number(e.target.value) })}
+                                        className="w-full h-12 bg-white/5 border border-border rounded-xl pl-10 pr-4 md:text-sm text-base font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-indigo-600"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl">
+                            <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">Quantidade</span>
+                            <div className="flex items-center gap-4">
+                                <button
+                                    type="button"
+                                    disabled={editingItem.quantity <= 1}
+                                    onClick={() => setEditingItem({ ...editingItem, quantity: Math.max(1, editingItem.quantity - 1) })}
+                                    className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center font-bold text-foreground hover:bg-white/10 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all"
+                                >
+                                    -
+                                </button>
+                                <span className="text-sm font-black text-foreground tabular-nums w-6 text-center">{editingItem.quantity}</span>
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingItem({ ...editingItem, quantity: editingItem.quantity + 1 })}
+                                    className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center font-bold text-foreground hover:bg-white/10 active:scale-95 transition-all"
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button
+                            type="button"
+                            onClick={handleSaveEdit}
+                            className="w-full h-14 bg-indigo-500 hover:bg-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-indigo-500/20 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-3 mt-4"
+                        >
+                            Confirmar Alterações
+                        </button>
+                    </div>
+                )}
+            </PremiumModal>
         </div>
     )
 }

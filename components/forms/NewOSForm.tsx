@@ -115,10 +115,19 @@ export default function NewOSForm({
         terms_accepted: initialData?.terms_accepted || false,
     })
 
-    const [items, setItems] = useState<any[]>(initialData?.items || [])
+    const [items, setItems] = useState<any[]>(() => {
+        const initialItems = initialData?.items || []
+        return initialItems.map((item: any, idx: number) => ({
+            ...item,
+            client_key: item.client_key || `key-${Math.random().toString(36).substring(2, 9)}-${Date.now()}-${idx}`,
+            quantity: Number(item.quantity) || 1,
+            unit_price: Number(item.unit_price) || 0,
+            unit_cost: Number(item.unit_cost) || 0,
+            total_price: Number(item.total_price) || 0,
+            total_cost: Number(item.total_cost) || 0,
+        }))
+    })
     const [localCustomers, setLocalCustomers] = useState(customers)
-    const [isQuickMode, setIsQuickMode] = useState(false)
-    const [quickService, setQuickService] = useState({ name: '', price: '', cost: '' })
 
     const [photos, setPhotos] = useState<{ front: File | null, back: File | null }>({
         front: null,
@@ -299,45 +308,18 @@ export default function NewOSForm({
                 <div className="lg:col-span-8 space-y-8">
                     
                     {/* CARD 1: IDENTIFICAÇÃO (CHUNKING) */}
-                    <div className={cn(
-                        "bg-card/40 border rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[300] overflow-visible transition-all duration-500",
-                        isQuickMode ? "border-amber-500/40 bg-amber-500/[0.03]" : "border-white/5"
-                    )}>
-                        {isQuickMode && (
-                            <>
-                                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/[0.07] to-transparent pointer-events-none rounded-[2rem]" />
-                                <div className="absolute -right-8 -top-8 w-48 h-48 text-amber-500/[0.03] pointer-events-none rotate-12">
-                                    <Zap className="w-full h-full fill-current" />
-                                </div>
-                            </>
-                        )}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[80px] rounded-full" />
+                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[300] overflow-visible transition-all duration-500">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[80px] rounded-full pointer-events-none" />
                         
                         <div className="relative flex items-center justify-between mb-8 border-b border-white/5 pb-4">
                             <div className="flex items-center gap-3">
-                                <div className={cn(
-                                    "p-2 rounded-xl transition-all duration-500",
-                                    isQuickMode ? "bg-amber-500/20 text-amber-400 scale-110 shadow-[0_0_20px_rgba(245,158,11,0.3)]" : "bg-indigo-500/10 text-indigo-400"
-                                )}>
-                                    {isQuickMode ? <Zap className="w-5 h-5 fill-current" /> : <User className="w-5 h-5" />}
+                                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
+                                    <User className="w-5 h-5" />
                                 </div>
                                 <h2 className="text-sm font-black uppercase tracking-widest text-foreground/60">
-                                    {isQuickMode ? 'Registro Expresso' : 'Identificação'}
+                                    Identificação
                                 </h2>
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => setIsQuickMode(!isQuickMode)}
-                                className={cn(
-                                    "flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                                    isQuickMode 
-                                        ? "bg-amber-500 text-white shadow-lg shadow-amber-500/20" 
-                                        : "bg-white/5 text-muted-foreground hover:bg-white/10"
-                                )}
-                            >
-                                <Zap className={cn("w-3.5 h-3.5", isQuickMode && "fill-current")} />
-                                {isQuickMode ? 'Modo Rápido Ativo' : 'Ativar Modo Rápido'}
-                            </button>
                         </div>
 
                         <div className="grid md:grid-cols-2 gap-8">
@@ -363,113 +345,6 @@ export default function NewOSForm({
                                         }}
                                     />
                                 </div>
-                                {isQuickMode && (
-                                    <div className="p-6 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <Zap className="w-4 h-4 text-amber-500 fill-current" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-amber-600">Serviço Rápido</span>
-                                        </div>
-                                        
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="block text-[9px] font-black text-amber-700/60 mb-1 uppercase tracking-widest px-1">O que será feito? (Serviço)</label>
-                                                <PremiumInput
-                                                    placeholder="Ex: Manutenção preventiva"
-                                                    value={quickService.name}
-                                                    onChange={(e) => {
-                                                        const name = e.target.value;
-                                                        setQuickService(prev => ({ ...prev, name }));
-                                                        
-                                                        const existingIndex = items.findIndex(i => !i.inventory_item_id && i.isQuick);
-                                                        if (existingIndex > -1) {
-                                                            const newItems = [...items];
-                                                            newItems[existingIndex] = { ...newItems[existingIndex], item_name: name };
-                                                            setItems(newItems);
-                                                        } else if (name) {
-                                                            const newItem: any = {
-                                                                inventory_item_id: null,
-                                                                item_name: name,
-                                                                quantity: 1,
-                                                                unit_price: Number(quickService.price) || 0,
-                                                                unit_cost: Number(quickService.cost) || 0,
-                                                                total_price: Number(quickService.price) || 0,
-                                                                total_cost: Number(quickService.cost) || 0,
-                                                                isQuick: true
-                                                            };
-                                                            setItems([...items, newItem]);
-                                                        }
-                                                    }}
-                                                    icon={<Wrench className="w-4 h-4" />}
-                                                />
-                                            </div>
-
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-[9px] font-black text-amber-700/60 mb-1 uppercase tracking-widest px-1">Preço Venda</label>
-                                                    <div className="relative">
-                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-500/40">R$</span>
-<input
-                                                            type="number"
-                                                            inputMode="numeric"
-                                                            pattern="[0-9]*"
-                                                            className="w-full h-11 bg-white/5 border border-amber-500/20 rounded-xl pl-9 pr-4 md:text-xs text-base font-bold focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
-                                                            value={quickService.price}
-                                                            onFocus={(e) => {
-                                                                if (e.target.value === '0') setQuickService(prev => ({ ...prev, price: '' }))
-                                                            }}
-                                                            onChange={(e) => {
-                                                                const price = e.target.value;
-                                                                setQuickService(prev => ({ ...prev, price }));
-                                                                
-                                                                const existingIndex = items.findIndex(i => !i.inventory_item_id && i.isQuick);
-                                                                if (existingIndex > -1) {
-                                                                    const newItems = [...items];
-                                                                    newItems[existingIndex] = { 
-                                                                        ...newItems[existingIndex], 
-                                                                        unit_price: Number(price) || 0, 
-                                                                        total_price: Number(price) || 0 
-                                                                    };
-                                                                    setItems(newItems);
-                                                                }
-                                                            }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-[9px] font-black text-amber-700/60 mb-1 uppercase tracking-widest px-1">Custo</label>
-                                                    <div className="relative">
-                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-500/40">R$</span>
-<input
-                                                            type="number"
-                                                            inputMode="numeric"
-                                                            pattern="[0-9]*"
-                                                            className="w-full h-11 bg-white/5 border border-amber-500/20 rounded-xl pl-9 pr-4 md:text-xs text-base font-bold focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
-                                                            value={quickService.cost}
-                                                            onFocus={(e) => {
-                                                                if (e.target.value === '0') setQuickService(prev => ({ ...prev, cost: '' }))
-                                                            }}
-                                                            onChange={(e) => {
-                                                                const cost = e.target.value;
-                                                                setQuickService(prev => ({ ...prev, cost }));
-                                                                
-                                                                const existingIndex = items.findIndex(i => !i.inventory_item_id && i.isQuick);
-                                                                if (existingIndex > -1) {
-                                                                    const newItems = [...items];
-                                                                    newItems[existingIndex] = { 
-                                                                        ...newItems[existingIndex], 
-                                                                        unit_cost: Number(cost) || 0, 
-                                                                        total_cost: Number(cost) || 0 
-                                                                    };
-                                                                    setItems(newItems);
-                                                                }
-                                                            }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
 
                             <div className="space-y-6 relative z-[10]">
@@ -501,7 +376,7 @@ export default function NewOSForm({
 
                     {/* CARD 2: GESTÃO DE ITENS */}
                     <div className="bg-card/40 border border-white/5 rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[200] overflow-visible">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full pointer-events-none" />
                         
 
 
