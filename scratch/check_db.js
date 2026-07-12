@@ -1,26 +1,19 @@
-
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config({ path: '.env.local' });
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-async function checkProfiles() {
-    const { data, error } = await supabase
-        .from('profiles')
-        .select('*');
-    
-    if (error) {
-        console.error('Error fetching profiles:', error);
-        return;
-    }
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-    console.log('Profiles found:', JSON.stringify(data, null, 2));
+async function run() {
+  const { data: so } = await supabase.from('service_orders').select('id, total_amount, parts_cost').order('created_at', { ascending: false }).limit(5);
+  const { data: sales } = await supabase.from('sales').select('id, final_amount, total_cost').order('created_at', { ascending: false }).limit(5);
+  const { data: tx } = await supabase.from('cash_transactions').select('id, amount, source_type, source_id, type').order('created_at', { ascending: false }).limit(5);
 
-    const { data: companies } = await supabase.from('companies').select('*');
-    console.log('Companies found:', JSON.stringify(companies, null, 2));
+  console.log("Service Orders:", so);
+  console.log("Sales:", sales);
+  console.log("Cash Tx:", tx);
 }
 
-checkProfiles();
+run();

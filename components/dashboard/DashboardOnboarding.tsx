@@ -36,6 +36,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
     const [logoPreview, setLogoPreview] = useState('')
     const [uploadingLogo, setUploadingLogo] = useState(false)
     const [saving, setSaving] = useState(false)
+    const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
     // Load existing company details if present in the database to prevent overwriting with null
     useEffect(() => {
@@ -97,6 +98,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
         setLogoFile(file)
         setLogoPreview(URL.createObjectURL(file))
         setUploadingLogo(true)
+        setErrorMessage(null)
 
         try {
             const fileExt = file.name.split('.').pop()
@@ -116,6 +118,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
             setCompanyDetails(prev => ({ ...prev, logo_url: publicUrl }))
         } catch (err: any) {
             console.error('Error uploading logo during onboarding:', err)
+            setErrorMessage('Falha no upload da logo. Tente novamente.')
         } finally {
             setUploadingLogo(false)
         }
@@ -129,6 +132,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
 
     const handleFinish = async () => {
         setSaving(true)
+        setErrorMessage(null)
         try {
             const response = await fetch(`/api/company/${companyId}`, {
                 method: 'PUT',
@@ -207,8 +211,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
             onComplete()
         } catch (err) {
             console.error('Erro durante configuração do onboarding:', err)
-            // Still complete so the user isn't stuck, but show a warning
-            onComplete()
+            setErrorMessage(err instanceof Error ? err.message : 'Erro desconhecido ao salvar. Tente novamente.')
         } finally {
             setSaving(false)
         }
@@ -483,7 +486,22 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                 </div>
 
                 {/* Footer Controls */}
-                <div className="pt-8 border-t border-border/10 flex gap-4 mt-6">
+                <div className="pt-8 border-t border-border/10 flex flex-col gap-3 mt-6">
+                    {errorMessage && (
+                        <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold animate-in fade-in slide-in-from-bottom-2 duration-200">
+                            <X className="w-4 h-4 mt-0.5 shrink-0" />
+                            <span className="flex-1 break-words">{errorMessage}</span>
+                            <button
+                                type="button"
+                                onClick={() => setErrorMessage(null)}
+                                className="opacity-60 hover:opacity-100 transition-opacity"
+                                aria-label="Fechar erro"
+                            >
+                                <X className="w-3.5 h-3.5" />
+                            </button>
+                        </div>
+                    )}
+                    <div className="flex gap-4">
                     {step > 1 && step < stepsCount && (
                         <button
                             onClick={() => setStep(prev => prev - 1)}
@@ -511,6 +529,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                             <Check className="w-4 h-4" />
                         </button>
                     )}
+                    </div>
                 </div>
 
             </div>
