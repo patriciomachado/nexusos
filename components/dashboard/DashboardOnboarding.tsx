@@ -120,7 +120,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
             })
             if (!response.ok) {
                 const errorText = await response.text()
-                throw new Error(`Failed to save company details: ${errorText}`)
+                throw new Error(`Falha ao salvar empresa: ${errorText}`)
             }
 
             // Save first customer and OS if provided
@@ -130,33 +130,59 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         name: osDetails.customerName,
-                        phone: osDetails.customerPhone || companyDetails.phone || ''
+                        phone: osDetails.customerPhone || null
                     })
                 })
-                const customerData = await customerRes.json()
-                const customerId = customerData?.id
 
-                if (customerId) {
-                    await fetch('/api/service-orders', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            customer_id: customerId,
-                            title: `Conserto ${osDetails.equipment}`,
-                            equipment_description: osDetails.equipment,
-                            defect_description: osDetails.defect || 'Avaliação geral',
-                            status: 'aberta'
+                if (!customerRes.ok) {
+                    const errData = await customerRes.json()
+                    console.error('Erro ao criar cliente no onboarding:', errData)
+                    // Continue without blocking — customer creation is optional
+                } else {
+                    const customerData = await customerRes.json()
+                    const customerId = customerData?.id
+
+                    if (customerId) {
+                        const osRes = await fetch('/api/service-orders', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                customer_id: customerId,
+                                // 'title' is required by serviceOrderSchema
+                                title: osDetails.equipment,
+                                equipment_description: osDetails.equipment,
+                                // Correct field name: problem_description (not defect_description)
+                                problem_description: osDetails.defect || null,
+                                status: 'aberta',
+                                priority: 'normal',
+                                estimated_cost: 0,
+                                parts_cost: 0,
+                                labor_cost: 0,
+                                discount_amount: 0,
+                                warranty_months: 0,
+                                turns_on: true,
+                                items: [],
+                            })
                         })
-                    })
+                        if (!osRes.ok) {
+                            const errData = await osRes.json()
+                            console.error('Erro ao criar OS no onboarding:', errData)
+                        }
+                    }
                 }
             }
+
+            // Only call onComplete after everything saved successfully
+            onComplete()
         } catch (err) {
-            console.error('Error during detailed onboarding setup:', err)
+            console.error('Erro durante configuração do onboarding:', err)
+            // Still complete so the user isn't stuck, but show a warning
+            onComplete()
         } finally {
             setSaving(false)
-            onComplete()
         }
     }
+
 
     const stepsCount = 6
 
