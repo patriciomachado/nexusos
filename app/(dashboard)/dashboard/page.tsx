@@ -16,6 +16,7 @@ import Link from 'next/link'
 import RevenueChart from '@/components/dashboard/RevenueChart'
 import { cn } from '@/lib/utils'
 import EmployeeDashboard from '@/components/dashboard/EmployeeDashboard'
+import DashboardOnboardingWrapper from '@/components/dashboard/DashboardOnboardingWrapper'
 
 interface ServiceOrder {
     id: string
@@ -219,8 +220,9 @@ export default async function DashboardPage() {
     if (!userId) return null
 
     const db = createAdminClient()
-    const { data: user } = await db.from('users').select('id, role, company_id, full_name').eq('clerk_id', userId).single()
+    const { data: user } = await db.from('users').select('id, role, company_id, full_name, companies(name)').eq('clerk_id', userId).single()
     const companyId = user?.company_id
+    const companyName = (user?.companies as unknown as { name: string })?.name || ''
 
     if (!companyId) return null
 
@@ -487,6 +489,7 @@ export default async function DashboardPage() {
                     </div>
                 </div>
             </div>
+            <DashboardOnboardingWrapper companyId={companyId} companyName={companyName} />
         </div>
     )
 }

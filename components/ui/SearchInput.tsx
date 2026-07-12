@@ -24,17 +24,17 @@ export default function SearchInput({
     const searchParams = useSearchParams()
 
     const [isPending, startTransition] = useTransition()
-    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '')
+    const [searchTerm, setSearchTerm] = useState(searchParams?.get('search') || '')
 
     // Update local state if URL changes externally
     useEffect(() => {
         if (syncWithUrl) {
-            setSearchTerm(searchParams.get('search') || '')
+            setSearchTerm(searchParams?.get('search') || '')
         }
     }, [searchParams, syncWithUrl])
 
     const handleSearch = useCallback((term: string) => {
-        const params = new URLSearchParams(searchParams)
+        const params = new URLSearchParams(searchParams || undefined)
         if (term) {
             params.set('search', term)
         } else {
@@ -52,7 +52,7 @@ export default function SearchInput({
         if (!syncWithUrl) return
 
         const timeoutId = setTimeout(() => {
-            if (searchTerm !== (searchParams.get('search') || '')) {
+            if (searchTerm !== (searchParams?.get('search') || '')) {
                 handleSearch(searchTerm)
             }
         }, 500)

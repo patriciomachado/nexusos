@@ -25,7 +25,7 @@ interface Subscription {
 }
 
 const TRIAL_DAYS = 15
-const MONTHLY_PRICE = 99
+const MONTHLY_PRICE = "54,90"
 
 const PLAN_FEATURES = [
     'Gestão completa de Ordens de Serviço',
@@ -85,7 +85,7 @@ export default function SubscriptionPage() {
     const [loading, setLoading] = useState(true)
     const [processing, setProcessing] = useState(false)
     const [error, setError] = useState('')
-    const [success, setSuccess] = useState(searchParams.get('success') === 'true')
+    const [success, setSuccess] = useState(searchParams?.get('success') === 'true')
 
     useEffect(() => {
         fetchSubscription()
@@ -285,7 +285,7 @@ export default function SubscriptionPage() {
                                     className="w-full py-4 rounded-2xl bg-white/5 text-sm font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-3 border border-white/10"
                                 >
                                     {processing ? <Loader2 className="w-5 h-5 animate-spin" /> : (
-                                        <><CreditCard className="w-5 h-5" /> Gerenciar Assinatura Stripe</>
+                                        <><CreditCard className="w-5 h-5" /> Gerenciar Assinatura Cakto</>
                                     )}
                                 </button>
                             ) : (
@@ -350,19 +350,18 @@ export default function SubscriptionPage() {
                                 <div className="bg-card border border-border rounded-[2rem] overflow-hidden shadow-2xl">
                                     <div className="bg-gradient-to-br from-primary/10 to-transparent p-8">
                                         <div className="flex items-baseline gap-1 mb-2">
-                                            <span className="text-sm font-bold text-muted-foreground">12x de</span>
                                             <span className="text-5xl font-black tracking-tighter">R$ {MONTHLY_PRICE}</span>
                                         </div>
-                                        <p className="text-sm font-bold text-muted-foreground uppercase">por mês</p>
+                                        <p className="text-sm font-bold text-muted-foreground uppercase">mensal</p>
                                     </div>
                                     <div className="p-6 pt-2 space-y-4">
                                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
                                             <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                                            <span>Pagamento processo pelo Stripe</span>
+                                            <span>Sem necessidade de cartão de crédito</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
                                             <Star className="w-4 h-4 text-amber-500" />
-                                            <span>Garantia de 7 dias</span>
+                                            <span>Pagamento facilitado via PIX</span>
                                         </div>
                                         
                                         <button

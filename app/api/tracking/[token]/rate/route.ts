@@ -1,10 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase'
+import { rateLimit, getClientIp } from '@/lib/security-rate-limit'
 
 export async function POST(
-    req: Request,
+    req: NextRequest,
     { params }: { params: Promise<{ token: string }> }
 ) {
+    const ip = getClientIp(req)
+    if (!rateLimit('rate-os', 5, 60000, ip)) {
+        return NextResponse.json({ error: 'Muitas solicitações. Por favor, tente novamente mais tarde.' }, { status: 429 })
+    }
     try {
         const { token } = await params
         const body = await req.json()

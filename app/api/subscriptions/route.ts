@@ -89,10 +89,9 @@ export async function POST(req: NextRequest) {
 
     try {
         if (action === 'create-checkout-session') {
-            if (!process.env.STRIPE_SECRET_KEY) {
-                return NextResponse.json({ error: 'Stripe not configured' }, { status: 503 })
+            if (!process.env.CAKTO_CLIENT_ID || !process.env.CAKTO_CLIENT_SECRET) {
+                return NextResponse.json({ error: 'Cakto credentials not configured' }, { status: 503 })
             }
-            const stripe = getStripe()
             
             // Get company info
             const { data: company } = await db
@@ -105,48 +104,12 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ error: 'Company not found' }, { status: 404 })
             }
 
-            // Get or create Stripe customer
-            let customerId = subscription?.stripe_customer_id
-
-            if (!customerId) {
-                const customer = await stripe.customers.create({
-                    email: company.email,
-                    metadata: {
-                        company_id: companyId,
-                        user_id: userId
-                    }
-                })
-
-                customerId = customer.id
-
-                // Update with customer ID
-                await db
-                    .from('subscriptions')
-                    .upsert({
-                        company_id: companyId,
-                        stripe_customer_id: customerId
-                    })
-            }
-
-            const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-
-            // Create checkout session
-            const session = await stripe.checkout.sessions.create({
-                customer: customerId,
-                payment_method_types: ['card'],
-                line_items: [{
-                    price: MONTHLY_PRICE_ID,
-                    quantity: 1
-                }],
-                mode: 'subscription',
-                success_url: `${appUrl}/settings/subscription?success=true`,
-                cancel_url: `${appUrl}/settings/subscription?canceled=true`,
-                metadata: {
-                    company_id: companyId
-                }
-            })
-
-            return NextResponse.json({ url: session.url })
+            // Cakto checkout urls are simple links pointing to pay.cakto.com.br/product_id
+            // We can prefill customer details in query parameters like name and email
+            const productId = process.env.CAKTO_PRODUCT_ID || 'gs38yot_931352'
+            const checkoutUrl = `https://pay.cakto.com.br/${productId}?email=${encodeURIComponent(company.email || '')}&name=${encodeURIComponent(company.name || '')}&metadata_company_id=${companyId}`
+            
+            return NextResponse.json({ url: checkoutUrl })
         }
 
         if (action === 'create-portal-session') {

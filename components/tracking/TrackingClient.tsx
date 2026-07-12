@@ -1,13 +1,24 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ShieldCheck, Zap, Info, Smartphone, CheckCircle2, Clock, MapPin, SearchCode, Wrench, AlertTriangle, MessageSquare, Star, MessageCircle, User, ClipboardList, Camera } from 'lucide-react'
+import { ShieldCheck, Zap, Info, Smartphone, CheckCircle2, Clock, MapPin, SearchCode, Wrench, AlertTriangle, MessageSquare, Star, MessageCircle, User, ClipboardList, Camera, Trash } from 'lucide-react'
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils'
 import Image from 'next/image'
 import CustomerRatingForm from './CustomerRatingForm'
 import { toast } from 'sonner'
 import TrackingGallery from './TrackingGallery'
+
+const maskPhone = (phone: string) => {
+    if (!phone) return ''
+    const cleaned = phone.replace(/\D/g, '')
+    if (cleaned.length < 4) return phone
+    // If the phone has spaces or formatting, preserve it partially but mask the middle
+    if (phone.includes(' ') || phone.includes('-')) {
+        return phone.slice(0, 6) + '***-*' + phone.slice(-3)
+    }
+    return phone.slice(0, 5) + '*****' + phone.slice(-4)
+}
 
 interface Props {
     os: any
@@ -22,17 +33,25 @@ interface Props {
 export default function TrackingClient({ os, company, token, hasRated, ratingData, isFinished, statusCfg }: Props) {
     const [accepted, setAccepted] = useState(os.terms_accepted)
     const [isPending, setIsPending] = useState(false)
+    const [isCanvasEmpty, setIsCanvasEmpty] = useState(true)
     const router = useRouter()
 
-    async function handleAccept() {
+    const canvasRef = useRef<HTMLCanvasElement>(null)
+    const isDrawingRef = useRef(false)
+
+    async function handleAccept(signatureBase64: string | null) {
         setIsPending(true)
         try {
             const res = await fetch(`/api/tracking/${token}/accept-terms`, {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ signature: signatureBase64 })
             })
             if (res.ok) {
                 setAccepted(true)
-                toast.success('Termos aceitos com sucesso!')
+                toast.success('Termos aceitos e OS assinada com sucesso!')
                 router.refresh()
             } else {
                 toast.error('Erro ao aceitar termos. Tente novamente.')
@@ -42,6 +61,106 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
         } finally {
             setIsPending(false)
         }
+    }
+
+    const clearCanvas = () => {
+        const canvas = canvasRef.current
+        if (!canvas) return
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        setIsCanvasEmpty(true)
+    }
+
+    useEffect(() => {
+        if (accepted) return
+
+        const canvas = canvasRef.current
+        if (!canvas) return
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
+
+        const resize = () => {
+            const rect = canvas.getBoundingClientRect()
+            canvas.width = rect.width * (window.devicePixelRatio || 1)
+            canvas.height = 180 * (window.devicePixelRatio || 1)
+            
+            ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1)
+            ctx.strokeStyle = '#1e1b4b' // Indigo 950
+            ctx.lineWidth = 3
+            ctx.lineCap = 'round'
+            ctx.lineJoin = 'round'
+            setIsCanvasEmpty(true)
+        }
+
+        resize()
+        window.addEventListener('resize', resize)
+
+        function getPos(e: MouseEvent | TouchEvent) {
+            const rect = canvas!.getBoundingClientRect()
+            const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+            const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            }
+        }
+
+        function startDrawing(e: MouseEvent | TouchEvent) {
+            isDrawingRef.current = true
+            const pos = getPos(e)
+            ctx!.beginPath()
+            ctx!.moveTo(pos.x, pos.y)
+            setIsCanvasEmpty(false)
+            if (e.cancelable) e.preventDefault()
+        }
+
+        function draw(e: MouseEvent | TouchEvent) {
+            if (!isDrawingRef.current) return
+            const pos = getPos(e)
+            ctx!.lineTo(pos.x, pos.y)
+            ctx!.stroke()
+            if (e.cancelable) e.preventDefault()
+        }
+
+        function stopDrawing() {
+            isDrawingRef.current = false
+        }
+
+        canvas.addEventListener('mousedown', startDrawing)
+        canvas.addEventListener('mousemove', draw)
+        canvas.addEventListener('mouseup', stopDrawing)
+        canvas.addEventListener('mouseleave', stopDrawing)
+
+        canvas.addEventListener('touchstart', startDrawing, { passive: false })
+        canvas.addEventListener('touchmove', draw, { passive: false })
+        canvas.addEventListener('touchend', stopDrawing)
+
+        return () => {
+            window.removeEventListener('resize', resize)
+            if (canvas) {
+                canvas.removeEventListener('mousedown', startDrawing)
+                canvas.removeEventListener('mousemove', draw)
+                canvas.removeEventListener('mouseup', stopDrawing)
+                canvas.removeEventListener('mouseleave', stopDrawing)
+                canvas.removeEventListener('touchstart', startDrawing)
+                canvas.removeEventListener('touchmove', draw)
+                canvas.removeEventListener('touchend', stopDrawing)
+            }
+        }
+    }, [accepted])
+
+    const handleSubmit = async () => {
+        if (isCanvasEmpty) {
+            toast.error('Por favor, desenhe sua assinatura no campo indicado.')
+            return
+        }
+
+        const canvas = canvasRef.current
+        if (!canvas) return
+        
+        const signatureBase64 = canvas.toDataURL('image/png')
+        await handleAccept(signatureBase64)
     }
 
     if (!accepted) {
@@ -54,19 +173,38 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                         </div>
                         <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Termos de Garantia</h1>
                         <p className="text-slate-500 dark:text-slate-400 font-medium">
-                            Para visualizar o acompanhamento da sua Ordem de Serviço, por favor leia e aceite os termos abaixo.
+                            Para visualizar o acompanhamento da sua Ordem de Serviço, por favor leia, assine e aceite os termos abaixo.
                         </p>
                     </div>
 
                     <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 shadow-xl shadow-indigo-500/5">
                         <div className="prose prose-slate dark:prose-invert max-w-none">
-                            <div className="bg-slate-50 dark:bg-black/20 p-6 rounded-3xl border border-slate-200/50 dark:border-white/5 max-h-[40vh] overflow-y-auto custom-scrollbar mb-8 text-sm leading-relaxed whitespace-pre-line text-slate-600 dark:text-slate-300">
+                            <div className="bg-slate-50 dark:bg-black/20 p-6 rounded-3xl border border-slate-200/50 dark:border-white/5 max-h-[30vh] overflow-y-auto custom-scrollbar mb-6 text-sm leading-relaxed whitespace-pre-line text-slate-600 dark:text-slate-300">
                                 {company?.warranty_terms || 'Termos não configurados.'}
                             </div>
                         </div>
 
+                        {/* Signature Pad */}
+                        <div className="space-y-3 mb-6">
+                            <div className="flex items-center justify-between">
+                                <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Assinatura do Cliente</label>
+                                <button
+                                    type="button"
+                                    onClick={clearCanvas}
+                                    className="text-xs text-rose-500 hover:text-rose-600 flex items-center gap-1 font-semibold transition-colors"
+                                >
+                                    <Trash className="w-3.5 h-3.5" /> Limpar
+                                </button>
+                            </div>
+                            <div className="relative border border-slate-200 dark:border-white/10 rounded-2xl bg-slate-50 dark:bg-black/20 overflow-hidden">
+                                <canvas ref={canvasRef} className="w-full h-[180px] cursor-crosshair touch-none block bg-transparent" />
+                                <div className="absolute left-6 right-6 bottom-10 border-b border-dashed border-slate-300 dark:border-white/10 pointer-events-none" />
+                                <span className="absolute bottom-3 left-6 text-[10px] text-slate-400 font-bold uppercase tracking-wider pointer-events-none select-none">Assine aqui</span>
+                            </div>
+                        </div>
+
                         <button
-                            onClick={handleAccept}
+                            onClick={handleSubmit}
                             disabled={isPending}
                             className="w-full bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 group"
                         >
@@ -76,7 +214,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                                 </span>
                             ) : (
                                 <>
-                                    ACEITAR E CONTINUAR <Zap className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                    ACEITAR E ASSINAR OS <Zap className="w-5 h-5 group-hover:scale-110 transition-transform" />
                                 </>
                             )}
                         </button>
@@ -196,7 +334,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                             {os.customers?.phone && (
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Telefone</p>
-                                    <p className="font-medium">{os.customers.phone}</p>
+                                    <p className="font-medium">{maskPhone(os.customers.phone)}</p>
                                 </div>
                             )}
                         </div>
@@ -226,6 +364,23 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Num. de Série (IMEI)</p>
                                     <p className="font-mono text-sm bg-slate-100 dark:bg-white/5 px-2 py-1 rounded inline-block">{os.equipment_serial}</p>
+                                </div>
+                            )}
+                            {os.checklist_progress && os.checklist_progress.length > 0 && (
+                                <div className="pt-4 border-t border-slate-100 dark:border-white/5 space-y-2">
+                                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Checklist de Entrada</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
+                                        {os.checklist_progress.map((item: any) => (
+                                            <div key={item.id} className="flex items-center justify-between text-xs py-0.5">
+                                                <span className={item.completed ? 'text-slate-700 dark:text-slate-300 font-semibold' : 'text-slate-400 line-through decoration-1'}>{item.text}</span>
+                                                {item.completed ? (
+                                                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                                                ) : (
+                                                    <div className="w-4 h-4 rounded-full border border-slate-200 dark:border-white/10 shrink-0" />
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -349,12 +504,21 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                                 </div>
                                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-widest border border-emerald-500/10">
                                     <CheckCircle2 className="w-3 h-3" />
-                                    Aceito pelo Cliente
+                                    {os.signature_url ? 'Aceito e Assinado' : 'Aceito pelo Cliente'}
                                 </div>
                             </div>
                             <div className="text-sm text-slate-600 dark:text-slate-400/80 leading-relaxed font-medium bg-slate-50 dark:bg-white/[0.02] p-6 rounded-2xl border border-slate-200/50 dark:border-white/5 whitespace-pre-line">
                                 {company.warranty_terms}
                             </div>
+                            
+                            {os.signature_url && (
+                                <div className="mt-6 pt-6 border-t border-slate-100 dark:border-white/5 flex flex-col items-center">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3">Assinatura Digital do Cliente</p>
+                                    <div className="bg-slate-50 dark:bg-black/20 p-4 rounded-2xl border border-slate-200/50 dark:border-white/5 max-w-[280px] w-full flex items-center justify-center">
+                                        <img src={os.signature_url} alt="Assinatura Digital" className="max-h-20 object-contain dark:invert" />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

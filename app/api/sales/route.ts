@@ -37,11 +37,54 @@ export async function POST(req: NextRequest) {
     registerId = activeRegister.id
 
     try {
+        // Fetch items and calculate prices from DB first to prevent price manipulation
+        let calculatedTotalAmount = 0
+        const itemsToInsert = []
+        const stockUpdates = []
+
+        for (const item of items) {
+            // Get item cost and price - ensure it belongs to the company
+            const { data: stockItem } = await db
+                .from('inventory_items')
+                .select('quantity_in_stock, cost_price, selling_price')
+                .eq('id', item.inventory_item_id)
+                .eq('company_id', companyId)
+                .single()
+
+            if (!stockItem) throw new Error(`Item de estoque não encontrado ou não pertence à empresa: ${item.item_name}`)
+
+            const unitPrice = stockItem.selling_price || 0
+            const itemTotalPrice = unitPrice * item.quantity
+            const unitCost = stockItem.cost_price || 0
+            const itemTotalCost = unitCost * item.quantity
+
+            calculatedTotalAmount += itemTotalPrice
+
+            itemsToInsert.push({
+                inventory_item_id: item.inventory_item_id,
+                item_name: item.item_name,
+                quantity: item.quantity,
+                unit_price: unitPrice,
+                total_price: itemTotalPrice,
+                unit_cost: unitCost,
+                total_cost: itemTotalCost
+            })
+
+            stockUpdates.push({
+                id: item.inventory_item_id,
+                new_stock: Number(stockItem.quantity_in_stock) - Number(item.quantity)
+            })
+        }
+
+        const calculatedFinalAmount = Math.max(0, calculatedTotalAmount - (saleData.discount_amount || 0))
+
         // 3. Create Sale
         const { data: sale, error: saleError } = await db
             .from('sales')
             .insert({
                 ...saleData,
+                total_amount: calculatedTotalAmount,
+                final_amount: calculatedFinalAmount,
                 company_id: companyId,
                 user_id: dbUser.id,
                 cash_register_id: registerId,
@@ -54,33 +97,18 @@ export async function POST(req: NextRequest) {
 
         // 4. Create Sale Items and Update Stock
         let totalCost = 0;
-        for (const item of items) {
-            // Get item cost - ensure it belongs to the company
-            const { data: stockItem } = await db
-                .from('inventory_items')
-                .select('quantity_in_stock, cost_price')
-                .eq('id', item.inventory_item_id)
-                .eq('company_id', companyId)
-                .single()
+        for (let i = 0; i < itemsToInsert.length; i++) {
+            const insertData = itemsToInsert[i]
+            const updateData = stockUpdates[i]
 
-            if (!stockItem) throw new Error(`Item de estoque não encontrado ou não pertence à empresa: ${item.item_name}`)
-
-            const unitCost = stockItem.cost_price || 0;
-            const itemTotalCost = unitCost * item.quantity;
-            totalCost += itemTotalCost;
+            totalCost += insertData.total_cost
 
             // Create item
             const { error: itemError } = await db
                 .from('sale_items')
                 .insert({
                     sale_id: sale.id,
-                    inventory_item_id: item.inventory_item_id,
-                    item_name: item.item_name,
-                    quantity: item.quantity,
-                    unit_price: item.unit_price,
-                    total_price: item.total_price,
-                    unit_cost: unitCost,
-                    total_cost: itemTotalCost
+                    ...insertData
                 })
 
             if (itemError) throw itemError
@@ -89,9 +117,9 @@ export async function POST(req: NextRequest) {
             await db
                 .from('inventory_items')
                 .update({
-                    quantity_in_stock: Number(stockItem.quantity_in_stock) - Number(item.quantity)
+                    quantity_in_stock: updateData.new_stock
                 })
-                .eq('id', item.inventory_item_id)
+                .eq('id', updateData.id)
                 .eq('company_id', companyId)
         }
 
@@ -115,7 +143,7 @@ export async function POST(req: NextRequest) {
                 cash_register_id: registerId,
                 company_id: companyId,
                 type: 'entry',
-                amount: saleData.final_amount,
+                amount: calculatedFinalAmount,
                 payment_method_id: saleData.payment_method_id,
                 transaction_type_id: transType?.id,
                 description: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
@@ -167,7 +195,7 @@ export async function POST(req: NextRequest) {
             .insert({
                 company_id: companyId,
                 customer_id: saleData.customer_id || null,
-                amount: saleData.final_amount,
+                amount: calculatedFinalAmount,
                 payment_method: methodMap[pm?.code || ''] || 'dinheiro',
                 payment_status: 'completed',
                 payment_date: new Date().toISOString(),

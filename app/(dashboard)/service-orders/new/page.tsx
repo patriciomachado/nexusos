@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
-import NewOSForm from '@/components/forms/NewOSForm'
+import NewOSClient from '@/components/forms/NewOSClient'
 
 export default async function NewServiceOrderPage() {
     const { userId } = await auth()
@@ -20,7 +20,7 @@ export default async function NewServiceOrderPage() {
     return (
         <div className="animate-fade-in">
             <Header title="Nova Ordem de Serviço" />
-            <NewOSForm
+            <NewOSClient
                 customers={customers || []}
                 technicians={technicians || []}
                 companyId={companyId}

@@ -96,16 +96,16 @@ export async function PUT(req: NextRequest, { params }: Params) {
     }
 
     // Sync items if present in body
-    if (body.items && Array.isArray(body.items)) {
+    if (items && Array.isArray(items)) {
         // 1. Delete existing items - ensure they belong to this SO
         await db.from('service_order_items').delete().eq('service_order_id', id)
 
         // 2. Insert new items with cost tracking
         let totalPartsCost = 0;
-        if (body.items.length > 0) {
+        if (items.length > 0) {
             const itemsToInsert = []
             
-            for (const item of body.items) {
+            for (const item of items) {
                 let unitCost = item.unit_cost || 0
                 
                 // If inventory item, try to get cost if not provided

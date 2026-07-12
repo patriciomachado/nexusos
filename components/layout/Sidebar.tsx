@@ -110,7 +110,7 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
                         })
                         .map((item) => {
                             const Icon = item.icon
-                            const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                            const isActive = pathname === item.href || (pathname ? pathname.startsWith(item.href + '/') : false)
                             return (
                                 <Link
                                     key={item.href}

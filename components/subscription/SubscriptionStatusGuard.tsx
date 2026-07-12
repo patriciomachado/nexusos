@@ -25,7 +25,7 @@ export function SubscriptionStatusGuard({
     const isAllowedPath = 
         pathname === '/settings/subscription' || 
         pathname === '/settings' ||
-        pathname.startsWith('/api/') ||
+        (pathname ? pathname.startsWith('/api/') : false) ||
         pathname === '/'
 
     if (isValid || isAllowedPath) {

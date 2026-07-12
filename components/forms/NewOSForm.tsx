@@ -22,6 +22,15 @@ import {
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
+// Wizard step components (used only in guided mode)
+import WizardProgress from '@/components/forms/os-steps/WizardProgress'
+import StepClienteForm from '@/components/forms/os-steps/StepClienteForm'
+import StepDispositivoForm from '@/components/forms/os-steps/StepDispositivoForm'
+import StepDiagnosticoForm from '@/components/forms/os-steps/StepDiagnosticoForm'
+import StepSegurancaForm from '@/components/forms/os-steps/StepSegurancaForm'
+import StepRevisaoForm from '@/components/forms/os-steps/StepRevisaoForm'
+import StepOSCriada from '@/components/forms/os-steps/StepOSCriada'
+
 // No auto-fill suggestions - free text input
 // Common device suggestions for the autocomplete
 const DEVICE_SUGGESTIONS: string[] = [
@@ -67,6 +76,7 @@ interface Props {
     companyId: string
     initialData?: any
     warrantyTerms?: string
+    mode?: 'quick' | 'guided'
 }
 
 const STATUS_OPTIONS = [
@@ -83,16 +93,37 @@ const PRIORITY_OPTIONS = [
     { id: 'urgente', name: 'Urgente' },
 ]
 
+const DEFAULT_CHECKLIST = [
+    { id: 'touch_screen', text: 'Touchscreen / Vidro', completed: false },
+    { id: 'display', text: 'Tela / Display', completed: false },
+    { id: 'charging_port', text: 'Conector de Carga', completed: false },
+    { id: 'front_camera', text: 'Câmera Frontal', completed: false },
+    { id: 'back_camera', text: 'Câmera Traseira', completed: false },
+    { id: 'speaker', text: 'Alto-falante / Viva-voz', completed: false },
+    { id: 'microphone', text: 'Microfone', completed: false },
+    { id: 'wifi_bluetooth', text: 'Wi-Fi / Bluetooth', completed: false },
+    { id: 'buttons', text: 'Botões (Power/Volume)', completed: false },
+    { id: 'sensors_biometrics', text: 'Biometria / Sensores', completed: false },
+]
+
 export default function NewOSForm({ 
     customers, 
     technicians, 
     inventoryItems, 
     companyId, 
     initialData, 
-    warrantyTerms 
+    warrantyTerms,
+    mode = 'quick'
 }: Props) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
+
+    // Guided wizard state
+    const [currentStep, setCurrentStep] = useState(1)
+    const [devicePassword, setDevicePassword] = useState('')
+    const [devicePasswordType, setDevicePasswordType] = useState<'pin' | 'pattern'>('pin')
+    const [createdOrderId, setCreatedOrderId] = useState('')
+    const [createdOrderNumber, setCreatedOrderNumber] = useState('')
     const [form, setForm] = useState({
         customer_id: initialData?.customer_id || '',
         technician_id: initialData?.technician_id || '',
@@ -113,6 +144,9 @@ export default function NewOSForm({
         discount_amount: initialData?.discount_amount?.toString() || '',
         turns_on: initialData?.turns_on ?? true,
         terms_accepted: initialData?.terms_accepted || false,
+        checklist_progress: (initialData?.checklist_progress && initialData.checklist_progress.length > 0)
+            ? initialData.checklist_progress
+            : DEFAULT_CHECKLIST,
     })
 
     const [items, setItems] = useState<any[]>(() => {
@@ -141,6 +175,15 @@ export default function NewOSForm({
     const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false)
     const [initialCustomerName, setInitialCustomerName] = useState('')
 
+    // Guided mode: password injected into form notes before submit
+    function buildPasswordNote() {
+        if (!devicePassword) return form.internal_notes || ''
+        const label = devicePasswordType === 'pin' ? 'PIN/Senha' : 'Padrão Android'
+        const passwordLine = `[Segurança] ${label}: ${devicePassword}`
+        const existing = form.internal_notes || ''
+        return existing ? `${existing}\n${passwordLine}` : passwordLine
+    }
+
     // Update costs when items change
     useEffect(() => {
         const totalEstimated = items.reduce((sum, item) => sum + (item.total_price || 0), 0)
@@ -161,8 +204,8 @@ export default function NewOSForm({
         })
     }, [items])
 
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault()
+    async function handleSubmit(e?: React.FormEvent) {
+        if (e) e.preventDefault()
         // Se o título estiver vazio, usar a descrição do equipamento ou um padrão
         if (!form.title.trim()) {
             form.title = form.equipment_description || 'Nova Ordem de Serviço'
@@ -215,11 +258,15 @@ export default function NewOSForm({
                 setIsUploading(false)
             }
 
+            // Inject device password into internal notes if guided mode
+            const notesWithPassword = mode === 'guided' ? buildPasswordNote() : (form.internal_notes || '')
+
             const res = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...form,
+                    internal_notes: notesWithPassword,
                     company_id: companyId,
                     parts_cost: parseFloat(form.parts_cost) || 0,
                     labor_cost: parseFloat(form.labor_cost) || 0,
@@ -236,14 +283,97 @@ export default function NewOSForm({
             const data = await res.json()
             if (res.ok) {
                 toast.success(isEdit ? 'OS atualizada!' : 'OS aberta com sucesso!')
-                router.push(`/service-orders/${data.id || initialData.id}`)
-                router.refresh()
+                if (mode === 'guided') {
+                    // Show success step instead of redirect
+                    setCreatedOrderId(data.id || initialData?.id || '')
+                    setCreatedOrderNumber(data.order_number || '')
+                    setCurrentStep(6)
+                } else {
+                    router.push(`/service-orders/${data.id || initialData.id}`)
+                    router.refresh()
+                }
             } else {
                 toast.error(data.error || 'Erro ao processar OS')
             }
         })
     }
 
+    // ─── GUIDED MODE ───────────────────────────────────────────────────────
+    if (mode === 'guided') {
+        return (
+            <div className="p-4 max-w-[1600px] mx-auto space-y-6 pb-32">
+                {currentStep < 6 && <WizardProgress currentStep={currentStep} />}
+
+                <div className="pt-4">
+                    {currentStep === 1 && (
+                        <StepClienteForm
+                            form={form}
+                            setForm={setForm}
+                            customers={localCustomers}
+                            setCustomers={setLocalCustomers}
+                            technicians={technicians}
+                            companyId={companyId}
+                            onNext={() => setCurrentStep(2)}
+                        />
+                    )}
+                    {currentStep === 2 && (
+                        <StepDispositivoForm
+                            form={form}
+                            setForm={setForm}
+                            onNext={() => setCurrentStep(3)}
+                            onBack={() => setCurrentStep(1)}
+                        />
+                    )}
+                    {currentStep === 3 && (
+                        <StepDiagnosticoForm
+                            form={form}
+                            setForm={setForm}
+                            photos={photos}
+                            setPhotos={setPhotos}
+                            photoUrls={photoUrls}
+                            onNext={() => setCurrentStep(4)}
+                            onBack={() => setCurrentStep(2)}
+                        />
+                    )}
+                    {currentStep === 4 && (
+                        <StepSegurancaForm
+                            devicePassword={devicePassword}
+                            devicePasswordType={devicePasswordType}
+                            onChangePassword={setDevicePassword}
+                            onChangePasswordType={setDevicePasswordType}
+                            onNext={() => setCurrentStep(5)}
+                            onBack={() => setCurrentStep(3)}
+                        />
+                    )}
+                    {currentStep === 5 && (
+                        <StepRevisaoForm
+                            form={form}
+                            setForm={setForm}
+                            items={items}
+                            setItems={setItems}
+                            inventoryItems={inventoryItems}
+                            devicePassword={devicePassword}
+                            devicePasswordType={devicePasswordType}
+                            customers={localCustomers}
+                            technicians={technicians}
+                            isPending={isPending}
+                            isUploading={isUploading}
+                            onSubmit={() => handleSubmit()}
+                            onBack={() => setCurrentStep(4)}
+                        />
+                    )}
+                    {currentStep === 6 && (
+                        <StepOSCriada
+                            orderId={createdOrderId}
+                            orderNumber={createdOrderNumber}
+                        />
+                    )}
+                </div>
+            </div>
+        )
+    }
+
+    // ─── QUICK MODE (original form, unchanged) ─────────────────────────────
     return (
         <form onSubmit={handleSubmit} className="p-4 max-w-[1600px] mx-auto space-y-8 pb-32 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {/* Header Flutuante com Resumo de Custo */}
@@ -511,6 +641,36 @@ export default function NewOSForm({
                                     {form.turns_on ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
                                     {form.turns_on ? 'Sim' : 'Não'}
                                 </button>
+                            </div>
+
+                            <div className="space-y-3 pt-4 border-t border-white/5">
+                                <label className="block text-[10px] font-black text-muted-foreground tracking-widest uppercase">Checklist do Dispositivo</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {(form.checklist_progress || DEFAULT_CHECKLIST).map((item: any, idx: number) => (
+                                        <button
+                                            key={item.id}
+                                            type="button"
+                                            onClick={() => {
+                                                const currentList = form.checklist_progress || DEFAULT_CHECKLIST
+                                                const updated = [...currentList]
+                                                updated[idx] = { ...item, completed: !item.completed }
+                                                setForm(p => ({ ...p, checklist_progress: updated }))
+                                            }}
+                                            className={`p-3 rounded-2xl text-[11px] font-bold text-left transition-all border flex items-center justify-between gap-2 select-none ${
+                                                item.completed
+                                                    ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-inner'
+                                                    : 'bg-white/5 text-foreground/50 border-white/5 hover:border-white/10 hover:text-foreground/75'
+                                            }`}
+                                        >
+                                            <span className="truncate">{item.text}</span>
+                                            {item.completed ? (
+                                                <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-500" />
+                                            ) : (
+                                                <div className="w-3.5 h-3.5 shrink-0 rounded-full border-2 border-white/10" />
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
 
                             <div className="space-y-4">

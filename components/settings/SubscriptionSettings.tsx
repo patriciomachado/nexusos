@@ -18,7 +18,7 @@ export default function SubscriptionSettings({ company }: SubscriptionSettingsPr
     const isActive = company.subscription_status === 'active'
 
     return (
-        <div className="space-y-10">
+        <div className="space-y-8">
             <div className="flex items-center gap-3">
                 <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-500 shadow-inner">
                     <ShieldCheck className="w-6 h-6" />
@@ -29,42 +29,52 @@ export default function SubscriptionSettings({ company }: SubscriptionSettingsPr
                 </div>
             </div>
 
-            <div className="p-10 rounded-[3rem] bg-gradient-to-br from-indigo-500/10 via-card/40 to-card/40 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
-                <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-emerald-500/5 blur-[80px] rounded-full group-hover:bg-emerald-500/10 transition-colors duration-700" />
-
-                <div className="relative z-10 space-y-10">
-                    <div className="flex items-center justify-between p-6 rounded-[2rem] bg-white/5 border border-white/5 shadow-inner">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
-                                <Sparkles className="w-6 h-6 animate-pulse" />
-                            </div>
-                            <div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Plano Atual</span>
-                                <p className="text-2xl font-black text-foreground tracking-tight">{company.subscription_plan}</p>
+            {/* Bento Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                {/* Block 1: Plan Details */}
+                <div className="p-8 rounded-[2.5rem] bg-card/40 border border-white/5 backdrop-blur-3xl shadow-xl relative overflow-hidden group flex flex-col justify-between min-h-[220px]">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-[50px] rounded-full group-hover:bg-indigo-500/10 transition-colors duration-700" />
+                    
+                    <div className="space-y-4 relative z-10">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Plano Ativo</span>
+                            <div className={cn(
+                                "flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border",
+                                isActive || isTrial
+                                    ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                                    : 'text-rose-400 bg-rose-500/10 border-rose-500/20'
+                            )}>
+                                <div className={cn(
+                                    "w-1.5 h-1.5 rounded-full",
+                                    isActive || isTrial ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'
+                                )} />
+                                {isTrial ? 'PRO Trials' : isActive ? 'Ativo' : 'Inativo'}
                             </div>
                         </div>
-                        <div className={cn(
-                            "flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full border",
-                            isActive || isTrial
-                                ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-lg shadow-emerald-500/10'
-                                : 'text-rose-400 bg-rose-500/10 border-rose-500/20 shadow-lg shadow-rose-500/10'
-                        )}>
-                            <div className={cn(
-                                "w-1.5 h-1.5 rounded-full",
-                                isActive || isTrial ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'
-                            )} />
-                            {isTrial ? 'PRO Trials' : isActive ? 'Enterprise Active' : 'Suspensa'}
+                        <div>
+                            <p className="text-4xl font-black text-foreground tracking-tighter capitalize">{company.subscription_plan}</p>
+                            <p className="text-[10px] text-muted-foreground/40 mt-1 uppercase font-bold tracking-tight">Assinatura do Workspace</p>
                         </div>
                     </div>
+                </div>
 
-                    <div className="grid sm:grid-cols-2 gap-8 px-2">
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-muted-foreground/40 italic">
-                                    <Users className="w-3 h-3" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">Cotas de Talentos</span>
-                                </div>
-                                <span className="text-lg font-black text-foreground tracking-tighter">02 / {company.max_users.toString().padStart(2, '0')}</span>
+                {/* Block 2: Talent Quota / Usage */}
+                <div className="p-8 rounded-[2.5rem] bg-card/40 border border-white/5 backdrop-blur-3xl shadow-xl relative overflow-hidden group flex flex-col justify-between min-h-[220px]">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] rounded-full group-hover:bg-primary/10 transition-colors duration-700" />
+                    
+                    <div className="space-y-6 relative z-10 w-full">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Cotas de Talentos</span>
+                            <div className="p-2 rounded-xl bg-white/5 border border-white/5 text-muted-foreground">
+                                <Users className="w-4 h-4" />
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-end">
+                                <span className="text-[10px] font-black uppercase text-muted-foreground/40">Usuários no Time</span>
+                                <span className="text-2xl font-black text-foreground tracking-tighter">02 <span className="text-muted-foreground/30 text-lg">/ {company.max_users.toString().padStart(2, '0')}</span></span>
                             </div>
                             <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
                                 <div
@@ -73,32 +83,50 @@ export default function SubscriptionSettings({ company }: SubscriptionSettingsPr
                                 />
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        {isTrial && company.trial_ends_at && (
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 text-muted-foreground/40 italic">
-                                        <Clock className="w-3 h-3" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Expira em</span>
+                {/* Block 3: Trial / Manage Actions */}
+                <div className="p-8 rounded-[2.5rem] bg-card/40 border border-white/5 backdrop-blur-3xl shadow-xl relative overflow-hidden group flex flex-col justify-between min-h-[220px]">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-[50px] rounded-full group-hover:bg-emerald-500/10 transition-colors duration-700" />
+                    
+                    <div className="space-y-4 relative z-10 w-full h-full flex flex-col justify-between">
+                        {isTrial && company.trial_ends_at ? (
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Período de Testes</span>
+                                    <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+                                        <Clock className="w-4 h-4 animate-spin-slow" />
                                     </div>
-                                    <span className="text-lg font-black text-foreground tracking-tighter">
+                                </div>
+                                <div className="flex justify-between items-end">
+                                    <span className="text-[10px] font-black uppercase text-muted-foreground/40">Tempo Restante</span>
+                                    <span className="text-2xl font-black text-foreground tracking-tighter">
                                         {Math.max(0, Math.ceil((new Date(company.trial_ends_at).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} Dias
                                     </span>
                                 </div>
-                                <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                    <div className="h-full bg-emerald-500/40 w-[60%] rounded-full" />
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Gerenciar</span>
+                                    <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+                                        <Zap className="w-4 h-4" />
+                                    </div>
                                 </div>
+                                <span className="text-[10px] font-black uppercase text-muted-foreground/40 block leading-tight">Configurações de faturamento e upgrades</span>
                             </div>
                         )}
-                    </div>
 
-                    <div className="pt-4">
-                        <Link href="/settings/subscription" className="w-full h-16 rounded-2xl bg-foreground text-background font-black text-xs uppercase tracking-[0.3em] hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-foreground/10 flex items-center justify-center gap-3 group">
-                            GERENCIAR ASSINATURA
-                            <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                        </Link>
+                        <div className="pt-2">
+                            <Link href="/settings/subscription" className="w-full h-12 rounded-2xl bg-foreground text-background font-black text-[10px] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 group">
+                                GERENCIAR
+                                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     )

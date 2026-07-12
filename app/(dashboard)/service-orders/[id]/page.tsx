@@ -4,7 +4,7 @@ import Header from '@/components/layout/Header'
 import { notFound } from 'next/navigation'
 import { formatDateTime, formatCurrency, OS_STATUS_LABELS, OS_STATUS_COLORS, OS_PRIORITY_LABELS, cn } from '@/lib/utils'
 import Link from 'next/link'
-import { ArrowLeft, Clock, MapPin, User, Wrench, DollarSign, Calendar, Info } from 'lucide-react'
+import { ArrowLeft, Clock, MapPin, User, Wrench, DollarSign, Calendar, Info, CheckCircle2, XCircle } from 'lucide-react'
 import OSActions from '@/components/os/OSActions'
 import OSGallery from '@/components/os/OSGallery'
 
@@ -148,6 +148,31 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                         </div>
                                     )}
                                 </div>
+
+                                {os.checklist_progress && os.checklist_progress.length > 0 && (
+                                    <div className="sm:col-span-2 pt-4 border-t border-border/30">
+                                        <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block mb-3">Checklist do Dispositivo</span>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                            {os.checklist_progress.map((item: any) => (
+                                                <div
+                                                    key={item.id}
+                                                    className={`px-3 py-2 rounded-xl text-xs flex items-center justify-between border ${
+                                                        item.completed
+                                                            ? 'bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border-emerald-500/10 font-bold'
+                                                            : 'bg-muted/10 text-muted-foreground/50 border-border/20 line-through decoration-1'
+                                                    }`}
+                                                >
+                                                    <span className="truncate">{item.text}</span>
+                                                    {item.completed ? (
+                                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                                                    ) : (
+                                                        <XCircle className="w-3.5 h-3.5 text-muted-foreground/30 shrink-0" />
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
                                 {os.internal_notes && (
                                     <div className="sm:col-span-2">

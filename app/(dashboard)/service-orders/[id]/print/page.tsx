@@ -137,6 +137,24 @@ export default async function PrintOSPage({
                                 <p className="font-bold uppercase text-xs text-gray-500 mb-1">Defeito Relatado pelo Cliente</p>
                                 <p className="italic">{os.problem_description || 'Nenhum defeito relatado.'}</p>
                             </div>
+
+                            {os.checklist_progress && os.checklist_progress.length > 0 && (
+                                <div className="border-t border-gray-200 pt-2">
+                                    <p className="font-bold uppercase text-xs text-gray-500 mb-2">Checklist de Entrada</p>
+                                    <div className="grid grid-cols-3 gap-y-1.5 gap-x-4 text-xs">
+                                        {os.checklist_progress.map((item: any) => (
+                                            <div key={item.id} className="flex items-center gap-1.5">
+                                                <span className={`inline-block w-3.5 h-3.5 border border-black rounded flex items-center justify-center font-bold text-[9px] ${item.completed ? 'bg-gray-200' : ''}`}>
+                                                    {item.completed ? '✓' : ' '}
+                                                </span>
+                                                <span className={item.completed ? 'text-black font-semibold' : 'text-gray-400 line-through decoration-1'}>
+                                                    {item.text}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -225,7 +243,14 @@ export default async function PrintOSPage({
                                 <p className="text-xs text-gray-500 mt-1">{os.technicians?.name}</p>
                             </div>
                         </div>
-                        <div className="text-center">
+                        <div className="text-center flex flex-col justify-end">
+                            {os.signature_url ? (
+                                <div className="flex justify-center mb-1">
+                                    <img src={os.signature_url} alt="Assinatura do Cliente" className="max-h-16 object-contain" />
+                                </div>
+                            ) : (
+                                <div className="h-16" />
+                            )}
                             <div className="border-t border-black pt-2">
                                 <p className="font-bold text-sm">Assinatura do Cliente</p>
                                 <p className="text-xs text-gray-500 mt-1">{customer?.name}</p>

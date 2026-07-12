@@ -26,7 +26,9 @@ export default function TransactionHistory({
 }: TransactionHistoryProps) {
     const [searchQuery, setSearchQuery] = useState('')
     const [filterType, setFilterType] = useState<'all' | 'entry' | 'exit'>('all')
-    const [timeRange, setTimeRange] = useState<string>('30')
+    const today = new Date()
+    const defaultRange = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
+    const [timeRange, setTimeRange] = useState<string>(defaultRange)
     const [showMonthPicker, setShowMonthPicker] = useState(false)
     const [deleteModal, setDeleteModal] = useState<{ open: boolean; transaction: any | null }>({ open: false, transaction: null })
     const [deleting, setDeleting] = useState(false)
@@ -217,15 +219,44 @@ export default function TransactionHistory({
         // Net Profit = Gross Profit - Expenses (Other entries like Suprimento don't count as profit, just cash balance)
         const netProfit = grossProfit - totalExpenses
 
+        // 5. Calculate previous month balance (Líquido: Faturamento + Suprimento - Despesas/Sangrias)
+        const prevMonthDate = new Date()
+        prevMonthDate.setMonth(prevMonthDate.getMonth() - 1)
+        const pmYear = prevMonthDate.getFullYear()
+        const pmMonth = prevMonthDate.getMonth() // 0-indexed
+
+        const prevMonthTransactions = unifiedHistory.filter(item => {
+            const itemDate = new Date(item.date)
+            return itemDate.getFullYear() === pmYear && itemDate.getMonth() === pmMonth
+        })
+
+        const pmGrossRevenue = prevMonthTransactions
+            .filter(item => 
+                item.type === 'entry' && 
+                (item.sourceType === 'service_order' || item.sourceType === 'product_sale' || item.sourceType === 'payment')
+            )
+            .reduce((sum, item) => sum + item.amount, 0)
+        
+        const pmOtherEntries = prevMonthTransactions
+            .filter(item => item.type === 'entry' && item.sourceType === 'manual_suprimento')
+            .reduce((sum, item) => sum + item.amount, 0)
+
+        const pmTotalExpenses = prevMonthTransactions
+            .filter(item => item.type === 'exit' && !item.description.startsWith('Custo de Peças OS'))
+            .reduce((sum, item) => sum + item.amount, 0)
+
+        const pmNetCashFlow = pmGrossRevenue + pmOtherEntries - pmTotalExpenses
+
         return {
             totalRevenue: grossRevenue, // We display Gross Revenue as the main "Faturamento"
             otherEntries,
             totalExpenses,
             grossProfit,
             netProfit,
-            margin: grossRevenue > 0 ? (netProfit / grossRevenue) * 100 : 0
+            margin: grossRevenue > 0 ? (netProfit / grossRevenue) * 100 : 0,
+            prevMonthNetCashFlow: pmNetCashFlow
         }
-    }, [dateFilteredHistory])
+    }, [dateFilteredHistory, unifiedHistory])
 
     const availableMonths = useMemo(() => {
         const months = []
@@ -242,14 +273,29 @@ export default function TransactionHistory({
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
             {/* Profit Snapshot Bar */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="glass-premium rounded-[2rem] p-6 border border-emerald-500/20 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-500/10 transition-all" />
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-500">
+                            <Wallet className="w-5 h-5" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500/60">Caixa Mês Anterior</span>
+                    </div>
+                    <p className="text-2xl font-black text-emerald-500 tracking-tighter">{formatCurrency(metrics.prevMonthNetCashFlow)}</p>
+                    <div className="flex items-center gap-1.5 mt-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Fluxo Líquido Caixa</span>
+                    </div>
+                </div>
+
                 <div className="glass-premium rounded-[2rem] p-6 border border-border/40 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/10 transition-all" />
                     <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-500">
                             <DollarSign className="w-5 h-5" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Faturamento Total</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Faturamento do Período</span>
                     </div>
                     <p className="text-2xl font-black text-foreground tracking-tighter">{formatCurrency(metrics.totalRevenue)}</p>
                     <div className="flex items-center gap-1.5 mt-2">
@@ -264,7 +310,7 @@ export default function TransactionHistory({
                         <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-500">
                             <TrendingUp className="w-5 h-5" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500/60">Lucro Bruto</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500/60">Lucro Bruto Período</span>
                     </div>
                     <p className="text-2xl font-black text-indigo-500 tracking-tighter">{formatCurrency(metrics.grossProfit)}</p>
                     <p className="text-[10px] text-muted-foreground/50 mt-2 uppercase font-bold tracking-tight">Receita - Custo de Peças</p>
@@ -276,7 +322,7 @@ export default function TransactionHistory({
                         <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-500">
                             <Activity className="w-5 h-5" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500/60">Lucro Líquido</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500/60">Lucro Líquido Período</span>
                     </div>
                     <p className="text-2xl font-black text-emerald-500 tracking-tighter">{formatCurrency(metrics.netProfit)}</p>
                     <div className="flex items-center gap-2 mt-2">
@@ -292,7 +338,7 @@ export default function TransactionHistory({
                         <div className="p-3 rounded-2xl bg-rose-500/10 text-rose-500">
                             <TrendingDown className="w-5 h-5" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-rose-500/60">Despesas Totais</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-rose-500/60">Despesas do Período</span>
                     </div>
                     <p className="text-2xl font-black text-rose-500 tracking-tighter">{formatCurrency(metrics.totalExpenses)}</p>
                     <p className="text-[10px] text-muted-foreground/50 mt-2 uppercase font-bold tracking-tight">Retiradas e Exclusões</p>
@@ -311,18 +357,18 @@ export default function TransactionHistory({
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    {/* Time Range Filter */}
+                    {/* Time Range Filter - Calendário/Meses Dinâmicos */}
                     <div className="flex items-center gap-1.5 bg-muted/30 p-1 rounded-2xl border border-border/50">
-                        {['30', '60', '90'].map((range) => (
+                        {availableMonths.slice(0, 3).map((monthOption) => (
                             <button
-                                key={range}
-                                onClick={() => setTimeRange(range)}
+                                key={monthOption.value}
+                                onClick={() => setTimeRange(monthOption.value)}
                                 className={cn(
                                     "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                                    timeRange === range ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                                    timeRange === monthOption.value ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
-                                {range} Dias
+                                {monthOption.label.split(' de ')[0]}
                             </button>
                         ))}
                         

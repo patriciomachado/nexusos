@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
 import { formatCurrency, getStartOfDay, getStartOfMonth } from '@/lib/utils'
-import { BarChart3, TrendingUp, PieChart, Activity } from 'lucide-react'
+import { BarChart3, TrendingUp, PieChart, Activity, Wallet } from 'lucide-react'
 
 export default async function ReportsPage() {
     const { userId } = await auth()
@@ -55,6 +55,9 @@ export default async function ReportsPage() {
         db.from('cash_transactions').select('amount').eq('type', 'exit').in('user_id', userIds).gte('created_at', prevMonthStart).lte('created_at', prevMonthEnd)
     ])
 
+    // Fetch cash registers data to calculate previous month drawer details
+    const { data: allRegisters } = await db.from('cash_registers').select('id, opened_at, opening_balance, closed_at, closing_balance').eq('company_id', companyId)
+
     const monthRevenue = monthPayments?.reduce((s, p) => s + Number(p.amount), 0) || 0
     const osThisMonth = recentOS?.length || 0
     const osCompletedThisMonth = recentOS?.filter((o: { status: string }) => o.status === 'concluida' || o.status === 'faturada').length || 0
@@ -87,6 +90,16 @@ export default async function ReportsPage() {
     
     // Net Profit: Gross Profit - Operational Expenses
     const monthNetProfit = monthGrossProfit - totalExpenses
+
+    // Consolidated drawer metric for previous month (Líquido do Caixa no período)
+    const prevMonthRegisters = allRegisters?.filter(reg => {
+        if (!reg.closed_at) return false
+        const closedDate = new Date(reg.closed_at)
+        return closedDate >= new Date(prevMonthStart) && closedDate <= new Date(prevMonthEnd)
+    }) || []
+    const prevMonthDrawerLiquidity = prevMonthRegisters.reduce((sum, reg) => {
+        return sum + (Number(reg.closing_balance || 0) - Number(reg.opening_balance || 0))
+    }, 0)
 
     const statusCounts = (osByStatus || []).reduce((acc: Record<string, number>, os: { status: string }) => {
         acc[os.status] = (acc[os.status] || 0) + 1
@@ -205,6 +218,39 @@ export default async function ReportsPage() {
                                     <span className="text-lg font-black text-emerald-500">{formatCurrency(monthNetProfit)}</span>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Caixa & Liquidez Detail */}
+                <div className="p-8 rounded-[2rem] bg-card/40 border border-border/50 backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/10 transition-all" />
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                <Wallet className="w-5 h-5" />
+                            </div>
+                            <h3 className="text-xl font-black text-foreground">Fluxo de Caixa Consolidado (Mês Anterior)</h3>
+                        </div>
+                        <span className="text-[10px] font-black text-muted-foreground/20 uppercase tracking-[0.2em]">Resultado dos Terminais</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="p-5 rounded-2xl bg-muted/20 border border-border/50">
+                            <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest mb-1">Movimentado Líquido</p>
+                            <p className="text-2xl font-black text-foreground tracking-tighter">{formatCurrency(prevMonthDrawerLiquidity)}</p>
+                            <p className="text-[9px] text-muted-foreground/40 mt-1">Diferença de fechamento total</p>
+                        </div>
+                        <div className="p-5 rounded-2xl bg-muted/20 border border-border/50">
+                            <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest mb-1">Terminais Fechados</p>
+                            <p className="text-2xl font-black text-foreground tracking-tighter">{prevMonthRegisters.length}</p>
+                            <p className="text-[9px] text-muted-foreground/40 mt-1">Caixas fechados no mês</p>
+                        </div>
+                        <div className="p-5 rounded-2xl bg-muted/20 border border-border/50">
+                            <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest mb-1">Média por Terminal</p>
+                            <p className="text-2xl font-black text-emerald-500 tracking-tighter">
+                                {formatCurrency(prevMonthRegisters.length > 0 ? prevMonthDrawerLiquidity / prevMonthRegisters.length : 0)}
+                            </p>
+                            <p className="text-[9px] text-muted-foreground/40 mt-1">Líquido médio por caixa</p>
                         </div>
                     </div>
                 </div>
