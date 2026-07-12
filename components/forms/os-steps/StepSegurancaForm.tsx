@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { ShieldCheck, ChevronLeft, ChevronRight, Lock, Grid3X3, Delete, Eye, EyeOff } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 /* ── Pattern Grid (Android-style) ── */
 const GRID_POINTS = [0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -22,6 +23,11 @@ function PatternGrid({ pattern, onChange }: PatternGridProps) {
     const [currentPattern, setCurrentPattern] = useState<number[]>(pattern)
     const [cursorPos, setCursorPos] = useState<{ x: number; y: number } | null>(null)
     const svgRef = useRef<SVGSVGElement>(null)
+
+    // Sync state with parent prop updates
+    useEffect(() => {
+        setCurrentPattern(pattern)
+    }, [pattern])
 
     function getSVGPos(e: React.PointerEvent<SVGSVGElement>): { x: number; y: number } {
         const rect = svgRef.current!.getBoundingClientRect()
@@ -67,7 +73,7 @@ function PatternGrid({ pattern, onChange }: PatternGridProps) {
         onChange(currentPattern)
     }
 
-    const points = currentPattern.length > 0 ? currentPattern : pattern
+    const points = currentPattern
 
     return (
         <div className="flex flex-col items-center gap-3">
@@ -119,15 +125,20 @@ function PatternGrid({ pattern, onChange }: PatternGridProps) {
                         <g key={i}>
                             <circle
                                 cx={pos.x} cy={pos.y} r="16"
-                                fill={isActive ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.03)'}
-                                stroke={isActive ? 'rgba(99,102,241,0.5)' : 'rgba(255,255,255,0.1)'}
+                                className={cn(
+                                    "transition-all duration-200",
+                                    isActive
+                                        ? "fill-indigo-500/15 stroke-indigo-500/50"
+                                        : "fill-foreground/[0.03] stroke-foreground/15"
+                                )}
                                 strokeWidth="1.5"
-                                className="transition-all duration-200"
                             />
                             <circle
                                 cx={pos.x} cy={pos.y} r={isActive ? 6 : 4}
-                                fill={isActive ? 'rgb(99,102,241)' : 'rgba(255,255,255,0.2)'}
-                                className="transition-all duration-200"
+                                className={cn(
+                                    "transition-all duration-200",
+                                    isActive ? "fill-indigo-500" : "fill-foreground/30"
+                                )}
                             />
                         </g>
                     )
