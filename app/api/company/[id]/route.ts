@@ -4,6 +4,27 @@ import { companyUpdateSchema, idSchema } from '@/lib/validations/schemas'
 
 type P = { params: Promise<{ id: string }> }
 
+export async function GET(req: NextRequest, { params }: P) {
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+
+    const { id } = await params
+    const { db, companyId } = ctx
+
+    if (id !== companyId) {
+        return NextResponse.json({ error: 'Acesso negado' }, { status: 403 })
+    }
+
+    const { data, error } = await db
+        .from('companies')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json(data)
+}
+
 export async function PUT(req: NextRequest, { params }: P) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
@@ -31,3 +52,4 @@ export async function PUT(req: NextRequest, { params }: P) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json(data)
 }
+

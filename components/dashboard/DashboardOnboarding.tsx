@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Sparkles, ArrowRight, ShieldCheck, Check, Camera, Link as LinkIcon, Building2, Smartphone, MapPin, Globe, Upload, X, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
@@ -36,6 +36,37 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
     const [logoPreview, setLogoPreview] = useState('')
     const [uploadingLogo, setUploadingLogo] = useState(false)
     const [saving, setSaving] = useState(false)
+
+    // Load existing company details if present in the database to prevent overwriting with null
+    useEffect(() => {
+        async function loadCompanyDetails() {
+            try {
+                const res = await fetch(`/api/company/${companyId}`)
+                if (res.ok) {
+                    const data = await res.json()
+                    setCompanyDetails(prev => ({
+                        ...prev,
+                        name: data.name || prev.name,
+                        cnpj: data.cnpj ? formatCNPJ(data.cnpj) : '',
+                        phone: data.phone ? formatPhone(data.phone) : '',
+                        address: data.address || '',
+                        city: data.city || '',
+                        state: data.state || '',
+                        zip_code: data.zip_code ? formatCEP(data.zip_code) : '',
+                        logo_url: data.logo_url || '',
+                        google_review_url: data.google_review_url || '',
+                        warranty_terms: data.warranty_terms || prev.warranty_terms
+                    }))
+                    if (data.logo_url) {
+                        setLogoPreview(data.logo_url)
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao carregar dados da empresa para onboarding:', err)
+            }
+        }
+        loadCompanyDetails()
+    }, [companyId])
 
     const formatCNPJ = (value: string) => {
         const numbers = value.replace(/\D/g, '').slice(0, 14)
