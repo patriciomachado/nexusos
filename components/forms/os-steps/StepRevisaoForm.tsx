@@ -169,7 +169,7 @@ export default function StepRevisaoForm({
                         <ShieldCheckIcon className="w-3 h-3" />
                     </div>
                     <p className="text-[10px] font-medium text-muted-foreground leading-relaxed uppercase tracking-widest">
-                        O cliente aceita os termos de serviço e política de garantia do Nexus.
+                        O cliente aceita os termos de garantia da assistência, bem como os <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline font-bold">Termos de Uso</a> e a <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline font-bold">Política de Privacidade</a> do Nexus OS.
                     </p>
                 </div>
                 <button

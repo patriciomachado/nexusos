@@ -266,6 +266,8 @@ export default function NewOSForm({
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...form,
+                    customer_id: form.customer_id || null,
+                    technician_id: form.technician_id || null,
                     internal_notes: notesWithPassword,
                     company_id: companyId,
                     parts_cost: parseFloat(form.parts_cost) || 0,
@@ -277,7 +279,10 @@ export default function NewOSForm({
                     terms_accepted: form.terms_accepted,
                     photo_front_url: finalPhotoFront,
                     photo_back_url: finalPhotoBack,
-                    items: items
+                    items: items.map(item => ({
+                        ...item,
+                        inventory_item_id: item.inventory_item_id || null
+                    }))
                 }),
             })
             const data = await res.json()
@@ -293,7 +298,10 @@ export default function NewOSForm({
                     router.refresh()
                 }
             } else {
-                toast.error(data.error || 'Erro ao processar OS')
+                const errMsg = typeof data.error === 'object'
+                    ? 'Dados inválidos no formulário'
+                    : (data.error || 'Erro ao processar OS')
+                toast.error(errMsg)
             }
         })
     }
@@ -766,7 +774,7 @@ export default function NewOSForm({
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-[9px] font-medium text-muted-foreground leading-relaxed uppercase tracking-widest">
-                                            O cliente aceita os termos de serviço e política de garantia do Nexus.
+                                            O cliente aceita os termos de garantia da assistência, bem como os <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline font-bold">Termos de Uso</a> e a <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline font-bold">Política de Privacidade</a> do Nexus OS.
                                         </p>
                                     </div>
                                 </div>

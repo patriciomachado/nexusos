@@ -400,10 +400,15 @@ function StepFinal({ onboardingData }: { onboardingData: { money: number; time: 
                 </div>
             </div>
 
-            <div className="pt-10">
+            <div className="pt-10 space-y-2">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-[#505060]">
                     © 2026 Nexus OS. Todos os direitos reservados.
                 </p>
+                <div className="flex justify-center gap-4 text-[10px] font-bold uppercase tracking-widest text-[#505060]">
+                    <Link href="/termos" target="_blank" className="hover:text-[#A0A0B5] transition-colors">Termos de Uso</Link>
+                    <span>&bull;</span>
+                    <Link href="/privacidade" target="_blank" className="hover:text-[#A0A0B5] transition-colors">Política de Privacidade</Link>
+                </div>
             </div>
         </div>
     )

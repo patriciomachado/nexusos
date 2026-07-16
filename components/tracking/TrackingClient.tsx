@@ -32,6 +32,8 @@ interface Props {
 
 export default function TrackingClient({ os, company, token, hasRated, ratingData, isFinished, statusCfg }: Props) {
     const [accepted, setAccepted] = useState(os.terms_accepted)
+    const [termsAccepted, setTermsAccepted] = useState(false)
+    const [privacyAccepted, setPrivacyAccepted] = useState(false)
     const [isPending, setIsPending] = useState(false)
     const [isCanvasEmpty, setIsCanvasEmpty] = useState(true)
     const router = useRouter()
@@ -203,10 +205,38 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                             </div>
                         </div>
 
+                        {/* Checkboxes for Terms & Privacy */}
+                        <div className="space-y-3 mb-6 p-4 bg-slate-50 dark:bg-black/10 rounded-2xl border border-slate-100 dark:border-white/5">
+                            <label className="flex items-start gap-3 cursor-pointer select-none">
+                                <input
+                                    type="checkbox"
+                                    id="checkbox-terms"
+                                    checked={termsAccepted}
+                                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                                    className="mt-0.5 w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-white/10 dark:bg-black/25 shrink-0"
+                                />
+                                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                                    Li e aceito os <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:text-indigo-400 font-bold underline transition-colors">Termos de Uso</a> do Nexus OS.
+                                </span>
+                            </label>
+                            <label className="flex items-start gap-3 cursor-pointer select-none">
+                                <input
+                                    type="checkbox"
+                                    id="checkbox-privacy"
+                                    checked={privacyAccepted}
+                                    onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                                    className="mt-0.5 w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-white/10 dark:bg-black/25 shrink-0"
+                                />
+                                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                                    Li e aceito a <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:text-indigo-400 font-bold underline transition-colors">Política de Privacidade</a> do Nexus OS.
+                                </span>
+                            </label>
+                        </div>
+
                         <button
                             onClick={handleSubmit}
-                            disabled={isPending}
-                            className="w-full bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 group"
+                            disabled={isPending || !termsAccepted || !privacyAccepted}
+                            className="w-full bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-3 group"
                         >
                             {isPending ? (
                                 <span className="flex items-center gap-2">

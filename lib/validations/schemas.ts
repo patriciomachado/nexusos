@@ -68,6 +68,7 @@ export const serviceOrderSchema = z.object({
     completed: z.boolean()
   })).optional().nullable(),
   discount_amount: z.number().min(0).optional().default(0),
+  terms_accepted: z.boolean().optional().nullable(),
   photo_front_url: z.string().optional().nullable(),
   photo_back_url: z.string().optional().nullable(),
   items: z.array(z.object({

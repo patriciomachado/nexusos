@@ -7,6 +7,37 @@ import Link from 'next/link'
 import { ArrowLeft, Clock, MapPin, User, Wrench, DollarSign, Calendar, Info, CheckCircle2, XCircle } from 'lucide-react'
 import OSActions from '@/components/os/OSActions'
 import OSGallery from '@/components/os/OSGallery'
+import OSSecurityView from '@/components/os/OSSecurityView'
+
+interface ParsedNotes {
+    cleanNotes: string | null
+    security: { type: 'pin' | 'pattern'; value: string } | null
+}
+
+function parseInternalNotes(notes: string | null): ParsedNotes {
+    if (!notes) return { cleanNotes: null, security: null }
+
+    const lines = notes.split('\n')
+    let security: { type: 'pin' | 'pattern'; value: string } | null = null
+    const cleanLines = lines.filter(line => {
+        if (line.includes('[Segurança]')) {
+            const matchPin = line.match(/\[Segurança\] PIN\/Senha:\s*(.*)/i)
+            const matchPattern = line.match(/\[Segurança\] Padrão Android:\s*(.*)/i)
+            if (matchPin) {
+                security = { type: 'pin', value: matchPin[1].trim() }
+            } else if (matchPattern) {
+                security = { type: 'pattern', value: matchPattern[1].trim() }
+            }
+            return false
+        }
+        return true
+    })
+
+    return {
+        cleanNotes: cleanLines.join('\n').trim() || null,
+        security
+    }
+}
 
 export default async function ServiceOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { userId } = await auth()
@@ -32,6 +63,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
 
     if (!os) notFound()
 
+    const { cleanNotes, security } = parseInternalNotes(os.internal_notes)
     const statusClasses = OS_STATUS_COLORS[os.status] || ''
 
     return (
@@ -174,11 +206,11 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                     </div>
                                 )}
 
-                                {os.internal_notes && (
+                                {cleanNotes && (
                                     <div className="sm:col-span-2">
                                         <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block mb-1">Notas Internas</span>
                                         <p className="text-amber-700 dark:text-amber-400 text-xs bg-amber-500/5 rounded-xl border border-amber-500/10 p-3 italic">
-                                            {os.internal_notes}
+                                            {cleanNotes}
                                         </p>
                                     </div>
                                 )}
@@ -362,6 +394,11 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                     </div>
                                 )}
                             </div>
+                        )}
+
+                        {/* OSSecurityView if security credentials exist */}
+                        {security && (
+                            <OSSecurityView type={security.type} value={security.value} />
                         )}
 
                         {/* Financial Card - Enhanced */}

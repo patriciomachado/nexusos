@@ -41,7 +41,10 @@ export async function PUT(req: NextRequest, { params }: Params) {
     // Validate body
     const validation = serviceOrderSchema.partial().safeParse(body)
     if (!validation.success) {
-        return NextResponse.json({ error: validation.error.format() }, { status: 400 })
+        return NextResponse.json({ 
+            error: 'Dados inválidos no formulário', 
+            details: validation.error.format() 
+        }, { status: 400 })
     }
 
     const { items, ...updateData } = validation.data
