@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
         .single()
 
     const companyName = company?.name || 'Nossa Assistência Técnica'
-    const companyCity = company?.city ? `${company.city}` : 'sua cidade'
+    const companyCity = company?.city ? `${company.city}` : 'nossa cidade'
     const companyPhone = company?.phone || 'nosso WhatsApp'
 
     let osDetailsContext = ''
@@ -48,26 +48,105 @@ export async function POST(req: NextRequest) {
 
         if (os) {
             titleText = `OS #${os.id.slice(0, 5)}: ${os.equipment_description || os.title}`
-            osDetailsContext = `Aparelho: ${os.equipment_description || 'Equipamento'}. Problema: ${os.problem_description || 'Defeito trazido pelo cliente'}. Solução: ${os.solution_applied || 'Reparo concluído na bancada'}.`
+            osDetailsContext = `Aparelho: ${os.equipment_description || 'Equipamento'}. Defeito relatado: ${os.problem_description || 'Falha técnica'}. Reparo realizado: ${os.solution_applied || 'Manutenção concluída na bancada'}.`
         }
     }
 
-    // 3. Construct prompt parameters for AI generation engine
-    const promptSubject = osDetailsContext || topic || 'Manutenção Preventiva e Cuidados com Aparelhos Celulares e Computadores'
-    
-    // We attempt AI generation or fallback to our tuned prompt generator for technical shops
-    const scriptResult = generateTailoredScript({
+    const promptSubject = osDetailsContext || topic || 'Cuidados com Aparelhos Celulares e Computadores na Assistência Técnica'
+
+    // 3. OpenRouter API Call to Claude
+    const apiKey = process.env.OPENROUTER_API_KEY
+    const primaryModel = 'anthropic/claude-3.5-sonnet'
+
+    if (apiKey) {
+        try {
+            const systemPrompt = `Você é o principal especialista do Brasil em marketing de conteúdo e roteiros virais para assistências técnicas de celulares, computadores e eletrônicos.
+Sua missão é gerar um pacote completo de marketing extremamente persuasivo e focado em atrair clientes locais para a loja.
+
+IMPORTANTE: Você deve responder APENAS um objeto JSON válido (sem texto explicativo antes ou depois), seguindo EXATAMENTE este esquema de chaves:
+{
+  "title": "Título descritivo curto",
+  "hook_3s": "Gancho viral e chocante dos primeiros 3 segundos para parar a rolagem no TikTok/Reels",
+  "body_script": "Roteiro da bancada detalhado com indicações de cena [CENA 1 - BANCADA], falas do técnico e demonstrações visuais",
+  "cta_text": "Chamada para ação forte e persuasiva convidando o cliente para vir à loja ou mandar mensagem",
+  "instagram_caption": "Legenda completa para Instagram/TikTok com introdução engajante, benefícios, endereço local e hashtags do nicho",
+  "whatsapp_text": "Texto amigável e direto para Status e Lista de Transmissão do WhatsApp com emojis",
+  "google_post": "Publicação otimizada para SEO local no Google Meu Negócio / Google Maps",
+  "banner_prompt": "Prompt visual descritivo em português para criar a arte/banner promocional"
+}`
+
+            const userPrompt = `
+Empresa: ${companyName}
+Cidade: ${companyCity}
+Contato/Zap: ${companyPhone}
+Assunto / Tema: ${promptSubject}
+Categoria: ${category}
+Tom de Voz: ${tone} (ex: viral, educativo, promocional, bancada)
+Formato Desejado: ${targetFormat}
+
+Gere o pacote completo em JSON.`
+
+            const openRouterRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'HTTP-Referer': process.env.NEXT_PUBLIC_APP_URL || 'https://nexusgestor.com',
+                    'X-Title': 'Nexus Studio AI',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: primaryModel,
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: userPrompt }
+                    ],
+                    temperature: 0.7,
+                    response_format: { type: 'json_object' }
+                })
+            })
+
+            if (openRouterRes.ok) {
+                const aiData = await openRouterRes.json()
+                const rawContent = aiData.choices?.[0]?.message?.content
+                if (rawContent) {
+                    try {
+                        const parsed = JSON.parse(rawContent)
+                        return NextResponse.json({
+                            title: parsed.title || titleText,
+                            category,
+                            hook_3s: parsed.hook_3s || '',
+                            body_script: parsed.body_script || '',
+                            cta_text: parsed.cta_text || '',
+                            instagram_caption: parsed.instagram_caption || '',
+                            whatsapp_text: parsed.whatsapp_text || '',
+                            google_post: parsed.google_post || '',
+                            banner_prompt: parsed.banner_prompt || ''
+                        })
+                    } catch (e) {
+                        console.error('Failed to parse Claude JSON response, falling back:', e)
+                    }
+                }
+            } else {
+                const errText = await openRouterRes.text()
+                console.error('OpenRouter API returned error:', errText)
+            }
+        } catch (aiErr) {
+            console.error('Error calling OpenRouter Claude API:', aiErr)
+        }
+    }
+
+    // 4. Fallback Script Engine if OpenRouter API is not set or temporary connection error
+    const fallbackResult = generateFallbackScript({
         companyName,
         companyCity,
         companyPhone,
         title: titleText,
         subject: promptSubject,
         category,
-        tone,
-        targetFormat
+        tone
     })
 
-    return NextResponse.json(scriptResult)
+    return NextResponse.json(fallbackResult)
 }
 
 interface GenerateParams {
@@ -78,80 +157,70 @@ interface GenerateParams {
     subject: string
     category: string
     tone: string
-    targetFormat: string
 }
 
-function generateTailoredScript(params: GenerateParams) {
-    const { companyName, companyCity, companyPhone, title, subject, category, tone } = params
+function generateFallbackScript(params: GenerateParams) {
+    const { companyName, companyCity, companyPhone, title, subject, category } = params
 
     let hook = ''
     let body = ''
     let cta = ''
-    let caption = ''
-    let whatsapp = ''
-    let googlePost = ''
-    let bannerPrompt = ''
 
     const isPlaca = subject.toLowerCase().includes('placa') || category.toLowerCase().includes('placa')
     const isBateria = subject.toLowerCase().includes('bateria') || category.toLowerCase().includes('bateria')
-    const isTela = subject.toLowerCase().includes('tela') || subject.toLowerCase().includes('vidro') || category.toLowerCase().includes('tela')
+    const isTela = subject.toLowerCase().includes('tela') || subject.toLowerCase().includes('vidro')
     const isWater = subject.toLowerCase().includes('água') || subject.toLowerCase().includes('molhado') || subject.toLowerCase().includes('praia')
 
     if (isWater) {
-        hook = `🚨 NUNCA coloque seu celular no arroz se ele cair na água! Veja o que acontece na verdade...`
-        body = `[CENA 1 - BANCADA]: Mostre a placa de um celular oxidada sob o microscópio ou sob boa iluminação.\n\n` +
-            `"Muita gente acha que o arroz seca o celular, mas na verdade o amido do arroz junta com a água e acelera a corrosão dos componentes internos da placa!\n\n` +
-            `[CENA 2 - TÉCNICO DEMONSTRANDO]:\n` +
-            `O segredo é DESLIGAR o aparelho imediatamente, não colocar no carregador de jeito nenhum e trazer direto para a bancada para a banho ultrassônico de desoxidação!"`
-        cta = `📲 Teve esse problema? Traga seu aparelho hoje mesmo na ${companyName} em ${companyCity}. Atendimento rápido antes que a placa queime!`
+        hook = `🚨 NUNCA coloque seu celular no arroz se ele cair na água! Veja o que acontece de verdade...`
+        body = `[CENA 1 - BANCADA]: Mostre a placa de um celular oxidada sob o microscópio.\n\n` +
+            `"O amido do arroz acelera a oxidação interna dos conectores! O certo é desligar imediatamente e trazer para um banho ultrassônico de desoxidação."\n\n` +
+            `[CENA 2 - TÉCNICO DEMONSTRANDO]: Mostre a cuba ultrassônica limpando a placa.`
+        cta = `📲 Teve esse problema? Traga na ${companyName} em ${companyCity} antes que a placa queime!`
     } else if (isBateria) {
-        hook = `⚡ Seu celular tá descarregando rápido demais ou esquentando muito no bolso? Dá uma olhada nisso!`
-        body = `[CENA 1 - MOSTRANDO A BATERIA ESTUFADA OU TESTE DE SAÚDE]:\n` +
-            `"Quando a bateria do seu aparelho começa a perder a química interna, ela não só descarrega rápido, como pode estufar e pressionar a tela por dentro, correndo o risco de quebrar o display!\n\n` +
-            `[CENA 2 - TROCA RÁPIDA NA BANCADA]:\n` +
-            `Aqui na bancada a gente faz o teste de mAh na hora e faz a substituição por uma bateria selada de alta performance com garantia!"`
-        cta = `🔋 Venha testar a saúde da sua bateria grátis aqui na ${companyName} (${companyCity})!`
+        hook = `⚡ Seu celular tá descarregando rápido demais ou esquentando no bolso? Dá uma olhada nisso!`
+        body = `[CENA 1 - TESTE DE SAÚDE]: Mostre o medidor de consumo de corrente na bancada.\n\n` +
+            `"Quando a bateria perde a química interna, ela estufa e pode empurrar a tela até quebrar!\n\n` +
+            `[CENA 2 - TROCA NA BANCADA]: Substituição por bateria homologada com garantia."`
+        cta = `🔋 Teste a saúde da sua bateria grátis hoje na ${companyName} (${companyCity})!`
     } else if (isTela) {
         hook = `😱 Chegou esse aparelho com a tela TOTALMENTE destruída! Será que tem salvação?`
-        body = `[CENA 1 - ANTES]: Mostre o aparelho trincado em detalhes com close na câmera.\n\n` +
-            `"O cliente achou que ia ter que comprar outro celular novo... Mas a gente abriu o aparelho, higienizou os conectores e instalamos uma tela com brilho e toque de fábrica!\n\n` +
-            `[CENA 2 - DEPOIS]: Mostre o teste de touch deslizando perfeitamente na tela novinha."`
-        cta = `✨ Não precisa comprar outro! Recupere seu celular na ${companyName}. Atendimento presencial e orçamento sem compromisso.`
+        body = `[CENA 1 - ANTES]: Mostre o aparelho trincado em detalhes.\n\n` +
+            `"Fizemos a desmontagem, alinhamos a carcaça e instalamos um display com brilho e toque originais!\n\n` +
+            `[CENA 2 - DEPOIS]: Teste fluido de touch screen."`
+        cta = `✨ Não precisa comprar outro! Recupere seu celular na ${companyName} em ${companyCity}.`
     } else if (isPlaca) {
-        hook = `🔬 Outra assistência disse que esse celular NÃO TINHA MAIS CONSERTO... Olha o que achamos na placa!`
-        body = `[CENA 1 - MICROSCÓPIO]: Mostre a tela do microscópio com o capacitor em curto-circuito.\n\n` +
-            `"Muito lugar troca peça, mas aqui na ${companyName} nós fazemos REPARO DE PLACA em nível de componentes! Identificamos um microcapacitor queimado de apenas 1mm.\n\n` +
-            `[CENA 2 - APARELHO LIGANDO]: Removemos o curto e o celular ligou com TODOS OS DADOS do cliente salvos!"`
-        cta = `👨‍💻 Quer um diagnóstico de verdade? Fale com nosso time da ${companyName} em ${companyCity}!`
+        hook = `🔬 Outra assistência disse que esse celular NÃO TINHA CONSERTO... Olha o que achamos!`
+        body = `[CENA 1 - MICROSCÓPIO]: Identificando microcapacitor em curto.\n\n` +
+            `"Aqui na ${companyName} fazemos reparo em nível de componentes. Trocamos a peça com defeito e salvamos todos os dados do cliente!"`
+        cta = `👨‍💻 Quer um diagnóstico de verdade? Fale com a ${companyName} (${companyCity})!`
     } else {
-        hook = `⚠️ Se você usa o celular ou notebook todo dia para trabalhar, VOCÊ PRECISA SABER DISSO!`
-        body = `[CENA 1 - BANCADA E FERRAMENTAS]:\n` +
-            `"Poeira, umidade do bolso e sujeira nos conectores são os maiores vilões dos eletrônicos. Uma manutenção preventiva anual evita que a placa queime ou que a bateria estufe.\n\n` +
-            `[CENA 2 - MOSTRANDO LIMPEZA]:\n` +
-            `Aqui nós fazemos a higienização completa, limpeza do conector de carga e aplicação de pasta térmica de alta condutividade!"`
-        cta = `🛠️ Agende sua revisão hoje na ${companyName}. Chame no WhatsApp: ${companyPhone}`
+        hook = `⚠️ Se você usa o celular ou notebook para trabalhar, VOCÊ PRECISA SABER DISSO!`
+        body = `[CENA 1 - BANCADA]: Mostre o acúmulo de poeira e sujeira interna.\n\n` +
+            `"Uma manutenção preventiva limpa o cooler, troca a pasta térmica ressecada e evita a queima da placa!"`
+        cta = `🛠️ Agende sua manutenção preventiva na ${companyName}. Chame no WhatsApp: ${companyPhone}`
     }
 
-    caption = `${hook}\n\n` +
-        `Manter seu equipamento em dia é muito mais barato do que comprar um novo!\n\n` +
-        `Aqui na ${companyName} oferecemos:\n` +
-        `✅ Peças de alta qualidade\n` +
-        `✅ Garantia estendida\n` +
-        `✅ Orçamento transparente na hora\n\n` +
-        `📍 Estamos em ${companyCity}.\n` +
-        `💬 Dúvidas ou orçamentos? Clique no link da bio ou chame no WhatsApp!\n\n` +
-        `#assistenciatecnica #consertodecelular #reparodeplaca #${companyCity.toLowerCase().replace(/\s+/g, '')} #tecnologia #manutencaodenotebook`
+    const caption = `${hook}\n\n` +
+        `Manter seu equipamento em dia sai muito mais barato do que comprar um novo!\n\n` +
+        `Aqui na ${companyName} você encontra:\n` +
+        `✅ Peças com garantia estendida\n` +
+        `✅ Diagnóstico rápido e transparente\n` +
+        `✅ Equipe especializada\n\n` +
+        `📍 Atendendo em ${companyCity}.\n` +
+        `💬 WhatsApp: ${companyPhone}\n\n` +
+        `#assistenciatecnica #consertodecelular #reparodeplaca #${companyCity.toLowerCase().replace(/\s+/g, '')} #tecnologia`
 
-    whatsapp = `Oi! Tudo bem? 👋\n\n` +
+    const whatsapp = `Oi! Tudo bem? 👋\n\n` +
         `Passando para lembrar que seu aparelho merece cuidado especializado! 📱💻\n\n` +
         `Estamos com condições especiais esta semana na *${companyName}* para trocas de bateria, telas e revisões técnicas gerais.\n\n` +
         `Quer fazer um orçamento rápido sem compromisso? Responda essa mensagem ou mande uma foto do seu aparelho! 🚀`
 
-    googlePost = `Necessitando de conserto rápido e garantido para seu celular ou notebook em ${companyCity}?\n\n` +
+    const googlePost = `Necessitando de conserto rápido e garantido para seu celular ou computador em ${companyCity}?\n\n` +
         `Na ${companyName} fazemos troca de tela, substituição de bateria, reparos em placa e limpeza preventiva com rapidez e transparência.\n\n` +
         `Visite nossa loja ou entre em contato pelo telefone/WhatsApp: ${companyPhone}.`
 
-    bannerPrompt = `Banner promocional estilo futurista em tons de azul escuro e dourado. Texto em destaque: 'REVISÃO TÉCNICA E TROCA DE TELA - ${companyName.toUpperCase()}'. Foto de bancada técnica profissional limpa com ferramentas de precisão.`
+    const bannerPrompt = `Banner promocional estilo futurista em tons de azul e dourado com logotipo '${companyName}'. Texto: 'REVISÃO TÉCNICA E TROCA DE TELA EM ${companyCity.toUpperCase()}'.`
 
     return {
         title,
