@@ -159,6 +159,7 @@ export const SOURCE_TYPE_LABELS: Record<string, string> = {
     product_sale: 'Venda (PDV)',
     service_order: 'Ordem de Serviço',
     inventory_adjustment: 'Ajuste de Estoque',
+    recurring_expense: 'Conta Fixa',
 }
 
 export const APPOINTMENT_STATUS_LABELS: Record<string, string> = {

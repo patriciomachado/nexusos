@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
+import { processRecurringExpenses } from '@/lib/recurring-expenses'
 
 export async function GET(req: NextRequest) {
     const ctx = await getContext()
@@ -79,59 +80,7 @@ export async function GET(req: NextRequest) {
 
     // Apply recurring expenses if register is open
     if (cashRegister) {
-        const now = new Date()
-        const currentDay = now.getDate()
-        const currentMonthYear = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-
-        // Find active recurring expenses for this company that should have been applied by now
-        const { data: recurringExpenses } = await db
-            .from('recurring_expenses')
-            .select('*')
-            .eq('company_id', companyId)
-            .eq('is_active', true)
-            .lte('day_of_month', currentDay)
-
-        if (recurringExpenses && recurringExpenses.length > 0) {
-            // Check which ones are already applied to this month/register
-            const { data: applied } = await db
-                .from('applied_recurring_expenses')
-                .select('recurring_expense_id')
-                .eq('month_year', currentMonthYear)
-                .eq('company_id', companyId)
-
-            const appliedIds = new Set(applied?.map(a => a.recurring_expense_id))
-
-            for (const expense of recurringExpenses) {
-                if (!appliedIds.has(expense.id)) {
-                    // Apply expense: Create transaction
-                    const { error: txError } = await db
-                        .from('cash_transactions')
-                        .insert({
-                            company_id: companyId,
-                            cash_register_id: cashRegister.id,
-                            description: `[Fixa] ${expense.description}`,
-                            amount: expense.amount,
-                            type: 'exit',
-                            transaction_type_id: expense.transaction_type_id,
-                            payment_method_id: expense.payment_method_id,
-                            source_type: 'recurring_expense',
-                            user_id: ctx.dbUser.id
-                        })
-
-                    if (!txError) {
-                        // Mark as applied
-                        await db
-                            .from('applied_recurring_expenses')
-                            .insert({
-                                company_id: companyId,
-                                cash_register_id: cashRegister.id,
-                                recurring_expense_id: expense.id,
-                                month_year: currentMonthYear
-                            })
-                    }
-                }
-            }
-        }
+        await processRecurringExpenses(db, companyId, cashRegister.id, ctx.dbUser.id)
     }
 
     return NextResponse.json(cashRegister, {

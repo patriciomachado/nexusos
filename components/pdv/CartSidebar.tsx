@@ -47,7 +47,7 @@ export default function CartSidebar() {
             {/* Scrollable Cart List */}
             <div className="flex-1 overflow-y-auto p-4 lg:p-8 pt-2 lg:pt-4 space-y-3 lg:space-y-4 custom-scrollbar">
                 {cart.map((item) => (
-                    <div key={item.id} className="group bg-background/50 border border-border/50 rounded-3xl p-4 flex items-center gap-4 hover:border-primary/30 transition-all hover:bg-card">
+                    <div key={item.id} className="group bg-white/[0.01] border border-white/5 rounded-3xl p-4 flex items-center gap-4 hover:border-primary/20 transition-all duration-300 hover:bg-white/[0.03]">
                         <div className="w-20 h-20 rounded-2xl bg-muted overflow-hidden flex-shrink-0 border border-border/30 flex items-center justify-center">
                             {item.product.image_url ? (
                                 <img
@@ -123,9 +123,9 @@ export default function CartSidebar() {
                             key={method.id}
                             //@ts-ignore
                             onClick={() => setPaymentMethod(method.id)}
-                            className={`flex flex-col items-center justify-center gap-2 py-4 rounded-3xl border-2 transition-all active:scale-95 ${paymentMethod === method.id
-                                    ? 'bg-primary/10 border-primary text-primary shadow-lg shadow-primary/10 scale-105'
-                                    : 'bg-background border-border/50 text-muted-foreground hover:border-primary/20 hover:text-foreground'
+                            className={`flex flex-col items-center justify-center gap-2 py-4 rounded-3xl border transition-all duration-300 active:scale-95 ${paymentMethod === method.id
+                                    ? 'bg-primary/20 border-primary text-primary shadow-lg shadow-primary/15 scale-105'
+                                    : 'bg-white/[0.02] border-white/5 text-muted-foreground hover:border-primary/20 hover:text-foreground hover:bg-white/[0.04]'
                                 }`}
                         >
                             <method.icon className="w-5 h-5" />

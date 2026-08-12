@@ -9,7 +9,7 @@ import {
     MoreHorizontal, Eye, Edit2, MessageCircle,
     CheckCircle, Clock, Ban, Trash,
     Settings, Printer, Share2, AlertTriangle, DollarSign,
-    X, ChevronRight, LayoutGrid
+    X, ChevronRight, LayoutGrid, Sparkles
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import PayOSModal from './PayOSModal'
@@ -117,6 +117,17 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                         <Edit2 className="w-3.5 h-3.5" />
                     </div>
                     <span className="font-bold">Editar</span>
+                </button>
+
+                <button
+                    onClick={() => router.push(`/studio?os_id=${os.id}`)}
+                    className="flex flex-col items-start gap-1 justify-center px-3 py-2 rounded-xl text-[11px] transition-all text-amber-400 hover:bg-amber-500/10 outline-none cursor-pointer border border-amber-500/30 bg-amber-500/10"
+                    title="Gerar Vídeo/Post no Nexus Studio"
+                >
+                    <div className="p-1 rounded-lg bg-amber-500/20 text-amber-400">
+                        <Sparkles className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="font-bold">Studio AI</span>
                 </button>
 
                 <button

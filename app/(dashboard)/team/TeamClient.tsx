@@ -77,7 +77,7 @@ export default function TeamClient() {
                 </div>
 
                 {/* Dashboard Insight Bar */}
-                <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
+                <div className="glass-premium bg-card/65 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
                     <div className="flex items-center gap-6">
                         <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
                             <Users className="w-7 h-7" />

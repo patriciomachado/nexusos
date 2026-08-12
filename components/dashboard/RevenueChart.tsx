@@ -36,7 +36,7 @@ export default function RevenueChart({ data = defaultData, height = 300 }: Reven
     const formatBRL = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val)
 
     return (
-        <div style={{ height }} className="w-full p-3 sm:p-4 rounded-2xl bg-card border border-border relative overflow-hidden group" suppressHydrationWarning>
+        <div style={{ height }} className="w-full p-4 sm:p-6 rounded-3xl glass-premium bg-card/65 backdrop-blur-md border border-white/5 relative overflow-hidden group shadow-lg" suppressHydrationWarning>
             <div className="flex items-center justify-between mb-4 relative z-10">
                 <div className="flex gap-4 sm:gap-6">
                     <div>
@@ -44,18 +44,18 @@ export default function RevenueChart({ data = defaultData, height = 300 }: Reven
                         <p className="text-base sm:text-lg font-black text-foreground">{formatBRL(rangeRevenue)}</p>
                     </div>
                     <div>
-                        <h3 className="text-[9px] font-black text-emerald-500/60 uppercase tracking-[0.2em]">Lucro Líquido ({days}d)</h3>
-                        <p className={`text-base sm:text-lg font-black ${rangeProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                        <h3 className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em] opacity-80">Lucro Líquido ({days}d)</h3>
+                        <p className={`text-base sm:text-lg font-black ${rangeProfit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                             {formatBRL(rangeProfit)}
                         </p>
                     </div>
                 </div>
-                <div className="flex gap-1 sm:gap-2">
+                <div className="flex gap-1.5 sm:gap-2">
                     {[7, 30].map(d => (
                         <button
                             key={d}
                             onClick={() => setDays(d)}
-                            className={`px-1.5 py-1 sm:px-2 sm:py-1 lg:px-3 lg:py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${days === d ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'}`}
+                            className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 ${days === d ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 border border-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10'}`}
                         >
                             {d} Dias
                         </button>
@@ -63,41 +63,42 @@ export default function RevenueChart({ data = defaultData, height = 300 }: Reven
                 </div>
             </div>
 
-            <div className="h-full w-full absolute inset-0 pt-16">
+            <div className="h-full w-full absolute inset-0 pt-20">
                 {mounted ? (
                     <ResponsiveContainer width="100%" height="80%">
                         <AreaChart
                             data={filteredData}
-                            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                            margin={{ top: 10, right: 30, left: 10, bottom: 0 }}
                         >
                             <defs>
                                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
-                                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.25} />
+                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                                 </linearGradient>
                                 <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
+                                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.25} />
                                     <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" opacity={0.1} />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" opacity={0.05} />
                             <XAxis
                                 dataKey="name"
                                 axisLine={false}
                                 tickLine={false}
-                                tick={{ fill: 'currentColor', opacity: 0.3, fontSize: 9, fontWeight: 900 }}
+                                tick={{ fill: 'currentColor', opacity: 0.4, fontSize: 9, fontWeight: 900 }}
                                 interval={days === 30 ? 5 : 0}
                                 dy={10}
                             />
                             <YAxis hide />
                             <Tooltip
                                 contentStyle={{
-                                    backgroundColor: 'hsl(var(--card))',
-                                    border: '1px solid hsl(var(--border))',
-                                    borderRadius: '16px',
+                                    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+                                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                                    borderRadius: '24px',
                                     fontSize: '10px',
-                                    color: 'hsl(var(--foreground))',
-                                    backdropFilter: 'blur(10px)'
+                                    color: '#f8fafc',
+                                    backdropFilter: 'blur(16px)',
+                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
                                 }}
                                 itemStyle={{ fontWeight: 900 }}
                                 formatter={(value: any, name: any) => [
@@ -110,25 +111,25 @@ export default function RevenueChart({ data = defaultData, height = 300 }: Reven
                                 dataKey="revenue"
                                 name="revenue"
                                 stroke="#3b82f6"
-                                strokeWidth={3}
+                                strokeWidth={3.5}
                                 fillOpacity={1}
                                 fill="url(#colorRevenue)"
-                                animationDuration={2000}
+                                animationDuration={1500}
                             />
                             <Area
                                 type="monotone"
                                 dataKey="profit"
                                 name="profit"
                                 stroke="#10b981"
-                                strokeWidth={3}
+                                strokeWidth={3.5}
                                 fillOpacity={1}
                                 fill="url(#colorProfit)"
-                                animationDuration={2500}
+                                animationDuration={2000}
                             />
                         </AreaChart>
                     </ResponsiveContainer>
                 ) : (
-                    <div className="w-full h-[80%] bg-muted/20 animate-pulse rounded-xl" />
+                    <div className="w-full h-[80%] bg-white/5 animate-pulse rounded-2xl" />
                 )}
             </div>
         </div>

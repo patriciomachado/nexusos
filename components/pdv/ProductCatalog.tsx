@@ -155,7 +155,7 @@ export default function ProductCatalog() {
                     onMouseLeave={handleMouseLeave}
                     onMouseUp={handleMouseUp}
                     onMouseMove={handleMouseMove}
-                    className="flex items-center gap-2 bg-muted/30 p-1.5 rounded-2xl border border-border/50 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none"
+                    className="flex items-center gap-2 glass-premium bg-white/[0.02] p-1.5 rounded-2xl border border-white/5 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none"
                 >
                     <button
                         onClick={() => setActiveCategory('all')}

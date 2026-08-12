@@ -64,7 +64,7 @@ export default async function PaymentsPage({
             <div className="p-6 max-w-7xl mx-auto space-y-8">
                 {/* Dashboard Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="md:col-span-2 p-8 rounded-3xl bg-card border border-border backdrop-blur-2xl relative overflow-hidden group shadow-2xl">
+                    <div className="md:col-span-2 p-8 rounded-3xl glass-premium bg-card/65 border border-white/5 backdrop-blur-2xl relative overflow-hidden group shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-primary/5">
                         <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 blur-[80px] rounded-full group-hover:bg-primary/10 transition-colors" />
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-4">
@@ -83,7 +83,7 @@ export default async function PaymentsPage({
                         </div>
                     </div>
 
-                    <div className="p-8 rounded-3xl bg-card border border-border backdrop-blur-xl relative group shadow-lg">
+                    <div className="p-8 rounded-3xl glass-premium bg-card/65 border border-white/5 backdrop-blur-xl relative group shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-primary/5">
                         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-4">
@@ -97,7 +97,7 @@ export default async function PaymentsPage({
                         </div>
                     </div>
 
-                    <div className="p-8 rounded-3xl bg-card border border-border backdrop-blur-xl flex flex-col justify-center items-center group shadow-lg">
+                    <div className="p-8 rounded-3xl glass-premium bg-card/65 border border-white/5 backdrop-blur-xl flex flex-col justify-center items-center group shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-primary/5">
                         <RegisterPaymentButton customers={customers || []} orders={orders || []} companyId={user?.company_id} />
                         <p className="text-[10px] text-muted-foreground/20 mt-4 font-mono uppercase tracking-widest text-center">Registrar novo recebimento</p>
                     </div>
@@ -121,7 +121,7 @@ export default async function PaymentsPage({
                 </div>
 
                 {/* Transactions Table */}
-                <div className="rounded-3xl border border-border bg-card/40 backdrop-blur-2xl overflow-hidden shadow-2xl">
+                <div className="rounded-3xl border border-white/5 bg-card/65 glass-premium backdrop-blur-2xl overflow-hidden shadow-2xl">
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
                             <thead>
@@ -140,7 +140,7 @@ export default async function PaymentsPage({
                                     const cfg = STATUS_CONFIG[p.payment_status] || { label: p.payment_status, color: 'text-muted-foreground/40', bg: 'bg-muted/5', border: 'border-border/10' }
 
                                     return (
-                                        <tr key={p.id} className="group hover:bg-muted/40 transition-all">
+                                        <tr key={p.id} className="group hover:bg-white/[0.03] transition-colors">
                                             <td className="p-5">
                                                 <div className="flex flex-col">
                                                     <span className="text-sm font-medium text-foreground/70">{formatDateTime(p.payment_date).split(',')[0]}</span>

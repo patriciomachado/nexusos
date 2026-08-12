@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { cashRegisterOpenSchema } from '@/lib/validations/schemas'
+import { processRecurringExpenses } from '@/lib/recurring-expenses'
 
 export async function POST(req: NextRequest) {
     const ctx = await getContext()
@@ -53,6 +54,11 @@ export async function POST(req: NextRequest) {
         .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Auto-process any due recurring expenses for the newly opened cash register
+    if (data?.id) {
+        await processRecurringExpenses(db, companyId, data.id, dbUser.id)
+    }
 
     return NextResponse.json(data, { status: 201 })
 }

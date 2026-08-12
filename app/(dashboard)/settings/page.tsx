@@ -57,7 +57,7 @@ export default async function SettingsPage() {
                         </div>
                     </div>
 
-                    <div className="p-10 rounded-[3.5rem] bg-card/40 border border-white/5 backdrop-blur-3xl shadow-2xl overflow-hidden relative group">
+                    <div className="p-10 rounded-[3.5rem] glass-premium bg-card/65 border border-white/5 backdrop-blur-3xl shadow-2xl overflow-hidden relative group transition-all duration-300 hover:scale-[1.01] hover:shadow-primary/5">
                         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/3 group-hover:bg-indigo-500/10 transition-colors duration-700" />
                         <CompanySettingsForm company={company} companyId={user?.company_id} />
                     </div>
@@ -83,7 +83,7 @@ export default async function SettingsPage() {
                             </div>
                             <h2 className="text-3xl font-black text-foreground tracking-tighter">Métodos de Pagamento</h2>
                         </div>
-                        <div className="p-10 rounded-[3.5rem] bg-card/40 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group transition-all duration-500 hover:border-primary/20">
+                        <div className="p-10 rounded-[3.5rem] glass-premium bg-card/65 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group transition-all duration-300 hover:scale-[1.01] hover:border-primary/20 hover:shadow-primary/5">
                             <div className="absolute top-0 left-0 w-96 h-96 bg-primary/5 blur-[100px] rounded-full -translate-x-1/2 -translate-y-1/2 group-hover:bg-primary/10 transition-colors" />
                             <div className="relative z-10">
                                 <PaymentMethodsSettings />

@@ -133,7 +133,7 @@ export default async function ServiceOrdersPage({
                                     return (
                                         <div
                                             key={order.id}
-                                            className="relative block w-full hover:bg-white/5 transition-all duration-300 cursor-pointer select-none group"
+                                            className="relative block w-full hover:bg-white/[0.03] hover:scale-[1.005] border-l-2 border-l-transparent hover:border-l-primary transition-all duration-300 cursor-pointer select-none group"
                                         >
                                             <div className="grid grid-cols-12 gap-4 p-6 items-center">
                                                 <div className="col-span-1 font-mono text-xs font-black text-muted-foreground/40 tracking-tighter">
@@ -229,7 +229,7 @@ export default async function ServiceOrdersPage({
                                     <Link
                                         key={order.id}
                                         href={`/service-orders/${order.id}`}
-                                        className="block p-5 rounded-3xl bg-card/60 backdrop-blur-xl border border-white/5 hover:border-primary/30 transition-all hover:bg-white/[0.02] active:scale-98"
+                                        className="block p-5 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-primary/20 hover:scale-[1.02] transition-all duration-300 active:scale-[0.98] shadow-md"
                                     >
                                         <div className="flex items-center justify-between mb-3">
                                             <span className="text-xs font-mono font-black text-muted-foreground/50">

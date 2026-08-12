@@ -133,11 +133,11 @@ export default function AppointmentsCalendar({
                                             openAppointment(a)
                                         }}
                                         className={cn(
-                                            "px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-tighter truncate border transition-all hover:scale-[1.02]",
-                                            a.status === 'scheduled' ? "bg-blue-500/10 border-blue-500/20 text-blue-400" :
-                                                a.status === 'confirmed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
-                                                    a.status === 'completed' ? "bg-purple-500/10 border-purple-500/20 text-purple-400" :
-                                                        "bg-orange-500/10 border-orange-500/20 text-orange-400"
+                                            "px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-tighter truncate border transition-all duration-300 hover:scale-[1.03] cursor-pointer",
+                                            a.status === 'scheduled' ? "bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500/20" :
+                                                a.status === 'confirmed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20" :
+                                                    a.status === 'completed' ? "bg-purple-500/10 border-purple-500/20 text-purple-400 hover:bg-purple-500/20" :
+                                                        "bg-orange-500/10 border-orange-500/20 text-orange-400 hover:bg-orange-500/20"
                                         )}
                                     >
                                         {a.service_orders?.title || 'Compromisso'}
@@ -186,7 +186,7 @@ export default function AppointmentsCalendar({
                                     <div
                                         key={a.id}
                                         onClick={() => openAppointment(a)}
-                                        className="p-3 rounded-xl border border-border/10 bg-muted/20 cursor-pointer hover:bg-muted/30 transition-all"
+                                        className="p-3 rounded-xl border border-white/5 bg-white/[0.02] cursor-pointer hover:bg-white/[0.05] hover:scale-[1.02] transition-all duration-300"
                                     >
                                         <div className="text-[9px] font-black text-primary mb-1">
                                             {new Date(a.scheduled_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
@@ -213,7 +213,7 @@ export default function AppointmentsCalendar({
                         <div
                             key={a.id}
                             onClick={() => openAppointment(a)}
-                            className="p-6 rounded-3xl border border-border/10 bg-muted/20 cursor-pointer hover:scale-[1.01] transition-all flex items-center justify-between"
+                            className="p-6 rounded-3xl border border-white/5 bg-white/[0.02] cursor-pointer hover:scale-[1.02] transition-all duration-300 flex items-center justify-between shadow-lg"
                         >
                             <div className="flex items-center gap-6">
                                 <div className="text-xl font-black text-primary">
@@ -321,10 +321,10 @@ export default function AppointmentsCalendar({
                             <div
                                 key={a.id}
                                 onClick={() => openAppointment(a)}
-                                className="relative pl-6 border-l-2 border-primary/20 py-2 group cursor-pointer hover:border-primary transition-all rounded-r-xl hover:bg-muted/[0.02]"
+                                className="relative pl-6 border-l-2 border-primary/30 py-3 group cursor-pointer hover:border-primary transition-all duration-300 rounded-r-2xl hover:bg-white/[0.02] hover:scale-[1.01]"
                                 suppressHydrationWarning
                             >
-                                <div className="absolute left-[-5px] top-3 w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(99,102,241,0.5)] group-hover:scale-125 transition-transform" suppressHydrationWarning />
+                                <div className="absolute left-[-5px] top-4 w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(99,102,241,0.5)] group-hover:scale-125 transition-transform" suppressHydrationWarning />
                                 <div className="text-[10px] font-black text-muted-foreground/40 mb-1" suppressHydrationWarning>{new Date(a.scheduled_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</div>
                                 <h3 className="text-sm font-black text-foreground group-hover:text-primary transition-colors leading-tight">{a.service_orders?.title || 'Compromisso'}</h3>
                                 <div className="flex items-center gap-2 mt-2" suppressHydrationWarning>
@@ -440,7 +440,7 @@ export default function AppointmentsCalendar({
                                     )}
                         </div>
 
-                        <div className="p-6 rounded-[2rem] bg-card/40 border border-border/20" suppressHydrationWarning>
+                        <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5" suppressHydrationWarning>
                             <div className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest mb-2" suppressHydrationWarning>Status</div>
                             <div className={cn(
                                 "inline-flex px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",

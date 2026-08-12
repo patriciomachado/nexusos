@@ -354,7 +354,7 @@ export default async function DashboardPage() {
                     {/* Desktop: Original Grid Layout */}
                     <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-6">
                         {kpis.map((kpi) => (
-                            <div key={kpi.label} className="glass-premium rounded-[2rem] p-6 lg:p-8 transition-all group relative overflow-hidden active:scale-[0.98] h-full" suppressHydrationWarning>
+                            <div key={kpi.label} className="glass-premium rounded-[2rem] p-6 lg:p-8 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] hover:shadow-primary/5 group relative overflow-hidden h-full border border-white/5" suppressHydrationWarning>
                                 <div className="flex flex-col justify-between h-full relative z-10" suppressHydrationWarning>
                                     <div className="space-y-4">
                                         <div className={cn(
@@ -394,7 +394,7 @@ export default async function DashboardPage() {
                 <div className="space-y-6" suppressHydrationWarning>
                     {/* Main Row: Chart */}
                     <div className="space-y-6" suppressHydrationWarning>
-                        <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-lg transition-all h-[350px]" suppressHydrationWarning>
+                        <div className="glass-premium rounded-3xl overflow-hidden shadow-lg transition-all duration-300 h-[350px] border border-white/5" suppressHydrationWarning>
                             <RevenueChart 
                                 data={data.chartData} 
                                 height={280} 

@@ -213,7 +213,7 @@ export default function CashRegisterClient() {
             <main className="px-4 lg:px-8 py-6 max-w-7xl mx-auto space-y-8">
                 {/* Dashboard Tabs & Global Actions */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="inline-flex p-1 bg-muted/50 border border-border rounded-xl">
+                    <div className="inline-flex p-1 bg-white/[0.02] border border-white/5 rounded-xl">
                         <button
                             onClick={() => setActiveTab('daily')}
                             className={cn(
@@ -273,7 +273,7 @@ export default function CashRegisterClient() {
                         {/* LEFT COLUMN: Stats & Chart */}
                         <div className="lg:col-span-8 space-y-8">
                             {/* Main Balance Card */}
-                            <div className="relative overflow-hidden bg-card/40 border border-border rounded-3xl p-8 group">
+                            <div className="relative overflow-hidden glass-premium bg-card/65 border border-white/5 rounded-3xl p-8 group">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] -mr-32 -mt-32" />
                                 
                                 <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -318,24 +318,25 @@ export default function CashRegisterClient() {
                                                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                                                 </linearGradient>
                                             </defs>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.3)" />
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.3)" opacity={0.1} />
                                             <XAxis 
                                                 dataKey="time" 
                                                 axisLine={false} 
                                                 tickLine={false} 
-                                                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                                                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))', opacity: 0.5 }}
                                                 dy={10}
                                             />
                                             <YAxis hide />
                                             <Tooltip 
                                                 contentStyle={{ 
-                                                    backgroundColor: 'hsl(var(--card))', 
-                                                    border: '1px solid hsl(var(--border))',
-                                                    color: 'hsl(var(--card-foreground))',
-                                                    borderRadius: '12px',
-                                                    fontSize: '12px'
+                                                    backgroundColor: 'rgba(15, 23, 42, 0.85)', 
+                                                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                                                    color: '#f8fafc',
+                                                    borderRadius: '16px',
+                                                    fontSize: '10px',
+                                                    backdropFilter: 'blur(10px)'
                                                 }}
-                                                itemStyle={{ color: 'hsl(var(--foreground))' }}
+                                                itemStyle={{ color: '#f8fafc' }}
                                             />
                                             <Area 
                                                 type="monotone" 
@@ -352,7 +353,7 @@ export default function CashRegisterClient() {
                             </div>
 
                             {/* Transaction List */}
-                            <div className="bg-card/40 border border-border rounded-3xl overflow-hidden">
+                            <div className="glass-premium bg-card/65 border border-white/5 rounded-3xl overflow-hidden shadow-lg">
                                 <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                                     <h3 className="text-sm font-bold flex items-center gap-2">
                                         <ArrowRightLeft className="w-4 h-4 text-muted-foreground" />
@@ -446,7 +447,7 @@ export default function CashRegisterClient() {
                         {/* RIGHT COLUMN: Quick Actions & Insights */}
                         <div className="lg:col-span-4 space-y-8">
                             {/* Actions Card */}
-                            <div className="bg-card/40 border border-border rounded-3xl p-6 space-y-6">
+                            <div className="glass-premium bg-card/65 border border-white/5 rounded-3xl p-6 space-y-6 shadow-lg">
                                 <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                     <Zap className="w-4 h-4 text-primary" />
                                     Ações Rápidas
@@ -524,7 +525,7 @@ export default function CashRegisterClient() {
                                 )}
                             
                             {/* Performance Insights */}
-                            <div className="bg-card/40 border border-border rounded-3xl p-6 space-y-6">
+                            <div className="glass-premium bg-card/65 border border-white/5 rounded-3xl p-6 space-y-6 shadow-lg">
                                 <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                     <Activity className="w-4 h-4 text-primary" />
                                     Métricas de Hoje
@@ -612,7 +613,10 @@ export default function CashRegisterClient() {
                 {isRecurringModalOpen && (
                     <RecurringExpensesModal
                         isOpen={isRecurringModalOpen}
-                        onClose={() => setIsRecurringModalOpen(false)}
+                        onClose={() => {
+                            setIsRecurringModalOpen(false)
+                            fetchData()
+                        }}
                     />
                 )}
 

@@ -6,25 +6,56 @@ import { useState, useEffect } from 'react'
 import { UserButton } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
 import {
-    LayoutDashboard, ClipboardList, Calendar, Users, Wrench,
+    LayoutDashboard, ClipboardList, Calendar, Users,
     Package, BarChart3, Settings, Zap,
-    Wallet, PanelLeft, PanelLeftClose, MousePointer2
+    Wallet, PanelLeft, PanelLeftClose, MousePointer2,
+    HeartHandshake, Landmark, Users2, Wrench, Sparkles
 } from 'lucide-react'
 import { useAppStore } from '@/store/appStore'
 import { UserRole } from '@/types'
 
-const navItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'] },
-    { href: '/service-orders', label: 'Ordens de Serviço', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'] },
-    { href: '/appointments', label: 'Agendamentos', icon: Calendar, roles: ['admin', 'manager'] },
-    { href: '/customers', label: 'Clientes', icon: Users, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'] },
-    { href: '/technicians', label: 'Técnicos', icon: Wrench, roles: ['admin', 'manager'] },
-    { href: '/inventory', label: 'Produtos', icon: Package, roles: ['admin', 'manager'] },
-    { href: '/pdv', label: 'PDV', icon: Zap, roles: ['admin', 'manager', 'cashier', 'attendant', 'talento'] },
-    { href: '/team', label: 'Equipe', icon: Users, roles: ['admin', 'manager'] },
-    { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager', 'cashier'] }, // Cashier can see cash register too
-    { href: '/reports', label: 'Relatórios', icon: BarChart3, roles: ['admin', 'manager'] },
-    { href: '/settings', label: 'Configurações', icon: Settings, roles: ['admin'] },
+interface NavItem {
+    href: string
+    label: string
+    icon: React.ComponentType<any>
+    roles: string[]
+}
+
+interface NavGroup {
+    title: string
+    items: NavItem[]
+}
+
+const navGroups: NavGroup[] = [
+    {
+        title: 'Gestão Operacional',
+        items: [
+            { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'] },
+            { href: '/studio', label: 'Nexus Studio', icon: Sparkles, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'] },
+            { href: '/appointments', label: 'Mesa / Fluxo', icon: Calendar, roles: ['admin', 'manager'] },
+            { href: '/service-orders', label: 'Ordens de Serviço', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'] },
+            { href: '/pdv', label: 'Vendas / PDV', icon: Zap, roles: ['admin', 'manager', 'cashier', 'attendant', 'talento'] },
+        ]
+    },
+    {
+        title: 'Clientes',
+        items: [
+            { href: '/customers', label: 'Clientes', icon: Users, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'] },
+            { href: '/pecas', label: 'Peças', icon: Wrench, roles: ['admin', 'manager'] },
+            { href: '/inventory', label: 'Produtos', icon: Package, roles: ['admin', 'manager'] },
+            { href: '/post-sales', label: 'Pós-Venda', icon: HeartHandshake, roles: ['admin', 'manager'] },
+        ]
+    },
+    {
+        title: 'Administrativo',
+        items: [
+            { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager', 'cashier'] },
+            { href: '/payments', label: 'Financeiro', icon: Landmark, roles: ['admin', 'manager'] },
+            { href: '/team', label: 'Equipe', icon: Users2, roles: ['admin', 'manager'] },
+            { href: '/reports', label: 'Relatórios', icon: BarChart3, roles: ['admin', 'manager'] },
+            { href: '/settings', label: 'Configurações', icon: Settings, roles: ['admin'] },
+        ]
+    }
 ]
 
 export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRole }) {
@@ -69,16 +100,18 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 className={cn(
-                    'fixed left-0 top-0 h-screen z-30 flex flex-col bg-card border-r border-border shadow-[4px_0_24px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.6)] transition-all duration-300',
+                    'fixed left-0 top-0 h-screen z-30 flex flex-col border-r border-border/40 transition-all duration-300',
+                    'bg-card/75 dark:bg-background/85 backdrop-blur-xl',
+                    'shadow-[4px_0_24px_rgba(0,0,0,0.03)] dark:shadow-[4px_0_32px_rgba(0,0,0,0.55)]',
                     effectiveOpen ? 'w-60' : 'w-16',
                     'hidden lg:flex relative'
                 )}
             >
                 {/* Logo */}
-                <div className="h-16 lg:h-20 flex items-center px-3 lg:px-4 border-b border-border shrink-0 relative overflow-hidden bg-background/30" suppressHydrationWarning>
+                <div className="h-16 lg:h-20 flex items-center px-3 lg:px-4 border-b border-border/50 shrink-0 relative overflow-hidden bg-background/20" suppressHydrationWarning>
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent" suppressHydrationWarning />
                     <div className={cn(
-                        "rounded-2xl flex items-center justify-center shrink-0 shadow-xl shadow-primary/20 relative z-10 transition-all duration-500 overflow-hidden bg-white dark:bg-white/95 border border-primary/10",
+                        "rounded-2xl flex items-center justify-center shrink-0 shadow-xl shadow-primary/10 relative z-10 transition-all duration-500 overflow-hidden bg-white dark:bg-white/95 border border-primary/10",
                         effectiveOpen ? "w-14 h-14 lg:w-16 lg:h-16 p-2" : "w-10 h-10 p-1"
                     )} suppressHydrationWarning>
                         {company?.logo_url ? (
@@ -98,48 +131,62 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
                 </div>
 
                 {/* Nav */}
-                <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
-                    {navItems
-                        .filter(item => {
+                <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-5">
+                    {navGroups.map((group) => {
+                        const filteredItems = group.items.filter(item => {
                             // FORCED SECURITY: Attendants ONLY see OS and PDV. No exceptions.
                             if (safeRole === 'attendant') {
                                 return ['/service-orders', '/pdv'].includes(item.href);
                             }
-                            // Other roles follow their defined permissions
                             return item.roles.includes(safeRole);
-                        })
-                        .map((item) => {
-                            const Icon = item.icon
-                            const isActive = pathname === item.href || (pathname ? pathname.startsWith(item.href + '/') : false)
-                            return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className={cn(
-                                        'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group relative overflow-hidden',
-                                        isActive
-                                            ? 'bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]'
-                                            : 'text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent'
-                                    )}
-                                    title={!effectiveOpen ? item.label : undefined}
-                                >
-                                    {isActive && (
-                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
-                                    )}
-                                    <Icon className={cn("w-5 h-5 shrink-0 transition-transform duration-300", isActive ? "scale-110" : "group-hover:scale-110 group-hover:text-primary")} />
-                                    {effectiveOpen && (
-                                        <span className="text-sm font-medium tracking-wide whitespace-nowrap animate-in fade-in slide-in-from-left-2 duration-300">
-                                            {item.label}
-                                        </span>
-                                    )}
-                                </Link>
-                            )
-                        })}
+                        });
+
+                        if (filteredItems.length === 0) return null;
+
+                        return (
+                            <div key={group.title} className="space-y-1.5">
+                                {effectiveOpen && (
+                                    <h3 className="text-[10px] font-bold tracking-[0.15em] text-muted-foreground/50 uppercase px-3 mb-1 animate-in fade-in duration-300 select-none">
+                                        {group.title}
+                                    </h3>
+                                )}
+                                <div className="space-y-1">
+                                    {filteredItems.map((item) => {
+                                        const Icon = item.icon
+                                        const isActive = pathname === item.href || (pathname ? pathname.startsWith(item.href + '/') : false)
+                                        return (
+                                            <Link
+                                                key={item.href}
+                                                href={item.href}
+                                                className={cn(
+                                                    'flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-300 group relative overflow-hidden',
+                                                    isActive
+                                                        ? 'bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_rgba(59,130,246,0.08)]'
+                                                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent'
+                                                )}
+                                                title={!effectiveOpen ? item.label : undefined}
+                                            >
+                                                {isActive && (
+                                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
+                                                )}
+                                                <Icon className={cn("w-5 h-5 shrink-0 transition-all duration-300", isActive ? "scale-110 text-primary" : "group-hover:scale-110 group-hover:text-primary")} />
+                                                {effectiveOpen && (
+                                                    <span className="text-sm font-medium tracking-wide whitespace-nowrap animate-in fade-in slide-in-from-left-2 duration-300">
+                                                        {item.label}
+                                                    </span>
+                                                )}
+                                            </Link>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        )
+                    })}
                 </nav>
 
                 {/* Sidebar Mode Toggle */}
                 <div className={cn(
-                    "px-2 py-2 border-t border-border",
+                    "px-2 py-2 border-t border-border/40",
                     !effectiveOpen && "flex flex-col items-center gap-1"
                 )} suppressHydrationWarning>
                     <div className={cn(
@@ -183,9 +230,9 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
                 </div>
 
                 {/* Bottom user area */}
-                <div className="p-3 border-t border-border shrink-0 bg-gradient-to-b from-transparent to-foreground/5 dark:to-black/20" suppressHydrationWarning>
+                <div className="p-3 border-t border-border/40 shrink-0 bg-gradient-to-b from-transparent to-foreground/5 dark:to-black/20" suppressHydrationWarning>
                     {mounted ? (
-                        <div className="flex items-center gap-4 p-2 rounded-xl hover:bg-muted transition-colors animate-in fade-in duration-500">
+                        <div className="flex items-center gap-4 p-2 rounded-xl hover:bg-muted/50 transition-colors animate-in fade-in duration-500">
                             <div className="relative">
                                 <UserButton
                                     userProfileMode="navigation"
@@ -221,3 +268,4 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
         </>
     )
 }
+

@@ -85,7 +85,7 @@ export default async function InventoryPage({
 
                 {/* KPI Section - Premium Style */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="relative group overflow-hidden p-8 rounded-[2.5rem] bg-card/40 backdrop-blur-3xl border border-white/5 shadow-2xl transition-all hover:scale-[1.02]">
+                    <div className="relative group overflow-hidden p-8 rounded-[2.5rem] glass-premium bg-card/65 backdrop-blur-3xl border border-white/5 shadow-2xl transition-all duration-300 hover:scale-[1.03] hover:shadow-primary/5">
                         <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                             <Package className="w-20 h-20 text-primary" />
                         </div>
@@ -104,7 +104,7 @@ export default async function InventoryPage({
                         </div>
                     </div>
 
-                    <div className="relative group overflow-hidden p-8 rounded-[2.5rem] bg-card/40 backdrop-blur-3xl border border-white/5 shadow-2xl transition-all hover:scale-[1.02]">
+                    <div className="relative group overflow-hidden p-8 rounded-[2.5rem] glass-premium bg-card/65 backdrop-blur-3xl border border-white/5 shadow-2xl transition-all duration-300 hover:scale-[1.03] hover:shadow-primary/5">
                         <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                             <Boxes className="w-20 h-20 text-indigo-400" />
                         </div>
@@ -121,8 +121,8 @@ export default async function InventoryPage({
                     </div>
 
                     <div className={cn(
-                        "relative group overflow-hidden p-8 rounded-[2.5rem] backdrop-blur-3xl border shadow-2xl transition-all hover:scale-[1.02]",
-                        lowStockItems.length > 0 ? "bg-rose-500/10 border-rose-500/20" : "bg-card/40 border-white/5"
+                        "relative group overflow-hidden p-8 rounded-[2.5rem] backdrop-blur-3xl border shadow-2xl transition-all duration-300 hover:scale-[1.03] hover:shadow-primary/5",
+                        lowStockItems.length > 0 ? "bg-rose-500/10 border-rose-500/20" : "glass-premium bg-card/65 border-white/5"
                     )}>
                         <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                             <AlertTriangle className={cn("w-20 h-20", lowStockItems.length > 0 ? "text-rose-500" : "text-muted-foreground/20")} />
@@ -183,10 +183,10 @@ export default async function InventoryPage({
                                     const isLow = item.quantity_in_stock <= item.minimum_quantity
 
                                     return (
-                                        <tr key={item.id} className="group hover:bg-white/5 transition-all">
+                                        <tr key={item.id} className="group hover:bg-white/[0.03] transition-colors">
                                             <td className="p-6">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-muted/40 border border-white/5 overflow-hidden flex-shrink-0 relative group-hover:border-primary/20 transition-all shadow-inner">
+                                                    <div className="w-12 h-12 rounded-2xl bg-muted/40 border border-white/5 overflow-hidden flex-shrink-0 relative group-hover:scale-105 transition-all duration-300 shadow-inner">
                                                         {item.image_url ? (
                                                             <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                                                         ) : (

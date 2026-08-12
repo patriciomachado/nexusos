@@ -93,7 +93,7 @@ export default async function CustomersPage({
                             <Link
                                 key={c.id}
                                 href={`/customers/${c.id}`}
-                                className="group relative p-8 rounded-[2.5rem] bg-card/40 backdrop-blur-3xl border border-white/5 hover:border-primary/30 transition-all shadow-2xl hover:-translate-y-2 overflow-hidden block"
+                                className="group relative p-8 rounded-[2.5rem] glass-premium bg-card/65 backdrop-blur-3xl border border-white/5 hover:border-primary/30 hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-2 overflow-hidden block shadow-2xl"
                             >
                                 {/* Subtle background glow */}
                                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors" />

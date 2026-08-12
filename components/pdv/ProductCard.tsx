@@ -26,9 +26,9 @@ export default function ProductCard({ product }: ProductCardProps) {
     const price = Number(product.selling_price || 0)
 
     return (
-        <div className="group bg-card border border-border rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
+        <div className="group glass-premium bg-card/65 backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-primary/5 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 shadow-lg">
             {/* Image Section */}
-            <div className="relative h-48 bg-muted overflow-hidden">
+            <div className="relative h-48 bg-white/[0.02] overflow-hidden">
                 {/* Image Placeholder with Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent z-10" />
                 {product.image_url ? (

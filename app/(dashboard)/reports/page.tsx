@@ -138,7 +138,7 @@ export default async function ReportsPage() {
 
                 {/* Profitability Detailing Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="p-8 rounded-[2rem] bg-card/40 border border-border/50 backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
+                    <div className="p-8 rounded-[2rem] glass-premium bg-card/65 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group transition-all duration-300 hover:scale-[1.01] hover:shadow-primary/5">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-500/10 transition-all" />
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-3">
@@ -178,7 +178,7 @@ export default async function ReportsPage() {
                         </div>
                     </div>
 
-                    <div className="p-8 rounded-[2rem] bg-card/40 border border-border/50 backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
+                    <div className="p-8 rounded-[2rem] glass-premium bg-card/65 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group transition-all duration-300 hover:scale-[1.01] hover:shadow-primary/5">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-500/10 transition-all" />
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-3">
@@ -223,7 +223,7 @@ export default async function ReportsPage() {
                 </div>
 
                 {/* Caixa & Liquidez Detail */}
-                <div className="p-8 rounded-[2rem] bg-card/40 border border-border/50 backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
+                <div className="p-8 rounded-[2rem] glass-premium bg-card/65 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group transition-all duration-300 hover:scale-[1.01] hover:shadow-primary/5">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/10 transition-all" />
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
@@ -257,7 +257,7 @@ export default async function ReportsPage() {
 
                 <div className="grid md:grid-cols-2 gap-8">
                     {/* Status Distribution */}
-                    <div className="p-8 rounded-[2rem] bg-card/40 border border-border/50 backdrop-blur-3xl shadow-2xl">
+                    <div className="p-8 rounded-[2rem] glass-premium bg-card/65 border border-white/5 backdrop-blur-3xl shadow-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-primary/5">
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-3">
                                 <div className="p-2.5 rounded-2xl bg-primary/10 text-primary border border-primary/20">
@@ -303,7 +303,7 @@ export default async function ReportsPage() {
                     </div>
 
                     {/* Financial Performance */}
-                    <div className="p-8 rounded-[2rem] bg-card/40 border border-border/50 backdrop-blur-3xl shadow-2xl">
+                    <div className="p-8 rounded-[2rem] glass-premium bg-card/65 border border-white/5 backdrop-blur-3xl shadow-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-primary/5">
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-3">
                                 <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">

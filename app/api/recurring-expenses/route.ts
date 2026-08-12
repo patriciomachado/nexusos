@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { recurringExpenseSchema } from '@/lib/validations/schemas'
+import { processRecurringExpenses } from '@/lib/recurring-expenses'
 
 export async function GET(req: NextRequest) {
     const ctx = await getContext()
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
 
-    const { db, companyId } = ctx
+    const { db, companyId, dbUser } = ctx
     const body = await req.json()
 
     const validation = recurringExpenseSchema.safeParse(body)
@@ -44,5 +45,20 @@ export async function POST(req: NextRequest) {
         .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Check if there is an open cash register and auto-process recurring expenses
+    const { data: openRegister } = await db
+        .from('cash_registers')
+        .select('id')
+        .eq('company_id', companyId)
+        .eq('status', 'open')
+        .order('opened_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+    if (openRegister?.id) {
+        await processRecurringExpenses(db, companyId, openRegister.id, dbUser.id)
+    }
+
     return NextResponse.json(data)
 }
