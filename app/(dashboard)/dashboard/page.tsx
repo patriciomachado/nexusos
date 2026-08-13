@@ -17,6 +17,7 @@ import RevenueChart from '@/components/dashboard/RevenueChart'
 import { cn } from '@/lib/utils'
 import EmployeeDashboard from '@/components/dashboard/EmployeeDashboard'
 import DashboardOnboardingWrapper from '@/components/dashboard/DashboardOnboardingWrapper'
+import StudioDashboardWidget from '@/components/dashboard/StudioDashboardWidget'
 
 interface ServiceOrder {
     id: string
@@ -280,6 +281,9 @@ export default async function DashboardPage() {
                         </Link>
                     </div>
                 </div>
+
+                {/* Nexus Studio Widget */}
+                <StudioDashboardWidget />
 
                 {/* Metrics Section */}
                 <div className="space-y-6">

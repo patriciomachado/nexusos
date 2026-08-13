@@ -720,45 +720,153 @@ function StudioContent() {
                     </div>
                 )}
 
-                {/* TAB 4: BANNERS & ARTES VISUAIS */}
+                {/* TAB 4: BANNERS & ARTES VISUAIS COM IDENTIDADE VISUAL */}
                 {activeTab === 'banners' && (
-                    <div className="space-y-6 animate-in fade-in duration-300">
-                        <div className="bg-card border border-border rounded-3xl p-6 md:p-8 space-y-6 shadow-xl">
-                            <div className="space-y-1">
-                                <h2 className="text-lg font-black flex items-center gap-2">
-                                    <ImageIcon className="w-5 h-5 text-purple-500" />
-                                    Gerador & Modelos de Banners Promocionais
-                                </h2>
-                                <p className="text-xs text-muted-foreground">Prompts e ideias de banners visuais ajustadas para sua assistência técnica.</p>
+                    <div className="space-y-8 animate-in fade-in duration-300">
+                        {/* Configurador de Identidade Visual */}
+                        <div className="bg-card border border-border rounded-3xl p-6 space-y-6 shadow-xl">
+                            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-border pb-4">
+                                <div>
+                                    <h2 className="text-lg font-black flex items-center gap-2">
+                                        <ImageIcon className="w-5 h-5 text-purple-500" />
+                                        Identidade Visual & Gerador de Prompts de Imagem
+                                    </h2>
+                                    <p className="text-xs text-muted-foreground mt-0.5">Personalize as cores e o estilo da sua marca para alimentar os prompts dos geradores de imagem AI.</p>
+                                </div>
+
+                                <div className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 px-3 py-1.5 rounded-xl text-xs font-bold text-purple-300">
+                                    <Sparkles className="w-4 h-4" />
+                                    Prompts Estruturados em Inglês (Midjourney / Flux / DALL-E)
+                                </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="p-5 bg-gradient-to-br from-purple-500/10 via-card to-card border border-purple-500/30 rounded-2xl space-y-3">
-                                    <span className="text-[10px] font-black uppercase text-purple-400 tracking-wider">Banner Promo 1</span>
-                                    <h3 className="font-bold text-sm">Troca de Tela com Película Grátis</h3>
-                                    <p className="text-xs text-muted-foreground">"Estilo futurista com luzes de neon azul e dourado, destacando precisão e rapidez na troca."</p>
-                                    <button onClick={() => copyToClipboard("Banner promocional com texto 'TROCA DE TELA EM ATÉ 1 HORA' em neon azul sobre bancada de eletrônicos", 'b1')} className="w-full py-2 bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-black rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
-                                        <Copy className="w-3.5 h-3.5" /> Copiar Prompt de Imagem
-                                    </button>
+                            {/* Form de Configuração da Marca */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Estilo Visual da Loja</label>
+                                    <select
+                                        value={tone}
+                                        onChange={e => setTone(e.target.value)}
+                                        className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                                    >
+                                        <option value="tech_futuristic">⚡ Tech & Futurista (Neon & Vidro)</option>
+                                        <option value="minimalist_premium">✨ Minimalista & Premium (Soberbo)</option>
+                                        <option value="geek_gamer">🎮 Geek & Gamer (LEDs & RGB)</option>
+                                        <option value="friendly_popular">🤝 Amigável & Popular (Quente & Confiável)</option>
+                                    </select>
                                 </div>
 
-                                <div className="p-5 bg-gradient-to-br from-blue-500/10 via-card to-card border border-blue-500/30 rounded-2xl space-y-3">
-                                    <span className="text-[10px] font-black uppercase text-blue-400 tracking-wider">Banner Promo 2</span>
-                                    <h3 className="font-bold text-sm">Revisão de Bateria & Saúde do Aparelho</h3>
-                                    <p className="text-xs text-muted-foreground">"Destaque para o ícone de bateria 100% carregada com raio verde brilhante e logotipo da loja."</p>
-                                    <button onClick={() => copyToClipboard("Banner publicitário moderno de bateria de celular 100% carregada com raio brilhante e texto de promoção", 'b2')} className="w-full py-2 bg-blue-500/20 text-blue-300 hover:bg-blue-500 hover:text-black rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
-                                        <Copy className="w-3.5 h-3.5" /> Copiar Prompt de Imagem
-                                    </button>
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Slogan ou Frase Marcante</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Ex: Sua tecnologia em mãos especialistas"
+                                        className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                                    />
                                 </div>
 
-                                <div className="p-5 bg-gradient-to-br from-emerald-500/10 via-card to-card border border-emerald-500/30 rounded-2xl space-y-3">
-                                    <span className="text-[10px] font-black uppercase text-emerald-400 tracking-wider">Banner Promo 3</span>
-                                    <h3 className="font-bold text-sm">Manutenção Preventiva de Notebooks</h3>
-                                    <p className="text-xs text-muted-foreground">"Fotografia profissional de notebook limpo com pasta térmica de alta performance e ferramentas."</p>
-                                    <button onClick={() => copyToClipboard("Banner publicitário de manutenção de notebook gamer, pasta térmica silver e cooler limpo", 'b3')} className="w-full py-2 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500 hover:text-black rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
-                                        <Copy className="w-3.5 h-3.5" /> Copiar Prompt de Imagem
-                                    </button>
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Tom de Cor Predominante</label>
+                                    <div className="flex items-center gap-2 bg-background border border-border px-3 py-2 rounded-xl text-xs font-bold">
+                                        <div className="w-4 h-4 rounded-full bg-primary border border-primary/50 shadow-sm" />
+                                        <span>Azul / Neon Dourado (Padrão Studio)</span>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Banner Prompt Cards in English */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Card 1: Display / Tela */}
+                            <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl flex flex-col justify-between hover:border-purple-500/40 transition-all">
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-lg border border-purple-500/20">
+                                            Troca de Tela / Display
+                                        </span>
+                                        <span className="text-[10px] font-bold text-muted-foreground">Prompt v6 (English)</span>
+                                    </div>
+                                    <h3 className="font-bold text-base">Banner Comercial: Troca de Tela em até 1h</h3>
+                                    <div className="p-3 bg-muted/30 border border-border rounded-2xl font-mono text-[11px] text-muted-foreground leading-relaxed">
+                                        "Ultra-professional commercial promotional banner for an electronics repair lab. High-end flagship smartphone screen replacement resting on a sleek dark glass workstation under glowing cyan ambient neon lighting, macro lens photography, 8k resolution, cinematic atmosphere, 16:9 aspect ratio --no blur, text artifacts"
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => copyToClipboard("Ultra-professional commercial promotional banner for an electronics repair lab. High-end flagship smartphone screen replacement resting on a sleek dark glass workstation under glowing cyan ambient neon lighting, macro lens photography, 8k resolution, cinematic atmosphere, 16:9 aspect ratio --no blur, text artifacts", 'p1')}
+                                    className="w-full py-3 bg-purple-500/20 text-purple-200 hover:bg-purple-500 hover:text-black rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-md"
+                                >
+                                    <Copy className="w-4 h-4" /> Copiar Prompt AI em Inglês (Midjourney / Flux)
+                                </button>
+                            </div>
+
+                            {/* Card 2: Bateria */}
+                            <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl flex flex-col justify-between hover:border-emerald-500/40 transition-all">
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                                            Saúde da Bateria
+                                        </span>
+                                        <span className="text-[10px] font-bold text-muted-foreground">Prompt v6 (English)</span>
+                                    </div>
+                                    <h3 className="font-bold text-base">Banner Comercial: Troca de Bateria com Garantia</h3>
+                                    <div className="p-3 bg-muted/30 border border-border rounded-2xl font-mono text-[11px] text-muted-foreground leading-relaxed">
+                                        "High-tech promotional commercial photograph for a modern smartphone battery replacement service. Glowing 100% full green energy battery indicator hovering above a dismantled phone chassis on an illuminated workbench, dark metallic blue ambient lighting, photorealistic, 8k, dramatic contrast"
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => copyToClipboard("High-tech promotional commercial photograph for a modern smartphone battery replacement service. Glowing 100% full green energy battery indicator hovering above a dismantled phone chassis on an illuminated workbench, dark metallic blue ambient lighting, photorealistic, 8k, dramatic contrast", 'p2')}
+                                    className="w-full py-3 bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500 hover:text-black rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-md"
+                                >
+                                    <Copy className="w-4 h-4" /> Copiar Prompt AI em Inglês (Midjourney / Flux)
+                                </button>
+                            </div>
+
+                            {/* Card 3: Notebook Preventiva */}
+                            <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl flex flex-col justify-between hover:border-amber-500/40 transition-all">
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
+                                            Manutenção de Notebooks
+                                        </span>
+                                        <span className="text-[10px] font-bold text-muted-foreground">Prompt v6 (English)</span>
+                                    </div>
+                                    <h3 className="font-bold text-base">Banner Comercial: Limpeza Preventiva & Pasta Térmica</h3>
+                                    <div className="p-3 bg-muted/30 border border-border rounded-2xl font-mono text-[11px] text-muted-foreground leading-relaxed">
+                                        "Commercial marketing graphic for high-performance laptop preventive thermal maintenance. Clean gaming laptop disassembled with silver thermal paste application and precision screwdrivers in soft focus background, dark amber and violet studio lighting, 8k, photorealistic"
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => copyToClipboard("Commercial marketing graphic for high-performance laptop preventive thermal maintenance. Clean gaming laptop disassembled with silver thermal paste application and precision screwdrivers in soft focus background, dark amber and violet studio lighting, 8k, photorealistic", 'p3')}
+                                    className="w-full py-3 bg-amber-500/20 text-amber-200 hover:bg-amber-500 hover:text-black rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-md"
+                                >
+                                    <Copy className="w-4 h-4" /> Copiar Prompt AI em Inglês (Midjourney / Flux)
+                                </button>
+                            </div>
+
+                            {/* Card 4: Banho Ultrassônico / Celular na Água */}
+                            <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl flex flex-col justify-between hover:border-blue-500/40 transition-all">
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-lg border border-blue-500/20">
+                                            Recuperação de Placa / Água
+                                        </span>
+                                        <span className="text-[10px] font-bold text-muted-foreground">Prompt v6 (English)</span>
+                                    </div>
+                                    <h3 className="font-bold text-base">Banner Comercial: Desoxidação Ultrassônica</h3>
+                                    <div className="p-3 bg-muted/30 border border-border rounded-2xl font-mono text-[11px] text-muted-foreground leading-relaxed">
+                                        "Cinematic commercial visual for emergency smartphone water damage restoration. Microscopic view of a clean motherboard undergoing ultrasonic cleaning bath, water droplets with glowing blue reflections, high-tech laboratory background, ultra-detailed 8k"
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => copyToClipboard("Cinematic commercial visual for emergency smartphone water damage restoration. Microscopic view of a clean motherboard undergoing ultrasonic cleaning bath, water droplets with glowing blue reflections, high-tech laboratory background, ultra-detailed 8k", 'p4')}
+                                    className="w-full py-3 bg-blue-500/20 text-blue-200 hover:bg-blue-500 hover:text-black rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-md"
+                                >
+                                    <Copy className="w-4 h-4" /> Copiar Prompt AI em Inglês (Midjourney / Flux)
+                                </button>
                             </div>
                         </div>
                     </div>

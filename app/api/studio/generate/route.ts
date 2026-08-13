@@ -13,7 +13,10 @@ export async function POST(req: NextRequest) {
         category = 'Geral', 
         osId, 
         tone = 'viral',
-        targetFormat = 'reels'
+        targetFormat = 'reels',
+        brandStyle = 'tech_futuristic',
+        brandPrimaryColor = '#3B82F6',
+        brandTagline = ''
     } = body
 
     // 1. Fetch company details for auto-personalization
@@ -26,6 +29,7 @@ export async function POST(req: NextRequest) {
     const companyName = company?.name || 'Nossa Assistência Técnica'
     const companyCity = company?.city ? `${company.city}` : 'nossa cidade'
     const companyPhone = company?.phone || 'nosso WhatsApp'
+    const shopTagline = brandTagline || company?.settings?.tagline || 'Sua tecnologia em mãos especialistas'
 
     let osDetailsContext = ''
     let titleText = topic || 'Conteúdo de Bancada'
@@ -60,28 +64,36 @@ export async function POST(req: NextRequest) {
 
     if (apiKey) {
         try {
-            const systemPrompt = `Você é o principal especialista do Brasil em marketing de conteúdo e roteiros virais para assistências técnicas de celulares, computadores e eletrônicos.
-Sua missão é gerar um pacote completo de marketing extremamente persuasivo e focado em atrair clientes locais para a loja.
+            const systemPrompt = `Você é o maior especialista mundial em marketing de conteúdo, roteiros de vídeos virais e direção de arte para assistências técnicas de eletrônicos.
 
-IMPORTANTE: Você deve responder APENAS um objeto JSON válido (sem texto explicativo antes ou depois), seguindo EXATAMENTE este esquema de chaves:
+REGRAS OBRIGATÓRIAS:
+1. Responda ESTRITAMENTE em formato JSON com o esquema exato de chaves abaixo.
+2. A chave "banner_prompt" DEVE SER ESTRITAMENTE EM INGLÊS, estruturada de forma altamente profissional para geradores de imagem AI (Midjourney v6, DALL-E 3, Flux.1).
+3. A estrutura do "banner_prompt" em inglês deve seguir o padrão de engenharia de prompt:
+   [Subject & Main Scene], [Environment & Tech Workshop], [Lighting & Color Palette matching brand tone], [Camera Shot & Lens], [Quality Modifiers & 8k Photorealistic].
+
+Esquema JSON de resposta:
 {
-  "title": "Título descritivo curto",
-  "hook_3s": "Gancho viral e chocante dos primeiros 3 segundos para parar a rolagem no TikTok/Reels",
-  "body_script": "Roteiro da bancada detalhado com indicações de cena [CENA 1 - BANCADA], falas do técnico e demonstrações visuais",
-  "cta_text": "Chamada para ação forte e persuasiva convidando o cliente para vir à loja ou mandar mensagem",
-  "instagram_caption": "Legenda completa para Instagram/TikTok com introdução engajante, benefícios, endereço local e hashtags do nicho",
-  "whatsapp_text": "Texto amigável e direto para Status e Lista de Transmissão do WhatsApp com emojis",
-  "google_post": "Publicação otimizada para SEO local no Google Meu Negócio / Google Maps",
-  "banner_prompt": "Prompt visual descritivo em português para criar a arte/banner promocional"
+  "title": "Título descritivo curto em português",
+  "hook_3s": "Gancho viral dos primeiros 3 segundos para TikTok/Reels em português",
+  "body_script": "Roteiro da bancada detalhado com [CENA 1], [CENA 2], falas e demonstrações práticas",
+  "cta_text": "Chamada para ação clara convidando para ir na loja ou mandar WhatsApp",
+  "instagram_caption": "Legenda persuasiva completa com introdução, tópicos, endereço local e hashtags",
+  "whatsapp_text": "Texto amigável para Status e Lista de Transmissão do WhatsApp",
+  "google_post": "Publicação otimizada para SEO local no Google Meu Negócio / Maps",
+  "banner_prompt": "ENGLISH ONLY: Professional Midjourney/Flux image prompt following structural standards: Subject, Environment, Lighting, Color Palette, Camera angle, 8k, photorealistic"
 }`
 
             const userPrompt = `
 Empresa: ${companyName}
+Slogan: ${shopTagline}
 Cidade: ${companyCity}
-Contato/Zap: ${companyPhone}
+Contato: ${companyPhone}
+Estilo da Marca: ${brandStyle}
+Cor Primária: ${brandPrimaryColor}
 Assunto / Tema: ${promptSubject}
 Categoria: ${category}
-Tom de Voz: ${tone} (ex: viral, educativo, promocional, bancada)
+Tom de Voz: ${tone}
 Formato Desejado: ${targetFormat}
 
 Gere o pacote completo em JSON.`
@@ -135,7 +147,7 @@ Gere o pacote completo em JSON.`
         }
     }
 
-    // 4. Fallback Script Engine if OpenRouter API is not set or temporary connection error
+    // Fallback Engine if API unreachable
     const fallbackResult = generateFallbackScript({
         companyName,
         companyCity,
@@ -220,7 +232,8 @@ function generateFallbackScript(params: GenerateParams) {
         `Na ${companyName} fazemos troca de tela, substituição de bateria, reparos em placa e limpeza preventiva com rapidez e transparência.\n\n` +
         `Visite nossa loja ou entre em contato pelo telefone/WhatsApp: ${companyPhone}.`
 
-    const bannerPrompt = `Banner promocional estilo futurista em tons de azul e dourado com logotipo '${companyName}'. Texto: 'REVISÃO TÉCNICA E TROCA DE TELA EM ${companyCity.toUpperCase()}'.`
+    // Professional English Prompt following Midjourney / DALL-E 3 standards
+    const bannerPrompt = `Ultra-professional commercial promotional banner for "${companyName}" electronics repair lab in ${companyCity}. High-end flagship smartphone screen replacement resting on a sleek dark illuminated workstation. Surrounded by precision micro-soldering tweezers, copper heating wire, and circuit boards. Ambient cinematic lighting in cyan and gold neon accents, macro shot, 85mm lens, f/1.8 shallow depth of field, photorealistic, 8k resolution, modern tech aesthetic, 16:9 aspect ratio --no blur, distorted elements`
 
     return {
         title,
