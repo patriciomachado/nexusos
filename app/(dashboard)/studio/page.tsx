@@ -6,7 +6,7 @@ import {
     Sparkles, Calendar, Video, FileText, Copy, Check, Trash2, 
     Play, Plus, Share2, MessageSquare, MapPin, Image as ImageIcon,
     Zap, RefreshCw, Layers, ArrowRight, Wand2, ShieldAlert, Award,
-    Filter, ChevronRight, HelpCircle
+    Filter, ChevronRight, HelpCircle, Palette, Smartphone, Monitor, Layout
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import { BRAZILIAN_SEASONAL_EVENTS, WEEKLY_CONTENT_IDEAS } from '@/lib/studio-events'
@@ -18,8 +18,9 @@ import { cn } from '@/lib/utils'
 function StudioContent() {
     const searchParams = useSearchParams()
     const osIdParam = searchParams.get('os_id')
+    const topicParam = searchParams.get('topic')
 
-    // Default to 'generate' as primary tab, with dedicated 'calendar' tab
+    // Default to 'generate' as primary tab
     const [activeTab, setActiveTab] = useState<'generate' | 'calendar' | 'library' | 'banners'>('generate')
     const [savedScripts, setSavedScripts] = useState<StudioScript[]>([])
     const [loadingScripts, setLoadingScripts] = useState(false)
@@ -29,7 +30,7 @@ function StudioContent() {
     const [selectedCategory, setSelectedCategory] = useState<string>('all')
 
     // Generation Form State
-    const [topic, setTopic] = useState('')
+    const [topic, setTopic] = useState(topicParam || '')
     const [category, setCategory] = useState('Geral')
     const [tone, setTone] = useState('viral')
     const [targetFormat, setTargetFormat] = useState('reels')
@@ -47,13 +48,24 @@ function StudioContent() {
     // Copy Feedback State
     const [copiedField, setCopiedField] = useState<string | null>(null)
 
+    // --- BANNER STUDIO CUSTOMIZATION STATE ---
+    const [bannerTitle, setBannerTitle] = useState('TROCA DE TELA EM 45 MIN')
+    const [bannerSubtitle, setBannerSubtitle] = useState('Com Película Grátis e 6 Meses de Garantia')
+    const [bannerAspect, setBannerAspect] = useState<'1:1' | '9:16' | '16:9'>('1:1')
+    const [bannerPrimaryColor, setBannerPrimaryColor] = useState('#3B82F6')
+    const [bannerSecondaryColor, setBannerSecondaryColor] = useState('#F59E0B')
+    const [bannerStyle, setBannerStyle] = useState('bancada_8k')
+
     useEffect(() => {
         fetchScripts()
         if (osIdParam) {
             setActiveTab('generate')
             setOsId(osIdParam)
+        } else if (topicParam) {
+            setActiveTab('generate')
+            setTopic(topicParam)
         }
-    }, [osIdParam])
+    }, [osIdParam, topicParam])
 
     const fetchScripts = async () => {
         setLoadingScripts(true)
@@ -117,7 +129,8 @@ function StudioContent() {
                     category: finalCategory,
                     tone,
                     targetFormat,
-                    osId: osId || undefined
+                    osId: osId || undefined,
+                    brandPrimaryColor: bannerPrimaryColor
                 })
             })
 
@@ -228,10 +241,18 @@ function StudioContent() {
         }
     }
 
+    // --- 1-CLICK BANNER CREATION FROM SCRIPT ---
+    const handleCreateBannerFromScript = (script: StudioScript | Partial<StudioScript>) => {
+        setBannerTitle((script.title || 'Manutenção Técnica').toUpperCase())
+        setBannerSubtitle(script.cta_text || script.hook_3s || 'Garantia e Rapidez no Conserto')
+        setActiveTab('banners')
+        toast.success('Dados do roteiro carregados no Estúdio de Banners!')
+    }
+
     const copyToClipboard = (text: string, fieldName: string) => {
         navigator.clipboard.writeText(text)
         setCopiedField(fieldName)
-        toast.success(`Copiado com sucesso!`)
+        toast.success(`Copiado para a área de transferência!`)
         setTimeout(() => setCopiedField(null), 2000)
     }
 
@@ -254,6 +275,18 @@ function StudioContent() {
         setIsTeleprompterOpen(true)
     }
 
+    // Helper to generate dynamic English prompts for ChatGPT and Nano Banana
+    const generateDynamicPrompt = (engine: 'chatgpt' | 'nanobanana') => {
+        const formatLabel = bannerAspect === '1:1' ? '1:1 square Instagram feed format' : bannerAspect === '9:16' ? '9:16 vertical Stories/Reels format' : '16:9 widescreen banner format'
+        const styleText = bannerStyle === 'bancada_8k' ? 'Hyper-photorealistic 8k commercial advertising photograph of an electronics repair workbench with a technician holding precision tools' : bannerStyle === 'render_3d' ? 'Futuristic 3D product render with glowing glass elements and sleek metallic reflections' : bannerStyle === 'microscopio' ? 'Extreme macro lens photography under a microscope showing intricate circuit board micro-components and soldering gold traces' : 'Clean minimal studio product shot with elegant soft shadows'
+
+        if (engine === 'chatgpt') {
+            return `Commercial advertisement banner photography for an electronics repair shop, ${formatLabel}. Main topic: "${bannerTitle}". ${styleText}. Leave clean empty space at the top half reserved for text overlay: "${bannerSubtitle}". Primary brand lighting color palette: ${bannerPrimaryColor} and glowing accent color ${bannerSecondaryColor}. High resolution, 8k, cinematic studio lighting, crisp details, professional lighting --no distorted text, blur.`
+        } else {
+            return `Ultra-detailed commercial visual for "${bannerTitle}", ${formatLabel}. Style: ${styleText}. Accentuated by neon illumination in ${bannerPrimaryColor} and ${bannerSecondaryColor}. Photorealistic commercial quality, 8k resolution, macro 85mm lens f/1.8, dramatic contrast, professional product photography.`
+        }
+    }
+
     // Filtered seasonal events
     const filteredEvents = BRAZILIAN_SEASONAL_EVENTS.filter(event => {
         if (selectedMonth !== 'all' && event.month !== selectedMonth) return false
@@ -266,9 +299,18 @@ function StudioContent() {
         'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
     ]
 
+    const COLOR_PRESETS = [
+        { name: 'Azul Tech & Dourado', primary: '#3B82F6', secondary: '#F59E0B' },
+        { name: 'Vermelho Cyber', primary: '#EF4444', secondary: '#111827' },
+        { name: 'Verde Esmeralda', primary: '#10B981', secondary: '#064E3B' },
+        { name: 'Roxo Neon', primary: '#8B5CF6', secondary: '#06B6D4' },
+        { name: 'Amarelo Ouro', primary: '#F59E0B', secondary: '#1E293B' },
+        { name: 'Laranja Fogo', primary: '#F97316', secondary: '#7C2D12' }
+    ]
+
     return (
         <div className="min-h-screen bg-background text-foreground pb-16">
-            <Header title="Nexus Studio" subtitle="Publicidade, Roteiros de Vídeo e Marketing Inteligente com Claude AI" />
+            <Header title="Nexus Studio" subtitle="Publicidade, Roteiros de Vídeo e Banners Promocionais com Claude AI" />
 
             <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
                 {/* Header & Tabs Nav */}
@@ -427,19 +469,27 @@ function StudioContent() {
                         <div className="lg:col-span-7 space-y-6">
                             {currentOutput ? (
                                 <div className="bg-card border border-border rounded-3xl p-6 md:p-8 space-y-6 shadow-xl animate-in zoom-in-95 duration-300">
-                                    <div className="flex items-center justify-between border-b border-border pb-4">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-4">
                                         <div>
                                             <h3 className="text-lg font-black text-foreground">{currentOutput.title}</h3>
                                             <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">✨ Gerado por Claude AI via OpenRouter</span>
                                         </div>
 
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <button
+                                                onClick={() => handleCreateBannerFromScript(currentOutput)}
+                                                className="px-3.5 py-2 bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-black rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                                            >
+                                                <ImageIcon className="w-4 h-4" />
+                                                Criar Banner
+                                            </button>
+
                                             <button
                                                 onClick={() => openTeleprompter(currentOutput)}
                                                 className="px-4 py-2 bg-amber-500 text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-amber-400 transition-all flex items-center gap-1.5 shadow-md"
                                             >
                                                 <Play className="w-4 h-4 fill-current" />
-                                                Abrir Teleprompter
+                                                Teleprompter
                                             </button>
 
                                             <button
@@ -448,7 +498,7 @@ function StudioContent() {
                                                 className="px-4 py-2 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center gap-1.5 disabled:opacity-50"
                                             >
                                                 <Copy className="w-4 h-4" />
-                                                Salvar Roteiro
+                                                Salvar
                                             </button>
                                         </div>
                                     </div>
@@ -696,6 +746,15 @@ function StudioContent() {
 
                                         <div className="flex items-center gap-2 pt-2 border-t border-border">
                                             <button
+                                                onClick={() => handleCreateBannerFromScript(script)}
+                                                className="px-3 py-2 bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-black rounded-xl text-xs font-bold transition-all flex items-center gap-1"
+                                                title="Criar Banner"
+                                            >
+                                                <ImageIcon className="w-3.5 h-3.5" />
+                                                Criar Banner
+                                            </button>
+
+                                            <button
                                                 onClick={() => openTeleprompter(script)}
                                                 className="flex-1 py-2 bg-amber-500 text-black rounded-xl text-xs font-bold hover:bg-amber-400 transition-all flex items-center justify-center gap-1.5"
                                             >
@@ -718,153 +777,221 @@ function StudioContent() {
                     </div>
                 )}
 
-                {/* TAB 4: BANNERS & ARTES VISUAIS COM IDENTIDADE VISUAL */}
+                {/* TAB 4: BANNERS & ARTES VISUAIS (ESTÚDIO PRÁTICO) */}
                 {activeTab === 'banners' && (
-                    <div className="space-y-8 animate-in fade-in duration-300">
-                        {/* Configurador de Identidade Visual */}
-                        <div className="bg-card border border-border rounded-3xl p-6 space-y-6 shadow-xl">
-                            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-border pb-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-300">
+                        {/* Coluna Esquerda: Configurador de Banner */}
+                        <div className="lg:col-span-6 space-y-6">
+                            <div className="bg-card border border-border rounded-3xl p-6 space-y-5 shadow-xl">
                                 <div>
                                     <h2 className="text-lg font-black flex items-center gap-2">
                                         <ImageIcon className="w-5 h-5 text-purple-500" />
-                                        Identidade Visual & Gerador de Prompts de Imagem
+                                        Estúdio de Banners & Artes Visuais
                                     </h2>
-                                    <p className="text-xs text-muted-foreground mt-0.5">Personalize as cores e o estilo da sua marca para alimentar os prompts dos geradores de imagem AI.</p>
+                                    <p className="text-xs text-muted-foreground">Escolha os formatos, cores e textos para gerar prompts ricos para ChatGPT e Nano Banana.</p>
                                 </div>
 
-                                <div className="flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 px-3 py-1.5 rounded-xl text-xs font-bold text-purple-300">
-                                    <Sparkles className="w-4 h-4" />
-                                    Prompts Estruturados em Inglês (Midjourney / Flux / DALL-E)
-                                </div>
-                            </div>
+                                {/* 1. Formato / Dimensão */}
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">1. Dimensão da Arte</label>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <button
+                                            onClick={() => setBannerAspect('1:1')}
+                                            className={cn(
+                                                "p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all",
+                                                bannerAspect === '1:1' ? "bg-purple-500/10 border-purple-500 text-purple-300" : "bg-background border-border text-muted-foreground hover:text-foreground"
+                                            )}
+                                        >
+                                            <Layout className="w-5 h-5" />
+                                            <span>Feed (1:1)</span>
+                                        </button>
 
-                            {/* Form de Configuração da Marca */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                                        <button
+                                            onClick={() => setBannerAspect('9:16')}
+                                            className={cn(
+                                                "p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all",
+                                                bannerAspect === '9:16' ? "bg-purple-500/10 border-purple-500 text-purple-300" : "bg-background border-border text-muted-foreground hover:text-foreground"
+                                            )}
+                                        >
+                                            <Smartphone className="w-5 h-5" />
+                                            <span>Stories (9:16)</span>
+                                        </button>
+
+                                        <button
+                                            onClick={() => setBannerAspect('16:9')}
+                                            className={cn(
+                                                "p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all",
+                                                bannerAspect === '16:9' ? "bg-purple-500/10 border-purple-500 text-purple-300" : "bg-background border-border text-muted-foreground hover:text-foreground"
+                                            )}
+                                        >
+                                            <Monitor className="w-5 h-5" />
+                                            <span>Horizontal (16:9)</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* 2. Caixa de Cores da Marca */}
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">2. Paleta de Cores da Marca</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {COLOR_PRESETS.map((preset, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => {
+                                                    setBannerPrimaryColor(preset.primary)
+                                                    setBannerSecondaryColor(preset.secondary)
+                                                }}
+                                                className={cn(
+                                                    "px-3 py-2 rounded-xl border text-xs font-bold flex items-center gap-2 transition-all",
+                                                    bannerPrimaryColor === preset.primary ? "border-primary bg-primary/10 text-foreground" : "border-border bg-background text-muted-foreground"
+                                                )}
+                                            >
+                                                <div className="w-3.5 h-3.5 rounded-full shadow-sm" style={{ backgroundColor: preset.primary }} />
+                                                <span>{preset.name}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Seletor Custom Hex Color */}
+                                    <div className="flex items-center gap-3 pt-2">
+                                        <div className="flex items-center gap-2 bg-background border border-border px-3 py-2 rounded-xl text-xs font-bold">
+                                            <input
+                                                type="color"
+                                                value={bannerPrimaryColor}
+                                                onChange={e => setBannerPrimaryColor(e.target.value)}
+                                                className="w-6 h-6 rounded-md cursor-pointer border-none bg-transparent"
+                                            />
+                                            <span className="uppercase font-mono text-[11px]">{bannerPrimaryColor}</span>
+                                        </div>
+                                        <span className="text-xs text-muted-foreground">Cor Primária Personalizada</span>
+                                    </div>
+                                </div>
+
+                                {/* 3. Estilo Visual */}
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Estilo Visual da Loja</label>
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">3. Estilo de Imagem</label>
                                     <select
-                                        value={tone}
-                                        onChange={e => setTone(e.target.value)}
+                                        value={bannerStyle}
+                                        onChange={e => setBannerStyle(e.target.value)}
                                         className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
                                     >
-                                        <option value="tech_futuristic">⚡ Tech & Futurista (Neon & Vidro)</option>
-                                        <option value="minimalist_premium">✨ Minimalista & Premium (Soberbo)</option>
-                                        <option value="geek_gamer">🎮 Geek & Gamer (LEDs & RGB)</option>
-                                        <option value="friendly_popular">🤝 Amigável & Popular (Quente & Confiável)</option>
+                                        <option value="bancada_8k">📸 Fotografia 8K de Bancada (Técnico Trabalhando)</option>
+                                        <option value="render_3d">💎 Render 3D Futurista com Neon & Vidro</option>
+                                        <option value="microscopio">🔬 Microscópio Macro (Placa & Micro-solda)</option>
+                                        <option value="minimalist">🎨 Studio Minimalista Clean de Produto</option>
                                     </select>
                                 </div>
 
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Slogan ou Frase Marcante</label>
-                                    <input
-                                        type="text"
-                                        placeholder="Ex: Sua tecnologia em mãos especialistas"
-                                        className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
-                                    />
-                                </div>
+                                {/* 4. Textos que Vão na Imagem */}
+                                <div className="space-y-3">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Título Estampado na Arte</label>
+                                        <input
+                                            type="text"
+                                            value={bannerTitle}
+                                            onChange={e => setBannerTitle(e.target.value)}
+                                            placeholder="Ex: TROCA DE TELA EM 45 MIN"
+                                            className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none uppercase"
+                                        />
+                                    </div>
 
-                                <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Tom de Cor Predominante</label>
-                                    <div className="flex items-center gap-2 bg-background border border-border px-3 py-2 rounded-xl text-xs font-bold">
-                                        <div className="w-4 h-4 rounded-full bg-primary border border-primary/50 shadow-sm" />
-                                        <span>Azul / Neon Dourado (Padrão Studio)</span>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Selo de Oferta / Destaque</label>
+                                        <input
+                                            type="text"
+                                            value={bannerSubtitle}
+                                            onChange={e => setBannerSubtitle(e.target.value)}
+                                            placeholder="Ex: Com Película Grátis e 6 Meses de Garantia"
+                                            className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                                        />
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Banner Prompt Cards in English */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Card 1: Display / Tela */}
-                            <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl flex flex-col justify-between hover:border-purple-500/40 transition-all">
-                                <div className="space-y-2">
+                        {/* Coluna Direita: Mockup Visual & Copiador de Prompts */}
+                        <div className="lg:col-span-6 space-y-6">
+                            <div className="bg-card border border-border rounded-3xl p-6 md:p-8 space-y-6 shadow-xl">
+                                <div>
+                                    <h3 className="text-base font-black flex items-center gap-2">
+                                        <Sparkles className="w-5 h-5 text-amber-400" />
+                                        Preview Interativo da Composição
+                                    </h3>
+                                    <p className="text-xs text-muted-foreground">Simulação visual do banner nas cores escolhidas para conferência antes de gerar a arte.</p>
+                                </div>
+
+                                {/* Mockup Visual Card */}
+                                <div 
+                                    className="p-6 rounded-3xl border space-y-4 relative overflow-hidden transition-all shadow-2xl flex flex-col justify-between min-h-[260px]"
+                                    style={{
+                                        borderColor: bannerPrimaryColor,
+                                        background: `linear-gradient(135deg, ${bannerPrimaryColor}25 0%, #090D16 100%)`
+                                    }}
+                                >
                                     <div className="flex items-center justify-between">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-lg border border-purple-500/20">
-                                            Troca de Tela / Display
+                                        <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border bg-black/40 text-white" style={{ borderColor: bannerPrimaryColor }}>
+                                            Assistência Técnica • {bannerAspect}
                                         </span>
-                                        <span className="text-[10px] font-bold text-muted-foreground">Prompt v6 (English)</span>
+                                        <div className="w-3 h-3 rounded-full animate-ping" style={{ backgroundColor: bannerSecondaryColor }} />
                                     </div>
-                                    <h3 className="font-bold text-base">Banner Comercial: Troca de Tela em até 1h</h3>
-                                    <div className="p-3 bg-muted/30 border border-border rounded-2xl font-mono text-[11px] text-muted-foreground leading-relaxed">
-                                        "Ultra-professional commercial promotional banner for an electronics repair lab. High-end flagship smartphone screen replacement resting on a sleek dark glass workstation under glowing cyan ambient neon lighting, macro lens photography, 8k resolution, cinematic atmosphere, 16:9 aspect ratio --no blur, text artifacts"
+
+                                    <div className="space-y-2 py-4">
+                                        <h2 className="text-xl font-black text-white uppercase tracking-tight drop-shadow-md">
+                                            {bannerTitle || 'SEU TÍTULO AQUI'}
+                                        </h2>
+                                        <p className="text-xs font-bold text-amber-300 bg-black/50 p-2.5 rounded-xl border border-amber-500/30 inline-block">
+                                            ✨ {bannerSubtitle || 'Oferta especial da semana'}
+                                        </p>
+                                    </div>
+
+                                    <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-gray-300 font-bold">
+                                        <span>Estilo: {bannerStyle}</span>
+                                        <span>Cores: {bannerPrimaryColor} / {bannerSecondaryColor}</span>
                                     </div>
                                 </div>
 
-                                <button
-                                    onClick={() => copyToClipboard("Ultra-professional commercial promotional banner for an electronics repair lab. High-end flagship smartphone screen replacement resting on a sleek dark glass workstation under glowing cyan ambient neon lighting, macro lens photography, 8k resolution, cinematic atmosphere, 16:9 aspect ratio --no blur, text artifacts", 'p1')}
-                                    className="w-full py-3 bg-purple-500/20 text-purple-200 hover:bg-purple-500 hover:text-black rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-md"
-                                >
-                                    <Copy className="w-4 h-4" /> Copiar Prompt AI em Inglês (Midjourney / Flux)
-                                </button>
-                            </div>
+                                {/* Prompts Formatados para ChatGPT e Nano Banana */}
+                                <div className="space-y-4 pt-2 border-t border-border">
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Prompts Profissionais em Inglês:</h4>
 
-                            {/* Card 2: Bateria */}
-                            <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl flex flex-col justify-between hover:border-emerald-500/40 transition-all">
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                                            Saúde da Bateria
-                                        </span>
-                                        <span className="text-[10px] font-bold text-muted-foreground">Prompt v6 (English)</span>
+                                    {/* 1. Prompt ChatGPT (DALL-E 3) */}
+                                    <div className="p-4 bg-muted/30 border border-border rounded-2xl space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                                                🤖 ChatGPT (DALL-E 3)
+                                            </span>
+                                            <button
+                                                onClick={() => copyToClipboard(generateDynamicPrompt('chatgpt'), 'prompt_chatgpt')}
+                                                className="px-3 py-1.5 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500 hover:text-black rounded-xl text-xs font-bold transition-all flex items-center gap-1"
+                                            >
+                                                <Copy className="w-3.5 h-3.5" />
+                                                Copiar Prompt ChatGPT
+                                            </button>
+                                        </div>
+                                        <p className="text-[11px] font-mono text-muted-foreground leading-relaxed line-clamp-4">
+                                            {generateDynamicPrompt('chatgpt')}
+                                        </p>
                                     </div>
-                                    <h3 className="font-bold text-base">Banner Comercial: Troca de Bateria com Garantia</h3>
-                                    <div className="p-3 bg-muted/30 border border-border rounded-2xl font-mono text-[11px] text-muted-foreground leading-relaxed">
-                                        "High-tech promotional commercial photograph for a modern smartphone battery replacement service. Glowing 100% full green energy battery indicator hovering above a dismantled phone chassis on an illuminated workbench, dark metallic blue ambient lighting, photorealistic, 8k, dramatic contrast"
-                                    </div>
-                                </div>
 
-                                <button
-                                    onClick={() => copyToClipboard("High-tech promotional commercial photograph for a modern smartphone battery replacement service. Glowing 100% full green energy battery indicator hovering above a dismantled phone chassis on an illuminated workbench, dark metallic blue ambient lighting, photorealistic, 8k, dramatic contrast", 'p2')}
-                                    className="w-full py-3 bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500 hover:text-black rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-md"
-                                >
-                                    <Copy className="w-4 h-4" /> Copiar Prompt AI em Inglês (Midjourney / Flux)
-                                </button>
-                            </div>
-
-                            {/* Card 3: Notebook Preventiva */}
-                            <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl flex flex-col justify-between hover:border-amber-500/40 transition-all">
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
-                                            Manutenção de Notebooks
-                                        </span>
-                                        <span className="text-[10px] font-bold text-muted-foreground">Prompt v6 (English)</span>
-                                    </div>
-                                    <h3 className="font-bold text-base">Banner Comercial: Limpeza Preventiva & Pasta Térmica</h3>
-                                    <div className="p-3 bg-muted/30 border border-border rounded-2xl font-mono text-[11px] text-muted-foreground leading-relaxed">
-                                        "Commercial marketing graphic for high-performance laptop preventive thermal maintenance. Clean gaming laptop disassembled with silver thermal paste application and precision screwdrivers in soft focus background, dark amber and violet studio lighting, 8k, photorealistic"
+                                    {/* 2. Prompt Nano Banana / Imagen 3 */}
+                                    <div className="p-4 bg-muted/30 border border-border rounded-2xl space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                                                🍌 Nano Banana / Imagen 3 / Flux
+                                            </span>
+                                            <button
+                                                onClick={() => copyToClipboard(generateDynamicPrompt('nanobanana'), 'prompt_nano')}
+                                                className="px-3 py-1.5 bg-amber-500/20 text-amber-300 hover:bg-amber-500 hover:text-black rounded-xl text-xs font-bold transition-all flex items-center gap-1"
+                                            >
+                                                <Copy className="w-3.5 h-3.5" />
+                                                Copiar Prompt Nano Banana
+                                            </button>
+                                        </div>
+                                        <p className="text-[11px] font-mono text-muted-foreground leading-relaxed line-clamp-4">
+                                            {generateDynamicPrompt('nanobanana')}
+                                        </p>
                                     </div>
                                 </div>
-
-                                <button
-                                    onClick={() => copyToClipboard("Commercial marketing graphic for high-performance laptop preventive thermal maintenance. Clean gaming laptop disassembled with silver thermal paste application and precision screwdrivers in soft focus background, dark amber and violet studio lighting, 8k, photorealistic", 'p3')}
-                                    className="w-full py-3 bg-amber-500/20 text-amber-200 hover:bg-amber-500 hover:text-black rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-md"
-                                >
-                                    <Copy className="w-4 h-4" /> Copiar Prompt AI em Inglês (Midjourney / Flux)
-                                </button>
-                            </div>
-
-                            {/* Card 4: Banho Ultrassônico / Celular na Água */}
-                            <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl flex flex-col justify-between hover:border-blue-500/40 transition-all">
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-lg border border-blue-500/20">
-                                            Recuperação de Placa / Água
-                                        </span>
-                                        <span className="text-[10px] font-bold text-muted-foreground">Prompt v6 (English)</span>
-                                    </div>
-                                    <h3 className="font-bold text-base">Banner Comercial: Desoxidação Ultrassônica</h3>
-                                    <div className="p-3 bg-muted/30 border border-border rounded-2xl font-mono text-[11px] text-muted-foreground leading-relaxed">
-                                        "Cinematic commercial visual for emergency smartphone water damage restoration. Microscopic view of a clean motherboard undergoing ultrasonic cleaning bath, water droplets with glowing blue reflections, high-tech laboratory background, ultra-detailed 8k"
-                                    </div>
-                                </div>
-
-                                <button
-                                    onClick={() => copyToClipboard("Cinematic commercial visual for emergency smartphone water damage restoration. Microscopic view of a clean motherboard undergoing ultrasonic cleaning bath, water droplets with glowing blue reflections, high-tech laboratory background, ultra-detailed 8k", 'p4')}
-                                    className="w-full py-3 bg-blue-500/20 text-blue-200 hover:bg-blue-500 hover:text-black rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-md"
-                                >
-                                    <Copy className="w-4 h-4" /> Copiar Prompt AI em Inglês (Midjourney / Flux)
-                                </button>
                             </div>
                         </div>
                     </div>

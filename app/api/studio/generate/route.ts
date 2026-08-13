@@ -64,13 +64,12 @@ export async function POST(req: NextRequest) {
 
     if (apiKey) {
         try {
-            const systemPrompt = `Você é o maior especialista mundial em marketing de conteúdo, roteiros de vídeos virais e direção de arte para assistências técnicas de eletrônicos.
+            const systemPrompt = `Você é o maior especialista mundial em marketing de conteúdo e direção de arte para assistências técnicas de eletrônicos.
 
 REGRAS OBRIGATÓRIAS:
 1. Responda ESTRITAMENTE em formato JSON com o esquema exato de chaves abaixo.
-2. A chave "banner_prompt" DEVE SER ESTRITAMENTE EM INGLÊS, estruturada de forma altamente profissional para geradores de imagem AI (Midjourney v6, DALL-E 3, Flux.1).
-3. A estrutura do "banner_prompt" em inglês deve seguir o padrão de engenharia de prompt:
-   [Subject & Main Scene], [Environment & Tech Workshop], [Lighting & Color Palette matching brand tone], [Camera Shot & Lens], [Quality Modifiers & 8k Photorealistic].
+2. A chave "banner_prompt" DEVE SER ESTRITAMENTE EM INGLÊS, altamente detalhada (150+ palavras) e otimizada para geradores modernos como ChatGPT (DALL-E 3) e Nano Banana / Imagen 3 / Flux.
+3. Inclua na descrição visual o assunto principal, o layout com espaço para texto de anúncio, a iluminação nas cores da marca e parâmetros fotográficos de alta fidelidade (8k, cinematic studio lighting).
 
 Esquema JSON de resposta:
 {
@@ -81,7 +80,7 @@ Esquema JSON de resposta:
   "instagram_caption": "Legenda persuasiva completa com introdução, tópicos, endereço local e hashtags",
   "whatsapp_text": "Texto amigável para Status e Lista de Transmissão do WhatsApp",
   "google_post": "Publicação otimizada para SEO local no Google Meu Negócio / Maps",
-  "banner_prompt": "ENGLISH ONLY: Professional Midjourney/Flux image prompt following structural standards: Subject, Environment, Lighting, Color Palette, Camera angle, 8k, photorealistic"
+  "banner_prompt": "ENGLISH ONLY: Highly detailed commercial advertising prompt (150+ words) tailored for ChatGPT (DALL-E 3) and Nano Banana (Imagen 3), specifying main subject, workbench environment, color illumination, negative text space, and 8k photorealistic rendering parameters."
 }`
 
             const userPrompt = `
@@ -232,8 +231,8 @@ function generateFallbackScript(params: GenerateParams) {
         `Na ${companyName} fazemos troca de tela, substituição de bateria, reparos em placa e limpeza preventiva com rapidez e transparência.\n\n` +
         `Visite nossa loja ou entre em contato pelo telefone/WhatsApp: ${companyPhone}.`
 
-    // Professional English Prompt following Midjourney / DALL-E 3 standards
-    const bannerPrompt = `Ultra-professional commercial promotional banner for "${companyName}" electronics repair lab in ${companyCity}. High-end flagship smartphone screen replacement resting on a sleek dark illuminated workstation. Surrounded by precision micro-soldering tweezers, copper heating wire, and circuit boards. Ambient cinematic lighting in cyan and gold neon accents, macro shot, 85mm lens, f/1.8 shallow depth of field, photorealistic, 8k resolution, modern tech aesthetic, 16:9 aspect ratio --no blur, distorted elements`
+    // Rich English Prompt optimized for ChatGPT (DALL-E 3) & Nano Banana / Imagen 3
+    const bannerPrompt = `Ultra-detailed commercial promotional banner advertisement for "${companyName}" electronics repair lab in ${companyCity}. High-end flagship smartphone screen replacement resting on a sleek dark glass workstation. Composition features clean empty negative space on the upper portion reserved for text layout. Illuminated under cinematic studio lighting with neon cyan blue (#00D2FE) and warm golden yellow (#FFB800) ambient reflections. Background shows an ultra-clean micro-soldering workbench with precision screwdrivers, tweezers, and circuit boards in soft bokeh blur. Shot with 85mm macro lens at f/1.8, 8k resolution, photorealistic commercial product photography, crisp sharp focus, dramatic rim lighting --no text artifacts, noise, distorted elements.`
 
     return {
         title,
