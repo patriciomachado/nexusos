@@ -57,8 +57,6 @@ function StudioContent() {
 
     const fetchScripts = async () => {
         setLoadingScripts(true)
-    const fetchScripts = async () => {
-        setLoadingScripts(true)
         let remoteScripts: StudioScript[] = []
         try {
             const res = await fetch('/api/studio/scripts')
