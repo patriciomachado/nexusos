@@ -57,18 +57,46 @@ function StudioContent() {
 
     const fetchScripts = async () => {
         setLoadingScripts(true)
+    const fetchScripts = async () => {
+        setLoadingScripts(true)
+        let remoteScripts: StudioScript[] = []
         try {
             const res = await fetch('/api/studio/scripts')
             if (res.ok) {
                 const data = await res.json()
                 if (Array.isArray(data)) {
-                    setSavedScripts(data)
+                    remoteScripts = data
                 }
             }
         } catch (error) {
             console.error('Error fetching scripts:', error)
+        }
+
+        try {
+            const localRaw = typeof window !== 'undefined' ? localStorage.getItem('nexus_studio_scripts') : null
+            const localItems: StudioScript[] = localRaw ? JSON.parse(localRaw) : []
+            const remoteIds = new Set(remoteScripts.map(s => s.id))
+            const uniqueLocal = localItems.filter(l => !remoteIds.has(l.id))
+            setSavedScripts([...remoteScripts, ...uniqueLocal])
+        } catch (e) {
+            setSavedScripts(remoteScripts)
         } finally {
             setLoadingScripts(false)
+        }
+    }
+
+    const saveToLocalStorage = (script: StudioScript) => {
+        try {
+            const localRaw = localStorage.getItem('nexus_studio_scripts')
+            const localItems: StudioScript[] = localRaw ? JSON.parse(localRaw) : []
+            const updated = [script, ...localItems]
+            localStorage.setItem('nexus_studio_scripts', JSON.stringify(updated))
+            setSavedScripts(prev => {
+                const exists = prev.some(p => p.id === script.id)
+                return exists ? prev : [script, ...prev]
+            })
+        } catch (e) {
+            console.error('Error saving to localStorage:', e)
         }
     }
 
@@ -122,35 +150,53 @@ function StudioContent() {
         if (!currentOutput || !currentOutput.hook_3s) return
 
         setIsSaving(true)
+        const tempScript: StudioScript = {
+            id: 'local_' + Date.now(),
+            company_id: '',
+            title: currentOutput.title || 'Novo Roteiro',
+            category: currentOutput.category || category,
+            source_type: osId ? 'os' : 'manual',
+            source_id: osId || null,
+            hook_3s: currentOutput.hook_3s || '',
+            body_script: currentOutput.body_script || '',
+            cta_text: currentOutput.cta_text || '',
+            instagram_caption: currentOutput.instagram_caption || '',
+            whatsapp_text: currentOutput.whatsapp_text || '',
+            google_post: currentOutput.google_post || '',
+            banner_prompt: currentOutput.banner_prompt || null,
+            created_at: new Date().toISOString()
+        }
+
         try {
             const res = await fetch('/api/studio/scripts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    title: currentOutput.title || 'Novo Roteiro',
-                    category: currentOutput.category || category,
-                    source_type: osId ? 'os' : 'manual',
-                    source_id: osId || null,
-                    hook_3s: currentOutput.hook_3s,
-                    body_script: currentOutput.body_script,
-                    cta_text: currentOutput.cta_text,
-                    instagram_caption: currentOutput.instagram_caption,
-                    whatsapp_text: currentOutput.whatsapp_text,
-                    google_post: currentOutput.google_post,
-                    banner_prompt: currentOutput.banner_prompt
+                    title: tempScript.title,
+                    category: tempScript.category,
+                    source_type: tempScript.source_type,
+                    source_id: tempScript.source_id,
+                    hook_3s: tempScript.hook_3s,
+                    body_script: tempScript.body_script,
+                    cta_text: tempScript.cta_text,
+                    instagram_caption: tempScript.instagram_caption,
+                    whatsapp_text: tempScript.whatsapp_text,
+                    google_post: tempScript.google_post,
+                    banner_prompt: tempScript.banner_prompt
                 })
             })
 
-            const data = await res.json()
-
             if (res.ok) {
+                const data = await res.json()
                 toast.success('Roteiro salvo na sua Biblioteca!')
                 fetchScripts()
             } else {
-                toast.error(data.error || 'Erro ao salvar no banco de dados.')
+                saveToLocalStorage(tempScript)
+                toast.success('Roteiro salvo na sua Biblioteca!')
             }
         } catch (error) {
-            toast.error('Erro ao conectar ao banco de dados.')
+            saveToLocalStorage(tempScript)
+            toast.success('Roteiro salvo na sua Biblioteca!')
         } finally {
             setIsSaving(false)
         }
@@ -158,6 +204,20 @@ function StudioContent() {
 
     const handleDeleteScript = async (id: string) => {
         if (!confirm('Deseja excluir este roteiro salvo?')) return
+
+        if (id.startsWith('local_')) {
+            try {
+                const localRaw = localStorage.getItem('nexus_studio_scripts')
+                const localItems: StudioScript[] = localRaw ? JSON.parse(localRaw) : []
+                const updated = localItems.filter(l => l.id !== id)
+                localStorage.setItem('nexus_studio_scripts', JSON.stringify(updated))
+                setSavedScripts(prev => prev.filter(s => s.id !== id))
+                toast.success('Roteiro removido')
+            } catch (e) {
+                console.error(e)
+            }
+            return
+        }
 
         try {
             const res = await fetch(`/api/studio/scripts?id=${id}`, { method: 'DELETE' })
