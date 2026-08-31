@@ -44,6 +44,7 @@ function DevicesContent() {
 
     const fetchDevices = async () => {
         setLoading(true)
+        let remoteDevices: Device[] = []
         try {
             const url = new URL('/api/devices', window.location.origin)
             if (selectedBrand !== 'todas') url.searchParams.set('brand', selectedBrand)
