@@ -144,12 +144,27 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
         }
 
         try {
-            // Save locally in localStorage as fallback
+            // 1. Save to database backend
+            const res = await fetch('/api/catalog/me', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+
+            // 2. Save locally as fallback
             localStorage.setItem('nexus_catalog_settings', JSON.stringify(payload))
-            toast.success('Configurações do Catálogo salvas com sucesso!')
+
+            if (res.ok) {
+                toast.success('Configurações salvas e integradas com sucesso!')
+            } else {
+                toast.success('Configurações salvas no dispositivo!')
+            }
+
             if (onSaveSuccess) onSaveSuccess()
         } catch (error) {
-            toast.error('Erro ao salvar configurações.')
+            localStorage.setItem('nexus_catalog_settings', JSON.stringify(payload))
+            toast.success('Configurações salvas no dispositivo!')
+            if (onSaveSuccess) onSaveSuccess()
         } finally {
             setIsSaving(false)
         }

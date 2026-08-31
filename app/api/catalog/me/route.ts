@@ -10,7 +10,6 @@ export async function GET(req: NextRequest) {
         let companyId = ctx?.companyId
         let companyData = (ctx?.dbUser as any)?.company
 
-        // If no context, find the first active company in DB as fallback
         if (!companyId) {
             const { data: firstCompany } = await db
                 .from('companies')
@@ -35,7 +34,6 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Empresa não encontrada' }, { status: 404 })
         }
 
-        // Generate clean URL slug from company name
         const rawName = companyData.name || 'minha-loja'
         const cleanSlug = rawName
             .toLowerCase()
@@ -44,7 +42,6 @@ export async function GET(req: NextRequest) {
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/(^-|-$)+/g, '') || companyData.id
 
-        // Fetch catalog settings if exists
         const { data: settings } = await db
             .from('catalog_settings')
             .select('*')
@@ -53,7 +50,6 @@ export async function GET(req: NextRequest) {
 
         const finalSlug = settings?.slug || cleanSlug
 
-        // Fetch devices for this company
         const { data: devices } = await db
             .from('devices')
             .select('*')
@@ -61,7 +57,6 @@ export async function GET(req: NextRequest) {
             .eq('status', 'disponivel')
             .order('created_at', { ascending: false })
 
-        // Fetch inventory accessories
         const { data: inventory } = await db
             .from('inventory_items')
             .select('id, name, category, sale_price, quantity_in_stock, description, image_url')
@@ -77,6 +72,14 @@ export async function GET(req: NextRequest) {
             settings: {
                 catalog_title: settings?.catalog_title || `Catálogo Oficial • ${companyData.name}`,
                 whatsapp_number: settings?.whatsapp_number || companyData.phone,
+                whatsapp_custom_message: settings?.whatsapp_custom_message || 'Olá! Vi no seu catálogo e gostaria de comprar o produto.',
+                announcement_bar: settings?.announcement_bar || '⚡ Frete Rápido via Motoboy & Garantia em todos os celulares!',
+                theme: settings?.theme || {
+                    primary: '#10B981',
+                    accent: '#34D399',
+                    background: '#0A0D14',
+                    card_bg: '#111622'
+                },
                 companies: companyData
             },
             devices: devices || [],
@@ -85,5 +88,69 @@ export async function GET(req: NextRequest) {
     } catch (err: any) {
         console.error('Exception in catalog me API:', err)
         return NextResponse.json({ error: 'Erro ao carregar catálogo da empresa' }, { status: 500 })
+    }
+}
+
+export async function POST(req: NextRequest) {
+    const ctx = await getContext()
+    const db = createAdminClient()
+
+    try {
+        let companyId = ctx?.companyId
+
+        if (!companyId) {
+            const { data: firstCompany } = await db.from('companies').select('id').limit(1).single()
+            companyId = firstCompany?.id
+        }
+
+        if (!companyId) {
+            return NextResponse.json({ error: 'Empresa não identificada' }, { status: 400 })
+        }
+
+        const body = await req.json()
+        const { slug, catalog_title, announcement_bar, whatsapp_number, whatsapp_custom_message, theme } = body
+
+        // Upsert settings in catalog_settings table
+        const { data: existing } = await db.from('catalog_settings').select('id').eq('company_id', companyId).single()
+
+        let savedSettings = null
+        if (existing) {
+            const { data, error } = await db
+                .from('catalog_settings')
+                .update({
+                    slug: slug || undefined,
+                    catalog_title: catalog_title || undefined,
+                    announcement_bar: announcement_bar || undefined,
+                    whatsapp_number: whatsapp_number || undefined,
+                    whatsapp_custom_message: whatsapp_custom_message || undefined,
+                    theme: theme || undefined,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', existing.id)
+                .select()
+                .single()
+            savedSettings = data
+        } else {
+            const { data, error } = await db
+                .from('catalog_settings')
+                .insert([{
+                    company_id: companyId,
+                    slug: slug || 'minha-loja',
+                    catalog_title: catalog_title || 'Nosso Catálogo Oficial',
+                    announcement_bar: announcement_bar || null,
+                    whatsapp_number: whatsapp_number || null,
+                    whatsapp_custom_message: whatsapp_custom_message || null,
+                    theme: theme || null,
+                    is_active: true
+                }])
+                .select()
+                .single()
+            savedSettings = data
+        }
+
+        return NextResponse.json({ success: true, settings: savedSettings })
+    } catch (err: any) {
+        console.error('Exception in saving catalog settings:', err)
+        return NextResponse.json({ error: 'Erro ao salvar configurações do catálogo' }, { status: 500 })
     }
 }

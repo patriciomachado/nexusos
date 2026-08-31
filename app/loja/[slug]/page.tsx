@@ -143,20 +143,30 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
         return true
     })
 
+    const theme = (data?.settings as any)?.theme || {
+        primary: '#10B981',
+        accent: '#34D399',
+        background: '#0A0D14',
+        card_bg: '#111622'
+    }
+    const whatsappCustomMsg = (data?.settings as any)?.whatsapp_custom_message || 'Olá! Vi no seu catálogo e gostaria de comprar.'
+
     const openWhatsAppInterest = (itemName: string, price: number, extraDetails?: string) => {
         const cleanPhone = companyPhone.replace(/\D/g, '')
-        let text = `Olá! Vi no catálogo online da *${companyName}* o *${itemName}* por *${formatCurrency(price)}* à vista.`
+        let text = `${whatsappCustomMsg}\n\n*Produto:* ${itemName}\n*Preço à Vista:* ${formatCurrency(price)}`
         if (extraDetails) text += ` (${extraDetails})`
-        text += `\n\nAinda está disponível para entrega ou retirada?`
 
         window.open(`https://wa.me/55${cleanPhone}?text=${encodeURIComponent(text)}`, '_blank')
     }
 
     return (
-        <div className="min-h-screen bg-[#0A0D14] text-slate-100 font-sans selection:bg-emerald-500 selection:text-black">
+        <div className="min-h-screen text-slate-100 font-sans selection:bg-emerald-500 selection:text-black transition-colors duration-300" style={{ backgroundColor: theme.background }}>
             {/* ANNOUNCEMENT BAR MARQUEE */}
             {announcementBarText && (
-                <div className="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 text-black py-2 px-4 text-center font-black text-xs uppercase tracking-wider shadow-md">
+                <div 
+                    className="py-2 px-4 text-center font-black text-xs uppercase tracking-wider shadow-md text-black"
+                    style={{ backgroundColor: theme.primary }}
+                >
                     {announcementBarText}
                 </div>
             )}
@@ -347,11 +357,12 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 return (
                                     <div
                                         key={device.id}
-                                        className="bg-[#111622] border border-slate-800 hover:border-emerald-500/50 rounded-3xl p-5 space-y-4 shadow-xl flex flex-col justify-between transition-all group hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/5"
+                                        className="border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl flex flex-col justify-between transition-all group hover:-translate-y-1 hover:shadow-2xl"
+                                        style={{ backgroundColor: theme.card_bg }}
                                     >
                                         <div className="space-y-3">
                                             {/* Photo Preview / Thumb Header */}
-                                            <div className="relative w-full h-48 bg-black/40 rounded-2xl overflow-hidden border border-slate-800/80 flex items-center justify-center group-hover:border-emerald-500/30 transition-all">
+                                            <div className="relative w-full h-48 bg-black/40 rounded-2xl overflow-hidden border border-slate-800/80 flex items-center justify-center transition-all">
                                                 {hasPhotos ? (
                                                     <img
                                                         src={photos[0]}
@@ -367,55 +378,62 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
                                                 {/* Top Badges */}
                                                 <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-emerald-500/30 shadow-md">
-                                                        {device.brand} • {device.storage || 'Estoque'}
+                                                    <span 
+                                                        className="text-[9px] font-black uppercase tracking-widest bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 shadow-md"
+                                                        style={{ color: theme.primary }}
+                                                    >
+                                                        {device.condition === 'novo_lacrado' ? 'NOVO LACRADO' : 'SEMINOVO PREMIUM'}
                                                     </span>
-
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-amber-300 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-amber-500/30 shadow-md">
-                                                        {device.condition === 'novo_lacrado' ? 'NOVO' : 'SEMINOVO A+'}
-                                                    </span>
+                                                    {device.storage && (
+                                                        <span className="text-[9px] font-mono font-bold text-white bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800">
+                                                            {device.storage}
+                                                        </span>
+                                                    )}
                                                 </div>
 
-                                                {/* Quick View Button Overlay */}
+                                                {/* Gallery Overlay Button */}
                                                 {hasPhotos && (
                                                     <button
                                                         onClick={() => {
                                                             setSelectedDeviceModal(device)
                                                             setActivePhotoIndex(0)
                                                         }}
-                                                        className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-xs font-black text-white uppercase tracking-wider backdrop-blur-xs"
+                                                        className="absolute bottom-3 right-3 px-3 py-1.5 bg-black/80 hover:bg-black text-white rounded-xl text-[10px] font-bold backdrop-blur-md border border-slate-700 transition-all flex items-center gap-1.5 shadow-lg"
                                                     >
-                                                        <Eye className="w-4 h-4 text-emerald-400" />
-                                                        Ver Galeria de Fotos ({photos.length})
+                                                        <Eye className="w-3.5 h-3.5" style={{ color: theme.primary }} />
+                                                        {photos.length} {photos.length === 1 ? 'Foto' : 'Fotos'}
                                                     </button>
                                                 )}
                                             </div>
 
                                             {/* Details Block */}
                                             <div>
-                                                <h3 className="text-lg font-black text-white group-hover:text-emerald-400 transition-colors">
+                                                <h3 className="text-lg font-black text-white transition-colors">
                                                     {device.brand} {device.model}
                                                 </h3>
                                                 <p className="text-xs text-slate-400 font-semibold mt-0.5">
                                                     {device.color ? `Cor: ${device.color} • ` : ''}
-                                                    Saúde da Bateria: <span className="text-emerald-400">{device.battery_health}%</span>
+                                                    Saúde da Bateria: <span style={{ color: theme.primary }}>{device.battery_health}%</span>
                                                 </p>
                                             </div>
 
                                             {/* Passaporte Técnico Badge */}
                                             {device.technical_passport?.is_revised && (
-                                                <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center gap-2 text-xs text-emerald-300 font-bold">
-                                                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                                                <div 
+                                                    className="p-2.5 rounded-2xl flex items-center gap-2 text-xs font-bold border border-white/10"
+                                                    style={{ backgroundColor: `${theme.primary}15`, color: theme.primary }}
+                                                >
+                                                    <ShieldCheck className="w-4 h-4 shrink-0" style={{ color: theme.primary }} />
                                                     <span>Garantia: {device.technical_passport.warranty_months || 6} Meses</span>
                                                 </div>
                                             )}
 
                                             {/* Pricing Box */}
-                                            <div className="p-4 bg-[#0A0D14] border border-slate-800 rounded-2xl space-y-1">
+                                            <div className="p-4 bg-black/40 border border-slate-800 rounded-2xl space-y-1">
                                                 <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest">PREÇO À VISTA (PIX)</span>
-                                                <p className="text-2xl font-black text-emerald-400 tracking-tight">{formatCurrency(device.cash_price)}</p>
+                                                <p className="text-2xl font-black tracking-tight" style={{ color: theme.primary }}>{formatCurrency(device.cash_price)}</p>
                                                 {device.installment_price && (
-                                                    <p className="text-xs font-bold text-amber-300">
+                                                    <p className="text-xs font-bold" style={{ color: theme.accent }}>
                                                         ou 12x de {formatCurrency(device.installment_price / 12)} no cartão
                                                     </p>
                                                 )}
@@ -424,22 +442,10 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
                                         {/* Action Buttons */}
                                         <div className="space-y-2 pt-2">
-                                            {hasPhotos && (
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedDeviceModal(device)
-                                                        setActivePhotoIndex(0)
-                                                    }}
-                                                    className="w-full py-2 bg-slate-800/80 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5"
-                                                >
-                                                    <ImageIcon className="w-3.5 h-3.5 text-purple-400" />
-                                                    Ver {photos.length} Fotos do Aparelho
-                                                </button>
-                                            )}
-
                                             <button
                                                 onClick={() => openWhatsAppInterest(`${device.brand} ${device.model} ${device.storage || ''}`, device.cash_price, `Bateria ${device.battery_health}%`)}
-                                                className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95"
+                                                className="w-full py-3 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95 hover:opacity-90"
+                                                style={{ backgroundColor: theme.primary }}
                                             >
                                                 <MessageSquare className="w-4 h-4 fill-current" />
                                                 Comprar pelo WhatsApp

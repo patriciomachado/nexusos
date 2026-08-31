@@ -11,17 +11,19 @@ export async function GET(
     try {
         let companyId: string | null = null
         let companyData: any = null
+        let catalogSettings: any = null
 
         // 1. Try finding by custom catalog_settings slug
-        const { data: settings } = await db
+        const { data: settingsBySlug } = await db
             .from('catalog_settings')
             .select('*, companies(name, cnpj, city, state, phone, address, logo_url, email)')
             .eq('slug', slug)
             .single()
 
-        if (settings && settings.companies) {
-            companyId = settings.company_id
-            companyData = settings.companies
+        if (settingsBySlug && settingsBySlug.companies) {
+            companyId = settingsBySlug.company_id
+            companyData = settingsBySlug.companies
+            catalogSettings = settingsBySlug
         } else {
             // 2. Fetch all companies and find matching slug or ID
             const { data: companies } = await db
@@ -29,7 +31,6 @@ export async function GET(
                 .select('id, name, cnpj, city, state, phone, address, logo_url, email')
 
             if (companies && companies.length > 0) {
-                // Find matching company by ID or slug derived from name
                 const matched = companies.find(c => {
                     if (c.id === slug) return true
                     const cleanSlug = c.name
@@ -45,10 +46,18 @@ export async function GET(
                     companyId = matched.id
                     companyData = matched
                 } else {
-                    // Fallback to first company
                     companyId = companies[0].id
                     companyData = companies[0]
                 }
+            }
+
+            if (companyId) {
+                const { data: cSettings } = await db
+                    .from('catalog_settings')
+                    .select('*')
+                    .eq('company_id', companyId)
+                    .single()
+                if (cSettings) catalogSettings = cSettings
             }
         }
 
@@ -74,7 +83,7 @@ export async function GET(
             .limit(100)
 
         const rawName = companyData.name || 'minha-loja'
-        const matchedSlug = rawName
+        const matchedSlug = catalogSettings?.slug || rawName
             .toLowerCase()
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')
@@ -86,8 +95,16 @@ export async function GET(
             company_id: companyId,
             share_url: `https://nexusgestor.com/loja/${matchedSlug}`,
             settings: {
-                catalog_title: `Catálogo Oficial • ${companyData.name}`,
-                whatsapp_number: companyData.phone,
+                catalog_title: catalogSettings?.catalog_title || `Catálogo Oficial • ${companyData.name}`,
+                whatsapp_number: catalogSettings?.whatsapp_number || companyData.phone,
+                whatsapp_custom_message: catalogSettings?.whatsapp_custom_message || 'Olá! Vi no seu catálogo e gostaria de comprar o produto.',
+                announcement_bar: catalogSettings?.announcement_bar || '⚡ Frete Rápido via Motoboy & Garantia em todos os celulares!',
+                theme: catalogSettings?.theme || {
+                    primary: '#10B981',
+                    accent: '#34D399',
+                    background: '#0A0D14',
+                    card_bg: '#111622'
+                },
                 companies: companyData
             },
             devices: devices || [],
