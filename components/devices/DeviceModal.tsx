@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Smartphone, DollarSign, ShieldCheck, Check, Sparkles, AlertCircle } from 'lucide-react'
+import { X, Smartphone, DollarSign, ShieldCheck, Check, Sparkles, AlertCircle, Image as ImageIcon, Plus, Trash2 } from 'lucide-react'
 import { Device } from '@/types/devices'
 import { toast } from 'sonner'
 
@@ -27,6 +27,10 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
     const [installmentPrice, setInstallmentPrice] = useState('')
     const [status, setStatus] = useState<'disponivel' | 'vendido' | 'reservado' | 'em_revisao'>('disponivel')
     
+    // Images array
+    const [images, setImages] = useState<string[]>([])
+    const [newImageUrl, setNewImageUrl] = useState('')
+
     // Checkbox items
     const [box, setBox] = useState(true)
     const [cable, setCable] = useState(true)
@@ -55,6 +59,10 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
             setCashPrice(deviceToEdit.cash_price ? String(deviceToEdit.cash_price) : '')
             setInstallmentPrice(deviceToEdit.installment_price ? String(deviceToEdit.installment_price) : '')
             setStatus(deviceToEdit.status || 'disponivel')
+            setImages(Array.isArray(deviceToEdit.images) ? deviceToEdit.images : [])
+            setIsRevised(deviceToEdit.technical_passport?.is_revised ?? true)
+            setWarrantyMonths(deviceToEdit.technical_passport?.warranty_months || 6)
+            setReplacedParts(deviceToEdit.technical_passport?.replaced_parts?.join(', ') || '')
         } else {
             setBrand('Apple')
             setModel('')
@@ -69,10 +77,28 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
             setCashPrice('')
             setInstallmentPrice('')
             setStatus('disponivel')
+            setImages([])
+            setIsRevised(true)
+            setWarrantyMonths(6)
+            setReplacedParts('')
         }
     }, [deviceToEdit, isOpen])
 
     if (!isOpen) return null
+
+    const handleAddImage = () => {
+        if (!newImageUrl) return
+        if (!newImageUrl.startsWith('http://') && !newImageUrl.startsWith('https://')) {
+            toast.error('Informe um link de imagem válido (http:// ou https://)')
+            return
+        }
+        setImages(prev => [...prev, newImageUrl])
+        setNewImageUrl('')
+    }
+
+    const handleRemoveImage = (index: number) => {
+        setImages(prev => prev.filter((_, i) => i !== index))
+    }
 
     const handleCashPriceChange = (val: string) => {
         setCashPrice(val)
@@ -114,6 +140,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
             installment_price: installmentPrice ? Number(installmentPrice) : Number(cashPrice) * 1.12,
             status,
             included_items: includedItems,
+            images,
             technical_passport: {
                 is_revised: isRevised,
                 warranty_months: Number(warrantyMonths),
@@ -173,7 +200,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
                         <div>
                             <h2 className="text-lg font-black">{deviceToEdit ? 'Editar Aparelho' : 'Adicionar Aparelho ao Estoque'}</h2>
-                            <p className="text-xs text-muted-foreground">Cadastre especificações, IMEI, preços e passaporte de garantia.</p>
+                            <p className="text-xs text-muted-foreground">Cadastre especificações, fotos, IMEI, preços e passaporte de garantia.</p>
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl transition-all">
@@ -227,7 +254,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
                     </div>
 
-                    {/* Linha 2: Condição, Cor e Saúde da Bateria */}
+                    {/* Linha 2: Condição, Cor e Bateria */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div className="space-y-1">
                             <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Condição</label>
@@ -267,7 +294,49 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
                     </div>
 
-                    {/* Linha 3: Identificadores (IMEI 1, IMEI 2 / Serial) */}
+                    {/* Seção de Fotos do Aparelho */}
+                    <div className="p-4 bg-muted/20 border border-border rounded-2xl space-y-3">
+                        <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
+                            <ImageIcon className="w-4 h-4 text-purple-400" />
+                            Fotos Reais do Aparelho (Exibidas no Catálogo)
+                        </span>
+
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="text"
+                                value={newImageUrl}
+                                onChange={e => setNewImageUrl(e.target.value)}
+                                placeholder="Link da foto (https://...)"
+                                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-xs font-bold outline-none"
+                            />
+                            <button
+                                type="button"
+                                onClick={handleAddImage}
+                                className="px-4 py-2 bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-black rounded-xl text-xs font-bold transition-all flex items-center gap-1 shrink-0"
+                            >
+                                <Plus className="w-4 h-4" /> Adicionar Foto
+                            </button>
+                        </div>
+
+                        {images.length > 0 && (
+                            <div className="flex flex-wrap items-center gap-3 pt-2">
+                                {images.map((img, idx) => (
+                                    <div key={idx} className="relative w-16 h-16 rounded-xl border border-border overflow-hidden group">
+                                        <img src={img} alt={`Foto ${idx + 1}`} className="w-full h-full object-cover" />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveImage(idx)}
+                                            className="absolute top-1 right-1 p-1 bg-black/70 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <Trash2 className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Identificadores (IMEI 1, IMEI 2 / Serial) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 bg-muted/20 border border-border rounded-2xl">
                         <div className="space-y-1">
                             <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">IMEI 1 (Segurança & Garantia)</label>
@@ -292,7 +361,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
                     </div>
 
-                    {/* Linha 4: Preços (Custo, À Vista e 12x) */}
+                    {/* Preços (Custo, À Vista e 12x) */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div className="space-y-1">
                             <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Custo de Compra (R$)</label>
@@ -332,7 +401,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
                     </div>
 
-                    {/* Passaporte Técnico & Itens Inclusos */}
+                    {/* Passaporte Técnico & Garantia */}
                     <div className="p-4 bg-primary/10 border border-primary/20 rounded-2xl space-y-3">
                         <span className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
                             <ShieldCheck className="w-4 h-4" />
@@ -365,7 +434,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                             </div>
                         </div>
 
-                        {/* Included checkboxes */}
+                        {/* Checkboxes */}
                         <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-primary/20 text-xs">
                             <label className="flex items-center gap-2 cursor-pointer font-bold">
                                 <input type="checkbox" checked={box} onChange={e => setBox(e.target.checked)} className="rounded" />

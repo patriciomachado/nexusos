@@ -9,41 +9,68 @@ export async function GET(
     const db = createAdminClient()
 
     try {
-        // 1. Find catalog settings by slug or company ID
-        let { data: settings } = await db
+        // 1. Find catalog settings or company by slug or ID
+        let companyId: string | null = null
+        let settingsData: any = null
+
+        // Try searching catalog_settings table by slug
+        const { data: settings } = await db
             .from('catalog_settings')
-            .select('*, companies(name, city, phone, logo_url)')
+            .select('*, companies(name, cnpj, city, state, phone, address, logo_url, email)')
             .eq('slug', slug)
             .single()
 
-        // Fallback: If not found by slug, search company ID directly
-        if (!settings) {
+        if (settings) {
+            settingsData = settings
+            companyId = settings.company_id
+        } else {
+            // Fallback: search company table directly by ID or slug
             const { data: company } = await db
                 .from('companies')
-                .select('id, name, city, phone, logo_url')
-                .eq('id', slug)
+                .select('id, name, cnpj, city, state, phone, address, logo_url, email')
+                .or(`id.eq.${slug},name.ilike.%${slug}%`)
+                .limit(1)
                 .single()
 
             if (company) {
-                settings = {
+                companyId = company.id
+                settingsData = {
                     id: company.id,
                     company_id: company.id,
                     slug: company.id,
-                    catalog_title: `Catálogo Oficial - ${company.name}`,
+                    catalog_title: `Catálogo Oficial • ${company.name}`,
                     whatsapp_number: company.phone,
                     is_active: true,
                     companies: company
                 }
+            } else {
+                // Return default fallback company if none found
+                const { data: firstCompany } = await db
+                    .from('companies')
+                    .select('id, name, cnpj, city, state, phone, address, logo_url, email')
+                    .limit(1)
+                    .single()
+
+                if (firstCompany) {
+                    companyId = firstCompany.id
+                    settingsData = {
+                        id: firstCompany.id,
+                        company_id: firstCompany.id,
+                        slug: firstCompany.id,
+                        catalog_title: `Catálogo Oficial • ${firstCompany.name}`,
+                        whatsapp_number: firstCompany.phone,
+                        is_active: true,
+                        companies: firstCompany
+                    }
+                }
             }
         }
 
-        if (!settings) {
+        if (!companyId || !settingsData) {
             return NextResponse.json({ error: 'Catálogo não encontrado' }, { status: 404 })
         }
 
-        const companyId = settings.company_id
-
-        // 2. Fetch available devices
+        // 2. Fetch available devices for this company
         const { data: devices } = await db
             .from('devices')
             .select('*')
@@ -61,7 +88,7 @@ export async function GET(
             .limit(100)
 
         return NextResponse.json({
-            settings,
+            settings: settingsData,
             devices: devices || [],
             inventory: inventory || []
         })
