@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
 
     try {
         let companyId = ctx?.companyId
-        let companyData = ctx?.dbUser?.company
+        let companyData = (ctx?.dbUser as any)?.company
 
         // If no context, find the first active company in DB as fallback
         if (!companyId) {
