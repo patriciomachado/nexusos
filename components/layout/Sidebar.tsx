@@ -51,7 +51,6 @@ const navGroups: NavGroup[] = [
         title: 'Administrativo',
         items: [
             { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager', 'cashier'] },
-            { href: '/payments', label: 'Financeiro', icon: Landmark, roles: ['admin', 'manager'] },
             { href: '/team', label: 'Equipe', icon: Users2, roles: ['admin', 'manager'] },
             { href: '/reports', label: 'Relatórios', icon: BarChart3, roles: ['admin', 'manager'] },
             { href: '/settings', label: 'Configurações', icon: Settings, roles: ['admin'] },
