@@ -106,7 +106,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
     const accessoriesList = data?.inventory || []
 
-    const [announcementBarText, setAnnouncementBarText] = useState<string | null>(data?.settings?.announcement_bar || null)
+    const [announcementBarText, setAnnouncementBarText] = useState<string | null>((data?.settings as any)?.announcement_bar || null)
 
     useEffect(() => {
         try {
