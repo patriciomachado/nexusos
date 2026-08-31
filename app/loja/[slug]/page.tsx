@@ -192,7 +192,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 Catálogo Verificado • {companyName}
                             </span>
                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-800 px-3 py-1 rounded-full">
-                                Garantia Oficial da Loja
+                                Garantia
                             </span>
                         </div>
 
@@ -209,7 +209,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                     <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800/80">
                         <div className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
                             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                            Garantia da Loja
+                            Garantia
                         </div>
                         <div className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
                             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -383,7 +383,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                             {device.technical_passport?.is_revised && (
                                                 <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center gap-2 text-xs text-emerald-300 font-bold">
                                                     <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                                                    <span>Garantia Oficial: {device.technical_passport.warranty_months || 6} Meses</span>
+                                                    <span>Garantia: {device.technical_passport.warranty_months || 6} Meses</span>
                                                 </div>
                                             )}
 
@@ -467,7 +467,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                         {companyCnpj && <span className="font-mono text-emerald-400">• CNPJ: {companyCnpj}</span>}
                     </div>
                     <p className="max-w-md mx-auto leading-relaxed">
-                        Garantia da loja e suporte técnico em {companyCity || 'nossa loja'}. Todos os direitos reservados.
+                        Garantia e suporte técnico em {companyCity || 'nossa loja'}. Todos os direitos reservados.
                     </p>
                     <p className="text-[10px] text-slate-600 font-mono">Desenvolvido com tecnologia Nexus OS</p>
                 </footer>

@@ -490,7 +490,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[10px] font-bold text-muted-foreground">Peças Trocadas na Bancada (se houver)</label>
+                                <label className="text-[10px] font-bold text-muted-foreground">Peças Trocadas (se houver)</label>
                                 <input
                                     type="text"
                                     value={replacedParts}
