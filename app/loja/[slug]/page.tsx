@@ -192,16 +192,16 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 Catálogo Verificado • {companyName}
                             </span>
                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-800 px-3 py-1 rounded-full">
-                                Nota Fiscal & Garantia Loja
+                                Garantia Oficial da Loja
                             </span>
                         </div>
 
                         <h2 className="text-2xl md:text-4xl font-black tracking-tight text-white leading-tight max-w-2xl">
-                            Celulares Selecionados & Revisados na Bancada em <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">{companyCity || 'nossa loja'}</span>.
+                            Celulares Selecionados com Garantia em <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">{companyCity || 'nossa loja'}</span>.
                         </h2>
                         
                         <p className="text-xs md:text-sm text-slate-400 max-w-xl leading-relaxed">
-                            Aparelhos seminovos de procedência garantida, com teste de 20 pontos técnicos, bateria saudável e parcelamento facilitado em até 12x.
+                            Aparelhos seminovos de procedência garantida, com teste técnico completo, bateria saudável e parcelamento facilitado em até 12x.
                         </p>
                     </div>
 
@@ -209,7 +209,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                     <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800/80">
                         <div className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
                             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                            Garantia de Bancada
+                            Garantia da Loja
                         </div>
                         <div className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
                             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -383,7 +383,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                             {device.technical_passport?.is_revised && (
                                                 <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center gap-2 text-xs text-emerald-300 font-bold">
                                                     <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                                                    <span>Garantia da Bancada: {device.technical_passport.warranty_months || 6} Meses</span>
+                                                    <span>Garantia Oficial: {device.technical_passport.warranty_months || 6} Meses</span>
                                                 </div>
                                             )}
 
@@ -467,7 +467,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                         {companyCnpj && <span className="font-mono text-emerald-400">• CNPJ: {companyCnpj}</span>}
                     </div>
                     <p className="max-w-md mx-auto leading-relaxed">
-                        Garantia de bancada e suporte técnico autorizado em {companyCity || 'nossa loja'}. Todos os direitos reservados.
+                        Garantia da loja e suporte técnico em {companyCity || 'nossa loja'}. Todos os direitos reservados.
                     </p>
                     <p className="text-[10px] text-slate-600 font-mono">Desenvolvido com tecnologia Nexus OS</p>
                 </footer>
