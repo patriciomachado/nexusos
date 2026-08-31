@@ -50,9 +50,25 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
     const [selectedDeviceModal, setSelectedDeviceModal] = useState<Device | null>(null)
     const [activePhotoIndex, setActivePhotoIndex] = useState(0)
 
+    // Announcement Bar Text
+    const [announcementBarText, setAnnouncementBarText] = useState<string | null>(null)
+
     useEffect(() => {
         fetchCatalog()
     }, [slug])
+
+    useEffect(() => {
+        if (data?.settings && (data.settings as any).announcement_bar) {
+            setAnnouncementBarText((data.settings as any).announcement_bar)
+        }
+        try {
+            const raw = localStorage.getItem('nexus_catalog_settings')
+            if (raw) {
+                const parsed = JSON.parse(raw)
+                if (parsed.announcement_bar) setAnnouncementBarText(parsed.announcement_bar)
+            }
+        } catch (e) {}
+    }, [data])
 
     const fetchCatalog = async () => {
         setLoading(true)
@@ -105,18 +121,6 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
     const companyLogo = company?.logo_url
 
     const accessoriesList = data?.inventory || []
-
-    const [announcementBarText, setAnnouncementBarText] = useState<string | null>((data?.settings as any)?.announcement_bar || null)
-
-    useEffect(() => {
-        try {
-            const raw = localStorage.getItem('nexus_catalog_settings')
-            if (raw) {
-                const parsed = JSON.parse(raw)
-                if (parsed.announcement_bar) setAnnouncementBarText(parsed.announcement_bar)
-            }
-        } catch (e) {}
-    }, [data])
 
     const filteredDevices = allDevices.filter(d => {
         if (selectedBrand !== 'todas' && d.brand.toLowerCase() !== selectedBrand.toLowerCase()) return false
