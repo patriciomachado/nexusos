@@ -99,6 +99,10 @@ export async function GET(
                 whatsapp_number: catalogSettings?.whatsapp_number || companyData.phone,
                 whatsapp_custom_message: catalogSettings?.whatsapp_custom_message || 'Olá! Vi no seu catálogo e gostaria de comprar o produto.',
                 announcement_bar: catalogSettings?.announcement_bar || '⚡ Frete Rápido via Motoboy & Garantia em todos os celulares!',
+                warranty_text: catalogSettings?.warranty_text || 'Garantia da Loja inclusa em todos os aparelhos',
+                delivery_text: catalogSettings?.delivery_text || 'Entrega rápida via Motoboy ou retirada em mãos',
+                payment_methods_text: catalogSettings?.payment_methods_text || 'Até 12x no cartão de crédito ou PIX com desconto',
+                device_condition_mode: catalogSettings?.device_condition_mode || 'todos',
                 theme: catalogSettings?.theme || {
                     primary: '#10B981',
                     accent: '#34D399',

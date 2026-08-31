@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { 
     Palette, Sparkles, Globe, MessageSquare, Megaphone, 
-    Save, Copy, ExternalLink, RefreshCw, Check, ShieldCheck, Smartphone
+    Save, Copy, ExternalLink, RefreshCw, Check, ShieldCheck, Smartphone, Truck, CreditCard, Layers
 } from 'lucide-react'
 import { CatalogSettings, CatalogTheme } from '@/types/devices'
 import { toast } from 'sonner'
@@ -74,6 +74,12 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
     const [whatsappNumber, setWhatsappNumber] = useState('')
     const [whatsappCustomMessage, setWhatsappCustomMessage] = useState('Olá! Vi no seu catálogo e gostaria de mais informações sobre o produto.')
     
+    // Custom Configuration Fields (Garantia, Entrega, Métodos de Pagamento, Tipos de Aparelhos)
+    const [warrantyText, setWarrantyText] = useState('Garantia da Loja inclusa em todos os aparelhos')
+    const [deliveryText, setDeliveryText] = useState('Entrega rápida via Motoboy ou retirada em mãos na loja')
+    const [paymentMethodsText, setPaymentMethodsText] = useState('Até 12x no cartão de crédito ou PIX com desconto')
+    const [deviceConditionMode, setDeviceConditionMode] = useState<'todos' | 'novos' | 'seminovos'>('todos')
+
     // 4 Custom Colors
     const [primaryColor, setPrimaryColor] = useState('#10B981')
     const [accentColor, setAccentColor] = useState('#34D399')
@@ -97,6 +103,12 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                     setWhatsappNumber(data.settings.whatsapp_number || data.settings.companies?.phone || '')
                     setAnnouncementBar(data.settings.announcement_bar || '⚡ Frete Rápido via Motoboy & Garantia em todos os celulares!')
                     setWhatsappCustomMessage(data.settings.whatsapp_custom_message || 'Olá! Vi no seu catálogo e gostaria de comprar o produto.')
+                    
+                    if (data.settings.warranty_text) setWarrantyText(data.settings.warranty_text)
+                    if (data.settings.delivery_text) setDeliveryText(data.settings.delivery_text)
+                    if (data.settings.payment_methods_text) setPaymentMethodsText(data.settings.payment_methods_text)
+                    if (data.settings.device_condition_mode) setDeviceConditionMode(data.settings.device_condition_mode)
+
                     if (data.settings.theme) {
                         setPrimaryColor(data.settings.theme.primary || '#10B981')
                         setAccentColor(data.settings.theme.accent || '#34D399')
@@ -135,6 +147,10 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
             announcement_bar: announcementBar,
             whatsapp_number: whatsappNumber,
             whatsapp_custom_message: whatsappCustomMessage,
+            warranty_text: warrantyText,
+            delivery_text: deliveryText,
+            payment_methods_text: paymentMethodsText,
+            device_condition_mode: deviceConditionMode,
             theme: {
                 primary: primaryColor,
                 accent: accentColor,
@@ -155,7 +171,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
             localStorage.setItem('nexus_catalog_settings', JSON.stringify(payload))
 
             if (res.ok) {
-                toast.success('Configurações salvas e integradas com sucesso!')
+                toast.success('Configurações do Catálogo salvas com sucesso!')
             } else {
                 toast.success('Configurações salvas no dispositivo!')
             }
@@ -170,13 +186,86 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
         }
     }
 
-    const liveShareUrl = `https://nexusgestor.com/loja/${slug}`
-
     return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* PAINEL DE CONFIGURAÇÕES (COLUNA DA ESQUERDA) */}
             <form onSubmit={handleSave} className="lg:col-span-7 space-y-6">
-                {/* 1. SELEÇÃO DA PALETA DE 4 CORES */}
+                
+                {/* 1. NOVAS CAIXAS DE CONFIGURAÇÃO (GARANTIA, ENTREGA, PAGAMENTO E TIPOS DE APARELHOS) */}
+                <div className="bg-card border border-border rounded-3xl p-6 space-y-5 shadow-xl">
+                    <div className="flex items-center gap-3 border-b border-border pb-4">
+                        <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-400 border border-emerald-500/20">
+                            <Layers className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <h3 className="font-black text-base">Informações & Regras do Catálogo</h3>
+                            <p className="text-xs text-muted-foreground">Configure as mensagens de garantia, entrega, métodos de pagamento e tipos de aparelhos.</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Tipo de Aparelhos Vendidos */}
+                        <div className="col-span-full space-y-1.5 bg-background p-4 rounded-2xl border border-border">
+                            <label className="text-[10px] font-black uppercase text-primary tracking-widest block">Tipos de Celulares Exibidos no Catálogo</label>
+                            <select
+                                value={deviceConditionMode}
+                                onChange={e => setDeviceConditionMode(e.target.value as any)}
+                                className="w-full bg-card border border-border rounded-xl px-3 py-2 text-xs font-bold outline-none"
+                            >
+                                <option value="todos">✨ Vendo Novos Lacrados e Seminovos</option>
+                                <option value="novos">📦 Vendo SOMENTE Aparelhos Novos Lacrados</option>
+                                <option value="seminovos">📱 Vendo SOMENTE Aparelhos Seminovos</option>
+                            </select>
+                        </div>
+
+                        {/* Garantia */}
+                        <div className="space-y-1 bg-background p-3.5 rounded-2xl border border-border">
+                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
+                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                                Texto de Garantia
+                            </label>
+                            <input
+                                type="text"
+                                value={warrantyText}
+                                onChange={e => setWarrantyText(e.target.value)}
+                                placeholder="Ex: Garantia da Loja inclusa em todos os aparelhos"
+                                className="w-full bg-card border border-border rounded-xl p-2.5 text-xs font-bold outline-none"
+                            />
+                        </div>
+
+                        {/* Entrega */}
+                        <div className="space-y-1 bg-background p-3.5 rounded-2xl border border-border">
+                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
+                                <Truck className="w-3.5 h-3.5 text-emerald-400" />
+                                Opções de Entrega
+                            </label>
+                            <input
+                                type="text"
+                                value={deliveryText}
+                                onChange={e => setDeliveryText(e.target.value)}
+                                placeholder="Ex: Entrega via Motoboy ou retirada na loja"
+                                className="w-full bg-card border border-border rounded-xl p-2.5 text-xs font-bold outline-none"
+                            />
+                        </div>
+
+                        {/* Parcelamento e Pagamentos */}
+                        <div className="col-span-full space-y-1 bg-background p-3.5 rounded-2xl border border-border">
+                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
+                                <CreditCard className="w-3.5 h-3.5 text-amber-400" />
+                                Parcelamento & Formas de Pagamento
+                            </label>
+                            <input
+                                type="text"
+                                value={paymentMethodsText}
+                                onChange={e => setPaymentMethodsText(e.target.value)}
+                                placeholder="Ex: Até 12x no cartão de crédito ou PIX com desconto"
+                                className="w-full bg-card border border-border rounded-xl p-2.5 text-xs font-bold outline-none"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* 2. SELEÇÃO DA PALETA DE 4 CORES */}
                 <div className="bg-card border border-border rounded-3xl p-6 space-y-5 shadow-xl">
                     <div className="flex items-center gap-3 border-b border-border pb-4">
                         <div className="p-3 bg-purple-500/10 rounded-2xl text-purple-400 border border-purple-500/20">
@@ -271,7 +360,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                     </div>
                 </div>
 
-                {/* 2. SLUG E MENSAGENS DO CATÁLOGO */}
+                {/* 3. SLUG E MENSAGENS DO CATÁLOGO */}
                 <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl">
                     <div className="flex items-center gap-3 border-b border-border pb-4">
                         <div className="p-3 bg-primary/10 rounded-2xl text-primary border border-primary/20">
@@ -359,7 +448,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                 >
                     {/* Top Announcement Bar */}
                     {announcementBar && (
-                        <div className="py-1 px-3 rounded-xl text-[10px] font-bold text-center truncate" style={{ backgroundColor: primaryColor, color: '#000000' }}>
+                        <div className="py-1 px-3 rounded-xl text-[10px] font-bold text-center truncate text-black" style={{ backgroundColor: primaryColor }}>
                             {announcementBar}
                         </div>
                     )}
@@ -381,13 +470,20 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         </div>
                     </div>
 
-                    {/* Banner Card Mockup */}
-                    <div className="p-4 rounded-2xl border border-white/10 space-y-2" style={{ backgroundColor: cardBgColor }}>
-                        <span className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded" style={{ backgroundColor: `${primaryColor}20`, color: primaryColor }}>
-                            GARANTIA DE LOJA
-                        </span>
-                        <h5 className="text-sm font-black tracking-tight leading-tight">Celulares Selecionados</h5>
-                        <p className="text-[10px] opacity-70">Aparelhos seminovos originais com entrega rápida.</p>
+                    {/* Trust Strip Mockup */}
+                    <div className="p-3 rounded-2xl border border-white/10 space-y-2 text-[10px]" style={{ backgroundColor: cardBgColor }}>
+                        <div className="flex items-center gap-1.5 font-bold" style={{ color: primaryColor }}>
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                            {warrantyText}
+                        </div>
+                        <div className="flex items-center gap-1.5 opacity-80">
+                            <Truck className="w-3.5 h-3.5" />
+                            {deliveryText}
+                        </div>
+                        <div className="flex items-center gap-1.5 opacity-80">
+                            <CreditCard className="w-3.5 h-3.5" />
+                            {paymentMethodsText}
+                        </div>
                     </div>
 
                     {/* Sample Product Card Mockup */}

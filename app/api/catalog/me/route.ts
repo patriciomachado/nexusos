@@ -74,6 +74,10 @@ export async function GET(req: NextRequest) {
                 whatsapp_number: settings?.whatsapp_number || companyData.phone,
                 whatsapp_custom_message: settings?.whatsapp_custom_message || 'Olá! Vi no seu catálogo e gostaria de comprar o produto.',
                 announcement_bar: settings?.announcement_bar || '⚡ Frete Rápido via Motoboy & Garantia em todos os celulares!',
+                warranty_text: settings?.warranty_text || 'Garantia da Loja inclusa em todos os aparelhos',
+                delivery_text: settings?.delivery_text || 'Entrega rápida via Motoboy ou retirada em mãos',
+                payment_methods_text: settings?.payment_methods_text || 'Até 12x no cartão de crédito ou PIX com desconto',
+                device_condition_mode: settings?.device_condition_mode || 'todos',
                 theme: settings?.theme || {
                     primary: '#10B981',
                     accent: '#34D399',
@@ -108,7 +112,10 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json()
-        const { slug, catalog_title, announcement_bar, whatsapp_number, whatsapp_custom_message, theme } = body
+        const { 
+            slug, catalog_title, announcement_bar, whatsapp_number, whatsapp_custom_message, 
+            warranty_text, delivery_text, payment_methods_text, device_condition_mode, theme 
+        } = body
 
         // Upsert settings in catalog_settings table
         const { data: existing } = await db.from('catalog_settings').select('id').eq('company_id', companyId).single()
@@ -123,6 +130,10 @@ export async function POST(req: NextRequest) {
                     announcement_bar: announcement_bar || undefined,
                     whatsapp_number: whatsapp_number || undefined,
                     whatsapp_custom_message: whatsapp_custom_message || undefined,
+                    warranty_text: warranty_text || undefined,
+                    delivery_text: delivery_text || undefined,
+                    payment_methods_text: payment_methods_text || undefined,
+                    device_condition_mode: device_condition_mode || undefined,
                     theme: theme || undefined,
                     updated_at: new Date().toISOString()
                 })
@@ -140,6 +151,10 @@ export async function POST(req: NextRequest) {
                     announcement_bar: announcement_bar || null,
                     whatsapp_number: whatsapp_number || null,
                     whatsapp_custom_message: whatsapp_custom_message || null,
+                    warranty_text: warranty_text || null,
+                    delivery_text: delivery_text || null,
+                    payment_methods_text: payment_methods_text || null,
+                    device_condition_mode: device_condition_mode || 'todos',
                     theme: theme || null,
                     is_active: true
                 }])

@@ -47,6 +47,10 @@ export interface CatalogSettings {
     announcement_bar?: string | null
     whatsapp_number?: string | null
     whatsapp_custom_message?: string | null
+    warranty_text?: string | null
+    delivery_text?: string | null
+    payment_methods_text?: string | null
+    device_condition_mode?: 'todos' | 'novos' | 'seminovos' | null
     motoboy_delivery_fee?: number
     theme?: CatalogTheme
     is_active: boolean

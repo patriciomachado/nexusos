@@ -122,7 +122,26 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
     const accessoriesList = data?.inventory || []
 
+    const theme = (data?.settings as any)?.theme || {
+        primary: '#10B981',
+        accent: '#34D399',
+        background: '#0A0D14',
+        card_bg: '#111622'
+    }
+    const whatsappCustomMsg = (data?.settings as any)?.whatsapp_custom_message || 'Olá! Vi no seu catálogo e gostaria de comprar.'
+    const warrantyText = (data?.settings as any)?.warranty_text || 'Garantia da Loja inclusa'
+    const deliveryText = (data?.settings as any)?.delivery_text || 'Entrega Via Motoboy'
+    const paymentMethodsText = (data?.settings as any)?.payment_methods_text || 'Até 12x no Cartão'
+    const deviceConditionMode = (data?.settings as any)?.device_condition_mode || 'todos'
+
+    // Dynamically extract ONLY brands that exist in allDevices
+    const registeredBrands = Array.from(new Set(allDevices.map(d => d.brand).filter(Boolean)))
+    const availableBrands = ['todas', ...registeredBrands]
+
     const filteredDevices = allDevices.filter(d => {
+        if (deviceConditionMode === 'novos' && d.condition !== 'novo_lacrado') return false
+        if (deviceConditionMode === 'seminovos' && d.condition === 'novo_lacrado') return false
+
         if (selectedBrand !== 'todas' && d.brand.toLowerCase() !== selectedBrand.toLowerCase()) return false
         
         if (priceRange === 'ate1500' && d.cash_price > 1500) return false
@@ -142,14 +161,6 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
         }
         return true
     })
-
-    const theme = (data?.settings as any)?.theme || {
-        primary: '#10B981',
-        accent: '#34D399',
-        background: '#0A0D14',
-        card_bg: '#111622'
-    }
-    const whatsappCustomMsg = (data?.settings as any)?.whatsapp_custom_message || 'Olá! Vi no seu catálogo e gostaria de comprar.'
 
     const openWhatsAppInterest = (itemName: string, price: number, extraDetails?: string) => {
         const cleanPhone = companyPhone.replace(/\D/g, '')
@@ -172,16 +183,16 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
             )}
 
             {/* STICKY HEADER COM IDENTIDADE VISUAL */}
-            <header className="sticky top-0 z-40 bg-[#0F1420]/90 backdrop-blur-xl border-b border-slate-800/80 shadow-2xl">
+            <header className="sticky top-0 z-40 backdrop-blur-xl border-b border-slate-800/80 shadow-2xl" style={{ backgroundColor: `${theme.card_bg}EE` }}>
                 <div className="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
                     {/* Logo + Store Name + CNPJ */}
                     <div className="flex items-center gap-3">
                         {companyLogo ? (
-                            <div className="w-11 h-11 rounded-2xl overflow-hidden border border-emerald-500/30 p-0.5 bg-black shadow-lg shadow-emerald-500/10">
+                            <div className="w-11 h-11 rounded-2xl overflow-hidden border p-0.5 bg-black shadow-lg" style={{ borderColor: `${theme.primary}50` }}>
                                 <img src={companyLogo} alt={companyName} className="w-full h-full object-cover rounded-xl" />
                             </div>
                         ) : (
-                            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-black font-black text-lg flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                            <div className="w-11 h-11 rounded-2xl text-black font-black text-lg flex items-center justify-center shadow-lg" style={{ backgroundColor: theme.primary }}>
                                 {companyName.substring(0, 2).toUpperCase()}
                             </div>
                         )}
@@ -189,10 +200,10 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                         <div>
                             <h1 className="text-base font-black tracking-tight text-white flex items-center gap-2">
                                 {companyName}
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: theme.primary }} />
                             </h1>
                             <p className="text-[11px] text-slate-400 font-semibold flex flex-wrap items-center gap-2">
-                                {companyCnpj && <span className="font-mono text-emerald-400">CNPJ: {companyCnpj}</span>}
+                                {companyCnpj && <span className="font-mono" style={{ color: theme.primary }}>CNPJ: {companyCnpj}</span>}
                                 {companyCity && <span>• {companyCity}{companyState ? `/${companyState}` : ''}</span>}
                             </p>
                         </div>
@@ -202,7 +213,8 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                     {companyPhone && (
                         <button
                             onClick={() => openWhatsAppInterest('Atendimento Geral', 0)}
-                            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95"
+                            className="px-4 py-2 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
+                            style={{ backgroundColor: theme.primary }}
                         >
                             <MessageSquare className="w-4 h-4 fill-current" />
                             <span className="hidden sm:inline">Falar no</span> WhatsApp
@@ -213,75 +225,74 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
             {/* HERO SECTION DE ALTA CONVERSÃO */}
             <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-[#121826] to-[#0D111A] border border-slate-800 p-6 md:p-10 shadow-2xl space-y-6">
+                <div className="relative overflow-hidden rounded-3xl border border-slate-800 p-6 md:p-10 shadow-2xl space-y-6" style={{ backgroundColor: theme.card_bg }}>
                     {/* Background glow effects */}
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl pointer-events-none opacity-20" style={{ backgroundColor: theme.primary }} />
 
                     <div className="relative z-10 space-y-4">
                         <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1.5 border" style={{ backgroundColor: `${theme.primary}20`, borderColor: `${theme.primary}40`, color: theme.primary }}>
                                 <ShieldCheck className="w-3.5 h-3.5" />
                                 Catálogo Verificado • {companyName}
                             </span>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-800 px-3 py-1 rounded-full">
-                                Garantia
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-300 bg-slate-800/80 px-3 py-1 rounded-full">
+                                {warrantyText}
                             </span>
                         </div>
 
                         <h2 className="text-2xl md:text-4xl font-black tracking-tight text-white leading-tight max-w-2xl">
-                            Celulares Selecionados com Garantia em <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">{companyCity || 'nossa loja'}</span>.
+                            Celulares Selecionados em <span style={{ color: theme.primary }}>{companyCity || 'nossa loja'}</span>.
                         </h2>
                         
                         <p className="text-xs md:text-sm text-slate-400 max-w-xl leading-relaxed">
-                            Aparelhos seminovos de procedência garantida, com teste técnico completo, bateria saudável e parcelamento facilitado em até 12x.
+                            {deviceConditionMode === 'novos' && 'Aparelhos 100% novos lacrados na caixa com garantia oficial.'}
+                            {deviceConditionMode === 'seminovos' && 'Seminovos originais de procedência garantida com teste técnico completo.'}
+                            {deviceConditionMode === 'todos' && 'Aparelhos novos lacrados e seminovos originais com procedência garantida e parcelamento facilitado.'}
                         </p>
                     </div>
 
                     {/* Trust badges strip */}
-                    <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800/80">
+                    <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-slate-800/80">
                         <div className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                            Garantia
+                            <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: theme.primary }} />
+                            {warrantyText}
                         </div>
                         <div className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                            Entrega Via Motoboy
+                            <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: theme.primary }} />
+                            {deliveryText}
                         </div>
                         <div className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                            Até 12x no Cartão
-                        </div>
-                        <div className="flex items-center gap-2 text-[11px] font-bold text-slate-300">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                            Aparelhos 100% Originais
+                            <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: theme.primary }} />
+                            {paymentMethodsText}
                         </div>
                     </div>
                 </div>
 
                 {/* FILTROS E PESQUISA */}
-                <div className="bg-[#111622] border border-slate-800 rounded-3xl p-4 md:p-6 space-y-4 shadow-xl">
+                <div className="border border-slate-800 rounded-3xl p-4 md:p-6 space-y-4 shadow-xl" style={{ backgroundColor: theme.card_bg }}>
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         {/* Search Bar */}
                         <div className="relative w-full md:w-96">
                             <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
                             <input
                                 type="text"
-                                placeholder="Buscar modelo de iPhone, Galaxy..."
+                                placeholder="Buscar modelo de celular..."
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
-                                className="w-full bg-[#0A0D14] border border-slate-700/80 rounded-2xl pl-10 pr-4 py-2.5 text-xs font-bold text-white outline-none focus:border-emerald-500 transition-all placeholder:text-slate-500"
+                                className="w-full border border-slate-700/80 rounded-2xl pl-10 pr-4 py-2.5 text-xs font-bold text-white outline-none transition-all placeholder:text-slate-500"
+                                style={{ backgroundColor: theme.background }}
                             />
                         </div>
 
                         {/* Abas Celulares vs Acessórios */}
-                        <div className="flex items-center gap-2 w-full md:w-auto bg-[#0A0D14] p-1.5 rounded-2xl border border-slate-800">
+                        <div className="flex items-center gap-2 w-full md:w-auto p-1.5 rounded-2xl border border-slate-800" style={{ backgroundColor: theme.background }}>
                             <button
                                 onClick={() => setActiveTab('devices')}
                                 className={cn(
                                     "flex-1 md:flex-initial px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
-                                    activeTab === 'devices' ? "bg-emerald-500 text-black font-black shadow-lg shadow-emerald-500/20" : "text-slate-400 hover:text-white"
+                                    activeTab === 'devices' ? "text-black font-black shadow-lg" : "text-slate-400 hover:text-white"
                                 )}
+                                style={activeTab === 'devices' ? { backgroundColor: theme.primary } : {}}
                             >
                                 <Smartphone className="w-4 h-4" />
                                 Celulares ({allDevices.length})
@@ -291,8 +302,9 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 onClick={() => setActiveTab('accessories')}
                                 className={cn(
                                     "flex-1 md:flex-initial px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
-                                    activeTab === 'accessories' ? "bg-emerald-500 text-black font-black shadow-lg shadow-emerald-500/20" : "text-slate-400 hover:text-white"
+                                    activeTab === 'accessories' ? "text-black font-black shadow-lg" : "text-slate-400 hover:text-white"
                                 )}
+                                style={activeTab === 'accessories' ? { backgroundColor: theme.primary } : {}}
                             >
                                 <ShoppingBag className="w-4 h-4" />
                                 Capas & Peças ({accessoriesList.length})
@@ -303,21 +315,22 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                     {/* Filtros Secundários por Marca e Faixa de Preço */}
                     {activeTab === 'devices' && (
                         <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-800/80">
-                            {/* Marcas */}
+                            {/* Marcas (SOMENTE AS MARCAS CADASTRADAS NO ESTOQUE DA LOJA) */}
                             <div className="flex flex-wrap items-center gap-2">
                                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 mr-1">Marca:</span>
-                                {['todas', 'Apple', 'Samsung', 'Xiaomi', 'Motorola'].map(brand => (
+                                {availableBrands.map(brand => (
                                     <button
                                         key={brand}
                                         onClick={() => setSelectedBrand(brand)}
                                         className={cn(
                                             "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border",
                                             selectedBrand === brand
-                                                ? "bg-emerald-500/10 border-emerald-500 text-emerald-400"
-                                                : "border-slate-800 bg-[#0A0D14] text-slate-400 hover:text-white"
+                                                ? "border-emerald-500 text-white"
+                                                : "border-slate-800 text-slate-400 hover:text-white"
                                         )}
+                                        style={selectedBrand === brand ? { backgroundColor: `${theme.primary}30`, borderColor: theme.primary, color: theme.primary } : { backgroundColor: theme.background }}
                                     >
-                                        {brand}
+                                        {brand === 'todas' ? 'Todas as Marcas' : brand}
                                     </button>
                                 ))}
                             </div>
@@ -328,7 +341,8 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 <select
                                     value={priceRange}
                                     onChange={e => setPriceRange(e.target.value as any)}
-                                    className="bg-[#0A0D14] border border-slate-800 text-slate-300 font-bold text-xs rounded-xl px-3 py-1.5 outline-none cursor-pointer"
+                                    className="border border-slate-800 text-slate-300 font-bold text-xs rounded-xl px-3 py-1.5 outline-none cursor-pointer"
+                                    style={{ backgroundColor: theme.background }}
                                 >
                                     <option value="todos">Qualquer Preço</option>
                                     <option value="ate1500">Até R$ 1.500</option>
