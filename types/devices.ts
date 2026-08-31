@@ -31,14 +31,24 @@ export interface Device {
     updated_at?: string
 }
 
+export interface CatalogTheme {
+    primary: string
+    accent: string
+    background: string
+    card_bg: string
+}
+
 export interface CatalogSettings {
     id: string
     company_id: string
     slug: string
     catalog_title: string
     banner_url?: string | null
+    announcement_bar?: string | null
     whatsapp_number?: string | null
+    whatsapp_custom_message?: string | null
     motoboy_delivery_fee?: number
+    theme?: CatalogTheme
     is_active: boolean
     created_at?: string
     updated_at?: string

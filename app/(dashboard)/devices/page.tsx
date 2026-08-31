@@ -11,6 +11,7 @@ import { Device, DeviceTradeIn, CatalogSettings } from '@/types/devices'
 import DeviceModal from '@/components/devices/DeviceModal'
 import TradeInModal from '@/components/devices/TradeInModal'
 import QRCodePrintModal from '@/components/devices/QRCodePrintModal'
+import CatalogSettingsForm from '@/components/devices/CatalogSettingsForm'
 import { formatCurrency, cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -469,55 +470,51 @@ function DevicesContent() {
                     </div>
                 )}
 
-                {/* TAB 3: CATÁLOGO DIGITAL PÚBLICO */}
+                {/* TAB 3: CATÁLOGO DIGITAL PÚBLICO & CONFIGURAÇÃO VISUAL */}
                 {activeTab === 'catalog' && (
-                    <div className="bg-card border border-border rounded-3xl p-6 md:p-8 space-y-6 shadow-xl animate-in fade-in duration-300">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-4">
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                        {/* Top Bar Banner with Quick Link */}
+                        <div className="bg-card border border-border rounded-3xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
                             <div>
                                 <h2 className="text-lg font-black flex items-center gap-2">
                                     <Globe className="w-5 h-5 text-primary" />
-                                    Seu Catálogo Digital Público
+                                    Seu Catálogo Digital Público & Identidade Visual
                                 </h2>
-                                <p className="text-xs text-muted-foreground mt-0.5">Seus clientes podem acessar e comprar seus celulares e produtos online.</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">Personalize as 4 cores do tema, mensagens e compartilhe o link exclusivo com seus clientes.</p>
                             </div>
 
-                            <Link
-                                href={`/loja/${myStoreSlug}`}
-                                target="_blank"
-                                className="px-5 py-2.5 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
-                            >
-                                Abrir Catálogo Público da Sua Loja
-                                <ExternalLink className="w-4 h-4" />
-                            </Link>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(myShareUrl)
+                                        toast.success('Link do catálogo copiado!')
+                                    }}
+                                    className="px-4 py-2.5 bg-background border border-border hover:border-primary/50 text-foreground rounded-xl text-xs font-bold transition-all flex items-center gap-2"
+                                >
+                                    <Copy className="w-4 h-4 text-primary" />
+                                    Copiar Link
+                                </button>
+
+                                <Link
+                                    href={`/loja/${myStoreSlug}`}
+                                    target="_blank"
+                                    className="px-5 py-2.5 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+                                >
+                                    Abrir Catálogo Público
+                                    <ExternalLink className="w-4 h-4" />
+                                </Link>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="p-5 bg-background border border-border rounded-2xl space-y-3">
-                                <span className="text-[10px] font-black uppercase text-primary tracking-widest">Link Exclusivo da Sua Assistência</span>
-                                <div className="p-3 bg-muted/40 rounded-xl font-mono text-xs text-foreground font-bold border border-border flex items-center justify-between overflow-hidden">
-                                    <span className="truncate mr-2">{myShareUrl}</span>
-                                    <button
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(myShareUrl)
-                                            toast.success('Link exclusivo da sua loja copiado!')
-                                        }}
-                                        className="text-xs text-primary font-bold hover:underline shrink-0"
-                                    >
-                                        Copiar Link
-                                    </button>
-                                </div>
-                                <p className="text-xs text-muted-foreground">Cole este link na bio do seu Instagram ou envie no WhatsApp dos seus clientes.</p>
-                            </div>
-
-                            <div className="p-5 bg-background border border-border rounded-2xl space-y-3">
-                                <span className="text-[10px] font-black uppercase text-emerald-400 tracking-widest">Itens Exibidos no Catálogo</span>
-                                <ul className="text-xs space-y-2 text-muted-foreground">
-                                    <li className="flex items-center gap-2">
-                                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                                        Todos os celulares cadastrados com status <strong>Disponível</strong>
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        {/* Complete Form & Live Preview */}
+                        <CatalogSettingsForm
+                            initialSlug={myStoreSlug}
+                            onSaveSuccess={() => {
+                                fetchMyStoreCatalogInfo()
+                            }}
+                        />
+                    </div>
+                )}
                                         Capas, películas e acessórios cadastrados no Estoque Geral
                                     </li>
                                 </ul>

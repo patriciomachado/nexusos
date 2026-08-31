@@ -106,6 +106,18 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
     const accessoriesList = data?.inventory || []
 
+    const [announcementBarText, setAnnouncementBarText] = useState<string | null>(data?.settings?.announcement_bar || null)
+
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem('nexus_catalog_settings')
+            if (raw) {
+                const parsed = JSON.parse(raw)
+                if (parsed.announcement_bar) setAnnouncementBarText(parsed.announcement_bar)
+            }
+        } catch (e) {}
+    }, [data])
+
     const filteredDevices = allDevices.filter(d => {
         if (selectedBrand !== 'todas' && d.brand.toLowerCase() !== selectedBrand.toLowerCase()) return false
         
@@ -138,6 +150,13 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
     return (
         <div className="min-h-screen bg-[#0A0D14] text-slate-100 font-sans selection:bg-emerald-500 selection:text-black">
+            {/* ANNOUNCEMENT BAR MARQUEE */}
+            {announcementBarText && (
+                <div className="bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 text-black py-2 px-4 text-center font-black text-xs uppercase tracking-wider shadow-md">
+                    {announcementBarText}
+                </div>
+            )}
+
             {/* STICKY HEADER COM IDENTIDADE VISUAL */}
             <header className="sticky top-0 z-40 bg-[#0F1420]/90 backdrop-blur-xl border-b border-slate-800/80 shadow-2xl">
                 <div className="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
