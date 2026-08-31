@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Smartphone, DollarSign, ShieldCheck, Check, Sparkles, AlertCircle, Image as ImageIcon, Plus, Trash2 } from 'lucide-react'
+import { X, Smartphone, DollarSign, ShieldCheck, Check, Sparkles, AlertCircle, Image as ImageIcon, Plus, Trash2, Upload, Camera } from 'lucide-react'
 import { Device } from '@/types/devices'
 import { toast } from 'sonner'
 
@@ -86,14 +86,58 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
 
     if (!isOpen) return null
 
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (!files || files.length === 0) return
+
+        Array.from(files).forEach(file => {
+            if (!file.type.startsWith('image/')) {
+                toast.error('Selecione um arquivo de imagem válido.')
+                return
+            }
+            const reader = new FileReader()
+            reader.onload = (event) => {
+                const result = event.target?.result as string
+                if (result) {
+                    setImages(prev => [...prev, result])
+                    toast.success('Foto adicionada ao aparelho!')
+                }
+            }
+            reader.readAsDataURL(file)
+        })
+    }
+
+    const handlePasteImage = (e: React.ClipboardEvent) => {
+        const items = e.clipboardData?.items
+        if (!items) return
+
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const file = items[i].getAsFile()
+                if (file) {
+                    const reader = new FileReader()
+                    reader.onload = (event) => {
+                        const result = event.target?.result as string
+                        if (result) {
+                            setImages(prev => [...prev, result])
+                            toast.success('Imagem colada com sucesso!')
+                        }
+                    }
+                    reader.readAsDataURL(file)
+                }
+            }
+        }
+    }
+
     const handleAddImage = () => {
         if (!newImageUrl) return
-        if (!newImageUrl.startsWith('http://') && !newImageUrl.startsWith('https://')) {
+        if (!newImageUrl.startsWith('http://') && !newImageUrl.startsWith('https://') && !newImageUrl.startsWith('data:image')) {
             toast.error('Informe um link de imagem válido (http:// ou https://)')
             return
         }
         setImages(prev => [...prev, newImageUrl])
         setNewImageUrl('')
+        toast.success('Link de foto adicionado!')
     }
 
     const handleRemoveImage = (index: number) => {
@@ -208,7 +252,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6" onPaste={handlePasteImage}>
                     {/* Linha 1: Marca, Modelo e Armazenamento */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div className="space-y-1">
@@ -294,34 +338,57 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
                     </div>
 
-                    {/* Seção de Fotos do Aparelho */}
+                    {/* SEÇÃO MULTI-MODO DE UPLOAD DE FOTOS */}
                     <div className="p-4 bg-muted/20 border border-border rounded-2xl space-y-3">
-                        <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
-                            <ImageIcon className="w-4 h-4 text-purple-400" />
-                            Fotos Reais do Aparelho (Exibidas no Catálogo)
-                        </span>
-
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="text"
-                                value={newImageUrl}
-                                onChange={e => setNewImageUrl(e.target.value)}
-                                placeholder="Link da foto (https://...)"
-                                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-xs font-bold outline-none"
-                            />
-                            <button
-                                type="button"
-                                onClick={handleAddImage}
-                                className="px-4 py-2 bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-black rounded-xl text-xs font-bold transition-all flex items-center gap-1 shrink-0"
-                            >
-                                <Plus className="w-4 h-4" /> Adicionar Foto
-                            </button>
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
+                                <ImageIcon className="w-4 h-4 text-purple-400" />
+                                Fotos do Aparelho (Adicione do Arquivo, Tire Foto ou Cole com Ctrl+V)
+                            </span>
                         </div>
 
+                        {/* Painel de Opções de Upload */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            {/* 1. Escolher Foto do Arquivo */}
+                            <label className="p-3 bg-background border border-border hover:border-purple-500/50 rounded-xl cursor-pointer flex items-center justify-center gap-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-all">
+                                <Upload className="w-4 h-4 text-purple-400" />
+                                Escolher Foto
+                                <input type="file" accept="image/*" multiple onChange={handleFileUpload} className="hidden" />
+                            </label>
+
+                            {/* 2. Bater Foto com a Câmera */}
+                            <label className="p-3 bg-background border border-border hover:border-emerald-500/50 rounded-xl cursor-pointer flex items-center justify-center gap-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-all">
+                                <Camera className="w-4 h-4 text-emerald-400" />
+                                Tirar Foto (Câmera)
+                                <input type="file" accept="image/*" capture="environment" onChange={handleFileUpload} className="hidden" />
+                            </label>
+
+                            {/* 3. Link da Foto / URL */}
+                            <div className="flex items-center gap-1">
+                                <input
+                                    type="text"
+                                    value={newImageUrl}
+                                    onChange={e => setNewImageUrl(e.target.value)}
+                                    placeholder="Link da imagem..."
+                                    className="w-full bg-background border border-border rounded-xl px-2.5 py-2 text-xs font-bold outline-none"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleAddImage}
+                                    className="p-2 bg-purple-500/20 text-purple-300 rounded-xl text-xs font-bold hover:bg-purple-500 hover:text-black transition-all"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <p className="text-[10px] text-muted-foreground font-medium">💡 Dica: Você também pode copiar qualquer imagem e dar <strong>Ctrl+V</strong> nesta tela para colar instantaneamente!</p>
+
+                        {/* Display Thumbnails */}
                         {images.length > 0 && (
-                            <div className="flex flex-wrap items-center gap-3 pt-2">
+                            <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border/50">
                                 {images.map((img, idx) => (
-                                    <div key={idx} className="relative w-16 h-16 rounded-xl border border-border overflow-hidden group">
+                                    <div key={idx} className="relative w-16 h-16 rounded-xl border border-border overflow-hidden group shadow-md">
                                         <img src={img} alt={`Foto ${idx + 1}`} className="w-full h-full object-cover" />
                                         <button
                                             type="button"

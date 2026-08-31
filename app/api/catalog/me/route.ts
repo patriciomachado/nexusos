@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             slug: finalSlug,
             company_id: companyId,
-            share_url: `https://nexusgestor.com/c/${finalSlug}`,
+            share_url: `https://nexusgestor.com/loja/${finalSlug}`,
             settings: {
                 catalog_title: settings?.catalog_title || `Catálogo Oficial • ${companyData.name}`,
                 whatsapp_number: settings?.whatsapp_number || companyData.phone,

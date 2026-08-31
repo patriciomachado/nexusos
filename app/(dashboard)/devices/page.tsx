@@ -22,7 +22,7 @@ function DevicesContent() {
     const [devices, setDevices] = useState<Device[]>([])
     const [tradeIns, setTradeIns] = useState<DeviceTradeIn[]>([])
     const [myStoreSlug, setMyStoreSlug] = useState('minha-loja')
-    const [myShareUrl, setMyShareUrl] = useState('https://nexusgestor.com/catalogo')
+    const [myShareUrl, setMyShareUrl] = useState('https://nexusgestor.com/loja/minha-loja')
     const [loading, setLoading] = useState(true)
 
     // Filter State
@@ -42,7 +42,23 @@ function DevicesContent() {
     useEffect(() => {
         fetchDevices()
         fetchTradeIns()
+        fetchMyStoreCatalogInfo()
     }, [selectedBrand, selectedStatus, searchQuery])
+
+    const fetchMyStoreCatalogInfo = async () => {
+        try {
+            const res = await fetch('/api/catalog/me')
+            if (res.ok) {
+                const info = await res.json()
+                if (info.slug) {
+                    setMyStoreSlug(info.slug)
+                    setMyShareUrl(`https://nexusgestor.com/loja/${info.slug}`)
+                }
+            }
+        } catch (e) {
+            console.error(e)
+        }
+    }
 
     const fetchDevices = async () => {
         setLoading(true)
@@ -466,7 +482,7 @@ function DevicesContent() {
                             </div>
 
                             <Link
-                                href={`/c/${myStoreSlug}`}
+                                href={`/loja/${myStoreSlug}`}
                                 target="_blank"
                                 className="px-5 py-2.5 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
                             >
