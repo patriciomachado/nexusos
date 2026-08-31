@@ -515,13 +515,6 @@ function DevicesContent() {
                         />
                     </div>
                 )}
-                                        Capas, películas e acessórios cadastrados no Estoque Geral
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
 
             {/* Modals */}
