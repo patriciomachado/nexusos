@@ -53,29 +53,64 @@ function DevicesContent() {
             const res = await fetch(url.toString())
             if (res.ok) {
                 const data = await res.json()
-                setDevices(data)
+                if (Array.isArray(data)) remoteDevices = data
             }
         } catch (error) {
             console.error('Error fetching devices:', error)
+        }
+
+        try {
+            const localRaw = typeof window !== 'undefined' ? localStorage.getItem('nexus_devices') : null
+            const localItems: Device[] = localRaw ? JSON.parse(localRaw) : []
+            const remoteIds = new Set(remoteDevices.map(d => d.id))
+            const uniqueLocal = localItems.filter(l => !remoteIds.has(l.id))
+            setDevices([...remoteDevices, ...uniqueLocal])
+        } catch (e) {
+            setDevices(remoteDevices)
         } finally {
             setLoading(false)
         }
     }
 
     const fetchTradeIns = async () => {
+        let remoteTradeIns: DeviceTradeIn[] = []
         try {
             const res = await fetch('/api/devices/trade-in')
             if (res.ok) {
                 const data = await res.json()
-                setTradeIns(data)
+                if (Array.isArray(data)) remoteTradeIns = data
             }
         } catch (error) {
             console.error('Error fetching trade-ins:', error)
+        }
+
+        try {
+            const localRaw = typeof window !== 'undefined' ? localStorage.getItem('nexus_trade_ins') : null
+            const localItems: DeviceTradeIn[] = localRaw ? JSON.parse(localRaw) : []
+            const remoteIds = new Set(remoteTradeIns.map(t => t.id))
+            const uniqueLocal = localItems.filter(l => !remoteIds.has(l.id))
+            setTradeIns([...remoteTradeIns, ...uniqueLocal])
+        } catch (e) {
+            setTradeIns(remoteTradeIns)
         }
     }
 
     const handleDeleteDevice = async (id: string) => {
         if (!confirm('Tem certeza que deseja excluir este aparelho do estoque?')) return
+
+        if (id.startsWith('local_')) {
+            try {
+                const localRaw = localStorage.getItem('nexus_devices')
+                const localItems: Device[] = localRaw ? JSON.parse(localRaw) : []
+                const updated = localItems.filter(d => d.id !== id)
+                localStorage.setItem('nexus_devices', JSON.stringify(updated))
+                setDevices(prev => prev.filter(d => d.id !== id))
+                toast.success('Aparelho excluído!')
+            } catch (e) {
+                console.error(e)
+            }
+            return
+        }
 
         try {
             const res = await fetch(`/api/devices?id=${id}`, { method: 'DELETE' })
