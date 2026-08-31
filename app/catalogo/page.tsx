@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { RefreshCw } from 'lucide-react'
-import { DynamicCatalogContent } from '../c/[slug]/page'
+import { DynamicCatalogContent } from '../loja/[slug]/page'
 
 export default function CatalogRootPage() {
     const [slug, setSlug] = useState<string | null>(null)
