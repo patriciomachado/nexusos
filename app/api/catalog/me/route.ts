@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
             .from('catalog_settings')
             .select('*')
             .eq('company_id', companyId)
-            .single()
+            .maybeSingle()
 
         const finalSlug = settings?.slug || cleanSlug
 
@@ -117,64 +117,60 @@ export async function POST(req: NextRequest) {
             warranty_text, delivery_text, payment_methods_text, device_condition_mode, theme 
         } = body
 
-        // Try upserting in catalog_settings table
-        const { data: existing } = await db.from('catalog_settings').select('id').eq('company_id', companyId).single()
+        // Check if row already exists for this company
+        const { data: existing } = await db
+            .from('catalog_settings')
+            .select('id')
+            .eq('company_id', companyId)
+            .maybeSingle()
+
+        const payload: any = {
+            company_id: companyId,
+            slug: slug || 'minha-loja',
+            catalog_title: catalog_title || 'Nosso Catálogo Oficial',
+            announcement_bar: announcement_bar || null,
+            whatsapp_number: whatsapp_number || null,
+            whatsapp_custom_message: whatsapp_custom_message || null,
+            warranty_text: warranty_text || null,
+            delivery_text: delivery_text || null,
+            payment_methods_text: payment_methods_text || null,
+            device_condition_mode: device_condition_mode || 'todos',
+            theme: theme || null,
+            updated_at: new Date().toISOString()
+        }
 
         let savedSettings = null
-        if (existing) {
+        if (existing?.id) {
             const { data, error } = await db
                 .from('catalog_settings')
-                .update({
-                    slug: slug || undefined,
-                    catalog_title: catalog_title || undefined,
-                    announcement_bar: announcement_bar || undefined,
-                    whatsapp_number: whatsapp_number || undefined,
-                    whatsapp_custom_message: whatsapp_custom_message || undefined,
-                    warranty_text: warranty_text || undefined,
-                    delivery_text: delivery_text || undefined,
-                    payment_methods_text: payment_methods_text || undefined,
-                    device_condition_mode: device_condition_mode || undefined,
-                    theme: theme || undefined,
-                    updated_at: new Date().toISOString()
-                })
+                .update(payload)
                 .eq('id', existing.id)
                 .select()
                 .single()
-            
+
             if (error) {
-                console.warn('Notice updating catalog_settings columns:', error.message)
-            } else {
-                savedSettings = data
+                console.error('Error updating catalog_settings:', error)
+                return NextResponse.json({ error: error.message }, { status: 500 })
             }
+            savedSettings = data
         } else {
+            payload.is_active = true
             const { data, error } = await db
                 .from('catalog_settings')
-                .insert([{
-                    company_id: companyId,
-                    slug: slug || 'minha-loja',
-                    catalog_title: catalog_title || 'Nosso Catálogo Oficial',
-                    announcement_bar: announcement_bar || null,
-                    whatsapp_number: whatsapp_number || null,
-                    whatsapp_custom_message: whatsapp_custom_message || null,
-                    warranty_text: warranty_text || null,
-                    delivery_text: delivery_text || null,
-                    payment_methods_text: payment_methods_text || null,
-                    device_condition_mode: device_condition_mode || 'todos',
-                    theme: theme || null,
-                    is_active: true
-                }])
+                .insert([payload])
                 .select()
                 .single()
+
             if (error) {
-                console.warn('Notice inserting catalog_settings columns:', error.message)
-            } else {
-                savedSettings = data
+                console.error('Error inserting catalog_settings:', error)
+                return NextResponse.json({ error: error.message }, { status: 500 })
             }
+            savedSettings = data
         }
 
         return NextResponse.json({ success: true, settings: savedSettings })
     } catch (err: any) {
         console.error('Exception in saving catalog settings:', err)
-        return NextResponse.json({ error: 'Erro ao salvar configurações do catálogo' }, { status: 500 })
+        return NextResponse.json({ error: 'Erro ao salvar configurações: ' + err.message }, { status: 500 })
     }
 }
