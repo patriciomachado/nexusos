@@ -1,0 +1,509 @@
+'use client'
+
+import { useState, useEffect, Suspense } from 'react'
+import { 
+    Smartphone, Plus, Search, Filter, RefreshCw, QrCode, Wand2, 
+    Trash2, Edit, ShieldCheck, DollarSign, Calculator, Globe, 
+    Share2, ExternalLink, ArrowUpRight, Award, CheckCircle2
+} from 'lucide-react'
+import Header from '@/components/layout/Header'
+import { Device, DeviceTradeIn, CatalogSettings } from '@/types/devices'
+import DeviceModal from '@/components/devices/DeviceModal'
+import TradeInModal from '@/components/devices/TradeInModal'
+import QRCodePrintModal from '@/components/devices/QRCodePrintModal'
+import { formatCurrency, cn } from '@/lib/utils'
+import { toast } from 'sonner'
+import Link from 'next/link'
+
+function DevicesContent() {
+    const [activeTab, setActiveTab] = useState<'inventory' | 'tradein' | 'catalog'>('inventory')
+    
+    // Data State
+    const [devices, setDevices] = useState<Device[]>([])
+    const [tradeIns, setTradeIns] = useState<DeviceTradeIn[]>([])
+    const [loading, setLoading] = useState(true)
+
+    // Filter State
+    const [selectedBrand, setSelectedBrand] = useState('todas')
+    const [selectedStatus, setSelectedStatus] = useState('disponivel')
+    const [searchQuery, setSearchQuery] = useState('')
+
+    // Modal Controls
+    const [isDeviceModalOpen, setIsDeviceModalOpen] = useState(false)
+    const [deviceToEdit, setDeviceToEdit] = useState<Device | null>(null)
+
+    const [isTradeInModalOpen, setIsTradeInModalOpen] = useState(false)
+
+    const [isQRCodeModalOpen, setIsQRCodeModalOpen] = useState(false)
+    const [selectedDeviceForQR, setSelectedDeviceForQR] = useState<Device | null>(null)
+
+    useEffect(() => {
+        fetchDevices()
+        fetchTradeIns()
+    }, [selectedBrand, selectedStatus, searchQuery])
+
+    const fetchDevices = async () => {
+        setLoading(true)
+        try {
+            const url = new URL('/api/devices', window.location.origin)
+            if (selectedBrand !== 'todas') url.searchParams.set('brand', selectedBrand)
+            if (selectedStatus !== 'todos') url.searchParams.set('status', selectedStatus)
+            if (searchQuery) url.searchParams.set('search', searchQuery)
+
+            const res = await fetch(url.toString())
+            if (res.ok) {
+                const data = await res.json()
+                setDevices(data)
+            }
+        } catch (error) {
+            console.error('Error fetching devices:', error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const fetchTradeIns = async () => {
+        try {
+            const res = await fetch('/api/devices/trade-in')
+            if (res.ok) {
+                const data = await res.json()
+                setTradeIns(data)
+            }
+        } catch (error) {
+            console.error('Error fetching trade-ins:', error)
+        }
+    }
+
+    const handleDeleteDevice = async (id: string) => {
+        if (!confirm('Tem certeza que deseja excluir este aparelho do estoque?')) return
+
+        try {
+            const res = await fetch(`/api/devices?id=${id}`, { method: 'DELETE' })
+            if (res.ok) {
+                toast.success('Aparelho excluído!')
+                setDevices(prev => prev.filter(d => d.id !== id))
+            } else {
+                toast.error('Erro ao excluir aparelho.')
+            }
+        } catch (error) {
+            toast.error('Erro de conexão.')
+        }
+    }
+
+    const handleOpenQRModal = (device: Device) => {
+        setSelectedDeviceForQR(device)
+        setIsQRCodeModalOpen(true)
+    }
+
+    // KPIs Calculations
+    const totalAvailable = devices.filter(d => d.status === 'disponivel').length
+    const totalInventoryValue = devices
+        .filter(d => d.status === 'disponivel')
+        .reduce((sum, d) => sum + Number(d.cash_price || 0), 0)
+
+    const totalRevised = devices.filter(d => d.technical_passport?.is_revised).length
+
+    return (
+        <div className="min-h-screen bg-background text-foreground pb-20">
+            <Header title="Gestão de Aparelhos Celulares" subtitle="Estoque de Novos e Seminovos, Avaliação de Troca e Catálogo Digital" />
+
+            <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
+                {/* Top Header & Navigation Tabs */}
+                <div className="bg-card border border-border rounded-3xl p-4 md:p-6 shadow-xl space-y-6">
+                    <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-border/50 pb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 bg-primary/10 rounded-2xl text-primary border border-primary/20">
+                                <Smartphone className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-black tracking-tight">Nexus Showcase Pro</h1>
+                                <p className="text-xs text-muted-foreground font-medium">Gestão Comercial de Celulares & Catálogo Público Integrado</p>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+                            <button
+                                onClick={() => setIsTradeInModalOpen(true)}
+                                className="px-4 py-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold hover:bg-amber-500 hover:text-black transition-all flex items-center gap-1.5"
+                            >
+                                <Calculator className="w-4 h-4" />
+                                Avaliar Usado (Trade-In)
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    setDeviceToEdit(null)
+                                    setIsDeviceModalOpen(true)
+                                }}
+                                className="px-5 py-2.5 rounded-2xl bg-primary text-black text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-1.5"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Adicionar Aparelho
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* KPI Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                        <div className="p-4 bg-background border border-border rounded-2xl space-y-1">
+                            <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Aparelhos Disponíveis</span>
+                            <p className="text-2xl font-black text-foreground">{totalAvailable} unidades</p>
+                        </div>
+
+                        <div className="p-4 bg-background border border-border rounded-2xl space-y-1">
+                            <span className="text-[10px] font-black uppercase text-emerald-400 tracking-widest">Valor em Estoque (À Vista)</span>
+                            <p className="text-2xl font-black text-emerald-400">{formatCurrency(totalInventoryValue)}</p>
+                        </div>
+
+                        <div className="p-4 bg-background border border-border rounded-2xl space-y-1">
+                            <span className="text-[10px] font-black uppercase text-primary tracking-widest">Seminovos Com Passaporte Técnico</span>
+                            <p className="text-2xl font-black text-primary">{totalRevised} revisados</p>
+                        </div>
+                    </div>
+
+                    {/* Tabs Bar */}
+                    <div className="flex flex-wrap gap-2 pt-2 border-t border-border/50">
+                        <button
+                            onClick={() => setActiveTab('inventory')}
+                            className={cn(
+                                "px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2",
+                                activeTab === 'inventory' ? "bg-primary text-black font-black shadow-lg shadow-primary/20" : "text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            <Smartphone className="w-4 h-4" />
+                            Estoque de Aparelhos ({devices.length})
+                        </button>
+
+                        <button
+                            onClick={() => setActiveTab('tradein')}
+                            className={cn(
+                                "px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2",
+                                activeTab === 'tradein' ? "bg-primary text-black font-black shadow-lg shadow-primary/20" : "text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            <Calculator className="w-4 h-4" />
+                            Avaliações Trade-In ({tradeIns.length})
+                        </button>
+
+                        <button
+                            onClick={() => setActiveTab('catalog')}
+                            className={cn(
+                                "px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2",
+                                activeTab === 'catalog' ? "bg-primary text-black font-black shadow-lg shadow-primary/20" : "text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            <Globe className="w-4 h-4" />
+                            Catálogo Digital Público
+                        </button>
+                    </div>
+                </div>
+
+                {/* TAB 1: ESTOQUE DE APARELHOS */}
+                {activeTab === 'inventory' && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                        {/* Filters Bar */}
+                        <div className="bg-card border border-border rounded-3xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg">
+                            <div className="relative w-full md:w-80">
+                                <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar por modelo, IMEI ou serial..."
+                                    value={searchQuery}
+                                    onChange={e => setSearchQuery(e.target.value)}
+                                    className="w-full bg-background border border-border rounded-2xl pl-9 pr-4 py-2 text-xs font-bold outline-none"
+                                />
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                                <div className="flex items-center gap-2 bg-background border border-border px-3 py-2 rounded-2xl text-xs">
+                                    <span className="text-muted-foreground font-bold">Marca:</span>
+                                    <select
+                                        value={selectedBrand}
+                                        onChange={e => setSelectedBrand(e.target.value)}
+                                        className="bg-transparent font-bold outline-none cursor-pointer"
+                                    >
+                                        <option value="todas">Todas as Marcas</option>
+                                        <option value="Apple">Apple</option>
+                                        <option value="Samsung">Samsung</option>
+                                        <option value="Xiaomi">Xiaomi</option>
+                                        <option value="Motorola">Motorola</option>
+                                    </select>
+                                </div>
+
+                                <div className="flex items-center gap-2 bg-background border border-border px-3 py-2 rounded-2xl text-xs">
+                                    <span className="text-muted-foreground font-bold">Status:</span>
+                                    <select
+                                        value={selectedStatus}
+                                        onChange={e => setSelectedStatus(e.target.value)}
+                                        className="bg-transparent font-bold outline-none cursor-pointer"
+                                    >
+                                        <option value="disponivel">Disponíveis</option>
+                                        <option value="vendido">Vendidos</option>
+                                        <option value="reservado">Reservados</option>
+                                        <option value="todos">Todos os Status</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Devices Grid */}
+                        {loading ? (
+                            <div className="py-16 flex justify-center">
+                                <RefreshCw className="w-8 h-8 text-primary animate-spin opacity-30" />
+                            </div>
+                        ) : devices.length === 0 ? (
+                            <div className="py-20 text-center bg-card border border-dashed border-border rounded-3xl p-8 space-y-3">
+                                <Smartphone className="w-10 h-10 text-muted-foreground mx-auto" />
+                                <h3 className="font-bold text-base">Nenhum aparelho encontrado</h3>
+                                <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                                    Clique em <strong>"+ Adicionar Aparelho"</strong> para registrar celulares novos ou seminovos no seu estoque.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {devices.map(device => (
+                                    <div key={device.id} className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl flex flex-col justify-between hover:border-primary/50 transition-all group">
+                                        <div className="space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-lg">
+                                                    {device.brand} • {device.storage || 'Estoque'}
+                                                </span>
+
+                                                <span className={cn(
+                                                    "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md",
+                                                    device.status === 'disponivel' ? "bg-emerald-500/10 text-emerald-400" : "bg-muted text-muted-foreground"
+                                                )}>
+                                                    {device.status}
+                                                </span>
+                                            </div>
+
+                                            <div>
+                                                <h3 className="text-lg font-black group-hover:text-primary transition-colors">
+                                                    {device.model}
+                                                </h3>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {device.color ? `Cor: ${device.color} • ` : ''}
+                                                    {device.condition === 'novo_lacrado' ? 'Novo Lacrado' : `Seminovo (Bateria ${device.battery_health}%)`}
+                                                </p>
+                                            </div>
+
+                                            {/* Technical Passport Badge */}
+                                            {device.technical_passport?.is_revised && (
+                                                <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center gap-2 text-xs text-emerald-300 font-bold">
+                                                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                                                    <span>Passaporte Técnico: Garantia de {device.technical_passport.warranty_months || 6} Meses</span>
+                                                </div>
+                                            )}
+
+                                            {/* Preços */}
+                                            <div className="p-3 bg-muted/30 border border-border rounded-2xl flex items-center justify-between">
+                                                <div>
+                                                    <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">À VISTA (PIX)</span>
+                                                    <p className="text-lg font-black text-emerald-400">{formatCurrency(device.cash_price)}</p>
+                                                </div>
+
+                                                {device.installment_price && (
+                                                    <div className="text-right">
+                                                        <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">PARCELADO 12X</span>
+                                                        <p className="text-xs font-bold text-amber-300">12x de {formatCurrency(device.installment_price / 12)}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* IMEI Display */}
+                                            {device.imei_1 && (
+                                                <div className="text-[10px] font-mono text-muted-foreground bg-background px-3 py-1.5 rounded-xl border border-border flex items-center justify-between">
+                                                    <span>IMEI: {device.imei_1}</span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Card Actions */}
+                                        <div className="flex items-center gap-2 pt-3 border-t border-border">
+                                            <button
+                                                onClick={() => handleOpenQRModal(device)}
+                                                className="p-2.5 bg-muted hover:bg-muted/80 rounded-xl text-xs font-bold transition-all"
+                                                title="Etiqueta QR Code"
+                                            >
+                                                <QrCode className="w-4 h-4" />
+                                            </button>
+
+                                            <Link
+                                                href={`/studio?topic=${encodeURIComponent(`Venda de ${device.brand} ${device.model}`)}`}
+                                                className="p-2.5 bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-black rounded-xl text-xs font-bold transition-all"
+                                                title="Criar Anúncio no Studio AI"
+                                            >
+                                                <Wand2 className="w-4 h-4" />
+                                            </Link>
+
+                                            <button
+                                                onClick={() => {
+                                                    setDeviceToEdit(device)
+                                                    setIsDeviceModalOpen(true)
+                                                }}
+                                                className="p-2.5 bg-muted hover:bg-muted/80 rounded-xl text-xs font-bold transition-all"
+                                                title="Editar Aparelho"
+                                            >
+                                                <Edit className="w-4 h-4" />
+                                            </button>
+
+                                            <button
+                                                onClick={() => handleDeleteDevice(device.id)}
+                                                className="p-2.5 text-muted-foreground hover:text-rose-500 rounded-xl transition-all"
+                                                title="Excluir"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* TAB 2: AVALIAÇÕES TRADE-IN */}
+                {activeTab === 'tradein' && (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-lg font-black tracking-tight flex items-center gap-2">
+                                <Calculator className="w-5 h-5 text-amber-400" />
+                                Histórico de Avaliações Trade-In ({tradeIns.length})
+                            </h2>
+
+                            <button
+                                onClick={() => setIsTradeInModalOpen(true)}
+                                className="px-4 py-2 bg-amber-500 text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-amber-400 transition-all flex items-center gap-1.5"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Nova Avaliação
+                            </button>
+                        </div>
+
+                        {tradeIns.length === 0 ? (
+                            <div className="py-16 text-center bg-card border border-dashed border-border rounded-3xl p-8 space-y-2">
+                                <p className="text-sm font-bold">Nenhuma avaliação registrada</p>
+                                <p className="text-xs text-muted-foreground">Avalie aparelhos usados trazidos pelos seus clientes e calcule o valor exato de abate na compra de um novo.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {tradeIns.map(item => (
+                                    <div key={item.id} className="bg-card border border-border rounded-2xl p-5 space-y-3 shadow-md">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[10px] font-black uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                                                {item.status}
+                                            </span>
+                                            <span className="text-xs text-muted-foreground font-mono">
+                                                {item.created_at ? new Date(item.created_at).toLocaleDateString('pt-BR') : ''}
+                                            </span>
+                                        </div>
+
+                                        <div>
+                                            <h3 className="font-bold text-base">{item.device_model}</h3>
+                                            <p className="text-xs text-muted-foreground">Cliente: {item.customer_name} {item.customer_phone ? `(${item.customer_phone})` : ''}</p>
+                                        </div>
+
+                                        <div className="p-3 bg-muted/30 rounded-xl flex items-center justify-between">
+                                            <span className="text-xs font-bold text-muted-foreground">Valor Oferecido:</span>
+                                            <span className="text-base font-black text-amber-400">{formatCurrency(item.offered_price)}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* TAB 3: CATÁLOGO DIGITAL PÚBLICO */}
+                {activeTab === 'catalog' && (
+                    <div className="bg-card border border-border rounded-3xl p-6 md:p-8 space-y-6 shadow-xl animate-in fade-in duration-300">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-4">
+                            <div>
+                                <h2 className="text-lg font-black flex items-center gap-2">
+                                    <Globe className="w-5 h-5 text-primary" />
+                                    Seu Catálogo Digital Público
+                                </h2>
+                                <p className="text-xs text-muted-foreground mt-0.5">Seus clientes podem acessar e comprar seus celulares e produtos online.</p>
+                            </div>
+
+                            <Link
+                                href="/catalogo"
+                                target="_blank"
+                                className="px-5 py-2.5 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+                            >
+                                Abrir Catálogo Público
+                                <ExternalLink className="w-4 h-4" />
+                            </Link>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="p-5 bg-background border border-border rounded-2xl space-y-3">
+                                <span className="text-[10px] font-black uppercase text-primary tracking-widest">Link de Compartilhamento</span>
+                                <div className="p-3 bg-muted/40 rounded-xl font-mono text-xs text-foreground font-bold border border-border flex items-center justify-between">
+                                    <span>https://nexusgestor.com/catalogo</span>
+                                    <button
+                                        onClick={() => {
+                                            navigator.clipboard.writeText('https://nexusgestor.com/catalogo')
+                                            toast.success('Link copiado!')
+                                        }}
+                                        className="text-xs text-primary font-bold hover:underline"
+                                    >
+                                        Copiar Link
+                                    </button>
+                                </div>
+                                <p className="text-xs text-muted-foreground">Cole este link na bio do seu Instagram ou envie no WhatsApp dos seus clientes.</p>
+                            </div>
+
+                            <div className="p-5 bg-background border border-border rounded-2xl space-y-3">
+                                <span className="text-[10px] font-black uppercase text-emerald-400 tracking-widest">Itens Exibidos no Catálogo</span>
+                                <ul className="text-xs space-y-2 text-muted-foreground">
+                                    <li className="flex items-center gap-2">
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                                        Todos os celulares cadastrados com status <strong>Disponível</strong>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                                        Capas, películas e acessórios cadastrados no Estoque Geral
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Modals */}
+            <DeviceModal
+                isOpen={isDeviceModalOpen}
+                onClose={() => setIsDeviceModalOpen(false)}
+                onSave={fetchDevices}
+                deviceToEdit={deviceToEdit}
+            />
+
+            <TradeInModal
+                isOpen={isTradeInModalOpen}
+                onClose={() => setIsTradeInModalOpen(false)}
+                onSaveSuccess={fetchTradeIns}
+            />
+
+            <QRCodePrintModal
+                isOpen={isQRCodeModalOpen}
+                onClose={() => setIsQRCodeModalOpen(false)}
+                device={selectedDeviceForQR}
+            />
+        </div>
+    )
+}
+
+export default function DevicesPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-screen">
+                <RefreshCw className="w-8 h-8 text-primary animate-spin opacity-30" />
+            </div>
+        }>
+            <DevicesContent />
+        </Suspense>
+    )
+}

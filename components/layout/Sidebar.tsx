@@ -9,7 +9,7 @@ import {
     LayoutDashboard, ClipboardList, Calendar, Users,
     Package, BarChart3, Settings, Zap,
     Wallet, PanelLeft, PanelLeftClose, MousePointer2,
-    HeartHandshake, Landmark, Users2, Wrench, Sparkles
+    HeartHandshake, Landmark, Users2, Wrench, Sparkles, Smartphone
 } from 'lucide-react'
 import { useAppStore } from '@/store/appStore'
 import { UserRole } from '@/types'
@@ -35,6 +35,7 @@ const navGroups: NavGroup[] = [
             { href: '/appointments', label: 'Mesa / Fluxo', icon: Calendar, roles: ['admin', 'manager'] },
             { href: '/service-orders', label: 'Ordens de Serviço', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'] },
             { href: '/pdv', label: 'Vendas / PDV', icon: Zap, roles: ['admin', 'manager', 'cashier', 'attendant', 'talento'] },
+            { href: '/devices', label: 'Venda de Aparelhos', icon: Smartphone, roles: ['admin', 'manager', 'cashier', 'attendant', 'talento'] },
         ]
     },
     {
