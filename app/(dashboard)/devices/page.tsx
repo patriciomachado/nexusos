@@ -21,6 +21,8 @@ function DevicesContent() {
     // Data State
     const [devices, setDevices] = useState<Device[]>([])
     const [tradeIns, setTradeIns] = useState<DeviceTradeIn[]>([])
+    const [myStoreSlug, setMyStoreSlug] = useState('minha-loja')
+    const [myShareUrl, setMyShareUrl] = useState('https://nexusgestor.com/catalogo')
     const [loading, setLoading] = useState(true)
 
     // Filter State
@@ -464,26 +466,26 @@ function DevicesContent() {
                             </div>
 
                             <Link
-                                href="/catalogo"
+                                href={`/c/${myStoreSlug}`}
                                 target="_blank"
                                 className="px-5 py-2.5 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
                             >
-                                Abrir Catálogo Público
+                                Abrir Catálogo Público da Sua Loja
                                 <ExternalLink className="w-4 h-4" />
                             </Link>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="p-5 bg-background border border-border rounded-2xl space-y-3">
-                                <span className="text-[10px] font-black uppercase text-primary tracking-widest">Link de Compartilhamento</span>
-                                <div className="p-3 bg-muted/40 rounded-xl font-mono text-xs text-foreground font-bold border border-border flex items-center justify-between">
-                                    <span>https://nexusgestor.com/catalogo</span>
+                                <span className="text-[10px] font-black uppercase text-primary tracking-widest">Link Exclusivo da Sua Assistência</span>
+                                <div className="p-3 bg-muted/40 rounded-xl font-mono text-xs text-foreground font-bold border border-border flex items-center justify-between overflow-hidden">
+                                    <span className="truncate mr-2">{myShareUrl}</span>
                                     <button
                                         onClick={() => {
-                                            navigator.clipboard.writeText('https://nexusgestor.com/catalogo')
-                                            toast.success('Link copiado!')
+                                            navigator.clipboard.writeText(myShareUrl)
+                                            toast.success('Link exclusivo da sua loja copiado!')
                                         }}
-                                        className="text-xs text-primary font-bold hover:underline"
+                                        className="text-xs text-primary font-bold hover:underline shrink-0"
                                     >
                                         Copiar Link
                                     </button>

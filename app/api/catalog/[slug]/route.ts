@@ -9,68 +9,54 @@ export async function GET(
     const db = createAdminClient()
 
     try {
-        // 1. Find catalog settings or company by slug or ID
         let companyId: string | null = null
-        let settingsData: any = null
+        let companyData: any = null
 
-        // Try searching catalog_settings table by slug
+        // 1. Try finding by custom catalog_settings slug
         const { data: settings } = await db
             .from('catalog_settings')
             .select('*, companies(name, cnpj, city, state, phone, address, logo_url, email)')
             .eq('slug', slug)
             .single()
 
-        if (settings) {
-            settingsData = settings
+        if (settings && settings.companies) {
             companyId = settings.company_id
+            companyData = settings.companies
         } else {
-            // Fallback: search company table directly by ID or slug
-            const { data: company } = await db
+            // 2. Fetch all companies and find matching slug or ID
+            const { data: companies } = await db
                 .from('companies')
                 .select('id, name, cnpj, city, state, phone, address, logo_url, email')
-                .or(`id.eq.${slug},name.ilike.%${slug}%`)
-                .limit(1)
-                .single()
 
-            if (company) {
-                companyId = company.id
-                settingsData = {
-                    id: company.id,
-                    company_id: company.id,
-                    slug: company.id,
-                    catalog_title: `Catálogo Oficial • ${company.name}`,
-                    whatsapp_number: company.phone,
-                    is_active: true,
-                    companies: company
-                }
-            } else {
-                // Return default fallback company if none found
-                const { data: firstCompany } = await db
-                    .from('companies')
-                    .select('id, name, cnpj, city, state, phone, address, logo_url, email')
-                    .limit(1)
-                    .single()
+            if (companies && companies.length > 0) {
+                // Find matching company by ID or slug derived from name
+                const matched = companies.find(c => {
+                    if (c.id === slug) return true
+                    const cleanSlug = c.name
+                        .toLowerCase()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/(^-|-$)+/g, '')
+                    return cleanSlug === slug
+                })
 
-                if (firstCompany) {
-                    companyId = firstCompany.id
-                    settingsData = {
-                        id: firstCompany.id,
-                        company_id: firstCompany.id,
-                        slug: firstCompany.id,
-                        catalog_title: `Catálogo Oficial • ${firstCompany.name}`,
-                        whatsapp_number: firstCompany.phone,
-                        is_active: true,
-                        companies: firstCompany
-                    }
+                if (matched) {
+                    companyId = matched.id
+                    companyData = matched
+                } else {
+                    // Fallback to first company
+                    companyId = companies[0].id
+                    companyData = companies[0]
                 }
             }
         }
 
-        if (!companyId || !settingsData) {
+        if (!companyId || !companyData) {
             return NextResponse.json({ error: 'Catálogo não encontrado' }, { status: 404 })
         }
 
-        // 2. Fetch available devices for this company
+        // Fetch devices for this company
         const { data: devices } = await db
             .from('devices')
             .select('*')
@@ -78,7 +64,7 @@ export async function GET(
             .eq('status', 'disponivel')
             .order('created_at', { ascending: false })
 
-        // 3. Fetch products from inventory (with quantity > 0)
+        // Fetch inventory accessories for this company
         const { data: inventory } = await db
             .from('inventory_items')
             .select('id, name, category, sale_price, quantity_in_stock, description, image_url')
@@ -87,8 +73,23 @@ export async function GET(
             .order('name', { ascending: true })
             .limit(100)
 
+        const rawName = companyData.name || 'minha-loja'
+        const matchedSlug = rawName
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)+/g, '') || companyData.id
+
         return NextResponse.json({
-            settings: settingsData,
+            slug: matchedSlug,
+            company_id: companyId,
+            share_url: `https://nexusgestor.com/c/${matchedSlug}`,
+            settings: {
+                catalog_title: `Catálogo Oficial • ${companyData.name}`,
+                whatsapp_number: companyData.phone,
+                companies: companyData
+            },
             devices: devices || [],
             inventory: inventory || []
         })
