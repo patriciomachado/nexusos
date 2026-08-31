@@ -36,7 +36,7 @@ interface PublicCatalogData {
     }>
 }
 
-function DynamicCatalogContent({ slug }: { slug: string }) {
+export function DynamicCatalogContent({ slug }: { slug: string }) {
     const [data, setData] = useState<PublicCatalogData | null>(null)
     const [loading, setLoading] = useState(true)
 
