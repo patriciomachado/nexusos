@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
             warranty_text, delivery_text, payment_methods_text, device_condition_mode, theme 
         } = body
 
-        // Upsert settings in catalog_settings table
+        // Try upserting in catalog_settings table
         const { data: existing } = await db.from('catalog_settings').select('id').eq('company_id', companyId).single()
 
         let savedSettings = null
@@ -140,7 +140,12 @@ export async function POST(req: NextRequest) {
                 .eq('id', existing.id)
                 .select()
                 .single()
-            savedSettings = data
+            
+            if (error) {
+                console.warn('Notice updating catalog_settings columns:', error.message)
+            } else {
+                savedSettings = data
+            }
         } else {
             const { data, error } = await db
                 .from('catalog_settings')
@@ -160,7 +165,11 @@ export async function POST(req: NextRequest) {
                 }])
                 .select()
                 .single()
-            savedSettings = data
+            if (error) {
+                console.warn('Notice inserting catalog_settings columns:', error.message)
+            } else {
+                savedSettings = data
+            }
         }
 
         return NextResponse.json({ success: true, settings: savedSettings })

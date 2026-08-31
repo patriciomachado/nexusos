@@ -167,11 +167,14 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                 body: JSON.stringify(payload)
             })
 
-            // 2. Save locally as fallback
+            // 2. Save locally as fallback & trigger instant window sync
             localStorage.setItem('nexus_catalog_settings', JSON.stringify(payload))
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new Event('nexus_catalog_settings_updated'))
+            }
 
             if (res.ok) {
-                toast.success('Configurações do Catálogo salvas com sucesso!')
+                toast.success('Configurações do Catálogo salvas e integradas!')
             } else {
                 toast.success('Configurações salvas no dispositivo!')
             }

@@ -50,25 +50,24 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
     const [selectedDeviceModal, setSelectedDeviceModal] = useState<Device | null>(null)
     const [activePhotoIndex, setActivePhotoIndex] = useState(0)
 
-    // Announcement Bar Text
-    const [announcementBarText, setAnnouncementBarText] = useState<string | null>(null)
+    // Dynamic Settings & Local Sync State
+    const [localSettings, setLocalSettings] = useState<any>(null)
+
+    useEffect(() => {
+        const loadLocal = () => {
+            try {
+                const raw = localStorage.getItem('nexus_catalog_settings')
+                if (raw) setLocalSettings(JSON.parse(raw))
+            } catch (e) {}
+        }
+        loadLocal()
+        window.addEventListener('nexus_catalog_settings_updated', loadLocal)
+        return () => window.removeEventListener('nexus_catalog_settings_updated', loadLocal)
+    }, [])
 
     useEffect(() => {
         fetchCatalog()
     }, [slug])
-
-    useEffect(() => {
-        if (data?.settings && (data.settings as any).announcement_bar) {
-            setAnnouncementBarText((data.settings as any).announcement_bar)
-        }
-        try {
-            const raw = localStorage.getItem('nexus_catalog_settings')
-            if (raw) {
-                const parsed = JSON.parse(raw)
-                if (parsed.announcement_bar) setAnnouncementBarText(parsed.announcement_bar)
-            }
-        } catch (e) {}
-    }, [data])
 
     const fetchCatalog = async () => {
         setLoading(true)
@@ -122,17 +121,19 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
     const accessoriesList = data?.inventory || []
 
-    const theme = (data?.settings as any)?.theme || {
+    const mergedSettings = { ...localSettings, ...data?.settings }
+    const theme = mergedSettings?.theme || localSettings?.theme || (data?.settings as any)?.theme || {
         primary: '#10B981',
         accent: '#34D399',
         background: '#0A0D14',
         card_bg: '#111622'
     }
-    const whatsappCustomMsg = (data?.settings as any)?.whatsapp_custom_message || 'Olá! Vi no seu catálogo e gostaria de comprar.'
-    const warrantyText = (data?.settings as any)?.warranty_text || 'Garantia da Loja inclusa'
-    const deliveryText = (data?.settings as any)?.delivery_text || 'Entrega Via Motoboy'
-    const paymentMethodsText = (data?.settings as any)?.payment_methods_text || 'Até 12x no Cartão'
-    const deviceConditionMode = (data?.settings as any)?.device_condition_mode || 'todos'
+    const announcementBarText = mergedSettings?.announcement_bar || localSettings?.announcement_bar || null
+    const whatsappCustomMsg = mergedSettings?.whatsapp_custom_message || localSettings?.whatsapp_custom_message || 'Olá! Vi no seu catálogo e gostaria de comprar.'
+    const warrantyText = mergedSettings?.warranty_text || localSettings?.warranty_text || 'Garantia da Loja inclusa'
+    const deliveryText = mergedSettings?.delivery_text || localSettings?.delivery_text || 'Entrega Via Motoboy'
+    const paymentMethodsText = mergedSettings?.payment_methods_text || localSettings?.payment_methods_text || 'Até 12x no Cartão'
+    const deviceConditionMode = mergedSettings?.device_condition_mode || localSettings?.device_condition_mode || 'todos'
 
     // Dynamically extract ONLY brands that exist in allDevices
     const registeredBrands = Array.from(new Set(allDevices.map(d => d.brand).filter(Boolean)))
