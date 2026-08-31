@@ -56,10 +56,10 @@ export async function GET(
             return NextResponse.json({ error: 'Catálogo não encontrado' }, { status: 404 })
         }
 
-        // Fetch devices for this company
+        // Fetch ONLY public customer-facing device fields (Sanitizing cost_price and IMEIs)
         const { data: devices } = await db
             .from('devices')
-            .select('*')
+            .select('id, brand, model, storage, color, condition, battery_health, cash_price, installment_price, status, included_items, images, technical_passport, created_at')
             .eq('company_id', companyId)
             .eq('status', 'disponivel')
             .order('created_at', { ascending: false })
@@ -84,7 +84,7 @@ export async function GET(
         return NextResponse.json({
             slug: matchedSlug,
             company_id: companyId,
-            share_url: `https://nexusgestor.com/c/${matchedSlug}`,
+            share_url: `https://nexusgestor.com/loja/${matchedSlug}`,
             settings: {
                 catalog_title: `Catálogo Oficial • ${companyData.name}`,
                 whatsapp_number: companyData.phone,
