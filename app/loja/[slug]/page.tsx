@@ -203,10 +203,11 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 {companyName}
                                 <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: theme.primary }} />
                             </h1>
-                            <p className="text-[11px] text-slate-400 font-semibold flex flex-wrap items-center gap-2">
-                                {companyCnpj && <span className="font-mono" style={{ color: theme.primary }}>CNPJ: {companyCnpj}</span>}
-                                {companyCity && <span>• {companyCity}{companyState ? `/${companyState}` : ''}</span>}
-                            </p>
+                            {companyCity && (
+                                <p className="text-[11px] text-slate-400 font-semibold flex flex-wrap items-center gap-2">
+                                    <span>{companyCity}{companyState ? `/${companyState}` : ''}</span>
+                                </p>
+                            )}
                         </div>
                     </div>
 
@@ -308,7 +309,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 style={activeTab === 'accessories' ? { backgroundColor: theme.primary } : {}}
                             >
                                 <ShoppingBag className="w-4 h-4" />
-                                Capas & Peças ({accessoriesList.length})
+                                Acessórios ({accessoriesList.length})
                             </button>
                         </div>
                     </div>
@@ -506,9 +507,21 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
                 {/* FOOTER DE CONFIANÇA & REGULAMENTAÇÃO */}
                 <footer className="pt-12 border-t border-slate-800 text-center space-y-4 text-xs text-slate-500">
-                    <div className="flex items-center justify-center gap-3 font-bold text-slate-400">
+                    <div className="flex flex-wrap items-center justify-center gap-3 font-bold text-slate-400">
                         <span>{companyName}</span>
-                        {companyCnpj && <span className="font-mono text-emerald-400">• CNPJ: {companyCnpj}</span>}
+                        {companyCnpj && <span className="font-mono text-slate-400">• CNPJ: {companyCnpj}</span>}
+                        {companyPhone && (
+                            <a 
+                                href={`https://wa.me/55${companyPhone.replace(/\D/g, '')}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center gap-1.5 hover:underline"
+                                style={{ color: theme.primary }}
+                            >
+                                <MessageSquare className="w-3.5 h-3.5 fill-current" />
+                                WhatsApp: {companyPhone}
+                            </a>
+                        )}
                     </div>
                     <p className="max-w-md mx-auto leading-relaxed">
                         Garantia e suporte técnico em {companyCity || 'nossa loja'}. Todos os direitos reservados.
