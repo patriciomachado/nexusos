@@ -9,6 +9,8 @@ import { CatalogSettings, CatalogTheme } from '@/types/devices'
 import { toast } from 'sonner'
 import { formatCurrency } from '@/lib/utils'
 
+import { DEFAULT_TRADE_IN_ITEMS, TradeInModelItem } from '@/lib/trade-in-defaults'
+
 const PRESET_THEMES: { name: string; icon: string; theme: CatalogTheme }[] = [
     {
         name: 'Cyber Emerald',
@@ -42,11 +44,11 @@ const PRESET_THEMES: { name: string; icon: string; theme: CatalogTheme }[] = [
     },
     {
         name: 'Purple Volt',
-        icon: '🍇',
+        icon: '⚡',
         theme: {
             primary: '#A855F7',
             accent: '#C084FC',
-            background: '#0D0B14',
+            background: '#0E0914',
             card_bg: '#161224'
         }
     },
@@ -80,6 +82,9 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
     const [paymentMethodsText, setPaymentMethodsText] = useState('Até 12x no cartão de crédito ou PIX com desconto')
     const [deviceConditionMode, setDeviceConditionMode] = useState<'todos' | 'novos' | 'seminovos'>('todos')
 
+    // Trade-In Matrix
+    const [tradeInValues, setTradeInValues] = useState<TradeInModelItem[]>(DEFAULT_TRADE_IN_ITEMS)
+
     // 4 Custom Colors
     const [primaryColor, setPrimaryColor] = useState('#10B981')
     const [accentColor, setAccentColor] = useState('#34D399')
@@ -109,6 +114,10 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                     if (data.settings.payment_methods_text) setPaymentMethodsText(data.settings.payment_methods_text)
                     if (data.settings.device_condition_mode) setDeviceConditionMode(data.settings.device_condition_mode)
 
+                    if (data.settings.trade_in_values && Array.isArray(data.settings.trade_in_values)) {
+                        setTradeInValues(data.settings.trade_in_values)
+                    }
+
                     if (data.settings.theme) {
                         setPrimaryColor(data.settings.theme.primary || '#10B981')
                         setAccentColor(data.settings.theme.accent || '#34D399')
@@ -120,6 +129,15 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
         } catch (e) {
             console.error(e)
         }
+    }
+
+    const updateTradeInValue = (id: string, val: number) => {
+        setTradeInValues(prev => prev.map(item => item.id === id ? { ...item, estimated_value: val } : item))
+    }
+
+    const restoreDefaultTradeIn = () => {
+        setTradeInValues(DEFAULT_TRADE_IN_ITEMS)
+        toast.success('Valores sugestivos de mercado restaurados!')
     }
 
     const applyPreset = (preset: typeof PRESET_THEMES[0]) => {
@@ -151,11 +169,14 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
             delivery_text: deliveryText,
             payment_methods_text: paymentMethodsText,
             device_condition_mode: deviceConditionMode,
+            trade_in_values: tradeInValues,
             theme: {
                 primary: primaryColor,
                 accent: accentColor,
                 background: backgroundColor,
                 card_bg: cardBgColor
+            }
+        }ardBgColor
             }
         }
 
@@ -420,6 +441,52 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                 className="w-full bg-background border border-border rounded-2xl p-3 text-xs font-bold outline-none"
                             />
                         </div>
+                    </div>
+                </div>
+
+                {/* 4. TABELA DE AVALIAÇÃO DE USADOS (TRADE-IN) */}
+                <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-border pb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-400 border border-amber-500/20">
+                                <Smartphone className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <h3 className="font-black text-base">Tabela de Avaliação de Usados (Trade-In)</h3>
+                                <p className="text-xs text-muted-foreground">Defina o valor base que sua loja paga em cada celular usado trazido pelo cliente.</p>
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={restoreDefaultTradeIn}
+                            className="px-3 py-1.5 bg-muted text-muted-foreground hover:text-foreground text-xs font-bold rounded-xl transition-all flex items-center gap-1.5"
+                        >
+                            <RefreshCw className="w-3.5 h-3.5" />
+                            Valores Sugeridos
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-y-auto pr-1">
+                        {tradeInValues.map(item => (
+                            <div key={item.id} className="p-3 bg-background border border-border rounded-2xl flex items-center gap-3">
+                                <div className="w-11 h-11 bg-black rounded-xl overflow-hidden shrink-0 border border-border">
+                                    <img src={item.image_url} alt={item.model} className="w-full h-full object-cover" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-bold text-xs truncate">{item.model} ({item.storage})</p>
+                                    <div className="flex items-center gap-1 mt-1">
+                                        <span className="text-[10px] font-bold text-muted-foreground">R$</span>
+                                        <input
+                                            type="number"
+                                            value={item.estimated_value}
+                                            onChange={e => updateTradeInValue(item.id, Number(e.target.value))}
+                                            className="w-full bg-card border border-border rounded-lg px-2 py-0.5 text-xs font-bold text-emerald-400 outline-none"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
 
                     <div className="pt-2 flex justify-end">

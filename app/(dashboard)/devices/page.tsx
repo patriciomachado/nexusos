@@ -40,6 +40,12 @@ function DevicesContent() {
     const [isQRCodeModalOpen, setIsQRCodeModalOpen] = useState(false)
     const [selectedDeviceForQR, setSelectedDeviceForQR] = useState<Device | null>(null)
 
+    // Mark as Sold & Cash Register Integration State
+    const [deviceToSell, setDeviceToSell] = useState<Device | null>(null)
+    const [isMarkAsSoldModalOpen, setIsMarkAsSoldModalOpen] = useState(false)
+    const [salePrice, setSalePrice] = useState<number>(0)
+    const [isSubmittingSale, setIsSubmittingSale] = useState(false)
+
     useEffect(() => {
         fetchDevices()
         fetchTradeIns()
@@ -148,6 +154,74 @@ function DevicesContent() {
     const handleOpenQRModal = (device: Device) => {
         setSelectedDeviceForQR(device)
         setIsQRCodeModalOpen(true)
+    }
+
+    const handleOpenMarkAsSold = (device: Device) => {
+        setDeviceToSell(device)
+        setSalePrice(Number(device.cash_price))
+        setIsMarkAsSoldModalOpen(true)
+    }
+
+    const handleConfirmSale = async () => {
+        if (!deviceToSell) return
+        setIsSubmittingSale(true)
+
+        try {
+            // 1. Update device status to 'vendido'
+            if (!deviceToSell.id.startsWith('local_')) {
+                await fetch('/api/devices', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: deviceToSell.id,
+                        status: 'vendido'
+                    })
+                })
+            }
+
+            // Update local state
+            setDevices(prev => prev.map(d => d.id === deviceToSell.id ? { ...d, status: 'vendido' } : d))
+            
+            try {
+                const localRaw = localStorage.getItem('nexus_devices')
+                if (localRaw) {
+                    const localItems: Device[] = JSON.parse(localRaw)
+                    const updated = localItems.map(d => d.id === deviceToSell.id ? { ...d, status: 'vendido' } : d)
+                    localStorage.setItem('nexus_devices', JSON.stringify(updated))
+                }
+            } catch (e) {}
+
+            // 2. Post transaction to current open cash register if available
+            try {
+                const regRes = await fetch('/api/cash-registers/current')
+                if (regRes.ok) {
+                    const reg = await regRes.json()
+                    if (reg && reg.id) {
+                        await fetch('/api/cash-transactions', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                cash_register_id: reg.id,
+                                type: 'entry',
+                                amount: Number(salePrice),
+                                description: `Venda de Aparelho: ${deviceToSell.brand} ${deviceToSell.model} (${deviceToSell.storage || ''}) - IMEI: ${deviceToSell.imei_1 || 'N/A'}`,
+                                category: 'Venda de Celular'
+                            })
+                        })
+                    }
+                }
+            } catch (e) {
+                console.error('Error recording sale in cash register:', e)
+            }
+
+            toast.success(`Aparelho marcado como VENDIDO e lançado no Caixa (${formatCurrency(salePrice)})!`)
+            setIsMarkAsSoldModalOpen(false)
+            setDeviceToSell(null)
+        } catch (err) {
+            toast.error('Erro ao processar venda.')
+        } finally {
+            setIsSubmittingSale(false)
+        }
     }
 
     // KPIs Calculations
@@ -376,6 +450,17 @@ function DevicesContent() {
 
                                         {/* Card Actions */}
                                         <div className="flex items-center gap-2 pt-3 border-t border-border">
+                                            {device.status === 'disponivel' && (
+                                                <button
+                                                    onClick={() => handleOpenMarkAsSold(device)}
+                                                    className="flex-1 py-2 px-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-black rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                                                    title="Marcar como Vendido e Lançar no Caixa"
+                                                >
+                                                    <DollarSign className="w-4 h-4" />
+                                                    Vendido (Caixa)
+                                                </button>
+                                            )}
+
                                             <button
                                                 onClick={() => handleOpenQRModal(device)}
                                                 className="p-2.5 bg-muted hover:bg-muted/80 rounded-xl text-xs font-bold transition-all"
@@ -536,6 +621,67 @@ function DevicesContent() {
                 onClose={() => setIsQRCodeModalOpen(false)}
                 device={selectedDeviceForQR}
             />
+
+            {/* MODAL DE CONFIRMAÇÃO DE VENDA & LANÇAMENTO NO CAIXA */}
+            {isMarkAsSoldModalOpen && deviceToSell && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-card border border-border rounded-3xl p-6 max-w-md w-full space-y-5 shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between border-b border-border pb-3">
+                            <div className="flex items-center gap-2">
+                                <div className="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-xl">
+                                    <DollarSign className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h3 className="font-black text-base">Marcar como Vendido</h3>
+                                    <p className="text-xs text-muted-foreground">Lançar receita no Caixa da Loja</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setIsMarkAsSoldModalOpen(false)} className="p-2 hover:bg-muted rounded-xl transition-all">
+                                <X className="w-5 h-5 text-muted-foreground" />
+                            </button>
+                        </div>
+
+                        <div className="p-4 bg-muted/30 border border-border rounded-2xl space-y-1">
+                            <span className="text-[10px] font-black uppercase text-primary tracking-widest">{deviceToSell.brand}</span>
+                            <h4 className="font-black text-base">{deviceToSell.model} ({deviceToSell.storage || 'Estoque'})</h4>
+                            <p className="text-xs text-muted-foreground">{deviceToSell.color ? `Cor: ${deviceToSell.color}` : ''}</p>
+                        </div>
+
+                        <div className="space-y-3">
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-muted-foreground block">Valor Final de Venda (R$)</label>
+                                <input
+                                    type="number"
+                                    value={salePrice}
+                                    onChange={e => setSalePrice(Number(e.target.value))}
+                                    className="w-full bg-background border border-border rounded-2xl p-3 text-lg font-black text-emerald-400 outline-none"
+                                />
+                            </div>
+
+                            <p className="text-[11px] text-muted-foreground leading-relaxed bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl text-amber-300">
+                                ℹ️ Ao confirmar, este aparelho terá o status alterado para <strong>Vendido</strong>, o valor será registrado como <strong>Receita no Caixa Aberto</strong> e ele <strong>sumirá automaticamente do seu catálogo público</strong>.
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-3 pt-2">
+                            <button
+                                onClick={() => setIsMarkAsSoldModalOpen(false)}
+                                className="flex-1 py-3 bg-muted hover:bg-muted/80 rounded-2xl text-xs font-bold transition-all"
+                            >
+                                Cancelar
+                            </button>
+
+                            <button
+                                disabled={isSubmittingSale}
+                                onClick={handleConfirmSale}
+                                className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20"
+                            >
+                                {isSubmittingSale ? 'Processando...' : 'Confirmar Venda'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

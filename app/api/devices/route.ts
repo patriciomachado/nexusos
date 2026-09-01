@@ -107,28 +107,31 @@ export async function PUT(req: NextRequest) {
     }
 
     try {
+        const updatePayload: any = {
+            updated_at: new Date().toISOString()
+        }
+
+        if (body.brand !== undefined) updatePayload.brand = body.brand
+        if (body.model !== undefined) updatePayload.model = body.model
+        if (body.storage !== undefined) updatePayload.storage = body.storage
+        if (body.color !== undefined) updatePayload.color = body.color
+        if (body.condition !== undefined) updatePayload.condition = body.condition
+        if (body.battery_health !== undefined) updatePayload.battery_health = body.battery_health ? Number(body.battery_health) : null
+        if (body.imei_1 !== undefined) updatePayload.imei_1 = body.imei_1
+        if (body.imei_2 !== undefined) updatePayload.imei_2 = body.imei_2
+        if (body.serial_number !== undefined) updatePayload.serial_number = body.serial_number
+        if (body.cost_price !== undefined) updatePayload.cost_price = Number(body.cost_price || 0)
+        if (body.cash_price !== undefined) updatePayload.cash_price = Number(body.cash_price)
+        if (body.installment_price !== undefined) updatePayload.installment_price = Number(body.installment_price)
+        if (body.status !== undefined) updatePayload.status = body.status
+        if (body.included_items !== undefined) updatePayload.included_items = body.included_items
+        if (body.images !== undefined) updatePayload.images = body.images
+        if (body.technical_passport !== undefined) updatePayload.technical_passport = body.technical_passport
+        if (body.notes !== undefined) updatePayload.notes = body.notes
+
         const { data, error } = await db
             .from('devices')
-            .update({
-                brand: body.brand,
-                model: body.model,
-                storage: body.storage,
-                color: body.color,
-                condition: body.condition,
-                battery_health: body.battery_health ? Number(body.battery_health) : null,
-                imei_1: body.imei_1,
-                imei_2: body.imei_2,
-                serial_number: body.serial_number,
-                cost_price: Number(body.cost_price || 0),
-                cash_price: Number(body.cash_price),
-                installment_price: Number(body.installment_price),
-                status: body.status,
-                included_items: body.included_items,
-                images: body.images,
-                technical_passport: body.technical_passport,
-                notes: body.notes,
-                updated_at: new Date().toISOString()
-            })
+            .update(updatePayload)
             .eq('id', body.id)
             .eq('company_id', companyId)
             .select()

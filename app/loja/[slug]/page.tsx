@@ -9,6 +9,10 @@ import {
 import { Device } from '@/types/devices'
 import { formatCurrency, cn } from '@/lib/utils'
 
+import CatalogQuizModal from '@/components/catalog/CatalogQuizModal'
+import TradeInCalculatorModal from '@/components/catalog/TradeInCalculatorModal'
+import { Sparkles } from 'lucide-react'
+
 interface PublicCatalogData {
     settings: {
         catalog_title?: string
@@ -49,6 +53,11 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
     // Product Modal Details
     const [selectedDeviceModal, setSelectedDeviceModal] = useState<Device | null>(null)
     const [activePhotoIndex, setActivePhotoIndex] = useState(0)
+
+    // Interactive Quiz & Trade-In Modals
+    const [isQuizOpen, setIsQuizOpen] = useState(false)
+    const [isTradeInModalOpen, setIsTradeInModalOpen] = useState(false)
+    const [selectedTradeInDevice, setSelectedTradeInDevice] = useState<Device | null>(null)
 
     // Dynamic Settings & Local Sync State
     const [localSettings, setLocalSettings] = useState<any>(null)
@@ -268,6 +277,27 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                             {paymentMethodsText}
                         </div>
                     </div>
+
+                    {/* GAMIFIED QUIZ CALLOUT BANNER */}
+                    <div className="relative z-10 p-4 md:p-5 bg-gradient-to-r from-emerald-500/20 via-teal-500/10 to-transparent border border-emerald-500/30 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+                        <div className="space-y-1 text-center sm:text-left">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 flex items-center justify-center sm:justify-start gap-1">
+                                <Sparkles className="w-3.5 h-3.5 fill-current" />
+                                Assistente Virtual de Troca em 45 Segundos
+                            </span>
+                            <h3 className="text-sm md:text-base font-black text-white">
+                                Descubra qual celular combina com você e saiba QUANTO VALE o seu na troca!
+                            </h3>
+                        </div>
+                        <button
+                            onClick={() => setIsQuizOpen(true)}
+                            className="w-full sm:w-auto px-5 py-3 text-black font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg hover:scale-105 active:scale-95 shrink-0 animate-pulse"
+                            style={{ backgroundColor: theme.primary }}
+                        >
+                            <Sparkles className="w-4 h-4 fill-current" />
+                            Fazer Quiz de Troca 🎮
+                        </button>
+                    </div>
                 </div>
 
                 {/* FILTROS E PESQUISA */}
@@ -358,17 +388,17 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
                 {/* ABA 1: GRID DE CELULARES */}
                 {activeTab === 'devices' && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredDevices.length === 0 ? (
-                            <div className="col-span-full py-20 text-center bg-[#111622] border border-dashed border-slate-800 rounded-3xl p-8 space-y-3">
-                                <Smartphone className="w-12 h-12 text-slate-600 mx-auto" />
-                                <h3 className="font-bold text-base text-slate-300">Nenhum aparelho disponível no momento</h3>
-                                <p className="text-xs text-slate-500 max-w-sm mx-auto">Adicione celulares no seu painel para exibi-los aqui no catálogo.</p>
+                            <div className="col-span-full py-16 text-center bg-[#111622] border border-dashed border-slate-800 rounded-3xl p-8 space-y-2">
+                                <Smartphone className="w-10 h-10 text-slate-500 mx-auto" />
+                                <p className="text-sm font-bold text-slate-300">Nenhum celular encontrado com estes filtros</p>
                             </div>
                         ) : (
                             filteredDevices.map(device => {
                                 const photos = Array.isArray(device.images) && device.images.length > 0 ? device.images : []
                                 const hasPhotos = photos.length > 0
+                                const mainPhoto = hasPhotos ? photos[0] : 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&auto=format&fit=crop&q=80'
 
                                 return (
                                     <div
@@ -379,18 +409,11 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                         <div className="space-y-3">
                                             {/* Photo Preview / Thumb Header */}
                                             <div className="relative w-full h-48 bg-black/40 rounded-2xl overflow-hidden border border-slate-800/80 flex items-center justify-center transition-all">
-                                                {hasPhotos ? (
-                                                    <img
-                                                        src={photos[0]}
-                                                        alt={device.model}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                    />
-                                                ) : (
-                                                    <div className="text-center space-y-2">
-                                                        <Smartphone className="w-12 h-12 text-slate-700 mx-auto" />
-                                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Fotos Sob Consulta</span>
-                                                    </div>
-                                                )}
+                                                <img
+                                                    src={mainPhoto}
+                                                    alt={device.model}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                />
 
                                                 {/* Top Badges */}
                                                 <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
@@ -465,6 +488,18 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                             >
                                                 <MessageSquare className="w-4 h-4 fill-current" />
                                                 Comprar pelo WhatsApp
+                                            </button>
+
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedTradeInDevice(device)
+                                                    setIsTradeInModalOpen(true)
+                                                }}
+                                                className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border border-slate-800"
+                                                style={{ borderColor: `${theme.primary}40`, color: theme.primary }}
+                                            >
+                                                <RefreshCw className="w-3.5 h-3.5" />
+                                                Fazer Upgrade (Dar meu celular na troca)
                                             </button>
                                         </div>
                                     </div>
@@ -594,6 +629,30 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                     </div>
                 </div>
             )}
+
+            {/* MODAL GAMIFICADO DE QUIZ RECOMENDADOR */}
+            <CatalogQuizModal
+                isOpen={isQuizOpen}
+                onClose={() => setIsQuizOpen(false)}
+                devices={allDevices}
+                companyName={companyName}
+                companyPhone={companyPhone}
+                tradeInValues={(data?.settings as any)?.trade_in_values}
+                themePrimary={theme.primary}
+            />
+
+            {/* MODAL DE CALCULADORA DIRETA DE UPGRADE */}
+            <TradeInCalculatorModal
+                isOpen={isTradeInModalOpen}
+                onClose={() => {
+                    setIsTradeInModalOpen(false)
+                    setSelectedTradeInDevice(null)
+                }}
+                targetDevice={selectedTradeInDevice}
+                companyPhone={companyPhone}
+                tradeInValues={(data?.settings as any)?.trade_in_values}
+                themePrimary={theme.primary}
+            />
         </div>
     )
 }
