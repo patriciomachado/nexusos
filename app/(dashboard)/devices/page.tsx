@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { 
     Smartphone, Plus, Search, Filter, RefreshCw, QrCode, Wand2, 
     Trash2, Edit, ShieldCheck, DollarSign, Calculator, Globe, 
-    Share2, ExternalLink, ArrowUpRight, Award, CheckCircle2, Copy
+    Share2, ExternalLink, ArrowUpRight, Award, CheckCircle2, Copy, X
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import { Device, DeviceTradeIn, CatalogSettings } from '@/types/devices'
