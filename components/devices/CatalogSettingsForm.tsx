@@ -176,8 +176,6 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                 background: backgroundColor,
                 card_bg: cardBgColor
             }
-        }ardBgColor
-            }
         }
 
         try {
