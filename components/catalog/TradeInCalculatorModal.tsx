@@ -13,6 +13,8 @@ interface TradeInCalculatorModalProps {
     companyPhone: string
     tradeInValues?: TradeInModelItem[]
     themePrimary?: string
+    installmentRate12x?: number
+    installmentRate24x?: number
 }
 
 export default function TradeInCalculatorModal({
@@ -21,7 +23,9 @@ export default function TradeInCalculatorModal({
     targetDevice,
     companyPhone,
     tradeInValues = DEFAULT_TRADE_IN_ITEMS,
-    themePrimary = '#10B981'
+    themePrimary = '#10B981',
+    installmentRate12x = 10,
+    installmentRate24x = 18
 }: TradeInCalculatorModalProps) {
     const [selectedTradeIn, setSelectedTradeIn] = useState<TradeInModelItem | null>(tradeInValues[3] || null) // default iPhone 11
 
@@ -29,8 +33,13 @@ export default function TradeInCalculatorModal({
 
     const tradeInValue = selectedTradeIn ? selectedTradeIn.estimated_value : 0
     const remainingCash = Math.max(0, targetDevice.cash_price - tradeInValue)
-    const targetInstallment = targetDevice.installment_price || targetDevice.cash_price * 1.12
-    const remainingInstallment = Math.max(0, targetInstallment - tradeInValue)
+    
+    // Automatic 12x and 24x calculation with custom interest rates
+    const remainingTotal12x = remainingCash * (1 + installmentRate12x / 100)
+    const remainingMonthly12x = remainingTotal12x / 12
+
+    const remainingTotal24x = remainingCash * (1 + installmentRate24x / 100)
+    const remainingMonthly24x = remainingTotal24x / 24
 
     const sendWhatsAppProposal = () => {
         if (!companyPhone) return
@@ -44,7 +53,8 @@ export default function TradeInCalculatorModal({
             text += `📱 *Meu Celular na Troca:* ${selectedTradeIn.model} ${selectedTradeIn.storage}\n`
             text += `🟢 *Avaliação Estimada:* ${formatCurrency(selectedTradeIn.estimated_value)}\n`
             text += `🔥 *SALDO RESTANTE À VISTA:* ${formatCurrency(remainingCash)}\n`
-            text += `💳 *OU EM 12X DE:* ${formatCurrency(remainingInstallment / 12)}/mês\n`
+            text += `💳 *OU EM 12X DE:* ${formatCurrency(remainingMonthly12x)}/mês\n`
+            text += `💳 *OU EM 24X DE:* ${formatCurrency(remainingMonthly24x)}/mês\n`
         }
 
         text += `\n*Gostaria de agendar a troca deste aparelho com a loja!*`
@@ -53,38 +63,38 @@ export default function TradeInCalculatorModal({
     }
 
     return (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-            <div className="bg-[#111622] border border-slate-800 rounded-3xl p-6 md:p-8 max-w-xl w-full space-y-6 relative my-8 shadow-2xl animate-in zoom-in-95 duration-200">
-                {/* Header */}
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+            <div className="bg-[#111622] border border-slate-800 rounded-3xl p-6 max-w-lg w-full space-y-5 relative my-8 animate-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <div className="flex items-center gap-2">
-                        <div className="p-2 rounded-xl text-black font-black text-xs flex items-center gap-1 shadow-lg" style={{ backgroundColor: themePrimary }}>
-                            <Smartphone className="w-4 h-4 fill-current" />
-                            UPGRADE
+                    <div className="flex items-center gap-2.5">
+                        <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-2xl border border-emerald-500/20">
+                            <Smartphone className="w-5 h-5" />
                         </div>
-                        <span className="text-xs text-slate-300 font-bold">Calculadora de Troca Instantânea</span>
+                        <div>
+                            <h3 className="font-black text-base text-white">Simulador de Troca & Upgrade</h3>
+                            <p className="text-xs text-slate-400">Calcule a diferença a pagar dando seu usado</p>
+                        </div>
                     </div>
-
-                    <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-xl transition-all text-slate-400 hover:text-white">
-                        <X className="w-5 h-5" />
+                    <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-xl transition-all">
+                        <X className="w-5 h-5 text-slate-400" />
                     </button>
                 </div>
 
-                {/* Target Device Overview */}
+                {/* Target Device Header */}
                 <div className="p-4 bg-[#0A0D14] border border-slate-800 rounded-2xl flex items-center gap-4">
-                    <div className="w-16 h-16 bg-black rounded-xl overflow-hidden border border-slate-800 shrink-0 p-1">
-                        <img 
-                            src={Array.isArray(targetDevice.images) && targetDevice.images.length > 0 ? targetDevice.images[0] : 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=300&auto=format&fit=crop&q=80'} 
+                    <div className="w-16 h-16 bg-black rounded-xl overflow-hidden shrink-0 border border-slate-800 p-1">
+                        <img
+                            src={Array.isArray(targetDevice.images) && targetDevice.images.length > 0 ? targetDevice.images[0] : 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=300&auto=format&fit=crop&q=80'}
                             alt={targetDevice.model}
                             className="w-full h-full object-contain"
                         />
                     </div>
                     <div>
-                        <span className="text-[9px] font-black uppercase text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md">
-                            Aparelho que você quer levar
+                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md">
+                            Aparelho Desejado
                         </span>
-                        <h4 className="font-black text-base text-white mt-1">{targetDevice.brand} {targetDevice.model} ({targetDevice.storage})</h4>
-                        <p className="text-xs font-bold text-emerald-400">{formatCurrency(targetDevice.cash_price)} à vista</p>
+                        <h4 className="font-black text-sm text-white mt-1">{targetDevice.brand} {targetDevice.model} ({targetDevice.storage || 'Estoque'})</h4>
+                        <p className="text-xs font-black text-emerald-400">{formatCurrency(targetDevice.cash_price)} à vista</p>
                     </div>
                 </div>
 
@@ -132,15 +142,16 @@ export default function TradeInCalculatorModal({
                             <span className="text-sm font-black">{formatCurrency(tradeInValue)}</span>
                         </div>
 
-                        <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                        <div className="pt-2 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                             <div>
                                 <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">VOCÊ SÓ PAGA A DIFERENÇA (PIX):</span>
                                 <p className="text-2xl font-black text-emerald-400">{formatCurrency(remainingCash)}</p>
                             </div>
 
-                            <div className="text-right">
-                                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">PARCELADO NO CARTÃO:</span>
-                                <p className="text-xs font-bold text-amber-300">12x de {formatCurrency(remainingInstallment / 12)}</p>
+                            <div className="text-left sm:text-right space-y-0.5">
+                                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest block">PARCELADO NO CARTÃO:</span>
+                                <p className="text-xs font-bold text-slate-200">12x de {formatCurrency(remainingMonthly12x)}</p>
+                                <p className="text-xs font-bold text-amber-300">24x de {formatCurrency(remainingMonthly24x)}</p>
                             </div>
                         </div>
                     </div>

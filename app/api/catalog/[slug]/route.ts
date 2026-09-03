@@ -103,6 +103,8 @@ export async function GET(
                 delivery_text: catalogSettings?.delivery_text || 'Entrega rápida via Motoboy ou retirada em mãos',
                 payment_methods_text: catalogSettings?.payment_methods_text || 'Até 12x no cartão de crédito ou PIX com desconto',
                 device_condition_mode: catalogSettings?.device_condition_mode || 'todos',
+                installment_rate_12x: catalogSettings?.installment_rate_12x ?? 10.0,
+                installment_rate_24x: catalogSettings?.installment_rate_24x ?? 18.0,
                 theme: catalogSettings?.theme || {
                     primary: '#10B981',
                     accent: '#34D399',

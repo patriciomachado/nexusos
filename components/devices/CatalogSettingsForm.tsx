@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { 
     Palette, Sparkles, Globe, MessageSquare, Megaphone, 
-    Save, Copy, ExternalLink, RefreshCw, Check, ShieldCheck, Smartphone, Truck, CreditCard, Layers
+    Save, Copy, ExternalLink, RefreshCw, Check, ShieldCheck, Smartphone, Truck, CreditCard, Layers, Percent
 } from 'lucide-react'
 import { CatalogSettings, CatalogTheme } from '@/types/devices'
 import { toast } from 'sonner'
@@ -82,6 +82,10 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
     const [paymentMethodsText, setPaymentMethodsText] = useState('Até 12x no cartão de crédito ou PIX com desconto')
     const [deviceConditionMode, setDeviceConditionMode] = useState<'todos' | 'novos' | 'seminovos'>('todos')
 
+    // Taxas de Juros Maquininha (12x e 24x)
+    const [installmentRate12x, setInstallmentRate12x] = useState<number>(10)
+    const [installmentRate24x, setInstallmentRate24x] = useState<number>(18)
+
     // Trade-In Matrix
     const [tradeInValues, setTradeInValues] = useState<TradeInModelItem[]>(DEFAULT_TRADE_IN_ITEMS)
 
@@ -113,6 +117,8 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                     if (data.settings.delivery_text) setDeliveryText(data.settings.delivery_text)
                     if (data.settings.payment_methods_text) setPaymentMethodsText(data.settings.payment_methods_text)
                     if (data.settings.device_condition_mode) setDeviceConditionMode(data.settings.device_condition_mode)
+                    if (data.settings.installment_rate_12x !== undefined) setInstallmentRate12x(Number(data.settings.installment_rate_12x))
+                    if (data.settings.installment_rate_24x !== undefined) setInstallmentRate24x(Number(data.settings.installment_rate_24x))
 
                     if (data.settings.trade_in_values && Array.isArray(data.settings.trade_in_values)) {
                         setTradeInValues(data.settings.trade_in_values)
@@ -169,6 +175,8 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
             delivery_text: deliveryText,
             payment_methods_text: paymentMethodsText,
             device_condition_mode: deviceConditionMode,
+            installment_rate_12x: installmentRate12x,
+            installment_rate_24x: installmentRate24x,
             trade_in_values: tradeInValues,
             theme: {
                 primary: primaryColor,
@@ -274,7 +282,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         <div className="col-span-full space-y-1 bg-background p-3.5 rounded-2xl border border-border">
                             <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
                                 <CreditCard className="w-3.5 h-3.5 text-amber-400" />
-                                Parcelamento & Formas de Pagamento
+                                Texto de Parcelamento & Formas de Pagamento
                             </label>
                             <input
                                 type="text"
@@ -283,6 +291,64 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                 placeholder="Ex: Até 12x no cartão de crédito ou PIX com desconto"
                                 className="w-full bg-card border border-border rounded-xl p-2.5 text-xs font-bold outline-none"
                             />
+                        </div>
+
+                        {/* Taxas de Juros da Maquininha (12x e 24x) */}
+                        <div className="col-span-full space-y-3 bg-gradient-to-r from-amber-500/10 via-background to-background p-4 rounded-2xl border border-amber-500/20">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <label className="text-[11px] font-black uppercase text-amber-400 tracking-widest flex items-center gap-1.5">
+                                    <Percent className="w-4 h-4 text-amber-400" />
+                                    Taxas de Juros da Maquininha (Cálculo Automático)
+                                </label>
+                                <span className="text-[10px] font-bold text-muted-foreground bg-amber-500/10 px-2 py-0.5 rounded-md text-amber-300 w-fit">
+                                    Calculado no Catálogo em 12x e 24x
+                                </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground leading-relaxed">
+                                Defina as porcentagens de juros cobradas pela sua maquininha. O catálogo calculará automaticamente as parcelas em 12x e 24x para cada celular!
+                            </p>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest block">Taxa Total 12x (%)</label>
+                                    <div className="flex items-center bg-card border border-border rounded-xl px-3 py-2">
+                                        <input
+                                            type="number"
+                                            step="0.1"
+                                            min="0"
+                                            max="100"
+                                            value={installmentRate12x}
+                                            onChange={e => setInstallmentRate12x(Number(e.target.value))}
+                                            className="w-full bg-transparent text-xs font-bold text-emerald-400 outline-none"
+                                            placeholder="Ex: 10.0"
+                                        />
+                                        <span className="text-xs font-mono font-bold text-muted-foreground select-none">%</span>
+                                    </div>
+                                    <span className="text-[10px] text-muted-foreground block font-medium">
+                                        💡 Exemplo em R$ 3.000: <strong className="text-emerald-400">12x de {formatCurrency((3000 * (1 + (installmentRate12x || 0) / 100)) / 12)}</strong>
+                                    </span>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest block">Taxa Total 24x (%)</label>
+                                    <div className="flex items-center bg-card border border-border rounded-xl px-3 py-2">
+                                        <input
+                                            type="number"
+                                            step="0.1"
+                                            min="0"
+                                            max="100"
+                                            value={installmentRate24x}
+                                            onChange={e => setInstallmentRate24x(Number(e.target.value))}
+                                            className="w-full bg-transparent text-xs font-bold text-amber-400 outline-none"
+                                            placeholder="Ex: 18.0"
+                                        />
+                                        <span className="text-xs font-mono font-bold text-muted-foreground select-none">%</span>
+                                    </div>
+                                    <span className="text-[10px] text-muted-foreground block font-medium">
+                                        💡 Exemplo em R$ 3.000: <strong className="text-amber-400">24x de {formatCurrency((3000 * (1 + (installmentRate24x || 0) / 100)) / 24)}</strong>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

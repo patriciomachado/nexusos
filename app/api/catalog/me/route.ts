@@ -78,6 +78,8 @@ export async function GET(req: NextRequest) {
                 delivery_text: settings?.delivery_text || 'Entrega rápida via Motoboy ou retirada em mãos',
                 payment_methods_text: settings?.payment_methods_text || 'Até 12x no cartão de crédito ou PIX com desconto',
                 device_condition_mode: settings?.device_condition_mode || 'todos',
+                installment_rate_12x: settings?.installment_rate_12x ?? 10.0,
+                installment_rate_24x: settings?.installment_rate_24x ?? 18.0,
                 theme: settings?.theme || {
                     primary: '#10B981',
                     accent: '#34D399',
@@ -114,7 +116,8 @@ export async function POST(req: NextRequest) {
         const body = await req.json()
         const { 
             slug, catalog_title, announcement_bar, whatsapp_number, whatsapp_custom_message, 
-            warranty_text, delivery_text, payment_methods_text, device_condition_mode, theme 
+            warranty_text, delivery_text, payment_methods_text, device_condition_mode, 
+            installment_rate_12x, installment_rate_24x, theme 
         } = body
 
         // Check if row already exists for this company
@@ -135,6 +138,8 @@ export async function POST(req: NextRequest) {
             delivery_text: delivery_text || null,
             payment_methods_text: payment_methods_text || null,
             device_condition_mode: device_condition_mode || 'todos',
+            installment_rate_12x: installment_rate_12x !== undefined ? Number(installment_rate_12x) : 10.0,
+            installment_rate_24x: installment_rate_24x !== undefined ? Number(installment_rate_24x) : 18.0,
             theme: theme || null,
             updated_at: new Date().toISOString()
         }

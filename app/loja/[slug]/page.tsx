@@ -143,6 +143,8 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
     const deliveryText = mergedSettings?.delivery_text || localSettings?.delivery_text || 'Entrega Via Motoboy'
     const paymentMethodsText = mergedSettings?.payment_methods_text || localSettings?.payment_methods_text || 'Até 12x no Cartão'
     const deviceConditionMode = mergedSettings?.device_condition_mode || localSettings?.device_condition_mode || 'todos'
+    const rate12x = Number(mergedSettings?.installment_rate_12x ?? localSettings?.installment_rate_12x ?? 10)
+    const rate24x = Number(mergedSettings?.installment_rate_24x ?? localSettings?.installment_rate_24x ?? 18)
 
     // Dynamically extract ONLY brands that exist in allDevices
     const registeredBrands = Array.from(new Set(allDevices.map(d => d.brand).filter(Boolean)))
@@ -471,11 +473,18 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                             <div className="p-4 bg-black/40 border border-slate-800 rounded-2xl space-y-1">
                                                 <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest">PREÇO À VISTA (PIX)</span>
                                                 <p className="text-2xl font-black tracking-tight" style={{ color: theme.primary }}>{formatCurrency(device.cash_price)}</p>
-                                                {device.installment_price && (
-                                                    <p className="text-xs font-bold" style={{ color: theme.accent }}>
-                                                        ou 12x de {formatCurrency(device.installment_price / 12)} no cartão
+                                                
+                                                {/* Automatic 12x and 24x installment calculation */}
+                                                <div className="pt-1.5 space-y-0.5 border-t border-slate-800/80 mt-1">
+                                                    <p className="text-xs font-bold flex items-center justify-between" style={{ color: theme.accent }}>
+                                                        <span className="text-[10px] uppercase text-slate-400 font-semibold">12x no cartão:</span>
+                                                        <span className="font-mono font-black">12x de {formatCurrency((device.cash_price * (1 + rate12x / 100)) / 12)}</span>
                                                     </p>
-                                                )}
+                                                    <p className="text-xs font-bold flex items-center justify-between text-amber-300">
+                                                        <span className="text-[10px] uppercase text-slate-400 font-semibold">24x no cartão:</span>
+                                                        <span className="font-mono font-black">24x de {formatCurrency((device.cash_price * (1 + rate24x / 100)) / 24)}</span>
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -639,6 +648,8 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                 companyPhone={companyPhone}
                 tradeInValues={(data?.settings as any)?.trade_in_values}
                 themePrimary={theme.primary}
+                installmentRate12x={rate12x}
+                installmentRate24x={rate24x}
             />
 
             {/* MODAL DE CALCULADORA DIRETA DE UPGRADE */}
@@ -652,6 +663,8 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                 companyPhone={companyPhone}
                 tradeInValues={(data?.settings as any)?.trade_in_values}
                 themePrimary={theme.primary}
+                installmentRate12x={rate12x}
+                installmentRate24x={rate24x}
             />
         </div>
     )

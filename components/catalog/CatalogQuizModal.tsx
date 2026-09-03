@@ -17,6 +17,8 @@ interface CatalogQuizModalProps {
     companyPhone: string
     tradeInValues?: TradeInModelItem[]
     themePrimary?: string
+    installmentRate12x?: number
+    installmentRate24x?: number
 }
 
 export default function CatalogQuizModal({
@@ -26,7 +28,9 @@ export default function CatalogQuizModal({
     companyName,
     companyPhone,
     tradeInValues = DEFAULT_TRADE_IN_ITEMS,
-    themePrimary = '#10B981'
+    themePrimary = '#10B981',
+    installmentRate12x = 10,
+    installmentRate24x = 18
 }: CatalogQuizModalProps) {
     const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
 
@@ -437,7 +441,7 @@ export default function CatalogQuizModal({
                                         </div>
                                     )}
 
-                                    <div className="pt-2 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2">
+                                    <div className="pt-2 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                                         <div>
                                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                                                 {hasTradeIn ? 'SALDO RESTANTE À VISTA (PIX):' : 'PREÇO À VISTA (PIX):'}
@@ -445,9 +449,10 @@ export default function CatalogQuizModal({
                                             <p className="text-2xl font-black text-emerald-400">{formatCurrency(finalCashPrice)}</p>
                                         </div>
 
-                                        <div className="text-right">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">PARCELADO NO CARTÃO:</span>
-                                            <p className="text-xs font-bold text-amber-300">12x de {formatCurrency(finalInstallmentPrice / 12)}</p>
+                                        <div className="text-left sm:text-right space-y-0.5">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">PARCELADO NO CARTÃO:</span>
+                                            <p className="text-xs font-bold text-slate-200">12x de {formatCurrency((finalCashPrice * (1 + installmentRate12x / 100)) / 12)}</p>
+                                            <p className="text-xs font-bold text-amber-300">24x de {formatCurrency((finalCashPrice * (1 + installmentRate24x / 100)) / 24)}</p>
                                         </div>
                                     </div>
                                 </div>
