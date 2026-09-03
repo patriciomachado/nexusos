@@ -109,13 +109,20 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
     }
 
     if (loading) {
+        const loadingTheme = localSettings?.theme || (data?.settings as any)?.theme || {
+            primary: '#10B981',
+            accent: '#34D399',
+            background: '#0A0D14',
+            card_bg: '#111622'
+        }
+
         return (
-            <div className="min-h-screen bg-[#0A0D14] text-white flex flex-col items-center justify-center space-y-4">
+            <div className="min-h-screen text-white flex flex-col items-center justify-center space-y-4" style={{ backgroundColor: loadingTheme.background }}>
                 <div className="relative">
-                    <div className="w-16 h-16 rounded-full border-4 border-emerald-500/20 border-t-emerald-400 animate-spin" />
-                    <Smartphone className="w-6 h-6 text-emerald-400 absolute inset-0 m-auto" />
+                    <div className="w-16 h-16 rounded-full border-4 animate-spin" style={{ borderColor: `${loadingTheme.primary}30`, borderTopColor: loadingTheme.primary }} />
+                    <Smartphone className="w-6 h-6 absolute inset-0 m-auto" style={{ color: loadingTheme.primary }} />
                 </div>
-                <p className="text-xs font-bold tracking-widest text-emerald-400 uppercase animate-pulse">Carregando Catálogo da Loja...</p>
+                <p className="text-xs font-bold tracking-widest uppercase animate-pulse" style={{ color: loadingTheme.primary }}>Carregando Catálogo da Loja...</p>
             </div>
         )
     }

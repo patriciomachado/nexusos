@@ -154,6 +154,10 @@ export default function TradeInCalculatorModal({
                                 <p className="text-xs font-bold text-amber-300">24x de {formatCurrency(remainingMonthly24x)}</p>
                             </div>
                         </div>
+
+                        <p className="text-[10px] text-slate-400 text-center font-medium pt-1 border-t border-slate-800/80">
+                            *Aviso: O valor do seu celular de entrada é uma estimativa aproximada sujeita à avaliação física presencial em nossa loja.
+                        </p>
                     </div>
                 )}
 
