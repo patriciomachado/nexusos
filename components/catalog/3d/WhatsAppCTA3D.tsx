@@ -77,7 +77,6 @@ export default function WhatsAppCTA3D({
                 position={[0, 0, 0.12]}
                 fontSize={0.18}
                 color="#000000"
-                font="/fonts/Inter-Bold.woff"
                 anchorX="center"
                 anchorY="middle"
             >

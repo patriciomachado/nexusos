@@ -77,7 +77,6 @@ export default function PriceBreakdown3D({
                     position={[0, 0.2, 0]}
                     fontSize={0.45}
                     color="#10B981"
-                    font="/fonts/Inter-Bold.woff"
                     anchorX="center"
                 >
                     {formatCurrency(cashPrice)}

@@ -13,6 +13,7 @@ import CatalogQuizModal from '@/components/catalog/CatalogQuizModal'
 import TradeInCalculatorModal from '@/components/catalog/TradeInCalculatorModal'
 import { Sparkles } from 'lucide-react'
 
+import React, { Component, ReactNode } from 'react'
 import dynamic from 'next/dynamic'
 
 const Catalog3DExperience = dynamic(() => import('@/components/catalog/3d/Catalog3DExperience'), {
@@ -24,6 +25,24 @@ const Catalog3DExperience = dynamic(() => import('@/components/catalog/3d/Catalo
         </div>
     )
 })
+
+class Catalog3DErrorBoundary extends Component<{ children: ReactNode; onErrorFallback: () => void }, { hasError: boolean }> {
+    constructor(props: { children: ReactNode; onErrorFallback: () => void }) {
+        super(props)
+        this.state = { hasError: false }
+    }
+    static getDerivedStateFromError() {
+        return { hasError: true }
+    }
+    componentDidCatch(error: any) {
+        console.error('3D Catalog initialization error, switching to 2D view:', error)
+        this.props.onErrorFallback()
+    }
+    render() {
+        if (this.state.hasError) return null
+        return this.props.children
+    }
+}
 
 interface PublicCatalogData {
     settings: {
@@ -268,18 +287,20 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
             {/* CONDITIONAL RENDER: 3D EXPERIENCE VS 2D CLASSIC VIEW */}
             {viewMode === '3d' ? (
-                <Catalog3DExperience
-                    devices={allDevices}
-                    companyName={companyName}
-                    companyPhone={companyPhone}
-                    themePrimary={theme.primary}
-                    rate12x={rate12x}
-                    rate24x={rate24x}
-                    onOpenTradeIn={(dev) => {
-                        setSelectedTradeInDevice(dev)
-                        setIsTradeInModalOpen(true)
-                    }}
-                />
+                <Catalog3DErrorBoundary onErrorFallback={() => setViewMode('2d')}>
+                    <Catalog3DExperience
+                        devices={allDevices}
+                        companyName={companyName}
+                        companyPhone={companyPhone}
+                        themePrimary={theme.primary}
+                        rate12x={rate12x}
+                        rate24x={rate24x}
+                        onOpenTradeIn={(dev) => {
+                            setSelectedTradeInDevice(dev)
+                            setIsTradeInModalOpen(true)
+                        }}
+                    />
+                </Catalog3DErrorBoundary>
             ) : (
                 <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
                 <div className="relative overflow-hidden rounded-3xl border border-slate-800 p-6 md:p-10 shadow-2xl space-y-6" style={{ backgroundColor: theme.card_bg }}>

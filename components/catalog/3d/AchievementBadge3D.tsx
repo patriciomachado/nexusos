@@ -58,7 +58,6 @@ export default function AchievementBadge3D({
                     position={[0, 0, 0.06]}
                     fontSize={0.12}
                     color="#ffffff"
-                    font="/fonts/Inter-Bold.woff"
                     anchorX="center"
                     anchorY="middle"
                 >
