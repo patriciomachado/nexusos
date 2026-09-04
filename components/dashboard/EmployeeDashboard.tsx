@@ -119,8 +119,8 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                             {recentOS.length > 0 ? (
                                 <div className="divide-y divide-border">
                                     {recentOS.slice(0, 8).map((os) => {
-                                        const cfg = STATUS_CONFIG[os.status]
-                                        const Icon = cfg?.icon ?? Circle
+                                        const cfg = (STATUS_CONFIG as Record<string, any>)[os.status]
+                                        const Icon: any = cfg?.icon ?? Circle
                                         return (
                                             <Link
                                                 key={os.id}
