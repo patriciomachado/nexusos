@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  transpilePackages: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing', 'postprocessing'],
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-dropdown-menu', '@radix-ui/react-dialog'],
   },
