@@ -13,6 +13,18 @@ import CatalogQuizModal from '@/components/catalog/CatalogQuizModal'
 import TradeInCalculatorModal from '@/components/catalog/TradeInCalculatorModal'
 import { Sparkles } from 'lucide-react'
 
+import dynamic from 'next/dynamic'
+
+const Catalog3DExperience = dynamic(() => import('@/components/catalog/3d/Catalog3DExperience'), {
+    ssr: false,
+    loading: () => (
+        <div className="min-h-screen bg-[#030712] text-white flex flex-col items-center justify-center space-y-4">
+            <div className="w-16 h-16 rounded-full border-4 border-cyan-500/30 border-t-cyan-400 animate-spin" />
+            <p className="text-xs font-mono font-bold tracking-widest uppercase text-cyan-400 animate-pulse">Inicializando Motor 3D Nexus...</p>
+        </div>
+    )
+})
+
 interface PublicCatalogData {
     settings: {
         catalog_title?: string
@@ -37,7 +49,7 @@ interface PublicCatalogData {
         quantity_in_stock: number
         description?: string
         image_url?: string
-    }>
+        }>
 }
 
 export function DynamicCatalogContent({ slug }: { slug: string }) {
@@ -49,6 +61,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
     const [selectedBrand, setSelectedBrand] = useState('todas')
     const [priceRange, setPriceRange] = useState<'todos' | 'ate1500' | '1500_3000' | 'acima3000'>('todos')
     const [searchQuery, setSearchQuery] = useState('')
+    const [viewMode, setViewMode] = useState<'3d' | '2d'>('3d')
 
     // Product Modal Details
     const [selectedDeviceModal, setSelectedDeviceModal] = useState<Device | null>(null)
@@ -229,22 +242,46 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                         </div>
                     </div>
 
-                    {/* WhatsApp Fast Button */}
-                    {companyPhone && (
+                    {/* View Mode Toggle + WhatsApp Fast Button */}
+                    <div className="flex items-center gap-2">
                         <button
-                            onClick={() => openWhatsAppInterest('Atendimento Geral', 0)}
-                            className="px-4 py-2 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
-                            style={{ backgroundColor: theme.primary }}
+                            onClick={() => setViewMode(viewMode === '3d' ? '2d' : '3d')}
+                            className="px-3.5 py-2 rounded-2xl text-xs font-mono font-black border border-cyan-500/40 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 transition-all shadow-md flex items-center gap-1.5"
                         >
-                            <MessageSquare className="w-4 h-4 fill-current" />
-                            <span className="hidden sm:inline">Falar no</span> WhatsApp
+                            <Zap className="w-3.5 h-3.5 fill-current" />
+                            {viewMode === '3d' ? 'MODO 2D' : 'MODO 3D'}
                         </button>
-                    )}
+
+                        {companyPhone && (
+                            <button
+                                onClick={() => openWhatsAppInterest('Atendimento Geral', 0)}
+                                className="px-4 py-2 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
+                                style={{ backgroundColor: theme.primary }}
+                            >
+                                <MessageSquare className="w-4 h-4 fill-current" />
+                                <span className="hidden sm:inline">Falar no</span> WhatsApp
+                            </button>
+                        )}
+                    </div>
                 </div>
             </header>
 
-            {/* HERO SECTION DE ALTA CONVERSÃO */}
-            <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+            {/* CONDITIONAL RENDER: 3D EXPERIENCE VS 2D CLASSIC VIEW */}
+            {viewMode === '3d' ? (
+                <Catalog3DExperience
+                    devices={allDevices}
+                    companyName={companyName}
+                    companyPhone={companyPhone}
+                    themePrimary={theme.primary}
+                    rate12x={rate12x}
+                    rate24x={rate24x}
+                    onOpenTradeIn={(dev) => {
+                        setSelectedTradeInDevice(dev)
+                        setIsTradeInModalOpen(true)
+                    }}
+                />
+            ) : (
+                <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
                 <div className="relative overflow-hidden rounded-3xl border border-slate-800 p-6 md:p-10 shadow-2xl space-y-6" style={{ backgroundColor: theme.card_bg }}>
                     {/* Background glow effects */}
                     <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl pointer-events-none opacity-20" style={{ backgroundColor: theme.primary }} />
@@ -580,6 +617,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                     <p className="text-[10px] text-slate-600 font-mono">Desenvolvido com tecnologia Nexus OS</p>
                 </footer>
             </main>
+            )}
 
             {/* MODAL DE GALERIA DE FOTOS DO APARELHO */}
             {selectedDeviceModal && (
