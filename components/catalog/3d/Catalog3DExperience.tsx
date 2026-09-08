@@ -188,11 +188,11 @@ export default function Catalog3DExperience({
                 </section>
 
                 {/* SECTION 3: PRODUCT GALLERY SELECTOR & INTEGRATED PHOTO VIEWER */}
-                <section className="h-screen w-full flex items-center justify-between px-6 md:px-16 pointer-events-none">
+                <section className="min-h-screen md:h-screen w-full flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-8 px-4 sm:px-8 md:px-16 py-12 md:py-0 pointer-events-none overflow-y-auto">
                     {/* Left Panel: Device Selector */}
-                    <div className="max-w-sm space-y-3 pointer-events-auto bg-black/70 backdrop-blur-xl p-5 rounded-3xl border border-slate-800 shadow-2xl">
+                    <div className="w-full max-w-sm space-y-3 pointer-events-auto bg-black/80 backdrop-blur-xl p-4 sm:p-5 rounded-3xl border border-slate-800 shadow-2xl">
                         <h3 className="text-xs font-mono font-black uppercase text-slate-400">Escolha o Aparelho:</h3>
-                        <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        <div className="space-y-2 max-h-48 sm:max-h-60 overflow-y-auto pr-1">
                             {devices.map((dev, idx) => (
                                 <button
                                     key={dev.id}
@@ -206,9 +206,9 @@ export default function Catalog3DExperience({
                                             : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white'
                                     }`}
                                 >
-                                    <div className="flex items-center justify-between">
-                                        <span>{dev.brand} {dev.model}</span>
-                                        <span className="text-emerald-400 font-mono">{formatCurrency(dev.cash_price)}</span>
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                                        <span className="font-black text-white">{dev.brand} {dev.model}</span>
+                                        <span className="text-emerald-400 font-mono font-black shrink-0">{formatCurrency(dev.cash_price)}</span>
                                     </div>
                                     <span className="text-[10px] text-slate-400 font-normal">{dev.storage} • {dev.color}</span>
                                 </button>
@@ -217,7 +217,7 @@ export default function Catalog3DExperience({
                     </div>
 
                     {/* Right Panel: Integrated Photo Viewer & Specs HUD */}
-                    <div className="max-w-sm w-full space-y-4 pointer-events-auto bg-black/80 backdrop-blur-xl p-5 rounded-3xl border border-cyan-500/40 shadow-2xl">
+                    <div className="w-full max-w-sm space-y-3 sm:space-y-4 pointer-events-auto bg-black/80 backdrop-blur-xl p-4 sm:p-5 rounded-3xl border border-cyan-500/40 shadow-2xl">
                         <div className="flex items-center justify-between">
                             <span className="text-[10px] font-mono font-black text-cyan-400 uppercase tracking-widest">ESPECIFICAÇÕES & FOTOS</span>
                             <span className="text-[9px] font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">{currentDevice.brand}</span>
@@ -230,7 +230,7 @@ export default function Catalog3DExperience({
                             <div className="space-y-2">
                                 <div
                                     onClick={() => setIsPhotoModalOpen(true)}
-                                    className="relative w-full h-44 bg-[#070b14] rounded-2xl overflow-hidden border border-slate-800 group cursor-pointer hover:border-cyan-500/50 transition-all flex items-center justify-center p-2"
+                                    className="relative w-full h-36 sm:h-44 bg-[#070b14] rounded-2xl overflow-hidden border border-slate-800 group cursor-pointer hover:border-cyan-500/50 transition-all flex items-center justify-center p-2"
                                 >
                                     <img
                                         src={currentDevice.images[activePhotoIndex] || currentDevice.images[0]}
@@ -253,7 +253,7 @@ export default function Catalog3DExperience({
                                             <button
                                                 key={i}
                                                 onClick={() => setActivePhotoIndex(i)}
-                                                className={`w-10 h-10 rounded-xl overflow-hidden border-2 shrink-0 transition-all p-0.5 bg-black ${
+                                                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border-2 shrink-0 transition-all p-0.5 bg-black ${
                                                     activePhotoIndex === i ? 'border-cyan-400 scale-105 shadow-md shadow-cyan-500/20' : 'border-slate-800 opacity-60 hover:opacity-100'
                                                 }`}
                                             >
@@ -264,7 +264,7 @@ export default function Catalog3DExperience({
                                 )}
                             </div>
                         ) : (
-                            <div className="w-full h-24 bg-slate-900/60 rounded-2xl border border-dashed border-slate-800 flex items-center justify-center text-center p-3">
+                            <div className="w-full h-20 sm:h-24 bg-slate-900/60 rounded-2xl border border-dashed border-slate-800 flex items-center justify-center text-center p-3">
                                 <p className="text-[11px] text-slate-400 font-bold">Modelo em visualização 3D interativa real</p>
                             </div>
                         )}
