@@ -55,6 +55,7 @@ export default function Catalog3DExperience({
     const [isMounted, setIsMounted] = useState(false)
     const [activePhotoIndex, setActivePhotoIndex] = useState(0)
     const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false)
+    const [conditionFilter, setConditionFilter] = useState<'todos' | 'novos' | 'seminovos'>('todos')
 
     useEffect(() => {
         setIsMounted(true)
@@ -191,28 +192,75 @@ export default function Catalog3DExperience({
                 <section className="min-h-screen md:h-screen w-full flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-8 px-4 sm:px-8 md:px-16 py-12 md:py-0 pointer-events-none overflow-y-auto">
                     {/* Left Panel: Device Selector */}
                     <div className="w-full max-w-sm space-y-3 pointer-events-auto bg-black/80 backdrop-blur-xl p-4 sm:p-5 rounded-3xl border border-slate-800 shadow-2xl">
-                        <h3 className="text-xs font-mono font-black uppercase text-slate-400">Escolha o Aparelho:</h3>
-                        <div className="space-y-2 max-h-48 sm:max-h-60 overflow-y-auto pr-1">
-                            {devices.map((dev, idx) => (
+                        {/* Condition Selector: Novo vs Seminovo */}
+                        <div className="space-y-1.5 border-b border-slate-800/80 pb-3">
+                            <span className="text-[10px] font-mono font-black uppercase text-slate-400">Condição do Aparelho:</span>
+                            <div className="grid grid-cols-3 gap-1 p-1 bg-slate-900/80 rounded-2xl border border-slate-800">
                                 <button
-                                    key={dev.id}
-                                    onClick={() => {
-                                        setSelectedDeviceIndex(idx)
-                                        setActivePhotoIndex(0)
-                                    }}
-                                    className={`w-full text-left p-3 rounded-2xl text-xs font-bold transition-all border ${
-                                        selectedDeviceIndex === idx
-                                            ? 'bg-cyan-500/20 border-cyan-400 text-white shadow-lg'
-                                            : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white'
+                                    onClick={() => setConditionFilter('todos')}
+                                    className={`py-1.5 text-[10px] font-bold rounded-xl transition-all ${
+                                        conditionFilter === 'todos' ? 'bg-cyan-500 text-black font-black shadow-md' : 'text-slate-400 hover:text-white'
                                     }`}
                                 >
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                                        <span className="font-black text-white">{dev.brand} {dev.model}</span>
-                                        <span className="text-emerald-400 font-mono font-black shrink-0">{formatCurrency(dev.cash_price)}</span>
-                                    </div>
-                                    <span className="text-[10px] text-slate-400 font-normal">{dev.storage} • {dev.color}</span>
+                                    Todos ({devices.length})
                                 </button>
-                            ))}
+                                <button
+                                    onClick={() => setConditionFilter('novos')}
+                                    className={`py-1.5 text-[10px] font-bold rounded-xl transition-all ${
+                                        conditionFilter === 'novos' ? 'bg-cyan-500 text-black font-black shadow-md' : 'text-slate-400 hover:text-white'
+                                    }`}
+                                >
+                                    Novos ✨
+                                </button>
+                                <button
+                                    onClick={() => setConditionFilter('seminovos')}
+                                    className={`py-1.5 text-[10px] font-bold rounded-xl transition-all ${
+                                        conditionFilter === 'seminovos' ? 'bg-cyan-500 text-black font-black shadow-md' : 'text-slate-400 hover:text-white'
+                                    }`}
+                                >
+                                    Seminovos 💎
+                                </button>
+                            </div>
+                        </div>
+
+                        <h3 className="text-xs font-mono font-black uppercase text-slate-400">Escolha o Aparelho:</h3>
+                        <div className="space-y-2 max-h-48 sm:max-h-60 overflow-y-auto pr-1">
+                            {devices
+                                .filter((dev) => {
+                                    if (conditionFilter === 'novos') return dev.condition === 'novo_lacrado'
+                                    if (conditionFilter === 'seminovos') return dev.condition !== 'novo_lacrado'
+                                    return true
+                                })
+                                .map((dev) => {
+                                    const originalIdx = devices.findIndex((d) => d.id === dev.id)
+                                    const isSelected = selectedDeviceIndex === originalIdx
+                                    return (
+                                        <button
+                                            key={dev.id}
+                                            onClick={() => {
+                                                const realIdx = originalIdx >= 0 ? originalIdx : 0
+                                                setSelectedDeviceIndex(realIdx)
+                                                setActivePhotoIndex(0)
+                                            }}
+                                            className={`w-full text-left p-3 rounded-2xl text-xs font-bold transition-all border ${
+                                                isSelected
+                                                    ? 'bg-cyan-500/20 border-cyan-400 text-white shadow-lg'
+                                                    : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white'
+                                            }`}
+                                        >
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                                                <span className="font-black text-white">{dev.brand} {dev.model}</span>
+                                                <span className="text-emerald-400 font-mono font-black shrink-0">{formatCurrency(dev.cash_price)}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between text-[10px] text-slate-400 font-normal mt-0.5">
+                                                <span>{dev.storage} • {dev.color}</span>
+                                                <span className="text-[9px] uppercase font-bold text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">
+                                                    {dev.condition === 'novo_lacrado' ? 'Novo' : 'Seminovo'}
+                                                </span>
+                                            </div>
+                                        </button>
+                                    )
+                                })}
                         </div>
                     </div>
 
