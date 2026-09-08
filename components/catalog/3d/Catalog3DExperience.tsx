@@ -53,6 +53,7 @@ export default function Catalog3DExperience({
     const setSelectedDeviceIndex = use3dCatalogStore((state) => state.setSelectedDeviceIndex)
 
     const [isMounted, setIsMounted] = useState(false)
+    const [activePhotoIndex, setActivePhotoIndex] = useState(0)
 
     useEffect(() => {
         setIsMounted(true)
@@ -147,21 +148,6 @@ export default function Catalog3DExperience({
                     </Canvas>
             </div>
 
-            {/* FIXED TOP GAMIFIED HUD HEADER */}
-            <header className="fixed top-0 left-0 right-0 z-40 p-4 backdrop-blur-md bg-black/40 border-b border-slate-800/80 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <span className="w-3 h-3 rounded-full animate-ping" style={{ backgroundColor: themePrimary }} />
-                    <span className="font-mono text-xs font-black uppercase tracking-widest text-slate-300">
-                        {companyName} • FAZA 0{activeSectionIndex + 1}: {activeSection.toUpperCase()}
-                    </span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black uppercase px-3 py-1 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 rounded-full flex items-center gap-1">
-                        <Sparkles className="w-3 h-3" /> MATCH LEGENDÁRIO
-                    </span>
-                </div>
-            </header>
-
             {/* SCROLL TRIGGER CONTAINER (5 HEIGHT UNITS) */}
             <div ref={scrollContainerRef} className="relative z-10 w-full">
                 
@@ -169,13 +155,13 @@ export default function Catalog3DExperience({
                 <section className="h-screen w-full flex items-center justify-start px-6 md:px-16 pointer-events-none">
                     <div className="max-w-xl space-y-6 pointer-events-auto bg-black/60 backdrop-blur-xl p-8 rounded-3xl border border-cyan-500/30 shadow-2xl">
                         <span className="text-xs font-mono font-black text-cyan-400 tracking-widest uppercase flex items-center gap-2">
-                            <Zap className="w-4 h-4" /> NEXUS 3D EXPERIENCE
+                            <Zap className="w-4 h-4" /> {companyName.toUpperCase()} 3D EXPERIENCE
                         </span>
                         <h1 className="text-3xl md:text-5xl font-black text-white leading-tight">
-                            Jornada de Troca <span style={{ color: themePrimary }}>Next-Gen</span>.
+                            Jornada de Troca <span style={{ color: themePrimary }}>{companyName}</span>.
                         </h1>
                         <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-                            Role para baixo para desbloquear seu celular dos sonhos com condições exclusivas de troca e parcelamento sem juros abusivos.
+                            Role para baixo para desbloquear seu celular dos sonhos com condições exclusivas de troca e parcelamento facilitado
                         </p>
                         <div className="pt-2 flex items-center gap-2 text-xs font-bold text-cyan-400 animate-bounce">
                             <ArrowRight className="w-4 h-4 rotate-90" />
@@ -200,7 +186,7 @@ export default function Catalog3DExperience({
                     </div>
                 </section>
 
-                {/* SECTION 3: PRODUCT GALLERY SELECTOR */}
+                {/* SECTION 3: PRODUCT GALLERY SELECTOR & INTEGRATED PHOTO VIEWER */}
                 <section className="h-screen w-full flex items-center justify-between px-6 md:px-16 pointer-events-none">
                     {/* Left Panel: Device Selector */}
                     <div className="max-w-sm space-y-3 pointer-events-auto bg-black/70 backdrop-blur-xl p-5 rounded-3xl border border-slate-800 shadow-2xl">
@@ -209,7 +195,10 @@ export default function Catalog3DExperience({
                             {devices.map((dev, idx) => (
                                 <button
                                     key={dev.id}
-                                    onClick={() => setSelectedDeviceIndex(idx)}
+                                    onClick={() => {
+                                        setSelectedDeviceIndex(idx)
+                                        setActivePhotoIndex(0)
+                                    }}
                                     className={`w-full text-left p-3 rounded-2xl text-xs font-bold transition-all border ${
                                         selectedDeviceIndex === idx
                                             ? 'bg-cyan-500/20 border-cyan-400 text-white shadow-lg'
@@ -226,11 +215,53 @@ export default function Catalog3DExperience({
                         </div>
                     </div>
 
-                    {/* Right Panel: Floating Specs HUD */}
-                    <div className="max-w-xs space-y-3 pointer-events-auto bg-black/70 backdrop-blur-xl p-5 rounded-3xl border border-cyan-500/40 shadow-2xl">
-                        <span className="text-[10px] font-mono font-black text-cyan-400 uppercase tracking-widest">ESPECIFICAÇÕES TÉCNICAS</span>
-                        <h3 className="text-lg font-black text-white">{currentDevice.brand} {currentDevice.model}</h3>
-                        <div className="space-y-1.5 text-xs text-slate-300">
+                    {/* Right Panel: Integrated Photo Viewer & Specs HUD */}
+                    <div className="max-w-sm w-full space-y-4 pointer-events-auto bg-black/80 backdrop-blur-xl p-5 rounded-3xl border border-cyan-500/40 shadow-2xl">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-mono font-black text-cyan-400 uppercase tracking-widest">ESPECIFICAÇÕES & FOTOS</span>
+                            <span className="text-[9px] font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">{currentDevice.brand}</span>
+                        </div>
+
+                        <h3 className="text-base font-black text-white">{currentDevice.brand} {currentDevice.model}</h3>
+                        
+                        {/* Integrated Device Photo Preview */}
+                        {Array.isArray(currentDevice.images) && currentDevice.images.length > 0 ? (
+                            <div className="space-y-2">
+                                <div className="relative w-full h-36 bg-black/60 rounded-2xl overflow-hidden border border-slate-800 group">
+                                    <img
+                                        src={currentDevice.images[activePhotoIndex] || currentDevice.images[0]}
+                                        alt={currentDevice.model}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                    <span className="absolute bottom-2 right-2 text-[9px] font-mono font-bold bg-black/80 px-2 py-0.5 rounded-md text-cyan-400 border border-slate-800">
+                                        {activePhotoIndex + 1}/{currentDevice.images.length} Fotos
+                                    </span>
+                                </div>
+
+                                {/* Thumbnails selector */}
+                                {currentDevice.images.length > 1 && (
+                                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                                        {currentDevice.images.map((img, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => setActivePhotoIndex(i)}
+                                                className={`w-9 h-9 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
+                                                    activePhotoIndex === i ? 'border-cyan-400 scale-105' : 'border-slate-800 opacity-60 hover:opacity-100'
+                                                }`}
+                                            >
+                                                <img src={img} alt="Thumb" className="w-full h-full object-cover" />
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="w-full h-24 bg-slate-900/60 rounded-2xl border border-dashed border-slate-800 flex items-center justify-center text-center p-3">
+                                <p className="text-[11px] text-slate-400 font-bold">Modelo em visualização 3D interativa real</p>
+                            </div>
+                        )}
+
+                        <div className="space-y-1.5 text-xs text-slate-300 pt-1">
                             <p className="flex justify-between border-b border-slate-800 pb-1">
                                 <span className="text-slate-400">Saúde Bateria:</span>
                                 <span className="text-emerald-400 font-bold">{currentDevice.battery_health}%</span>
@@ -241,7 +272,7 @@ export default function Catalog3DExperience({
                             </p>
                             <p className="flex justify-between">
                                 <span className="text-slate-400">Garantia:</span>
-                                <span className="text-cyan-400 font-bold">Inclusa Nexus</span>
+                                <span className="text-cyan-400 font-bold">Inclusa {companyName}</span>
                             </p>
                         </div>
                     </div>
