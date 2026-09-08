@@ -17,7 +17,7 @@ import PriceBreakdown3D from './PriceBreakdown3D'
 import WhatsAppCTA3D from './WhatsAppCTA3D'
 import { Device } from '@/types/devices'
 import { formatCurrency } from '@/lib/utils'
-import { Sparkles, MessageSquare, ShieldCheck, Zap, ArrowRight, RefreshCw } from 'lucide-react'
+import { Sparkles, MessageSquare, ShieldCheck, Zap, ArrowRight, RefreshCw, Eye, X, ChevronLeft, ChevronRight } from 'lucide-react'
 
 import { usePerformanceTier } from '@/lib/hooks/usePerformanceTier'
 
@@ -54,6 +54,7 @@ export default function Catalog3DExperience({
 
     const [isMounted, setIsMounted] = useState(false)
     const [activePhotoIndex, setActivePhotoIndex] = useState(0)
+    const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false)
 
     useEffect(() => {
         setIsMounted(true)
@@ -227,13 +228,20 @@ export default function Catalog3DExperience({
                         {/* Integrated Device Photo Preview */}
                         {Array.isArray(currentDevice.images) && currentDevice.images.length > 0 ? (
                             <div className="space-y-2">
-                                <div className="relative w-full h-36 bg-black/60 rounded-2xl overflow-hidden border border-slate-800 group">
+                                <div
+                                    onClick={() => setIsPhotoModalOpen(true)}
+                                    className="relative w-full h-44 bg-[#070b14] rounded-2xl overflow-hidden border border-slate-800 group cursor-pointer hover:border-cyan-500/50 transition-all flex items-center justify-center p-2"
+                                >
                                     <img
                                         src={currentDevice.images[activePhotoIndex] || currentDevice.images[0]}
                                         alt={currentDevice.model}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                                     />
-                                    <span className="absolute bottom-2 right-2 text-[9px] font-mono font-bold bg-black/80 px-2 py-0.5 rounded-md text-cyan-400 border border-slate-800">
+                                    <div className="absolute top-2 right-2 px-2.5 py-1 bg-black/80 hover:bg-black text-white rounded-xl text-[10px] font-bold backdrop-blur-md border border-slate-700 flex items-center gap-1 opacity-90 group-hover:opacity-100 transition-opacity">
+                                        <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                                        <span>Ampliar</span>
+                                    </div>
+                                    <span className="absolute bottom-2 left-2 text-[9px] font-mono font-bold bg-black/80 px-2 py-0.5 rounded-md text-cyan-400 border border-slate-800">
                                         {activePhotoIndex + 1}/{currentDevice.images.length} Fotos
                                     </span>
                                 </div>
@@ -245,11 +253,11 @@ export default function Catalog3DExperience({
                                             <button
                                                 key={i}
                                                 onClick={() => setActivePhotoIndex(i)}
-                                                className={`w-9 h-9 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
-                                                    activePhotoIndex === i ? 'border-cyan-400 scale-105' : 'border-slate-800 opacity-60 hover:opacity-100'
+                                                className={`w-10 h-10 rounded-xl overflow-hidden border-2 shrink-0 transition-all p-0.5 bg-black ${
+                                                    activePhotoIndex === i ? 'border-cyan-400 scale-105 shadow-md shadow-cyan-500/20' : 'border-slate-800 opacity-60 hover:opacity-100'
                                                 }`}
                                             >
-                                                <img src={img} alt="Thumb" className="w-full h-full object-cover" />
+                                                <img src={img} alt="Thumb" className="w-full h-full object-contain" />
                                             </button>
                                         ))}
                                     </div>
@@ -337,6 +345,73 @@ export default function Catalog3DExperience({
                     </div>
                 </section>
             </div>
+
+            {/* EXPANDED FULL-SCREEN PHOTO LIGHTBOX MODAL */}
+            {isPhotoModalOpen && Array.isArray(currentDevice.images) && currentDevice.images.length > 0 && (
+                <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col justify-between p-4 md:p-8 animate-in fade-in duration-200 pointer-events-auto">
+                    {/* Header */}
+                    <div className="flex items-center justify-between border-b border-slate-800/80 pb-4 max-w-5xl w-full mx-auto">
+                        <div>
+                            <h3 className="font-black text-lg text-white">{currentDevice.brand} {currentDevice.model}</h3>
+                            <p className="text-xs text-cyan-400 font-mono">
+                                Foto {activePhotoIndex + 1} de {currentDevice.images.length} • {currentDevice.storage || ''} {currentDevice.color || ''}
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => setIsPhotoModalOpen(false)}
+                            className="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white rounded-2xl transition-all shadow-lg"
+                        >
+                            <X className="w-6 h-6" />
+                        </button>
+                    </div>
+
+                    {/* Main Image Display with Navigation Arrows */}
+                    <div className="relative flex-1 flex items-center justify-center my-4 max-w-5xl w-full mx-auto">
+                        {currentDevice.images.length > 1 && (
+                            <button
+                                onClick={() => setActivePhotoIndex((prev) => (prev > 0 ? prev - 1 : currentDevice.images!.length - 1))}
+                                className="absolute left-2 z-10 p-3 bg-black/80 hover:bg-black text-white rounded-2xl border border-slate-800 backdrop-blur-md transition-all shadow-2xl hover:scale-110"
+                            >
+                                <ChevronLeft className="w-6 h-6 text-cyan-400" />
+                            </button>
+                        )}
+
+                        <div className="w-full h-full flex items-center justify-center p-2">
+                            <img
+                                src={currentDevice.images[activePhotoIndex] || currentDevice.images[0]}
+                                alt={currentDevice.model}
+                                className="max-h-[72vh] max-w-full object-contain rounded-2xl shadow-2xl"
+                            />
+                        </div>
+
+                        {currentDevice.images.length > 1 && (
+                            <button
+                                onClick={() => setActivePhotoIndex((prev) => (prev < currentDevice.images!.length - 1 ? prev + 1 : 0))}
+                                className="absolute right-2 z-10 p-3 bg-black/80 hover:bg-black text-white rounded-2xl border border-slate-800 backdrop-blur-md transition-all shadow-2xl hover:scale-110"
+                            >
+                                <ChevronRight className="w-6 h-6 text-cyan-400" />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Footer Thumbnails Selector */}
+                    {currentDevice.images.length > 1 && (
+                        <div className="flex items-center justify-center gap-2 overflow-x-auto pt-2 border-t border-slate-800/80 max-w-xl mx-auto w-full">
+                            {currentDevice.images.map((img, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setActivePhotoIndex(idx)}
+                                    className={`w-14 h-14 rounded-2xl overflow-hidden border-2 transition-all p-1 bg-black shrink-0 ${
+                                        activePhotoIndex === idx ? 'border-cyan-400 scale-105 shadow-lg shadow-cyan-500/30' : 'border-slate-800 opacity-50 hover:opacity-100'
+                                    }`}
+                                >
+                                    <img src={img} alt="Thumb" className="w-full h-full object-contain" />
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     )
 }
