@@ -105,7 +105,7 @@ export async function processRecurringExpenses(
                         })
                 }
             } else {
-                console.error(`Failed to insert transaction for recurring expense ${expense.id}:`, txError)
+                console.error('Failed to insert transaction for recurring expense', expense.id, txError)
             }
         }
     } catch (err) {

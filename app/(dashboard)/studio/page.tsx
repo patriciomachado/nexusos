@@ -225,7 +225,7 @@ function StudioContent() {
                 setSavedScripts(prev => prev.filter(s => s.id !== id))
                 toast.success('Roteiro removido')
             } catch (e) {
-                console.error(e)
+                console.error('Erro ao remover roteiro local')
             }
             return
         }

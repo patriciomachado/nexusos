@@ -70,7 +70,7 @@ export async function importDataAction(formData: FormData) {
                 .from('service_orders')
                 .upsert(batch, { onConflict: 'external_id,company_id' });
             
-            if (oError) console.error(`Erro lote ${i}:`, oError);
+            if (oError) console.error('Erro lote', i, oError);
         }
 
         return { 
@@ -141,7 +141,7 @@ async function parseOrders(text: string, companyId: string) {
 
         const cleanDescription = afterDate.replace(/^\d{2}:\d{2}:\d{2}/, '').trim();
         const title = cleanDescription.substring(0, 50) || 'Serviço Importado';
-        const finalOsId = osId.substring(0, 50) || 'OS-' + Math.random().toString(36).substr(2, 5);
+        const finalOsId = osId.substring(0, 50) || 'OS-' + crypto.randomUUID().replace(/-/g, '').substring(0, 10);
 
         orders.push({
             external_id: finalOsId,

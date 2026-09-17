@@ -63,7 +63,7 @@ function DevicesContent() {
                 }
             }
         } catch (e) {
-            console.error(e)
+            console.error('Erro ao buscar informações do catálogo')
         }
     }
 
@@ -133,7 +133,7 @@ function DevicesContent() {
                 setDevices(prev => prev.filter(d => d.id !== id))
                 toast.success('Aparelho excluído!')
             } catch (e) {
-                console.error(e)
+                console.error('Erro ao excluir aparelho do armazenamento local')
             }
             return
         }

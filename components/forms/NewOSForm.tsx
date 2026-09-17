@@ -153,7 +153,7 @@ export default function NewOSForm({
         const initialItems = initialData?.items || []
         return initialItems.map((item: any, idx: number) => ({
             ...item,
-            client_key: item.client_key || `key-${Math.random().toString(36).substring(2, 9)}-${Date.now()}-${idx}`,
+            client_key: item.client_key || `key-${crypto.randomUUID()}-${idx}`,
             quantity: Number(item.quantity) || 1,
             unit_price: Number(item.unit_price) || 0,
             unit_cost: Number(item.unit_cost) || 0,

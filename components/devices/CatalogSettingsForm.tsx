@@ -133,7 +133,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                 }
             }
         } catch (e) {
-            console.error(e)
+            console.error('Erro ao carregar configurações do catálogo')
         }
     }
 

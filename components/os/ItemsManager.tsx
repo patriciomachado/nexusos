@@ -61,7 +61,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
 
     const addItem = (invItem: InventoryItem) => {
         const newItem: OSItem = {
-            client_key: 'key-' + Math.random().toString(36).substring(2, 9) + '-' + Date.now(),
+            client_key: 'key-' + crypto.randomUUID(),
             inventory_item_id: invItem.id,
             item_name: invItem.name,
             quantity: 1,
@@ -78,7 +78,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
     const handleQuickAdd = () => {
         if (!quickName.trim()) return
         const newItem: OSItem = {
-            client_key: 'key-' + Math.random().toString(36).substring(2, 9) + '-' + Date.now(),
+            client_key: 'key-' + crypto.randomUUID(),
             inventory_item_id: null,
             item_name: quickName,
             quantity: 1,

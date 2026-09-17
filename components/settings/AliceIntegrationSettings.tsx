@@ -43,8 +43,9 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
     }
 
     const generateToken = () => {
-        const rand = () => Math.random().toString(36).substring(2, 15)
-        const newKey = `nexus_sec_key_2026_${rand()}`
+        const randomBytes = crypto.getRandomValues(new Uint8Array(24))
+        const rand = Array.from(randomBytes).map(b => b.toString(16).padStart(2, '0')).join('')
+        const newKey = `nexus_sec_key_${rand}`
         setToken(newKey)
         toast.info('Nova chave de segurança gerada! Salve as alterações.')
     }

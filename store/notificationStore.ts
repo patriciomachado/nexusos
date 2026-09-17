@@ -75,7 +75,7 @@ export const useNotificationStore = create<NotificationState>()(
                 // For now, only internal state addition or direct DB insert if triggered by app logic
                 const newNotif = {
                     ...notification,
-                    id: Math.random().toString(36).substring(7),
+                    id: crypto.randomUUID(),
                     created_at: new Date().toISOString(),
                     status: 'pending' as const
                 } as Notification
