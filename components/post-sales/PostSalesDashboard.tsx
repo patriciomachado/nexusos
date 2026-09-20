@@ -510,5 +510,6 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                 </div>
             </div>
         </div>
-    )
+    </div>
+)
 }
