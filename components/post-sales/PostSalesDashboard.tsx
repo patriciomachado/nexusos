@@ -27,6 +27,8 @@ interface PostSalesDashboardProps {
     initialRatings: RatingItem[]
 }
 
+import Header from '@/components/layout/Header'
+
 const COLORS = {
     positive: '#10B981', // Emerald 500
     neutral: '#F59E0B',  // Amber 500
@@ -177,7 +179,9 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
     }, [allRatings, searchTerm, ratingFilter, sentimentFilter])
 
     return (
-        <div className="p-4 lg:p-8 space-y-8 bg-background min-h-screen text-foreground transition-colors duration-300">
+        <div className="space-y-8 bg-background min-h-screen text-foreground transition-colors duration-300">
+            <Header title="Pós-Venda" />
+            <div className="p-4 lg:p-8 space-y-8">
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
