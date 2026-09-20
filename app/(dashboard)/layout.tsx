@@ -108,7 +108,7 @@ export default async function DashboardLayout({
     return (
         <div className="flex h-screen bg-background overflow-hidden transition-colors duration-300" suppressHydrationWarning>
             <Sidebar userRole={role} />
-            <main className="flex-1 overflow-y-auto relative pb-20 lg:pb-0" suppressHydrationWarning>
+            <main className="flex-1 overflow-y-auto relative pb-0" suppressHydrationWarning>
                 <NotificationGenerator />
                 <SubscriptionStatusGuard 
                     isValid={subscription.isValid} 
