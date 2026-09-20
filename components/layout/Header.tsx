@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, Command } from 'lucide-react'
+import { Search, Command, Menu } from 'lucide-react'
 import { useAppStore } from '@/store/appStore'
 import ThemeToggle from './ThemeToggle'
 import NotificationsDropdown from './NotificationsDropdown'
@@ -15,7 +15,7 @@ interface HeaderProps {
 }
 
 export default function Header({ title, subtitle, children }: HeaderProps) {
-    const { user: appUser } = useAppStore()
+    const { user: appUser, mobileMenuOpen, setMobileMenuOpen } = useAppStore()
     const { user: clerkUser, isLoaded: clerkLoaded } = useUser()
     const router = useRouter()
     const [mounted, setMounted] = useState(false)
@@ -29,8 +29,16 @@ export default function Header({ title, subtitle, children }: HeaderProps) {
     return (
         <header className="h-14 lg:h-16 px-3 sm:px-4 lg:px-8 flex items-center justify-between sticky top-0 z-40 bg-background/40 backdrop-blur-3xl border-b border-border/40 transition-all duration-500" suppressHydrationWarning>
 
-            {/* Left: Breadcrumb */}
+            {/* Left: Breadcrumb & Mobile Menu Trigger */}
             <div className="flex items-center gap-2 lg:gap-6 shrink-0" suppressHydrationWarning>
+                <button
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className="lg:hidden p-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all active:scale-95 flex items-center justify-center"
+                    aria-label="Abrir Menu"
+                    title="Menu Completo"
+                >
+                    <Menu className="w-5 h-5" />
+                </button>
                 <div className="flex flex-col" suppressHydrationWarning>
                     <h1 className="text-sm font-black tracking-tight text-foreground/80 whitespace-nowrap">{title}</h1>
                 </div>

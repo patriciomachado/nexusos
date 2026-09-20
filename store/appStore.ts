@@ -11,6 +11,8 @@ interface AppState {
     setSidebarOpen: (open: boolean) => void
     sidebarMode: 'hover' | 'open' | 'closed'
     setSidebarMode: (mode: 'hover' | 'open' | 'closed') => void
+    mobileMenuOpen: boolean
+    setMobileMenuOpen: (open: boolean) => void
 }
 
 export const useAppStore = create<AppState>()(
@@ -20,10 +22,12 @@ export const useAppStore = create<AppState>()(
             company: null,
             sidebarOpen: false,
             sidebarMode: 'hover',
+            mobileMenuOpen: false,
             setUser: (user) => set({ user }),
             setCompany: (company) => set({ company }),
             setSidebarOpen: (open) => set({ sidebarOpen: open }),
             setSidebarMode: (mode) => set({ sidebarMode: mode }),
+            setMobileMenuOpen: (open) => set({ mobileMenuOpen: open }),
         }),
         {
             name: 'nexus-app-store',
