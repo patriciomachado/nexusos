@@ -44,7 +44,6 @@ const navGroups: NavGroup[] = [
         title: 'Gestão Operacional',
         items: [
             { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'] },
-            { href: '/studio', label: 'Nexus Studio', icon: Sparkles, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'] },
             { href: '/appointments', label: 'Mesa / Fluxo', icon: Calendar, roles: ['admin', 'manager'] },
             { href: '/service-orders', label: 'Ordens de Serviço', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'] },
             { href: '/pdv', label: 'Vendas / PDV', icon: Zap, roles: ['admin', 'manager', 'cashier', 'attendant', 'talento'] },

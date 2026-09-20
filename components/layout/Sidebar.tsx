@@ -31,7 +31,6 @@ const navGroups: NavGroup[] = [
         title: 'Gestão Operacional',
         items: [
             { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'] },
-            { href: '/studio', label: 'Nexus Studio', icon: Sparkles, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'] },
             { href: '/appointments', label: 'Mesa / Fluxo', icon: Calendar, roles: ['admin', 'manager'] },
             { href: '/service-orders', label: 'Ordens de Serviço', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'] },
             { href: '/pdv', label: 'Vendas / PDV', icon: Zap, roles: ['admin', 'manager', 'cashier', 'attendant', 'talento'] },
@@ -109,7 +108,6 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
             >
                 {/* Logo */}
                 <div className="h-16 lg:h-20 flex items-center px-3 lg:px-4 border-b border-border/50 shrink-0 relative overflow-hidden bg-background/20" suppressHydrationWarning>
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent" suppressHydrationWarning />
                     <div className={cn(
                         "rounded-2xl flex items-center justify-center shrink-0 shadow-xl shadow-primary/10 relative z-10 transition-all duration-500 overflow-hidden bg-white dark:bg-white/95 border border-primary/10",
                         effectiveOpen ? "w-14 h-14 lg:w-16 lg:h-16 p-2" : "w-10 h-10 p-1"
@@ -230,7 +228,7 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
                 </div>
 
                 {/* Bottom user area */}
-                <div className="p-3 border-t border-border/40 shrink-0 bg-gradient-to-b from-transparent to-foreground/5 dark:to-black/20" suppressHydrationWarning>
+                <div className="p-3 border-t border-border/40 shrink-0 bg-background/30" suppressHydrationWarning>
                     {mounted ? (
                         <div className="flex items-center gap-4 p-2 rounded-xl hover:bg-muted/50 transition-colors animate-in fade-in duration-500">
                             <div className="relative">

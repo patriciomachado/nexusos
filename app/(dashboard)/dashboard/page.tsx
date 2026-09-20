@@ -17,7 +17,6 @@ import RevenueChart from '@/components/dashboard/RevenueChart'
 import { cn } from '@/lib/utils'
 import EmployeeDashboard from '@/components/dashboard/EmployeeDashboard'
 import DashboardOnboardingWrapper from '@/components/dashboard/DashboardOnboardingWrapper'
-import StudioDashboardWidget from '@/components/dashboard/StudioDashboardWidget'
 
 interface ServiceOrder {
     id: string
@@ -282,16 +281,12 @@ export default async function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Nexus Studio Widget */}
-                <StudioDashboardWidget />
-
                 {/* Metrics Section */}
                 <div className="space-y-6">
                     {/* Mobile: Financial Hub & Quick Actions */}
                     <div className="flex flex-col gap-6 md:hidden">
                         {/* Financial Hub Card */}
-                        <div className="glass-premium rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 border border-white/10 relative overflow-hidden bg-gradient-to-br from-blue-600/20 via-background to-emerald-600/20 shadow-2xl">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-3xl rounded-full -translate-y-12 translate-x-12" />
+                        <div className="glass-premium rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 border border-white/10 relative overflow-hidden bg-card/60 shadow-2xl">
                             
                             <div className="relative z-10 space-y-6">
                                 <div className="flex items-center justify-between">
