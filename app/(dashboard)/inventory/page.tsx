@@ -170,9 +170,9 @@ export default async function InventoryPage({
                         const isLow = item.quantity_in_stock <= item.minimum_quantity
 
                         return (
-                            <div key={item.id} className="p-4 rounded-2xl bg-card/75 border border-border/40 shadow-md space-y-3">
-                                <div className="flex items-start justify-between gap-3">
-                                    <div className="flex items-center gap-3">
+                            <div key={item.id} className="p-4 rounded-2xl bg-card/75 border border-border/40 shadow-md space-y-3 overflow-hidden">
+                                <div className="flex items-start justify-between gap-3 min-w-0">
+                                    <div className="flex items-center gap-3 min-w-0 flex-1">
                                         <div className="w-12 h-12 rounded-xl bg-muted/40 border border-border/40 overflow-hidden shrink-0 flex items-center justify-center">
                                             {item.image_url ? (
                                                 <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
@@ -180,18 +180,19 @@ export default async function InventoryPage({
                                                 <Package className="w-5 h-5 opacity-30 text-muted-foreground" />
                                             )}
                                         </div>
-                                        <div className="space-y-0.5 min-w-0">
-                                            <h4 className="text-sm font-black text-foreground truncate leading-tight">{item.name}</h4>
-                                            <div className="flex items-center gap-2 flex-wrap text-[10px]">
-                                                {item.sku && <span className="font-mono text-muted-foreground/60 uppercase">{item.sku}</span>}
-                                                {item.barcode && <span className="font-mono text-primary/70 bg-primary/10 px-1.5 py-0.5 rounded">EAN: {item.barcode}</span>}
+                                        <div className="space-y-0.5 min-w-0 flex-1">
+                                            <h4 className="text-sm font-black text-foreground line-clamp-2 break-words leading-tight">{item.name}</h4>
+                                            <div className="flex items-center gap-1.5 flex-wrap text-[10px]">
+                                                {item.sku && <span className="font-mono text-muted-foreground/60 uppercase truncate max-w-[120px]">{item.sku}</span>}
+                                                {item.barcode && <span className="font-mono text-primary/70 bg-primary/10 px-1.5 py-0.5 rounded truncate max-w-[140px]">EAN: {item.barcode}</span>}
                                             </div>
                                         </div>
                                     </div>
 
                                     <Link
                                         href={`/inventory/${item.id}/edit`}
-                                        className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0"
+                                        className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0 flex items-center justify-center active:scale-95"
+                                        title="Editar Produto"
                                     >
                                         <Edit className="w-4 h-4" />
                                     </Link>
