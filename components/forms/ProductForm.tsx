@@ -4,11 +4,12 @@ import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/layout/Header'
 import { toast } from 'sonner'
-import { Package, Save, X, Camera, Image as ImageIcon, Loader2, Plus } from 'lucide-react'
+import { Package, Save, X, Camera, Image as ImageIcon, Loader2, Plus, QrCode } from 'lucide-react'
 import { formatCurrency, cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 
 import PremiumAutocomplete from '@/components/ui/PremiumAutocomplete'
+import BarcodeScannerModal from '@/components/ui/BarcodeScannerModal'
 
 const PRODUCT_SUGGESTIONS = [
     // Películas
@@ -31,6 +32,7 @@ interface ProductFormProps {
 export default function ProductForm({ productId, initialData }: ProductFormProps) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
+    const [isScannerOpen, setIsScannerOpen] = useState(false)
     const [form, setForm] = useState({
         name: '',
         sku: '',
@@ -405,11 +407,34 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                             </div>
                             <div>
                                 <label className="block text-[9px] font-black text-muted-foreground/50 mb-1.5 uppercase tracking-widest">CÓDIGO DE BARRAS</label>
-                                <input name="barcode" value={form.barcode} onChange={handleChange} className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-mono" placeholder="Opcional..." />
+                                <div className="flex gap-2">
+                                    <input name="barcode" value={form.barcode} onChange={handleChange} className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-mono" placeholder="7890000000000..." />
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsScannerOpen(true)}
+                                        className="px-3 rounded-xl bg-primary/10 border border-primary/20 hover:bg-primary/20 text-primary transition-all flex items-center justify-center shrink-0 active:scale-95"
+                                        title="Escanear com a câmera"
+                                    >
+                                        <QrCode className="w-5 h-5" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <BarcodeScannerModal
+                    isOpen={isScannerOpen}
+                    onClose={() => setIsScannerOpen(false)}
+                    onScan={(code) => {
+                        setForm(p => ({
+                            ...p,
+                            barcode: code,
+                            sku: p.sku ? p.sku : code
+                        }))
+                    }}
+                    title="Escanear Código do Produto"
+                />
 
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                     <button type="submit" disabled={isPending || isUploading} className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2">

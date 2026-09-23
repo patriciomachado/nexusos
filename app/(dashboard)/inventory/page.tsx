@@ -62,21 +62,21 @@ export default async function InventoryPage({
         <div className="animate-fade-in pb-12 bg-background min-h-screen transition-colors duration-300">
             <Header title="Estoque e Produtos" />
 
-            <div className="p-8 lg:p-12 max-w-screen-2xl mx-auto space-y-10">
+            <div className="p-4 sm:p-6 lg:p-10 max-w-screen-2xl mx-auto space-y-6 sm:space-y-10">
 
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
-                    <div className="space-y-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 sm:gap-6">
+                    <div className="space-y-1 sm:space-y-2">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-1 bg-primary rounded-full" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">Controle de Ativos</span>
+                            <div className="w-6 h-1 bg-primary rounded-full" />
+                            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">Controle de Ativos</span>
                         </div>
-                        <h2 className="text-4xl lg:text-5xl font-black text-foreground tracking-tighter">Estoque Central</h2>
-                        <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-xl">Gerencie seu inventário de peças e insumos com precisão cirúrgica.</p>
+                        <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tighter">Estoque Central</h2>
+                        <p className="text-muted-foreground font-medium text-xs sm:text-base leading-relaxed max-w-xl">Gerencie seu inventário de peças e insumos com precisão.</p>
                     </div>
                     <Link
                         href="/inventory/new"
-                        className="flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-[2rem] font-black uppercase text-xs tracking-[0.1em] shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group"
+                        className="w-full sm:w-auto flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl sm:rounded-[2rem] font-black uppercase text-xs tracking-[0.1em] shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group shrink-0"
                     >
                         Novo Produto
                         <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
@@ -84,18 +84,18 @@ export default async function InventoryPage({
                 </div>
 
                 {/* KPI Section - Premium Style */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="relative group overflow-hidden p-8 rounded-[2.5rem] glass-premium bg-card/65 backdrop-blur-3xl border border-white/5 shadow-2xl transition-all duration-300 hover:scale-[1.03] hover:shadow-primary/5">
-                        <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <Package className="w-20 h-20 text-primary" />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                    <div className="relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-[2.5rem] glass-premium bg-card/65 backdrop-blur-3xl border border-border/40 shadow-xl transition-all duration-300">
+                        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <Package className="w-16 h-16 sm:w-20 sm:h-20 text-primary" />
                         </div>
-                        <div className="relative space-y-4">
-                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                                <Package className="w-6 h-6 text-primary" />
+                        <div className="relative space-y-3 sm:space-y-4">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                                <Package className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                             </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Total de SKUs</p>
-                                <h3 className="text-4xl font-black text-foreground tracking-tighter">{items?.length || 0}</h3>
+                            <div className="space-y-0.5">
+                                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Total de SKUs</p>
+                                <h3 className="text-2xl sm:text-4xl font-black text-foreground tracking-tighter">{items?.length || 0}</h3>
                             </div>
                             <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold">
                                 <TrendingUp className="w-4 h-4" />
@@ -104,89 +104,165 @@ export default async function InventoryPage({
                         </div>
                     </div>
 
-                    <div className="relative group overflow-hidden p-8 rounded-[2.5rem] glass-premium bg-card/65 backdrop-blur-3xl border border-white/5 shadow-2xl transition-all duration-300 hover:scale-[1.03] hover:shadow-primary/5">
-                        <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <Boxes className="w-20 h-20 text-indigo-400" />
+                    <div className="relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-[2.5rem] glass-premium bg-card/65 backdrop-blur-3xl border border-border/40 shadow-xl transition-all duration-300">
+                        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <Boxes className="w-16 h-16 sm:w-20 sm:h-20 text-indigo-400" />
                         </div>
-                        <div className="relative space-y-4">
-                            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
-                                <Boxes className="w-6 h-6 text-indigo-400" />
+                        <div className="relative space-y-3 sm:space-y-4">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
+                                <Boxes className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400" />
                             </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Patrimônio em Estoque</p>
-                                <h3 className="text-4xl font-black text-foreground tracking-tighter">{formatCurrency(totalValue)}</h3>
+                            <div className="space-y-0.5">
+                                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Patrimônio em Estoque</p>
+                                <h3 className="text-2xl sm:text-4xl font-black text-foreground tracking-tighter">{formatCurrency(totalValue)}</h3>
                             </div>
-                            <p className="text-muted-foreground/40 text-[10px] font-bold uppercase tracking-widest">Baseado no preço de custo</p>
+                            <p className="text-muted-foreground/40 text-[9px] font-bold uppercase tracking-widest">Preço de Custo</p>
                         </div>
                     </div>
 
                     <div className={cn(
-                        "relative group overflow-hidden p-8 rounded-[2.5rem] backdrop-blur-3xl border shadow-2xl transition-all duration-300 hover:scale-[1.03] hover:shadow-primary/5",
-                        lowStockItems.length > 0 ? "bg-rose-500/10 border-rose-500/20" : "glass-premium bg-card/65 border-white/5"
+                        "relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-[2.5rem] backdrop-blur-3xl border shadow-xl transition-all duration-300",
+                        lowStockItems.length > 0 ? "bg-rose-500/10 border-rose-500/20" : "glass-premium bg-card/65 border-border/40"
                     )}>
-                        <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <AlertTriangle className={cn("w-20 h-20", lowStockItems.length > 0 ? "text-rose-500" : "text-muted-foreground/20")} />
+                        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <AlertTriangle className={cn("w-16 h-16 sm:w-20 sm:h-20", lowStockItems.length > 0 ? "text-rose-500" : "text-muted-foreground/20")} />
                         </div>
-                        <div className="relative space-y-4">
+                        <div className="relative space-y-3 sm:space-y-4">
                             <div className={cn(
-                                "w-12 h-12 rounded-2xl flex items-center justify-center border",
+                                "w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center border",
                                 lowStockItems.length > 0 ? "bg-rose-500/10 border-rose-500/20" : "bg-muted/10 border-white/5"
                             )}>
-                                <AlertTriangle className={cn("w-6 h-6", lowStockItems.length > 0 ? "text-rose-500" : "text-muted-foreground/20")} />
+                                <AlertTriangle className={cn("w-5 h-5 sm:w-6 sm:h-6", lowStockItems.length > 0 ? "text-rose-500" : "text-muted-foreground/20")} />
                             </div>
-                            <div className="space-y-1">
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Fluxo de Reposição</p>
-                                <h3 className={cn("text-4xl font-black tracking-tighter", lowStockItems.length > 0 ? "text-rose-500" : "text-foreground")}>{lowStockItems.length}</h3>
+                            <div className="space-y-0.5">
+                                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Reposição Urgente</p>
+                                <h3 className={cn("text-2xl sm:text-4xl font-black tracking-tighter", lowStockItems.length > 0 ? "text-rose-500" : "text-foreground")}>{lowStockItems.length}</h3>
                             </div>
-                            <p className={cn("text-[10px] font-bold uppercase tracking-widest", lowStockItems.length > 0 ? "text-rose-400" : "text-muted-foreground/40")}>
-                                {lowStockItems.length > 0 ? "Ação necessária urgente" : "Estoque saudável"}
+                            <p className={cn("text-[9px] font-bold uppercase tracking-widest", lowStockItems.length > 0 ? "text-rose-400" : "text-muted-foreground/40")}>
+                                {lowStockItems.length > 0 ? "Ação necessária" : "Estoque saudável"}
                             </p>
                         </div>
                     </div>
                 </div>
 
                 {/* Search and Action Bar */}
-                <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+                <div className="bg-card/60 backdrop-blur-3xl border border-border/40 rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
                     <div className="relative flex-1 w-full md:max-w-md group">
-                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
                         <SearchInput
-                            placeholder="Pesquisar por nome ou SKU..."
-                            className="w-full bg-muted/30 border border-white/5 rounded-[1.5rem] pl-12 pr-6 py-4 text-sm font-medium focus:outline-none focus:border-primary/30 transition-all placeholder:opacity-30 h-14"
+                            placeholder="Pesquisar nome, SKU ou código..."
+                            className="w-full bg-muted/30 border border-border/40 rounded-xl sm:rounded-[1.5rem] pl-11 pr-4 py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-primary/30 transition-all placeholder:opacity-40 h-11 sm:h-14"
                         />
                     </div>
 
-                    <div className="flex items-center gap-4 w-full md:w-auto">
+                    <div className="flex items-center gap-3 w-full md:w-auto justify-between sm:justify-end">
                         <CategoryManagerWrapper />
-                        <button className="h-14 flex items-center gap-3 px-8 rounded-[1.5rem] bg-muted/30 border border-white/5 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-foreground transition-all">
-                            <Filter className="w-5 h-5" />
-                            <span>Filtros Avançados</span>
+                        <button className="h-11 sm:h-14 flex items-center gap-2 px-4 sm:px-6 rounded-xl sm:rounded-[1.5rem] bg-muted/30 border border-border/40 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 hover:text-foreground transition-all">
+                            <Filter className="w-4 h-4" />
+                            <span>Filtros</span>
                         </button>
                     </div>
                 </div>
 
-                {/* Inventory Table */}
-                <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] shadow-2xl overflow-hidden">
+                {/* Mobile View: Compact Cards List (block md:hidden) */}
+                <div className="block md:hidden space-y-3">
+                    {items && items.length > 0 ? items.map((item) => {
+                        const isLow = item.quantity_in_stock <= item.minimum_quantity
+
+                        return (
+                            <div key={item.id} className="p-4 rounded-2xl bg-card/75 border border-border/40 shadow-md space-y-3">
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 rounded-xl bg-muted/40 border border-border/40 overflow-hidden shrink-0 flex items-center justify-center">
+                                            {item.image_url ? (
+                                                <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <Package className="w-5 h-5 opacity-30 text-muted-foreground" />
+                                            )}
+                                        </div>
+                                        <div className="space-y-0.5 min-w-0">
+                                            <h4 className="text-sm font-black text-foreground truncate leading-tight">{item.name}</h4>
+                                            <div className="flex items-center gap-2 flex-wrap text-[10px]">
+                                                {item.sku && <span className="font-mono text-muted-foreground/60 uppercase">{item.sku}</span>}
+                                                {item.barcode && <span className="font-mono text-primary/70 bg-primary/10 px-1.5 py-0.5 rounded">EAN: {item.barcode}</span>}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <Link
+                                        href={`/inventory/${item.id}/edit`}
+                                        className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0"
+                                    >
+                                        <Edit className="w-4 h-4" />
+                                    </Link>
+                                </div>
+
+                                <div className="flex items-center justify-between pt-2 border-t border-border/30 text-xs">
+                                    <div>
+                                        <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60 block">Preço</span>
+                                        <span className="font-black text-foreground text-sm">{formatCurrency(item.selling_price)}</span>
+                                    </div>
+
+                                    <div className="text-right">
+                                        <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60 block">Estoque</span>
+                                        <span className={cn("font-black text-sm", isLow ? 'text-rose-500' : 'text-foreground/90')}>
+                                            {item.quantity_in_stock} <span className="text-[10px] uppercase opacity-60">{UNIT_LABELS[item.unit] || item.unit}</span>
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        {isLow ? (
+                                            <span className="px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                                                Reposição
+                                            </span>
+                                        ) : (
+                                            <span className="px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                                OK
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    }) : (
+                        <div className="p-10 text-center bg-card/40 border border-border/40 rounded-2xl">
+                            <Package className="w-10 h-10 mx-auto text-muted-foreground/30 mb-3" />
+                            <h3 className="text-base font-bold text-foreground">Nenhum produto cadastrado</h3>
+                            <p className="text-xs text-muted-foreground mt-1 mb-4">Adicione itens ao estoque.</p>
+                            <Link
+                                href="/inventory/new"
+                                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-bold text-xs uppercase"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Cadastrar
+                            </Link>
+                        </div>
+                    )}
+                </div>
+
+                {/* Desktop View: Full Table (hidden md:block) */}
+                <div className="hidden md:block bg-card/40 backdrop-blur-3xl border border-border/40 rounded-[2.5rem] shadow-2xl overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
                             <thead>
-                                <tr className="bg-muted/20 border-b border-white/5">
-                                    <th className="text-left p-6 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Produto / SKU</th>
-                                    <th className="text-left p-6 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Categoria</th>
-                                    <th className="text-right p-6 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Preço de Venda</th>
-                                    <th className="text-right p-6 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Estoque Atual</th>
-                                    <th className="p-6 text-center text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Status</th>
+                                <tr className="bg-muted/20 border-b border-border/40">
+                                    <th className="text-left p-6 text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">Produto / SKU</th>
+                                    <th className="text-left p-6 text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">Categoria</th>
+                                    <th className="text-right p-6 text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">Preço de Venda</th>
+                                    <th className="text-right p-6 text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">Estoque Actual</th>
+                                    <th className="p-6 text-center text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">Status</th>
                                     <th className="p-6"></th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/5">
+                            <tbody className="divide-y divide-border/40">
                                 {items && items.length > 0 ? items.map((item) => {
                                     const isLow = item.quantity_in_stock <= item.minimum_quantity
 
                                     return (
-                                        <tr key={item.id} className="group hover:bg-white/[0.03] transition-colors">
+                                        <tr key={item.id} className="group hover:bg-muted/20 transition-colors">
                                             <td className="p-6">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-muted/40 border border-white/5 overflow-hidden flex-shrink-0 relative group-hover:scale-105 transition-all duration-300 shadow-inner">
+                                                    <div className="w-12 h-12 rounded-2xl bg-muted/40 border border-border/40 overflow-hidden flex-shrink-0 relative group-hover:scale-105 transition-all duration-300 shadow-inner">
                                                         {item.image_url ? (
                                                             <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                                                         ) : (
@@ -197,7 +273,10 @@ export default async function InventoryPage({
                                                     </div>
                                                     <div className="flex flex-col space-y-1">
                                                         <p className="text-base font-black text-foreground group-hover:text-primary transition-colors tracking-tight">{item.name}</p>
-                                                        {item.sku && <p className="text-[10px] text-muted-foreground/30 font-mono uppercase tracking-widest">{item.sku}</p>}
+                                                        <div className="flex items-center gap-3">
+                                                            {item.sku && <span className="text-[10px] text-muted-foreground/50 font-mono uppercase tracking-widest">{item.sku}</span>}
+                                                            {item.barcode && <span className="text-[9px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded-md font-mono">EAN: {item.barcode}</span>}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </td>
@@ -209,7 +288,7 @@ export default async function InventoryPage({
                                             <td className="p-6 text-right">
                                                 <div className="flex flex-col items-end">
                                                     <span className="text-lg font-black text-foreground tracking-tighter">{formatCurrency(item.selling_price)}</span>
-                                                    <span className="text-[10px] text-muted-foreground/30 font-bold">Custo: {formatCurrency(item.cost_price)}</span>
+                                                    <span className="text-[10px] text-muted-foreground/40 font-bold">Custo: {formatCurrency(item.cost_price)}</span>
                                                 </div>
                                             </td>
                                             <td className="p-6 text-right">
@@ -220,7 +299,7 @@ export default async function InventoryPage({
                                                     )}>
                                                         {item.quantity_in_stock} <span className="text-xs uppercase opacity-40 ml-1">{UNIT_LABELS[item.unit] || item.unit}</span>
                                                     </span>
-                                                    <span className="text-[10px] text-muted-foreground/30 font-bold uppercase tracking-widest">Ativo</span>
+                                                    <span className="text-[10px] text-muted-foreground/40 font-bold uppercase tracking-widest">Ativo</span>
                                                 </div>
                                             </td>
                                             <td className="p-6 text-center">
@@ -254,7 +333,7 @@ export default async function InventoryPage({
                                 }) : (
                                     <tr>
                                         <td colSpan={6} className="p-32 text-center">
-                                            <div className="w-24 h-24 rounded-[2rem] bg-muted/20 border border-white/5 flex items-center justify-center mx-auto mb-6">
+                                            <div className="w-24 h-24 rounded-[2rem] bg-muted/20 border border-border/40 flex items-center justify-center mx-auto mb-6">
                                                 <Package className="w-10 h-10 text-muted-foreground/20" />
                                             </div>
                                             <h3 className="text-2xl font-black tracking-tight text-foreground/60">Estoque Vazio</h3>
