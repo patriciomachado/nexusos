@@ -5,57 +5,17 @@ import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { UserButton } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
-import {
-    LayoutDashboard, ClipboardList, Calendar, Users,
-    Package, BarChart3, Settings, Zap,
-    Wallet, PanelLeft, PanelLeftClose, MousePointer2,
-    HeartHandshake, Landmark, Users2, Wrench, Sparkles, Smartphone
-} from 'lucide-react'
+import { PanelLeft, PanelLeftClose, MousePointer2 } from 'lucide-react'
 import { useAppStore } from '@/store/appStore'
+import { useTaskStore } from '@/store/taskStore'
 import { UserRole } from '@/types'
+import { visibleGroups, safeRoleOf, isActivePath, ROLE_LABELS } from './nav-config'
 
-interface NavItem {
-    href: string
-    label: string
-    icon: React.ComponentType<any>
-    roles: string[]
-}
-
-interface NavGroup {
-    title: string
-    items: NavItem[]
-}
-
-const navGroups: NavGroup[] = [
-    {
-        title: 'Gestão Operacional',
-        items: [
-            { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'] },
-            { href: '/appointments', label: 'Mesa / Fluxo', icon: Calendar, roles: ['admin', 'manager'] },
-            { href: '/service-orders', label: 'Ordens de Serviço', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'] },
-            { href: '/pdv', label: 'Vendas / PDV', icon: Zap, roles: ['admin', 'manager', 'cashier', 'attendant', 'talento'] },
-            { href: '/devices', label: 'Venda de Aparelhos', icon: Smartphone, roles: ['admin', 'manager', 'cashier', 'attendant', 'talento'] },
-        ]
-    },
-    {
-        title: 'Clientes',
-        items: [
-            { href: '/customers', label: 'Clientes', icon: Users, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'] },
-            { href: '/pecas', label: 'Peças', icon: Wrench, roles: ['admin', 'manager'] },
-            { href: '/inventory', label: 'Produtos', icon: Package, roles: ['admin', 'manager'] },
-            { href: '/post-sales', label: 'Pós-Venda', icon: HeartHandshake, roles: ['admin', 'manager'] },
-        ]
-    },
-    {
-        title: 'Administrativo',
-        items: [
-            { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager', 'cashier'] },
-            { href: '/team', label: 'Equipe', icon: Users2, roles: ['admin', 'manager'] },
-            { href: '/reports', label: 'Relatórios', icon: BarChart3, roles: ['admin', 'manager'] },
-            { href: '/settings', label: 'Configurações', icon: Settings, roles: ['admin'] },
-        ]
-    }
-]
+const MODES = [
+    { id: 'hover', icon: MousePointer2, label: 'Expandir ao passar o mouse' },
+    { id: 'open', icon: PanelLeft, label: 'Sempre aberto' },
+    { id: 'closed', icon: PanelLeftClose, label: 'Sempre fechado' },
+] as const
 
 export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRole }) {
     const pathname = usePathname()
@@ -63,207 +23,180 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
     const [mounted, setMounted] = useState(false)
     const [isHovered, setIsHovered] = useState(false)
     const [company, setCompany] = useState<{ name: string; logo_url: string } | null>(null)
+    const taskSummary = useTaskStore(s => s.summary)
+    const fetchTaskSummary = useTaskStore(s => s.fetchSummary)
+
+    const role = safeRoleOf(userRole)
+    const groups = visibleGroups(role)
+    const showsTasks = groups.some(g => g.items.some(i => i.badge === 'tasks'))
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true)
-        
+
         fetch('/api/auth/me', { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {
-                if (data.company) {
-                    setCompany(data.company)
-                }
+                if (data.company) setCompany(data.company)
             })
             .catch(console.error)
     }, [])
 
-    // Prevent hydration mismatch
-    const validRoles = ['admin', 'owner', 'manager', 'technician', 'cashier', 'attendant', 'talento']
-    const safeRole = (userRole && validRoles.includes(userRole)) ? userRole : 'attendant'
-    
+    useEffect(() => {
+        if (!showsTasks) return
+        fetchTaskSummary(true)
+        const id = setInterval(() => fetchTaskSummary(), 5 * 60_000)
+        return () => clearInterval(id)
+    }, [showsTasks, fetchTaskSummary, pathname])
+
     const sidebarOpen = mounted ? store.sidebarOpen : true
     const sidebarMode = mounted ? store.sidebarMode : 'hover'
     const setSidebarMode = store.setSidebarMode
 
-    const effectiveOpen = mounted ? 
-        (sidebarMode === 'open' ? true : 
-         sidebarMode === 'closed' ? false : 
-         sidebarOpen || isHovered) 
+    const expanded = mounted
+        ? (sidebarMode === 'open' ? true : sidebarMode === 'closed' ? false : sidebarOpen || isHovered)
         : true
 
+    const badgeCount = taskSummary?.total ?? 0
+
     return (
-        <>
-            {/* Sidebar */}
-            <aside
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                className={cn(
-                    'fixed left-0 top-0 h-screen z-30 flex flex-col border-r border-border/40 transition-all duration-300',
-                    'bg-card/75 dark:bg-background/85 backdrop-blur-xl',
-                    'shadow-[4px_0_24px_rgba(0,0,0,0.03)] dark:shadow-[4px_0_32px_rgba(0,0,0,0.55)]',
-                    effectiveOpen ? 'w-60' : 'w-16',
-                    'hidden lg:flex relative'
-                )}
-            >
-                {/* Logo */}
-                <div className="h-16 lg:h-20 flex items-center px-3 lg:px-4 border-b border-border/50 shrink-0 relative overflow-hidden bg-background/20" suppressHydrationWarning>
-                    <div className={cn(
-                        "rounded-2xl flex items-center justify-center shrink-0 shadow-xl shadow-primary/10 relative z-10 transition-all duration-500 overflow-hidden bg-white dark:bg-white/95 border border-primary/10",
-                        effectiveOpen ? "w-14 h-14 lg:w-16 lg:h-16 p-2" : "w-10 h-10 p-1"
-                    )} suppressHydrationWarning>
-                        {company?.logo_url ? (
-                            <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain hover:scale-110 transition-transform duration-500" />
-                        ) : (
-                            <img src="/logo.png" alt="Nexus Logo" className="w-full h-full object-contain hover:scale-110 transition-transform duration-500" />
-                        )}
-                    </div>
-                    {effectiveOpen && (
-                        <div className="ml-4 flex flex-col relative z-10 animate-in fade-in slide-in-from-left-4 duration-500">
-                            <span className="font-black text-foreground dark:text-white tracking-[0.05em] text-sm lg:text-base leading-none opacity-90">
-                                {company?.name || 'NEXUS'}<span className="text-primary">OS</span>
-                            </span>
-                            <span className="text-[7px] font-bold text-primary uppercase tracking-[0.2em] mt-1 opacity-60">Premium Systems</span>
-                        </div>
-                    )}
+        <aside
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            aria-label="Navegação principal"
+            className={cn(
+                'h-screen z-30 flex-col border-r border-border/60 transition-[width] duration-300 ease-out',
+                'material-bar',
+                expanded ? 'w-64' : 'w-[72px]',
+                'hidden lg:flex relative shrink-0'
+            )}
+        >
+            {/* Brand */}
+            <div className="h-16 flex items-center gap-3 px-4 shrink-0" suppressHydrationWarning>
+                <div className="w-10 h-10 rounded-xl bg-white shadow-sm ring-1 ring-black/5 flex items-center justify-center overflow-hidden shrink-0 p-1">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={company?.logo_url || '/logo.png'}
+                        alt={company?.name || 'NexusOS'}
+                        className="w-full h-full object-contain"
+                    />
                 </div>
+                {expanded && (
+                    <div className="min-w-0 animate-in fade-in duration-200">
+                        <p className="text-[15px] font-semibold text-foreground truncate leading-tight">
+                            {company?.name || 'NexusOS'}
+                        </p>
+                        <p className="text-xs text-muted-foreground leading-tight">NexusOS</p>
+                    </div>
+                )}
+            </div>
 
-                {/* Nav */}
-                <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-5">
-                    {navGroups.map((group) => {
-                        const filteredItems = group.items.filter(item => {
-                            // FORCED SECURITY: Attendants ONLY see OS and PDV. No exceptions.
-                            if (safeRole === 'attendant') {
-                                return ['/service-orders', '/pdv'].includes(item.href);
-                            }
-                            return item.roles.includes(safeRole);
-                        });
-
-                        if (filteredItems.length === 0) return null;
-
-                        return (
-                            <div key={group.title} className="space-y-1.5">
-                                {effectiveOpen && (
-                                    <h3 className="text-[10px] font-bold tracking-[0.15em] text-muted-foreground/50 uppercase px-3 mb-1 animate-in fade-in duration-300 select-none">
-                                        {group.title}
-                                    </h3>
-                                )}
-                                <div className="space-y-1">
-                                    {filteredItems.map((item) => {
-                                        const Icon = item.icon
-                                        const isActive = pathname === item.href || (pathname ? pathname.startsWith(item.href + '/') : false)
-                                        return (
-                                            <Link
-                                                key={item.href}
-                                                href={item.href}
-                                                className={cn(
-                                                    'flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-300 group relative overflow-hidden',
-                                                    isActive
-                                                        ? 'bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_rgba(59,130,246,0.08)]'
-                                                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent'
-                                                )}
-                                                title={!effectiveOpen ? item.label : undefined}
-                                            >
-                                                {isActive && (
-                                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
-                                                )}
-                                                <Icon className={cn("w-5 h-5 shrink-0 transition-all duration-300", isActive ? "scale-110 text-primary" : "group-hover:scale-110 group-hover:text-primary")} />
-                                                {effectiveOpen && (
-                                                    <span className="text-sm font-medium tracking-wide whitespace-nowrap animate-in fade-in slide-in-from-left-2 duration-300">
-                                                        {item.label}
+            {/* Navigation */}
+            <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 pb-4 space-y-5">
+                {groups.map((group) => (
+                    <div key={group.title}>
+                        {expanded ? (
+                            <h3 className="px-2.5 pb-1 pt-2 text-xs font-semibold text-muted-foreground select-none">
+                                {group.title}
+                            </h3>
+                        ) : (
+                            <div className="mx-3 my-2 h-px bg-border/70" aria-hidden />
+                        )}
+                        <ul className="space-y-0.5">
+                            {group.items.map((item) => {
+                                const Icon = item.icon
+                                const active = isActivePath(pathname, item.href)
+                                const count = item.badge === 'tasks' ? badgeCount : 0
+                                return (
+                                    <li key={item.href}>
+                                        <Link
+                                            href={item.href}
+                                            aria-current={active ? 'page' : undefined}
+                                            title={!expanded ? item.label : undefined}
+                                            className={cn(
+                                                'relative flex items-center gap-3 h-9 rounded-lg transition-colors',
+                                                expanded ? 'px-2.5' : 'justify-center px-0',
+                                                active
+                                                    ? 'bg-primary/12 text-primary font-semibold'
+                                                    : 'text-foreground/85 hover:bg-foreground/[0.05]'
+                                            )}
+                                        >
+                                            <Icon className={cn('w-[18px] h-[18px] shrink-0', active ? 'text-primary' : 'text-muted-foreground')} strokeWidth={active ? 2.2 : 1.8} />
+                                            {expanded && (
+                                                <span className="text-sm truncate flex-1">{item.label}</span>
+                                            )}
+                                            {count > 0 && (
+                                                expanded ? (
+                                                    <span className="min-w-5 h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-semibold flex items-center justify-center tabular-nums">
+                                                        {count > 99 ? '99+' : count}
                                                     </span>
-                                                )}
-                                            </Link>
-                                        )
-                                    })}
-                                </div>
-                            </div>
+                                                ) : (
+                                                    <span className="absolute top-1 right-3 w-2 h-2 rounded-full bg-red-500 ring-2 ring-background" aria-label={`${count} pendências`} />
+                                                )
+                                            )}
+                                        </Link>
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                    </div>
+                ))}
+            </nav>
+
+            {/* Sidebar behaviour */}
+            <div className={cn('px-3 py-2 border-t border-border/60', !expanded && 'px-2')} suppressHydrationWarning>
+                <div
+                    role="radiogroup"
+                    aria-label="Comportamento da barra lateral"
+                    className={cn('flex p-0.5 rounded-lg bg-foreground/[0.05]', expanded ? 'flex-row' : 'flex-col')}
+                >
+                    {MODES.map(mode => {
+                        const Icon = mode.icon
+                        const selected = sidebarMode === mode.id
+                        return (
+                            <button
+                                key={mode.id}
+                                role="radio"
+                                aria-checked={selected}
+                                aria-label={mode.label}
+                                title={mode.label}
+                                onClick={() => setSidebarMode(mode.id)}
+                                className={cn(
+                                    'flex-1 h-7 min-w-7 rounded-md flex items-center justify-center transition-colors',
+                                    selected ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                                )}
+                            >
+                                <Icon className="w-3.5 h-3.5" />
+                            </button>
                         )
                     })}
-                </nav>
-
-                {/* Sidebar Mode Toggle */}
-                <div className={cn(
-                    "px-2 py-2 border-t border-border/40",
-                    !effectiveOpen && "flex flex-col items-center gap-1"
-                )} suppressHydrationWarning>
-                    <div className={cn(
-                        "flex items-center justify-center gap-1",
-                        !effectiveOpen && "flex-col"
-                    )} suppressHydrationWarning>
-                        <button
-                            onClick={() => setSidebarMode('hover')}
-                            className={cn(
-                                "p-2 rounded-lg transition-all",
-                                sidebarMode === 'hover' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted",
-                                !effectiveOpen && "p-1.5"
-                            )}
-                            title="Hover"
-                        >
-                            <MousePointer2 className="w-4 h-4" />
-                        </button>
-                        <button
-                            onClick={() => setSidebarMode('open')}
-                            className={cn(
-                                "p-2 rounded-lg transition-all",
-                                sidebarMode === 'open' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted",
-                                !effectiveOpen && "p-1.5"
-                            )}
-                            title="Sempre aberto"
-                        >
-                            <PanelLeft className="w-4 h-4" />
-                        </button>
-                        <button
-                            onClick={() => setSidebarMode('closed')}
-                            className={cn(
-                                "p-2 rounded-lg transition-all",
-                                sidebarMode === 'closed' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted",
-                                !effectiveOpen && "p-1.5"
-                            )}
-                            title="Sempre fechado"
-                        >
-                            <PanelLeftClose className="w-4 h-4" />
-                        </button>
-                    </div>
                 </div>
+            </div>
 
-                {/* Bottom user area */}
-                <div className="p-3 border-t border-border/40 shrink-0 bg-background/30" suppressHydrationWarning>
-                    {mounted ? (
-                        <div className="flex items-center gap-4 p-2 rounded-xl hover:bg-muted/50 transition-colors animate-in fade-in duration-500">
-                            <div className="relative">
-                                <UserButton
-                                    userProfileMode="navigation"
-                                    userProfileUrl="/profile"
-                                    appearance={{
-                                        elements: {
-                                            avatarBox: 'w-10 h-10 rounded-xl border border-border shadow-lg',
-                                        }
-                                    }}
-                                />
-                                <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-background rounded-full" />
+            {/* Account */}
+            <div className="p-3 border-t border-border/60 shrink-0" suppressHydrationWarning>
+                {mounted ? (
+                    <div className={cn('flex items-center gap-3 rounded-xl', expanded ? 'px-1.5 py-1' : 'justify-center')}>
+                        <UserButton
+                            userProfileMode="navigation"
+                            userProfileUrl="/profile"
+                            appearance={{ elements: { avatarBox: 'w-9 h-9' } }}
+                        />
+                        {expanded && (
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-foreground truncate">
+                                    {ROLE_LABELS[role] ?? role}
+                                </p>
+                                <Link href="/profile" className="text-xs text-primary hover:underline">
+                                    Configurar perfil
+                                </Link>
                             </div>
-                            {effectiveOpen && (
-                                <div className="flex-1 min-w-0 animate-in fade-in slide-in-from-left-2 duration-300">
-                                    <p className="text-sm font-bold text-foreground truncate drop-shadow-md capitalize">
-                                        {safeRole === 'admin' ? 'Administrador' :
-                                         safeRole === 'owner' ? 'Proprietário' :
-                                         safeRole === 'manager' ? 'Gerente' :
-                                         safeRole === 'technician' ? 'Técnico' :
-                                         safeRole === 'cashier' ? 'Caixa' :
-                                         safeRole === 'attendant' ? 'Atendente' :
-                                         safeRole === 'talento' ? 'Talento' : safeRole}
-                                    </p>
-                                    <Link href="/profile" className="text-xs text-primary truncate hover:underline block mt-1">Configurar Perfil</Link>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="w-10 h-10 rounded-xl bg-muted animate-pulse mx-auto" />
-                    )}
-                </div>
-            </aside>
-        </>
+                        )}
+                    </div>
+                ) : (
+                    <div className="w-9 h-9 rounded-full bg-muted animate-pulse mx-auto" />
+                )}
+            </div>
+        </aside>
     )
 }
-

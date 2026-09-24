@@ -240,7 +240,7 @@ export default function MesaKanbanClient({
                         <Wrench className="w-5 h-5" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">Na Bancada</p>
+                        <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Na Bancada</p>
                         <p className="text-xl font-black text-foreground">{stats.naBancada}</p>
                     </div>
                 </div>
@@ -250,7 +250,7 @@ export default function MesaKanbanClient({
                         <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">Consertados Hoje</p>
+                        <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Consertados Hoje</p>
                         <p className="text-xl font-black text-foreground">{stats.consertadosHoje}</p>
                     </div>
                 </div>
@@ -260,7 +260,7 @@ export default function MesaKanbanClient({
                         <PackageOpen className="w-5 h-5" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">Sem Peças</p>
+                        <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Sem Peças</p>
                         <p className="text-xl font-black text-foreground">{stats.aguardandoPecas}</p>
                     </div>
                 </div>
@@ -270,7 +270,7 @@ export default function MesaKanbanClient({
                         <Clock className="w-5 h-5" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">Novas Entradas</p>
+                        <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Novas Entradas</p>
                         <p className="text-xl font-black text-foreground">{stats.novasEntradas}</p>
                     </div>
                 </div>
@@ -280,7 +280,7 @@ export default function MesaKanbanClient({
                         <DollarSign className="w-5 h-5" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">Ticket Médio</p>
+                        <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Ticket Médio</p>
                         <p className="text-xl font-black text-foreground">{formatCurrency(stats.ticketMedio)}</p>
                     </div>
                 </div>
@@ -289,7 +289,7 @@ export default function MesaKanbanClient({
             {/* Filter and Search Bar */}
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white/[0.02] border border-white/5 rounded-2xl p-4">
                 <div className="relative w-full md:max-w-md">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
                         type="text"
                         placeholder="Buscar por OS, cliente ou aparelho..."
@@ -327,7 +327,7 @@ export default function MesaKanbanClient({
                             onDragEnter={handleDragEnter}
                             onDragLeave={handleDragLeave}
                             onDrop={(e) => handleDrop(e, col.id)}
-                            className="flex-1 min-w-[280px] max-w-[320px] rounded-[1.5rem] bg-card/15 border border-white/[0.03] flex flex-col transition-all duration-300"
+                            className="flex-1 min-w-[280px] max-w-[320px] rounded-2xl bg-card/15 border border-white/[0.03] flex flex-col transition-all duration-300"
                         >
                             {/* Column Header */}
                             <div className="p-4 border-b border-white/[0.04] flex items-center justify-between bg-white/[0.01]">
@@ -335,7 +335,7 @@ export default function MesaKanbanClient({
                                     <div className={cn("w-1.5 h-1.5 rounded-full", col.accent)} />
                                     <h3 className="text-xs font-bold text-foreground">{col.title}</h3>
                                 </div>
-                                <span className={cn("text-[9px] font-black px-2 py-0.5 rounded-full border", col.badge)}>
+                                <span className={cn("text-[11px] font-black px-2 py-0.5 rounded-full border", col.badge)}>
                                     {colOrders.length}
                                 </span>
                             </div>
@@ -343,9 +343,9 @@ export default function MesaKanbanClient({
                             {/* Cards Area */}
                             <div className="flex-1 p-3 overflow-y-auto space-y-3 max-h-[600px] custom-scrollbar">
                                 {colOrders.length === 0 ? (
-                                    <div className="h-28 border border-dashed border-white/[0.03] rounded-2xl flex flex-col items-center justify-center text-muted-foreground/30">
+                                    <div className="h-28 border border-dashed border-white/[0.03] rounded-2xl flex flex-col items-center justify-center text-muted-foreground">
                                         <PackageOpen className="w-5 h-5 mb-1" />
-                                        <span className="text-[9px] uppercase tracking-widest font-black">Coluna Vazia</span>
+                                        <span className="text-[11px] uppercase tracking-widest font-black">Coluna Vazia</span>
                                     </div>
                                 ) : (
                                     colOrders.map(order => {
@@ -374,21 +374,21 @@ export default function MesaKanbanClient({
 
                                                 <div className="space-y-3 pl-1">
                                                     <div className="flex items-start justify-between gap-2">
-                                                        <span className="text-[9px] font-black text-primary font-mono tracking-tight">#{order.order_number}</span>
-                                                        <span className={cn("text-[8px] font-black px-1.5 py-0.5 rounded-full border uppercase tracking-wider", priority.style)}>
+                                                        <span className="text-[11px] font-black text-primary font-mono tracking-tight">#{order.order_number}</span>
+                                                        <span className={cn("text-[11px] font-black px-1.5 py-0.5 rounded-full border uppercase tracking-wider", priority.style)}>
                                                             {priority.label}
                                                         </span>
                                                     </div>
 
                                                     <div>
                                                         <h4 className="text-xs font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-relaxed">{order.title}</h4>
-                                                        <p className="text-[9px] text-muted-foreground mt-1 line-clamp-1">{order.customers?.name || 'Sem cliente'}</p>
+                                                        <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{order.customers?.name || 'Sem cliente'}</p>
                                                     </div>
 
                                                     {/* Device Description */}
                                                     {order.equipment_description && (
-                                                        <div className="text-[8px] text-muted-foreground/60 bg-white/[0.02] border border-white/5 rounded px-2 py-1 flex items-center gap-1.5">
-                                                            <Wrench className="w-2.5 h-2.5 text-muted-foreground/40" />
+                                                        <div className="text-[11px] text-muted-foreground bg-white/[0.02] border border-white/5 rounded px-2 py-1 flex items-center gap-1.5">
+                                                            <Wrench className="w-2.5 h-2.5 text-muted-foreground" />
                                                             <span className="truncate">{order.equipment_description}</span>
                                                         </div>
                                                     )}
@@ -396,22 +396,22 @@ export default function MesaKanbanClient({
                                                     {/* Progress Checklist & Tech */}
                                                     <div className="flex items-center justify-between pt-2 border-t border-white/[0.04]">
                                                         {checklistTotal > 0 ? (
-                                                            <div className="flex items-center gap-1 text-[8px] text-muted-foreground font-bold">
-                                                                <CheckSquare className="w-3 h-3 text-muted-foreground/40" />
+                                                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-bold">
+                                                                <CheckSquare className="w-3 h-3 text-muted-foreground" />
                                                                 <span>{checklistDone}/{checklistTotal} tarefas</span>
                                                             </div>
                                                         ) : (
-                                                            <span className="text-[8px] text-muted-foreground/30 font-medium">Sem checklists</span>
+                                                            <span className="text-[11px] text-muted-foreground font-medium">Sem checklists</span>
                                                         )}
 
                                                         {/* Tech Tag */}
                                                         {order.technicians ? (
-                                                            <div className="flex items-center gap-1 text-[8px] text-foreground/80 bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-md font-bold">
+                                                            <div className="flex items-center gap-1 text-[11px] text-foreground/80 bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-md font-bold">
                                                                 <UserCheck className="w-2.5 h-2.5 text-primary" />
                                                                 <span>{order.technicians.name.split(' ')[0]}</span>
                                                             </div>
                                                         ) : (
-                                                            <span className="text-[8px] text-rose-400 font-bold bg-rose-500/10 border border-rose-500/25 px-1.5 py-0.5 rounded-md">Sem técnico</span>
+                                                            <span className="text-[11px] text-rose-400 font-bold bg-rose-500/10 border border-rose-500/25 px-1.5 py-0.5 rounded-md">Sem técnico</span>
                                                         )}
                                                     </div>
                                                 </div>
@@ -429,7 +429,7 @@ export default function MesaKanbanClient({
             {checkoutOS && (
                 <div className="fixed inset-0 bg-background/85 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
                     <div
-                        className="bg-card border border-white/10 rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl space-y-6 relative overflow-hidden animate-in zoom-in-95 duration-200"
+                        className="bg-card border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl space-y-6 relative overflow-hidden animate-in zoom-in-95 duration-200"
                     >
                         <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 blur-[80px] rounded-full -mr-32 -mt-32" />
 
@@ -439,7 +439,7 @@ export default function MesaKanbanClient({
                             </div>
                             <div>
                                 <h3 className="text-lg font-black text-foreground">Faturar Ordem de Serviço</h3>
-                                <p className="text-[10px] text-muted-foreground/50 font-black uppercase tracking-widest">Liquidando OS #{checkoutOS.order_number}</p>
+                                <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest">Liquidando OS #{checkoutOS.order_number}</p>
                             </div>
                         </div>
 
@@ -461,7 +461,7 @@ export default function MesaKanbanClient({
 
                         {/* Payment Method Selector */}
                         <div className="space-y-2 relative z-10">
-                            <label className="block text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest">Método de Liquidação</label>
+                            <label className="block text-[13px] font-medium text-muted-foreground">Método de Liquidação</label>
                             <select
                                 value={selectedPaymentMethodId}
                                 onChange={(e) => setSelectedPaymentMethodId(e.target.value)}
@@ -481,10 +481,10 @@ export default function MesaKanbanClient({
                                 Cancelar
                             </button>
                             <button
-                                onClick={handleCheckoutSubmit}
-                                disabled={isCheckoutLoading}
-                                className="flex-1 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-cyan-500/10 flex items-center justify-center gap-2"
-                            >
+ onClick={handleCheckoutSubmit}
+ disabled={isCheckoutLoading}
+ className="flex-1 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-cyan-500/10 flex items-center justify-center gap-2"
+ >
                                 {isCheckoutLoading ? 'Processando...' : (
                                     <>
                                         Faturar OS
@@ -527,7 +527,7 @@ export default function MesaKanbanClient({
                         <div className="flex-1 space-y-5">
                             {/* Title description */}
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest">Aparelho / Reparo</label>
+                                <label className="text-[13px] font-medium text-muted-foreground">Aparelho / Reparo</label>
                                 <input
                                     type="text"
                                     id="detail-title"
@@ -539,7 +539,7 @@ export default function MesaKanbanClient({
                             <div className="grid grid-cols-2 gap-4">
                                 {/* Priority Allocation */}
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest">Prioridade</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground">Prioridade</label>
                                     <select
                                         id="detail-priority"
                                         defaultValue={selectedOSDetails.priority}
@@ -554,7 +554,7 @@ export default function MesaKanbanClient({
 
                                 {/* Tech Allocation */}
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest">Técnico Atribuído</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground">Técnico Atribuído</label>
                                     <select
                                         id="detail-tech"
                                         defaultValue={selectedOSDetails.technician_id || ''}
@@ -570,7 +570,7 @@ export default function MesaKanbanClient({
 
                             {/* Problem Description */}
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest">Defeito Reclamado</label>
+                                <label className="text-[13px] font-medium text-muted-foreground">Defeito Reclamado</label>
                                 <textarea
                                     id="detail-problem"
                                     rows={3}
@@ -581,7 +581,7 @@ export default function MesaKanbanClient({
 
                             {/* Applied Solution */}
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest">Solução Aplicada</label>
+                                <label className="text-[13px] font-medium text-muted-foreground">Solução Aplicada</label>
                                 <textarea
                                     id="detail-solution"
                                     rows={3}
@@ -594,15 +594,15 @@ export default function MesaKanbanClient({
                             {/* Quick costs display */}
                             <div className="p-4 rounded-2xl bg-muted/30 border border-white/5 grid grid-cols-3 gap-2 text-center">
                                 <div>
-                                    <span className="block text-[8px] text-muted-foreground/60 uppercase font-black">Mão de Obra</span>
+                                    <span className="block text-[11px] text-muted-foreground uppercase font-black">Mão de Obra</span>
                                     <span className="text-xs font-bold text-foreground">{formatCurrency(selectedOSDetails.labor_cost || 0)}</span>
                                 </div>
                                 <div>
-                                    <span className="block text-[8px] text-muted-foreground/60 uppercase font-black">Peças</span>
+                                    <span className="block text-[11px] text-muted-foreground uppercase font-black">Peças</span>
                                     <span className="text-xs font-bold text-foreground">{formatCurrency(selectedOSDetails.parts_cost || 0)}</span>
                                 </div>
                                 <div>
-                                    <span className="block text-[8px] text-primary/80 uppercase font-black">Custo Total</span>
+                                    <span className="block text-[11px] text-primary/80 uppercase font-black">Custo Total</span>
                                     <span className="text-xs font-black text-primary">{formatCurrency(selectedOSDetails.final_cost || selectedOSDetails.estimated_cost || 0)}</span>
                                 </div>
                             </div>
@@ -618,18 +618,18 @@ export default function MesaKanbanClient({
                                 Ver OS Completa
                             </Link>
                             <button
-                                onClick={() => {
-                                    const title = (document.getElementById('detail-title') as HTMLInputElement)?.value
-                                    const priority = (document.getElementById('detail-priority') as HTMLSelectElement)?.value
-                                    const technician_id = (document.getElementById('detail-tech') as HTMLSelectElement)?.value || null
-                                    const problem_description = (document.getElementById('detail-problem') as HTMLTextAreaElement)?.value
-                                    const solution_applied = (document.getElementById('detail-solution') as HTMLTextAreaElement)?.value
+ onClick={() => {
+ const title = (document.getElementById('detail-title') as HTMLInputElement)?.value
+ const priority = (document.getElementById('detail-priority') as HTMLSelectElement)?.value
+ const technician_id = (document.getElementById('detail-tech') as HTMLSelectElement)?.value || null
+ const problem_description = (document.getElementById('detail-problem') as HTMLTextAreaElement)?.value
+ const solution_applied = (document.getElementById('detail-solution') as HTMLTextAreaElement)?.value
 
-                                    handleSaveDetails({ title, priority, technician_id, problem_description, solution_applied })
-                                }}
-                                disabled={isSavingDetails}
-                                className="flex-1 py-3.5 rounded-xl bg-primary text-primary-foreground font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                            >
+ handleSaveDetails({ title, priority, technician_id, problem_description, solution_applied })
+ }}
+ disabled={isSavingDetails}
+ className="flex-1 py-3.5 rounded-xl bg-primary text-primary-foreground font-black text-xs hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+ >
                                 {isSavingDetails ? 'Salvando...' : (
                                     <>
                                         <Check className="w-4 h-4" />

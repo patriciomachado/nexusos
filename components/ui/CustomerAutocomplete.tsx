@@ -47,7 +47,7 @@ export default function CustomerAutocomplete({
     return (
         <div className="relative w-full">
             {label && (
-                <label className="block text-[10px] font-black text-muted-foreground/60 mb-2 uppercase tracking-[0.2em] px-1">
+                <label className="block text-[13px] font-medium text-muted-foreground mb-2 px-1">
                     {label}
                 </label>
             )}
@@ -63,30 +63,30 @@ export default function CustomerAutocomplete({
                         )}
                     >
                         <span className="flex items-center gap-3">
-                            <User className={cn("w-4 h-4 transition-colors", selectedCustomer ? "text-primary" : "text-muted-foreground/30")} />
-                            <span className={cn("block truncate", !selectedCustomer && "text-muted-foreground/50")}>
+                            <User className={cn("w-4 h-4 transition-colors", selectedCustomer ? "text-primary" : "text-muted-foreground")} />
+                            <span className={cn("block truncate", !selectedCustomer && "text-muted-foreground")}>
                                 {selectedCustomer ? selectedCustomer.name : (placeholder || "Buscar ou selecionar cliente...")}
                             </span>
                         </span>
                         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-                            <ChevronsUpDown className="h-4 w-4 text-muted-foreground/30" aria-hidden="true" />
+                            <ChevronsUpDown className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                         </span>
                     </button>
                 </Popover.Trigger>
 
                 <Popover.Portal>
                     <Popover.Content 
-                        className="z-[9999] w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-[2rem] bg-card/95 border border-white/10 shadow-2xl backdrop-blur-3xl animate-in fade-in duration-200"
+                        className="z-[9999] w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-3xl bg-card/95 border border-white/10 shadow-2xl backdrop-blur-3xl animate-in fade-in duration-200"
                         sideOffset={8}
                         align="start"
                     >
                         <div className="p-3 border-b border-white/5">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/30" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                 <input
                                     autoFocus
                                     type="text"
-                                    className="w-full h-10 bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 md:text-xs text-base text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-bold"
+                                    className="w-full h-10 bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 md:text-xs text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-bold"
                                     placeholder="Procurar cliente..."
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
@@ -113,10 +113,10 @@ export default function CustomerAutocomplete({
                                             )}
                                         >
                                             <div className={cn(
-                                                "w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-black uppercase transition-all shadow-inner",
+                                                "w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black uppercase transition-all shadow-inner",
                                                 c.id === selectedId
                                                     ? "bg-primary/20 text-primary border border-primary/30"
-                                                    : "bg-white/5 text-muted-foreground/40 group-hover:bg-primary/10 group-hover:text-primary border border-white/5"
+                                                    : "bg-white/5 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary border border-white/5"
                                             )}>
                                                 {c.name?.charAt(0) || '?'}
                                             </div>
@@ -129,22 +129,22 @@ export default function CustomerAutocomplete({
                                 ))
                             ) : !showAddOption && (
                                 <li className="px-4 py-8 text-center">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/20">Nenhum cliente encontrado</p>
+                                    <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Nenhum cliente encontrado</p>
                                 </li>
                             )}
 
                             {showAddOption && (
                                 <li className="mt-1 border-t border-white/5 pt-1">
                                     <button
-                                        type="button"
-                                        disabled={isAdding}
-                                        onClick={() => {
-                                            onAdd!(query)
-                                            setIsOpen(false)
-                                            setQuery('')
-                                        }}
-                                        className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[10px] font-black transition-all text-primary hover:bg-primary/5 text-left uppercase tracking-widest"
-                                    >
+ type="button"
+ disabled={isAdding}
+ onClick={() => {
+ onAdd!(query)
+ setIsOpen(false)
+ setQuery('')
+ }}
+ className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-black transition-all text-primary hover:bg-primary/5 text-left "
+ >
                                         {isAdding ? (
                                             <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                                         ) : (

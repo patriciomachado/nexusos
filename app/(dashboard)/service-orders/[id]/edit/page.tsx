@@ -43,7 +43,7 @@ export default async function EditServiceOrderPage({ params }: { params: Promise
                 <div className="max-w-6xl mx-auto flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold text-foreground tracking-tight">Editar Ordem de Serviço</h1>
-                        <p className="text-muted-foreground/40 text-sm mt-1 uppercase tracking-widest font-black">OS #{os.order_number} · {os.title}</p>
+                        <p className="text-muted-foreground text-sm mt-1 uppercase tracking-widest font-black">OS #{os.order_number} · {os.title}</p>
                     </div>
                 </div>
             </div>

@@ -189,7 +189,7 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                         <HeartHandshake className="w-8 h-8" />
                     </div>
                     <div>
-                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight uppercase">Pós-Venda</h1>
+                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight ">Pós-Venda</h1>
                         <p className="text-sm text-muted-foreground mt-0.5">Satisfação do cliente, NPS e análise de sentimentos.</p>
                     </div>
                 </div>
@@ -217,7 +217,7 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                                 key={star} 
                                 className={cn(
                                     "w-4 h-4",
-                                    star <= Math.round(stats.avgRating) ? "text-amber-500 fill-amber-500" : "text-muted-foreground/30"
+                                    star <= Math.round(stats.avgRating) ? "text-amber-500 fill-amber-500" : "text-muted-foreground"
                                 )} 
                             />
                         ))}
@@ -350,7 +350,7 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                         </ResponsiveContainer>
                         <div className="absolute flex flex-col items-center justify-center">
                             <span className="text-3xl font-black">{allRatings.length}</span>
-                            <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Avaliações</span>
+                            <span className="text-[11px] text-muted-foreground uppercase font-bold tracking-wider">Avaliações</span>
                         </div>
                     </div>
                     {/* Legend */}
@@ -448,9 +448,9 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                                             <div>
                                                 <h4 className="font-bold text-sm tracking-tight">{item.customer_name}</h4>
                                                 <div className="flex items-center gap-1.5 mt-0.5">
-                                                    <span className="text-[10px] font-bold text-muted-foreground uppercase">{item.order_number}</span>
-                                                    <span className="text-muted-foreground/30 text-[10px]">•</span>
-                                                    <span className="text-[10px] text-muted-foreground truncate max-w-[150px]">{item.order_title}</span>
+                                                    <span className="text-[11px] font-bold text-muted-foreground uppercase">{item.order_number}</span>
+                                                    <span className="text-muted-foreground text-[11px]">•</span>
+                                                    <span className="text-[11px] text-muted-foreground truncate max-w-[150px]">{item.order_title}</span>
                                                 </div>
                                             </div>
                                             {/* Stars */}
@@ -469,13 +469,13 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                                     {/* Row 3: Footer actions */}
                                     <div className="flex items-center justify-between border-t border-border/40 pt-3">
                                         <div className="flex items-center gap-1.5">
-                                            <span className="text-[10px] font-semibold text-muted-foreground flex items-center gap-1">
+                                            <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
                                                 <Calendar className="w-3.5 h-3.5" />
                                                 {new Date(item.created_at).toLocaleDateString('pt-BR')}
                                             </span>
                                             {item.sentiment && (
                                                 <span className={cn(
-                                                    "text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border",
+                                                    "text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border",
                                                     isPositive && "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
                                                     isNeutral && "bg-amber-500/10 text-amber-500 border-amber-500/20",
                                                     isNegative && "bg-rose-500/10 text-rose-500 border-rose-500/20"
@@ -487,7 +487,7 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                                         <button 
                                             onClick={() => alert(`Enviando mensagem de suporte para ${item.customer_name}...`)}
                                             className={cn(
-                                                "text-[10px] font-bold px-2.5 py-1 rounded-lg border flex items-center gap-1.5 transition-all outline-none",
+                                                "text-[11px] font-bold px-2.5 py-1 rounded-lg border flex items-center gap-1.5 transition-all outline-none",
                                                 isNegative 
                                                     ? "bg-rose-500/10 text-rose-500 border-rose-500/20 hover:bg-rose-500 hover:text-white" 
                                                     : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/20"

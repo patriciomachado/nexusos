@@ -278,7 +278,7 @@ export default function CashRegisterClient() {
                                 
                                 <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
                                     <div className="space-y-1">
-                                        <div className="flex items-center gap-2 text-primary font-bold text-[10px] uppercase tracking-widest">
+                                        <div className="flex items-center gap-2 text-primary font-bold text-[11px] uppercase tracking-widest">
                                             <Wallet className="w-3.5 h-3.5" />
                                             Saldo Disponível em Caixa
                                         </div>
@@ -297,11 +297,11 @@ export default function CashRegisterClient() {
                                         )}
                                         <div className="flex gap-2 sm:gap-4 w-full md:w-auto">
                                             <div className="flex-1 md:flex-initial bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-3 py-2.5 sm:px-5 sm:py-3 text-right min-w-[110px] sm:min-w-0">
-                                                <span className="block text-[9px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Entradas</span>
+                                                <span className="block text-[11px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Entradas</span>
                                                 <span className="text-base sm:text-xl font-bold text-emerald-400 tabular-nums">{formatCurrency(stats.entries)}</span>
                                             </div>
                                             <div className="flex-1 md:flex-initial bg-rose-500/10 border border-rose-500/20 rounded-2xl px-3 py-2.5 sm:px-5 sm:py-3 text-right min-w-[110px] sm:min-w-0">
-                                                <span className="block text-[9px] font-bold text-rose-500 uppercase tracking-widest mb-1">Saídas</span>
+                                                <span className="block text-[11px] font-bold text-rose-500 uppercase tracking-widest mb-1">Saídas</span>
                                                 <span className="text-base sm:text-xl font-bold text-rose-400 tabular-nums">{formatCurrency(stats.exits)}</span>
                                             </div>
                                         </div>
@@ -359,7 +359,7 @@ export default function CashRegisterClient() {
                                         <ArrowRightLeft className="w-4 h-4 text-muted-foreground" />
                                         Últimas Movimentações
                                     </h3>
-                                    <div className="px-2 py-1 bg-muted rounded text-[10px] font-bold text-muted-foreground">
+                                    <div className="px-2 py-1 bg-muted rounded text-[11px] font-bold text-muted-foreground">
                                         {transactions.length} registros
                                     </div>
                                 </div>
@@ -392,7 +392,7 @@ export default function CashRegisterClient() {
                                                     </div>
                                                     <div className="space-y-0.5">
                                                         <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{tx.description}</p>
-                                                        <div className="flex items-center gap-3 text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
+                                                        <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-medium uppercase tracking-tight">
                                                             <span className="flex items-center gap-1">
                                                                 <CreditCard className="w-3 h-3" />
                                                                 {tx.payment_method?.name || 'Automático'}
@@ -413,7 +413,7 @@ export default function CashRegisterClient() {
                                                         )}>
                                                             {tx.type === 'entry' ? '+' : '-'} {formatCurrency(tx.amount)}
                                                         </p>
-                                                        <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest">
+                                                        <p className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">
                                                             {tx.source_type === 'manual_suprimento' ? 'Suprimento de Caixa' : 
                                                              tx.source_type === 'manual_sangria' ? 'Sangria de Caixa' :
                                                              SOURCE_TYPE_LABELS[tx.source_type as keyof typeof SOURCE_TYPE_LABELS] || tx.source_type}
@@ -448,7 +448,7 @@ export default function CashRegisterClient() {
                         <div className="lg:col-span-4 space-y-8">
                             {/* Actions Card */}
                             <div className="glass-premium bg-card/65 border border-white/5 rounded-3xl p-6 space-y-6 shadow-lg">
-                                <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                <h3 className="text-xs font-black text-muted-foreground flex items-center gap-2">
                                     <Zap className="w-4 h-4 text-primary" />
                                     Ações Rápidas
                                 </h3>
@@ -465,10 +465,10 @@ export default function CashRegisterClient() {
                                             </div>
                                             <div className="text-left">
                                                 <p className="text-sm font-bold text-foreground">Suprimento</p>
-                                                <p className="text-[10px] text-muted-foreground uppercase font-medium">Entrada de dinheiro</p>
+                                                <p className="text-[11px] text-muted-foreground uppercase font-medium">Entrada de dinheiro</p>
                                             </div>
                                         </div>
-                                        <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-emerald-500 transition-colors" />
+                                        <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-emerald-500 transition-colors" />
                                     </button>
 
                                     <button
@@ -482,10 +482,10 @@ export default function CashRegisterClient() {
                                             </div>
                                             <div className="text-left">
                                                 <p className="text-sm font-bold text-foreground">Sangria</p>
-                                                <p className="text-[10px] text-muted-foreground uppercase font-medium">Retirada de dinheiro</p>
+                                                <p className="text-[11px] text-muted-foreground uppercase font-medium">Retirada de dinheiro</p>
                                             </div>
                                         </div>
-                                        <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-rose-500 transition-colors" />
+                                        <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-rose-500 transition-colors" />
                                     </button>
 
                                     <button
@@ -498,10 +498,10 @@ export default function CashRegisterClient() {
                                             </div>
                                             <div className="text-left">
                                                 <p className="text-sm font-bold text-foreground">Contas Fixas</p>
-                                                <p className="text-[10px] text-muted-foreground uppercase font-medium">Gerenciar gastos mensais</p>
+                                                <p className="text-[11px] text-muted-foreground uppercase font-medium">Gerenciar gastos mensais</p>
                                             </div>
                                         </div>
-                                        <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary transition-colors" />
+                                        <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                                     </button>
                                 </div>
                             </div>
@@ -516,9 +516,9 @@ export default function CashRegisterClient() {
                                             Abra o caixa para começar a processar vendas e gerenciar movimentações financeiras.
                                         </p>
                                         <button 
-                                            onClick={() => setIsOpeningModalOpen(true)}
-                                            className="w-full py-2.5 bg-primary text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/20"
-                                        >
+ onClick={() => setIsOpeningModalOpen(true)}
+ className="w-full py-2.5 bg-primary text-black font-black text-[13px] rounded-xl hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/20"
+ >
                                             Ativar Agora
                                         </button>
                                     </div>
@@ -526,7 +526,7 @@ export default function CashRegisterClient() {
                             
                             {/* Performance Insights */}
                             <div className="glass-premium bg-card/65 border border-white/5 rounded-3xl p-6 space-y-6 shadow-lg">
-                                <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                <h3 className="text-xs font-black text-muted-foreground flex items-center gap-2">
                                     <Activity className="w-4 h-4 text-primary" />
                                     Métricas de Hoje
                                 </h3>
@@ -534,8 +534,8 @@ export default function CashRegisterClient() {
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between p-3 bg-muted/60 rounded-2xl border border-border">
                                         <div className="flex items-center gap-3">
-                                            <Users className="w-4 h-4 text-muted-foreground/60" />
-                                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Operadores Ativos</span>
+                                            <Users className="w-4 h-4 text-muted-foreground" />
+                                            <span className="text-[11px] font-bold text-muted-foreground uppercase">Operadores Ativos</span>
                                         </div>
                                         <span className="text-lg font-black text-foreground">
                                             {new Set(transactions.map(t => t.user_id)).size || 0}
@@ -544,8 +544,8 @@ export default function CashRegisterClient() {
 
                                     <div className="flex items-center justify-between p-3 bg-muted/60 rounded-2xl border border-border">
                                         <div className="flex items-center gap-3">
-                                            <Receipt className="w-4 h-4 text-muted-foreground/60" />
-                                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Ticket Médio</span>
+                                            <Receipt className="w-4 h-4 text-muted-foreground" />
+                                            <span className="text-[11px] font-bold text-muted-foreground uppercase">Ticket Médio</span>
                                         </div>
                                         <span className="text-lg font-black text-foreground">
                                             {formatCurrency(transactions.length > 0 ? (stats.entries / transactions.length) : 0)}
@@ -555,7 +555,7 @@ export default function CashRegisterClient() {
                                     <div className="flex items-center justify-between p-3 bg-muted/60 rounded-2xl border border-border">
                                         <div className="flex items-center gap-3">
                                             <TrendingUp className="w-4 h-4 text-emerald-500" />
-                                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Vendas OS e PDV</span>
+                                            <span className="text-[11px] font-bold text-muted-foreground uppercase">Vendas OS e PDV</span>
                                         </div>
                                         <span className="text-lg font-black text-foreground">
                                             {transactions.filter(t => t.source_type === 'service_order' || t.source_type === 'product_sale').length}
@@ -672,7 +672,7 @@ export default function CashRegisterClient() {
                             </div>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-muted-foreground uppercase mb-2">Descrição</label>
+                                    <label className="block text-[13px] font-bold text-muted-foreground mb-2">Descrição</label>
                                     <input
                                         id="edit-description"
                                         type="text"
@@ -681,7 +681,7 @@ export default function CashRegisterClient() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-muted-foreground uppercase mb-2">Valor</label>
+                                    <label className="block text-[13px] font-bold text-muted-foreground mb-2">Valor</label>
                                     <input
                                         id="edit-amount"
                                         type="number"

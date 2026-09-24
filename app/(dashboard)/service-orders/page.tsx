@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
 import Link from 'next/link'
 import { formatDate, cn } from '@/lib/utils'
-import { Plus, Search, Filter, Calendar, User, Wrench, ArrowRight } from 'lucide-react'
+import { Plus, Filter, Calendar, User, Wrench, ArrowRight } from 'lucide-react'
 import OSActions from '@/components/os/OSActions'
 import SearchInput from '@/components/ui/SearchInput'
 
@@ -62,36 +62,36 @@ export default async function ServiceOrdersPage({
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-1 bg-primary rounded-full" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">Controle de Oficina</span>
+                            <span className="text-[11px] font-black uppercase tracking-wider text-primary/60">Controle de Oficina</span>
                         </div>
                         <h2 className="text-3xl lg:text-4xl font-black text-foreground tracking-tighter">Gestão de Ordens</h2>
                         <p className="text-muted-foreground font-medium text-base leading-relaxed max-w-xl">Acompanhe e gerencie todas as manutenções da sua oficina em tempo real.</p>
                     </div>
                     <Link
-                        href="/service-orders/new"
-                        className="flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-[2rem] font-black uppercase text-xs tracking-[0.1em] shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group"
-                    >
+ href="/service-orders/new"
+ className="flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-3xl font-black text-xs shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group"
+ >
                         Nova Ordem (OS)
                         <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
                     </Link>
                 </div>
 
                 {/* Toolbar / Filters */}
-                <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[2rem] p-4 lg:p-5 flex flex-col xl:flex-row items-center justify-between gap-6 shadow-2xl">
+                <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-3xl p-4 lg:p-5 flex flex-col xl:flex-row items-center justify-between gap-6 shadow-2xl">
                     {/* Status Tabs */}
                     <div className="flex items-center gap-3 overflow-x-auto w-full xl:w-auto pb-2 xl:pb-0 scrollbar-hide pr-6">
                         <Link
-                            href="/service-orders"
-                            className={`px-6 py-3 rounded-[1.5rem] text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${!status ? 'bg-primary text-primary-foreground shadow-xl shadow-primary/20' : 'bg-muted/40 text-muted-foreground/60 hover:text-foreground hover:bg-muted'}`}
-                        >
+ href="/service-orders"
+ className={`px-6 py-3 rounded-2xl text-xs font-black transition-all whitespace-nowrap ${!status ? 'bg-primary text-primary-foreground shadow-xl shadow-primary/20' : 'bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+ >
                             Todas
                         </Link>
                         {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
                             <Link
-                                key={key}
-                                href={`/service-orders?status=${key}`}
-                                className={`px-6 py-3 rounded-[1.5rem] text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${status === key ? 'bg-primary text-primary-foreground shadow-xl shadow-primary/20' : 'bg-muted/40 text-muted-foreground/60 hover:text-foreground hover:bg-muted'}`}
-                            >
+ key={key}
+ href={`/service-orders?status=${key}`}
+ className={`px-6 py-3 rounded-2xl text-xs font-black transition-all whitespace-nowrap ${status === key ? 'bg-primary text-primary-foreground shadow-xl shadow-primary/20' : 'bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+ >
                                 {cfg.label}
                             </Link>
                         ))}
@@ -100,24 +100,23 @@ export default async function ServiceOrdersPage({
                     {/* Search & Actions */}
                     <div className="flex items-center gap-4 w-full xl:w-auto">
                         <div className="relative flex-1 xl:w-80 group">
-                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
                             <SearchInput
                                 placeholder="OS, cliente, placa..."
-                                className="w-full bg-muted/30 border border-white/5 rounded-[1.5rem] pl-12 pr-6 py-4 text-sm font-medium focus:outline-none focus:border-primary/30 transition-all placeholder:opacity-30 h-14"
+                                className="w-full bg-muted/30 border border-white/5 rounded-2xl pl-12 pr-6 py-4 text-sm font-medium focus:outline-none focus:border-primary/30 transition-all placeholder:opacity-30 h-14"
                             />
                         </div>
-                        <button className="h-14 w-14 flex items-center justify-center rounded-[1.5rem] bg-muted/30 border border-white/5 text-muted-foreground/60 hover:text-foreground transition-all">
+                        <button className="h-14 w-14 flex items-center justify-center rounded-2xl bg-muted/30 border border-white/5 text-muted-foreground hover:text-foreground transition-all">
                             <Filter className="w-5 h-5" />
                         </button>
                     </div>
                 </div>
 
                 {/* Data Table */}
-                <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] shadow-2xl overflow-visible">
+                <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-3xl shadow-2xl overflow-visible">
                     {/* Desktop/Tablet Grid-based Table */}
                     <div className="hidden md:block">
                         {/* Table Header */}
-                        <div className="grid grid-cols-12 gap-4 border-b border-white/5 bg-muted/20 text-[10px] font-black text-muted-foreground/30 uppercase tracking-[0.2em] p-6 items-center">
+                        <div className="grid grid-cols-12 gap-4 border-b border-white/5 bg-muted/20 text-[11px] font-black text-muted-foreground uppercase tracking-wider p-6 items-center">
                             <div className="col-span-1">ID #</div>
                             <div className="col-span-4">Serviço / Dispositivo</div>
                             <div className="col-span-3">Cliente</div>
@@ -136,7 +135,7 @@ export default async function ServiceOrdersPage({
                                             className="relative block w-full hover:bg-white/[0.03] hover:scale-[1.005] border-l-2 border-l-transparent hover:border-l-primary transition-all duration-300 cursor-pointer select-none group"
                                         >
                                             <div className="grid grid-cols-12 gap-4 p-6 items-center">
-                                                <div className="col-span-1 font-mono text-xs font-black text-muted-foreground/40 tracking-tighter">
+                                                <div className="col-span-1 font-mono text-xs font-black text-muted-foreground tracking-tighter">
                                                     {order.order_number}
                                                 </div>
                                                 <div className="col-span-4 space-y-1">
@@ -147,7 +146,7 @@ export default async function ServiceOrdersPage({
                                                         {order.title}
                                                     </Link>
                                                     <div className="flex items-center gap-3">
-                                                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">
+                                                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
                                                             <Calendar className="w-3 h-3" />
                                                             {formatDate(order.created_at)}
                                                         </div>
@@ -157,7 +156,7 @@ export default async function ServiceOrdersPage({
                                                                 priorityCfg?.color === 'text-orange-400' ? 'bg-orange-400' :
                                                                     priorityCfg?.color === 'text-rose-400' ? 'bg-rose-400' : 'bg-slate-400'
                                                         )} />
-                                                        <span className={cn("text-[9px] font-black uppercase tracking-widest", priorityCfg?.color)}>
+                                                        <span className={cn("text-[11px] font-black uppercase tracking-widest", priorityCfg?.color)}>
                                                             {priorityCfg?.label}
                                                         </span>
                                                     </div>
@@ -170,7 +169,7 @@ export default async function ServiceOrdersPage({
                                                         <span className="text-sm text-foreground font-black group-hover:translate-x-1 transition-transform truncate">
                                                             {order.customers?.name || 'Cliente Avulso'}
                                                         </span>
-                                                        <span className="text-[10px] text-muted-foreground/40 font-medium truncate">{order.customers?.phone || 'Sem contato'}</span>
+                                                        <span className="text-[11px] text-muted-foreground font-medium truncate">{order.customers?.phone || 'Sem contato'}</span>
                                                     </div>
                                                 </div>
                                                 <div className="col-span-2 text-xs font-bold text-foreground/60 italic truncate">
@@ -179,7 +178,7 @@ export default async function ServiceOrdersPage({
                                                 <div className="col-span-2 flex items-center justify-between">
                                                     {statusCfg && (
                                                         <div className={cn(
-                                                            "inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all",
+                                                            "inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-[11px] font-black uppercase tracking-widest border transition-all",
                                                             statusCfg.bg, statusCfg.text, statusCfg.border, statusCfg.glow
                                                         )}>
                                                             <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
@@ -202,15 +201,15 @@ export default async function ServiceOrdersPage({
                                 })
                             ) : (
                                 <div className="p-32 text-center">
-                                    <div className="w-24 h-24 rounded-[2rem] bg-muted/20 border border-white/5 flex items-center justify-center mx-auto mb-6">
-                                        <Wrench className="w-10 h-10 text-muted-foreground/20" />
+                                    <div className="w-24 h-24 rounded-3xl bg-muted/20 border border-white/5 flex items-center justify-center mx-auto mb-6">
+                                        <Wrench className="w-10 h-10 text-muted-foreground" />
                                     </div>
                                     <h3 className="text-2xl font-black tracking-tight text-foreground/60">Silêncio na Oficina...</h3>
-                                    <p className="text-muted-foreground/40 text-sm mt-2 mb-10 max-w-xs mx-auto">Você ainda não possui ordens de serviço. Clique abaixo para iniciar.</p>
+                                    <p className="text-muted-foreground text-sm mt-2 mb-10 max-w-xs mx-auto">Você ainda não possui ordens de serviço. Clique abaixo para iniciar.</p>
                                     <Link
-                                        href="/service-orders/new"
-                                        className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-[2rem] font-black uppercase text-xs tracking-widest shadow-2xl shadow-primary/20 transition-all hover:scale-105"
-                                    >
+ href="/service-orders/new"
+ className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-3xl font-black text-xs shadow-2xl shadow-primary/20 transition-all hover:scale-105"
+ >
                                         <Plus className="w-5 h-5" />
                                         Abrir minha 1ª OS
                                     </Link>
@@ -232,12 +231,12 @@ export default async function ServiceOrdersPage({
                                         className="block p-5 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-primary/20 hover:scale-[1.02] transition-all duration-300 active:scale-[0.98] shadow-md"
                                     >
                                         <div className="flex items-center justify-between mb-3">
-                                            <span className="text-xs font-mono font-black text-muted-foreground/50">
+                                            <span className="text-xs font-mono font-black text-muted-foreground">
                                                 #{order.order_number}
                                             </span>
                                             {statusCfg && (
                                                 <div className={cn(
-                                                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all",
+                                                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all",
                                                     statusCfg.bg, statusCfg.text, statusCfg.border, statusCfg.glow
                                                 )}>
                                                     <span className="w-1 h-1 rounded-full bg-current animate-pulse" />
@@ -263,13 +262,13 @@ export default async function ServiceOrdersPage({
                                                 </div>
                                             )}
 
-                                            <div className="flex items-center justify-between text-xs text-muted-foreground/50 pt-1">
+                                            <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
                                                 <div className="flex items-center gap-1">
                                                     <Calendar className="w-3.5 h-3.5" />
                                                     <span>{formatDate(order.created_at)}</span>
                                                 </div>
                                                 {priorityCfg && (
-                                                    <span className={cn("text-[9px] font-black uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-md", priorityCfg.color)}>
+                                                    <span className={cn("text-[11px] font-black uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-md", priorityCfg.color)}>
                                                         {priorityCfg.label}
                                                     </span>
                                                 )}
@@ -280,14 +279,14 @@ export default async function ServiceOrdersPage({
                             })
                         ) : (
                             <div className="p-12 text-center">
-                                <div className="w-16 h-16 rounded-[1.5rem] bg-muted/20 border border-white/5 flex items-center justify-center mx-auto mb-4">
-                                    <Wrench className="w-6 h-6 text-muted-foreground/20" />
+                                <div className="w-16 h-16 rounded-2xl bg-muted/20 border border-white/5 flex items-center justify-center mx-auto mb-4">
+                                    <Wrench className="w-6 h-6 text-muted-foreground" />
                                 </div>
-                                <p className="text-sm font-bold text-muted-foreground/60">Nenhuma ordem de serviço encontrada.</p>
+                                <p className="text-sm font-bold text-muted-foreground">Nenhuma ordem de serviço encontrada.</p>
                                 <Link
-                                    href="/service-orders/new"
-                                    className="inline-flex items-center gap-2 mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 transition-all hover:scale-105"
-                                >
+ href="/service-orders/new"
+ className="inline-flex items-center gap-2 mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-2xl font-black text-[13px] shadow-xl shadow-primary/20 transition-all hover:scale-105"
+ >
                                     <Plus className="w-4 h-4" />
                                     Nova OS
                                 </Link>

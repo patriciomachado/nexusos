@@ -88,7 +88,7 @@ export default function CustomerRatingForm({ token }: CustomerRatingFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                    <h3 className="text-xl font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent uppercase tracking-wider">
+                    <h3 className="text-xl font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent ">
                         Sua opinião vale muito!
                     </h3>
                     <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -155,7 +155,7 @@ export default function CustomerRatingForm({ token }: CustomerRatingFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                    <h3 className="text-xl font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent uppercase tracking-wider">
+                    <h3 className="text-xl font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent ">
                         Muito Obrigado!
                     </h3>
                     <p className="text-sm text-slate-600 dark:text-slate-400">

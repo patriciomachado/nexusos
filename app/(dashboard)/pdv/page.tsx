@@ -127,7 +127,7 @@ export default function PDVPage() {
                     {/* Desktop Search */}
                     <div className="hidden lg:flex items-center gap-2 flex-1 max-w-md group">
                         <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                             <input
                                 type="text"
                                 placeholder="Pesquisar produtos... (F2)"
@@ -150,11 +150,11 @@ export default function PDVPage() {
                     <nav className="hidden xl:flex items-center gap-4 border-l border-border/40 pl-4">
                         {navItems.map((item) => (
                             <Link
-                                key={item.path}
-                                href={item.path}
-                                className={`text-[10px] font-black uppercase tracking-widest transition-all hover:text-primary ${pathname === item.path ? 'text-primary' : 'text-muted-foreground/60'
-                                    }`}
-                            >
+ key={item.path}
+ href={item.path}
+ className={`text-[13px] font-black transition-all hover:text-primary ${pathname === item.path ? 'text-primary' : 'text-muted-foreground'
+ }`}
+ >
                                 {item.label}
                             </Link>
                         ))}
@@ -181,7 +181,7 @@ export default function PDVPage() {
                         >
                             <ShoppingCart className="w-4 h-4" />
                             {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-background">
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[11px] font-black rounded-full flex items-center justify-center border-2 border-background">
                                     {cartCount}
                                 </span>
                             )}
@@ -229,7 +229,7 @@ export default function PDVPage() {
                                 >
                                     <div className="text-left">
                                         <p className="font-bold text-sm text-foreground">{product.name}</p>
-                                        <p className="text-[10px] text-muted-foreground">Stock: {Number(product.quantity_in_stock)} {product.unit}</p>
+                                        <p className="text-[11px] text-muted-foreground">Stock: {Number(product.quantity_in_stock)} {product.unit}</p>
                                     </div>
                                     <p className="font-black text-primary">{formatCurrency(Number(product.selling_price))}</p>
                                 </button>

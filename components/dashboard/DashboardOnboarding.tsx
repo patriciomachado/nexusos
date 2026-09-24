@@ -222,10 +222,10 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
 
     return (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 dark:bg-black/90 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-card border border-border shadow-[0_32px_128px_rgba(0,0,0,0.5)] rounded-[2.5rem] max-w-xl w-full overflow-hidden relative flex flex-col min-h-[520px] p-8 md:p-10 justify-between">
+            <div className="bg-card border border-border shadow-[0_32px_128px_rgba(0,0,0,0.5)] rounded-3xl max-w-xl w-full overflow-hidden relative flex flex-col min-h-[520px] p-8 md:p-10 justify-between">
                 
                 {/* Step indicator */}
-                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 mb-4">
+                <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-4">
                     <span>Configuração Completa do Perfil</span>
                     <span>Etapa {step} de {stepsCount}</span>
                 </div>
@@ -243,7 +243,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                 <Sparkles className="w-8 h-8 animate-pulse" />
                             </div>
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-black tracking-tighter text-foreground uppercase">Configure seu Perfil</h2>
+                                <h2 className="text-3xl font-black tracking-tighter text-foreground ">Configure seu Perfil</h2>
                                 <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                                     Vamos configurar sua marca, endereço e link do Google Review. Seus clientes verão essas informações nas OS e orçamentos.
                                 </p>
@@ -254,14 +254,14 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                     {step === 2 && (
                         <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             <div>
-                                <h3 className="text-xl font-black text-foreground uppercase tracking-tight flex items-center gap-2">
+                                <h3 className="text-xl font-black text-foreground tracking-tight flex items-center gap-2">
                                     <Building2 className="w-5 h-5 text-primary" /> Identificação
                                 </h3>
                                 <p className="text-xs text-muted-foreground">Informações primárias da sua assistência técnica.</p>
                             </div>
                             <div className="space-y-3">
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider">Nome da Assistência *</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground">Nome da Assistência *</label>
                                     <input 
                                         type="text" 
                                         value={companyDetails.name}
@@ -273,7 +273,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider">CNPJ (Opcional)</label>
+                                        <label className="text-[13px] font-medium text-muted-foreground">CNPJ (Opcional)</label>
                                         <input 
                                             type="text" 
                                             value={companyDetails.cnpj}
@@ -283,7 +283,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider">Telefone de Contato</label>
+                                        <label className="text-[13px] font-medium text-muted-foreground">Telefone de Contato</label>
                                         <input 
                                             type="text" 
                                             value={companyDetails.phone}
@@ -300,14 +300,14 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                     {step === 3 && (
                         <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             <div>
-                                <h3 className="text-xl font-black text-foreground uppercase tracking-tight flex items-center gap-2">
+                                <h3 className="text-xl font-black text-foreground tracking-tight flex items-center gap-2">
                                     <MapPin className="w-5 h-5 text-primary" /> Endereço Comercial
                                 </h3>
                                 <p className="text-xs text-muted-foreground">O endereço é exibido nos recibos de entrada e saída.</p>
                             </div>
                             <div className="space-y-3">
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider">Logradouro e Número</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground">Logradouro e Número</label>
                                     <input 
                                         type="text" 
                                         value={companyDetails.address}
@@ -318,7 +318,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                 </div>
                                 <div className="grid grid-cols-3 gap-4">
                                     <div className="col-span-1 space-y-1">
-                                        <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider">CEP</label>
+                                        <label className="text-[13px] font-medium text-muted-foreground">CEP</label>
                                         <input 
                                             type="text" 
                                             value={companyDetails.zip_code}
@@ -328,7 +328,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                         />
                                     </div>
                                     <div className="col-span-1 space-y-1">
-                                        <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider">Cidade</label>
+                                        <label className="text-[13px] font-medium text-muted-foreground">Cidade</label>
                                         <input 
                                             type="text" 
                                             value={companyDetails.city}
@@ -338,7 +338,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                         />
                                     </div>
                                     <div className="col-span-1 space-y-1">
-                                        <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider">Estado</label>
+                                        <label className="text-[13px] font-medium text-muted-foreground">Estado</label>
                                         <input 
                                             type="text" 
                                             value={companyDetails.state}
@@ -355,14 +355,14 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                     {step === 4 && (
                         <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             <div>
-                                <h3 className="text-xl font-black text-foreground uppercase tracking-tight flex items-center gap-2">
+                                <h3 className="text-xl font-black text-foreground tracking-tight flex items-center gap-2">
                                     <Globe className="w-5 h-5 text-primary" /> Identidade Visual & Reviews
                                 </h3>
                                 <p className="text-xs text-muted-foreground">Envie sua logo e ative a coleta automática de avaliações.</p>
                             </div>
                             <div className="space-y-3">
                                 <div className="space-y-2">
-                                    <label className="block text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider flex items-center gap-1">
+                                    <label className="block text-[13px] font-medium text-muted-foreground flex items-center gap-1">
                                         <Camera className="w-3.5 h-3.5" /> Enviar Logomarca (Opcional)
                                     </label>
                                     
@@ -392,12 +392,12 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                         )}
                                         <div className="flex-1 text-left">
                                             <p className="text-xs font-bold text-foreground">Logotipo da Loja</p>
-                                            <p className="text-[10px] text-muted-foreground">PNG, JPG de até 2MB</p>
+                                            <p className="text-[11px] text-muted-foreground">PNG, JPG de até 2MB</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider flex items-center gap-1">
+                                    <label className="text-[13px] font-medium text-muted-foreground flex items-center gap-1">
                                         <LinkIcon className="w-3.5 h-3.5" /> Link do Google Review (Opcional)
                                     </label>
                                     <input 
@@ -407,7 +407,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                         className="w-full px-4 py-3.5 bg-white/5 border border-white/5 focus:border-primary/20 rounded-xl text-sm font-bold text-foreground focus:outline-none transition-colors"
                                         placeholder="https://g.page/r/XP-sua-assistencia/review"
                                     />
-                                    <span className="text-[9px] text-muted-foreground/50 font-bold block mt-1">Seus clientes receberão esse link para avaliar sua loja no Google após a conclusão da OS.</span>
+                                    <span className="text-[11px] text-muted-foreground font-bold block mt-1">Seus clientes receberão esse link para avaliar sua loja no Google após a conclusão da OS.</span>
                                 </div>
                             </div>
                         </div>
@@ -416,7 +416,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                     {step === 5 && (
                         <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             <div>
-                                <h3 className="text-xl font-black text-foreground uppercase tracking-tight flex items-center gap-2">
+                                <h3 className="text-xl font-black text-foreground tracking-tight flex items-center gap-2">
                                     <Smartphone className="w-5 h-5 text-primary" /> Criar Primeira OS de Teste
                                 </h3>
                                 <p className="text-xs text-muted-foreground">Experimente o controle de fluxos, atualizações via WhatsApp e faturamento.</p>
@@ -424,7 +424,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                             <div className="space-y-3">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider">Cliente de Teste</label>
+                                        <label className="text-[13px] font-medium text-muted-foreground">Cliente de Teste</label>
                                         <input 
                                             type="text" 
                                             value={osDetails.customerName}
@@ -434,7 +434,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider">Telefone do Cliente</label>
+                                        <label className="text-[13px] font-medium text-muted-foreground">Telefone do Cliente</label>
                                         <input 
                                             type="text" 
                                             value={osDetails.customerPhone}
@@ -446,7 +446,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider">Aparelho / Equipamento</label>
+                                        <label className="text-[13px] font-medium text-muted-foreground">Aparelho / Equipamento</label>
                                         <input 
                                             type="text" 
                                             value={osDetails.equipment}
@@ -456,7 +456,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-wider">Problema Relatado</label>
+                                        <label className="text-[13px] font-medium text-muted-foreground">Problema Relatado</label>
                                         <input 
                                             type="text" 
                                             value={osDetails.defect}
@@ -476,7 +476,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                 <ShieldCheck className="w-8 h-8" />
                             </div>
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-black tracking-tighter text-foreground uppercase">Setup Concluído!</h2>
+                                <h2 className="text-3xl font-black tracking-tighter text-foreground ">Setup Concluído!</h2>
                                 <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                                     Seus dados comerciais, endereço e configurações de avaliação foram salvos. Você está pronto para gerenciar sua assistência técnica com nível profissional.
                                 </p>
@@ -504,27 +504,27 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                     <div className="flex gap-4">
                     {step > 1 && step < stepsCount && (
                         <button
-                            onClick={() => setStep(prev => prev - 1)}
-                            className="px-6 py-3.5 bg-white/5 text-xs font-black uppercase tracking-widest hover:bg-white/10 rounded-xl text-foreground transition-colors"
-                        >
+ onClick={() => setStep(prev => prev - 1)}
+ className="px-6 py-3.5 bg-white/5 text-xs font-black hover:bg-white/10 rounded-xl text-foreground transition-colors"
+ >
                             Voltar
                         </button>
                     )}
                     {step < stepsCount ? (
                         <button
-                            onClick={() => setStep(prev => prev + 1)}
-                            disabled={step === 2 && !companyDetails.name}
-                            className="flex-1 py-3.5 bg-primary text-white text-xs font-black uppercase tracking-widest hover:bg-primary/95 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+ onClick={() => setStep(prev => prev + 1)}
+ disabled={step === 2 && !companyDetails.name}
+ className="flex-1 py-3.5 bg-primary text-white text-xs font-black hover:bg-primary/95 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+ >
                             Continuar
                             <ArrowRight className="w-4 h-4" />
                         </button>
                     ) : (
                         <button
-                            onClick={handleFinish}
-                            disabled={saving || uploadingLogo}
-                            className="flex-1 py-3.5 bg-primary text-white text-xs font-black uppercase tracking-widest hover:bg-primary/95 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                        >
+ onClick={handleFinish}
+ disabled={saving || uploadingLogo}
+ className="flex-1 py-3.5 bg-primary text-white text-xs font-black hover:bg-primary/95 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+ >
                             {saving ? 'Salvando...' : 'Finalizar Setup'}
                             <Check className="w-4 h-4" />
                         </button>

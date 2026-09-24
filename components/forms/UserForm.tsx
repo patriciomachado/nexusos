@@ -58,7 +58,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
         <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid sm:grid-cols-2 gap-6">
                 <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest ml-2">Nome Completo</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2 ml-2">Nome Completo</label>
                     <PremiumInput
                         required
                         value={form.full_name}
@@ -69,7 +69,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                 </div>
 
                 <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest ml-2">E-mail de Acesso</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2 ml-2">E-mail de Acesso</label>
                     <PremiumInput
                         required
                         type="email"
@@ -82,7 +82,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest ml-2">Cargo / Permissões</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2 ml-2">Cargo / Permissões</label>
                     <div className="relative group">
                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
                             <ShieldCheck className="w-4 h-4" />
@@ -103,7 +103,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest ml-2">Telefone</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2 ml-2">Telefone</label>
                     <PremiumInput
                         type="tel"
                         value={form.phone}
@@ -114,7 +114,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest ml-2">Status da Conta</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2 ml-2">Status da Conta</label>
                     <div 
                         onClick={() => setForm(p => ({ ...p, is_active: !p.is_active }))}
                         className={cn(
@@ -142,19 +142,19 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
 
             <div className="flex items-center gap-4 pt-4 border-t border-border">
                 <button
-                    type="submit"
-                    disabled={isPending}
-                    className="flex-1 bg-primary text-primary-foreground h-14 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                >
+ type="submit"
+ disabled={isPending}
+ className="flex-1 bg-primary text-primary-foreground h-14 rounded-2xl font-black text-xs shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+ >
                     {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     {initial?.id ? 'ATUALIZAR' : 'CONVIDAR MEMBRO'}
                 </button>
                 {onCancel && (
                     <button
-                        type="button"
-                        onClick={onCancel}
-                        className="px-8 h-14 rounded-2xl bg-muted text-muted-foreground font-black text-xs uppercase tracking-widest hover:bg-muted/80 transition-all"
-                    >
+ type="button"
+ onClick={onCancel}
+ className="px-8 h-14 rounded-2xl bg-muted text-muted-foreground font-black text-xs hover:bg-muted/80 transition-all"
+ >
                         CANCELAR
                     </button>
                 )}

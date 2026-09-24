@@ -128,7 +128,7 @@ export default function CatalogQuizModal({
                         <div className="flex items-center gap-2">
                             <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 shadow-md" style={{ color: themePrimary, borderColor: `${themePrimary}40` }}>
                                 <Gamepad2 className="w-4 h-4" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">NEXUS GAME HUD</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest">NEXUS GAME HUD</span>
                             </div>
                             <span className="text-xs font-mono font-bold text-slate-400">
                                 {step === 3 ? '🏆 FASE FINAL' : `FASE ${step} DE 2`}
@@ -145,7 +145,7 @@ export default function CatalogQuizModal({
 
                     {/* Progress XP Bar */}
                     <div className="space-y-1">
-                        <div className="flex items-center justify-between text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+                        <div className="flex items-center justify-between text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest">
                             <span>Progresso do Jogador</span>
                             <span>{step === 1 ? '50% XP' : step === 2 ? '85% XP' : '100% MATCH UNLOCKED'}</span>
                         </div>
@@ -166,7 +166,7 @@ export default function CatalogQuizModal({
                 {step === 1 && (
                     <div className="flex-1 min-h-0 flex flex-col justify-between py-3 space-y-3">
                         <div className="space-y-1 text-center sm:text-left">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/20" style={{ color: themePrimary }}>
+                            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/20" style={{ color: themePrimary }}>
                                 ETAPA 1 DE 2 • INVENTÁRIO
                             </span>
                             <h3 className="text-lg sm:text-xl font-black text-white">Você tem um celular para dar na troca? 🔁</h3>
@@ -188,7 +188,7 @@ export default function CatalogQuizModal({
                                 </div>
                                 <div className="min-w-0">
                                     <h4 className="font-black text-xs text-white">Sim, quero dar troca</h4>
-                                    <p className="text-[10px] text-slate-400 truncate">Abater valor do meu usado</p>
+                                    <p className="text-[11px] text-slate-400 truncate">Abater valor do meu usado</p>
                                 </div>
                             </button>
 
@@ -208,7 +208,7 @@ export default function CatalogQuizModal({
                                 </div>
                                 <div className="min-w-0">
                                     <h4 className="font-black text-xs text-white">Não tenho troca</h4>
-                                    <p className="text-[10px] text-slate-400 truncate">Comprar direto sem entrada</p>
+                                    <p className="text-[11px] text-slate-400 truncate">Comprar direto sem entrada</p>
                                 </div>
                             </button>
                         </div>
@@ -216,7 +216,7 @@ export default function CatalogQuizModal({
                         {/* Trade in selector grid if YES */}
                         {hasTradeIn && (
                             <div className="flex-1 min-h-0 space-y-1.5 flex flex-col justify-between">
-                                <label className="text-[10px] font-black uppercase tracking-wider text-emerald-400 block" style={{ color: themePrimary }}>
+                                <label className="text-[13px] font-medium text-emerald-400 block" style={{ color: themePrimary }}>
                                     Selecione seu modelo atual para abate imediato:
                                 </label>
 
@@ -238,14 +238,14 @@ export default function CatalogQuizModal({
                                                 </div>
                                                 <div className="min-w-0">
                                                     <p className="font-bold text-[11px] text-white truncate">{item.model}</p>
-                                                    <p className="text-[9px] font-black text-emerald-400">- {formatCurrency(item.estimated_value)}</p>
+                                                    <p className="text-[11px] font-black text-emerald-400">- {formatCurrency(item.estimated_value)}</p>
                                                 </div>
                                             </button>
                                         )
                                     })}
                                 </div>
 
-                                <p className="text-[10px] text-slate-400 flex items-center gap-1 font-semibold pt-1">
+                                <p className="text-[11px] text-slate-400 flex items-center gap-1 font-semibold pt-1">
                                     <Info className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                                     <span>*Estimativa aproximada sujeita à avaliação presencial do estado do aparelho na loja.</span>
                                 </p>
@@ -255,11 +255,11 @@ export default function CatalogQuizModal({
                         {/* Next Button */}
                         <div className="flex items-center justify-end pt-2 border-t border-slate-800/80">
                             <button
-                                disabled={hasTradeIn === null || (hasTradeIn && !selectedTradeIn)}
-                                onClick={() => setStep(2)}
-                                className="px-6 py-2.5 text-black font-black rounded-xl text-xs uppercase tracking-wider transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
-                                style={{ backgroundColor: themePrimary }}
-                            >
+ disabled={hasTradeIn === null || (hasTradeIn && !selectedTradeIn)}
+ onClick={() => setStep(2)}
+ className="px-6 py-2.5 text-black font-black rounded-xl text-xs transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
+ style={{ backgroundColor: themePrimary }}
+ >
                                 Avançar para Etapa 2
                                 <ArrowRight className="w-4 h-4" />
                             </button>
@@ -271,7 +271,7 @@ export default function CatalogQuizModal({
                 {step === 2 && (
                     <div className="flex-1 min-h-0 flex flex-col justify-between py-3 space-y-3">
                         <div className="space-y-1 text-center sm:text-left">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/20" style={{ color: themePrimary }}>
+                            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/20" style={{ color: themePrimary }}>
                                 ETAPA 2 DE 2 • PLANO DE CONQUISTA
                             </span>
                             <h3 className="text-lg sm:text-xl font-black text-white">Qual parcela mensal se encaixa melhor para você? 💳</h3>
@@ -295,12 +295,12 @@ export default function CatalogQuizModal({
                                         <div className="space-y-0.5">
                                             <div className="flex items-center gap-2">
                                                 <span className="text-xs font-black text-white">{b.title}</span>
-                                                <span className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                                                <span className="text-[11px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
                                                     {b.badge}
                                                 </span>
                                             </div>
                                             <p className="text-xs font-black text-emerald-400" style={{ color: themePrimary }}>{b.monthly}</p>
-                                            <p className="text-[10px] text-slate-400">{b.desc}</p>
+                                            <p className="text-[11px] text-slate-400">{b.desc}</p>
                                         </div>
 
                                         <div className={cn(
@@ -325,11 +325,11 @@ export default function CatalogQuizModal({
                             </button>
 
                             <button
-                                disabled={!selectedBudget}
-                                onClick={() => setStep(3)}
-                                className="px-6 py-2.5 text-black font-black rounded-xl text-xs uppercase tracking-wider transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg animate-pulse"
-                                style={{ backgroundColor: themePrimary }}
-                            >
+ disabled={!selectedBudget}
+ onClick={() => setStep(3)}
+ className="px-6 py-2.5 text-black font-black rounded-xl text-xs transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg animate-pulse"
+ style={{ backgroundColor: themePrimary }}
+ >
                                 Desbloquear Match Final
                                 <Trophy className="w-4 h-4 fill-current" />
                             </button>
@@ -341,7 +341,7 @@ export default function CatalogQuizModal({
                 {step === 3 && (
                     <div className="flex-1 min-h-0 flex flex-col justify-between py-2 space-y-3">
                         <div className="text-center space-y-1">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-0.5 rounded-full inline-flex items-center gap-1" style={{ color: themePrimary }}>
+                            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-0.5 rounded-full inline-flex items-center gap-1" style={{ color: themePrimary }}>
                                 <Trophy className="w-3.5 h-3.5 fill-current" />
                                 CONQUISTA DESBLOQUEADA • MATCH LEGENDÁRIO
                             </span>
@@ -360,7 +360,7 @@ export default function CatalogQuizModal({
                                     </div>
 
                                     <div className="space-y-1 flex-1 min-w-0">
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md">
+                                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md">
                                             {matchedDevice.brand} • {matchedDevice.storage || 'Estoque'}
                                         </span>
                                         <h4 className="text-base font-black text-white truncate">{matchedDevice.model}</h4>
@@ -394,21 +394,21 @@ export default function CatalogQuizModal({
 
                                     <div className="pt-2 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                                         <div>
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">
                                                 {hasTradeIn ? 'SALDO À VISTA (PIX):' : 'VALOR À VISTA (PIX):'}
                                             </span>
                                             <p className="text-xl sm:text-2xl font-black text-emerald-400" style={{ color: themePrimary }}>{formatCurrency(finalCashPrice)}</p>
                                         </div>
 
                                         <div className="text-left sm:text-right space-y-0.5">
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">PARCELADO NO CARTÃO:</span>
+                                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 block">PARCELADO NO CARTÃO:</span>
                                             <p className="text-xs font-bold text-slate-200">12x de {formatCurrency(finalMonthly12x)}</p>
                                             <p className="text-xs font-bold text-amber-300">24x de {formatCurrency(finalMonthly24x)}</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <p className="text-[9px] text-slate-400 text-center font-medium">
+                                <p className="text-[11px] text-slate-400 text-center font-medium">
                                     *Aviso: O valor pago em aparelhos de entrada é uma estimativa aproximada sujeita à avaliação presencial na loja.
                                 </p>
                             </div>
@@ -417,10 +417,10 @@ export default function CatalogQuizModal({
                         {/* CTA Button */}
                         <div className="space-y-2 pt-1 border-t border-slate-800/80">
                             <button
-                                onClick={sendWhatsAppOffer}
-                                className="w-full py-3.5 text-black font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl hover:scale-[1.01] active:scale-95 animate-pulse"
-                                style={{ backgroundColor: themePrimary }}
-                            >
+ onClick={sendWhatsAppOffer}
+ className="w-full py-3.5 text-black font-black rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-xl hover:scale-[1.01] active:scale-95 animate-pulse"
+ style={{ backgroundColor: themePrimary }}
+ >
                                 <MessageSquare className="w-4 h-4 fill-current" />
                                 RESGATAR MEU CELULAR NO WHATSAPP AGORA 🎮
                             </button>

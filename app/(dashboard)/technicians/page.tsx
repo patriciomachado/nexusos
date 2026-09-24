@@ -33,7 +33,7 @@ export default async function TechniciansPage() {
                     <div className="space-y-3">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-1 bg-orange-500 rounded-full" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-orange-500/60">Gestão de Equipe</span>
+                            <span className="text-[11px] font-black uppercase tracking-wider text-orange-500/60">Gestão de Equipe</span>
                         </div>
                         <h2 className="text-4xl lg:text-5xl font-black text-foreground tracking-tighter">Especialistas e Técnicos</h2>
                         <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-xl">
@@ -41,9 +41,9 @@ export default async function TechniciansPage() {
                         </p>
                     </div>
                     <Link
-                        href="/technicians/new"
-                        className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-foreground px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-[0_10px_25px_-5px_rgba(245,158,11,0.4)] transition-all hover:-translate-y-1 active:scale-95"
-                    >
+ href="/technicians/new"
+ className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-foreground px-8 py-4 rounded-2xl font-black text-[13px] shadow-[0_10px_25px_-5px_rgba(245,158,11,0.4)] transition-all hover:-translate-y-1 active:scale-95"
+ >
                         <Plus className="w-4 h-4" />
                         Novo Técnico
                     </Link>
@@ -82,7 +82,7 @@ export default async function TechniciansPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <button className="p-2 text-foreground/20 hover:text-muted-foreground/60 transition-colors">
+                                        <button className="p-2 text-foreground/20 hover:text-muted-foreground transition-colors">
                                             <MoreVertical className="w-5 h-5" />
                                         </button>
                                     </div>
@@ -91,7 +91,7 @@ export default async function TechniciansPage() {
                                     {t.specialties && t.specialties.length > 0 && (
                                         <div className="flex flex-wrap gap-2 mb-6">
                                             {(t.specialties as string[]).slice(0, 3).map((s: string) => (
-                                                <span key={s} className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                                                <span key={s} className="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-orange-500/10 text-orange-400 border border-orange-500/20">
                                                     {s}
                                                 </span>
                                             ))}
@@ -114,7 +114,7 @@ export default async function TechniciansPage() {
                                     <div className="mt-6 pt-5 border-t border-border/10 flex items-center justify-between">
                                         <div className="flex items-center gap-1.5">
                                             <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                                            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Disponível</span>
+                                            <span className="text-[11px] font-bold text-emerald-500 uppercase tracking-widest">Disponível</span>
                                         </div>
                                         <div className="flex items-center gap-1 text-orange-400 text-xs font-semibold group-hover:translate-x-1 transition-transform">
                                             Dashboard <ChevronRight className="w-3.5 h-3.5" />

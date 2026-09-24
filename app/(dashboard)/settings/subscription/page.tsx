@@ -166,7 +166,7 @@ export default function SubscriptionPage() {
             <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8">
                 {/* Error Banner */}
                 {error && (
-                    <div className="bg-rose-500/10 border border-rose-500/20 rounded-[2rem] p-6 flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="bg-rose-500/10 border border-rose-500/20 rounded-3xl p-6 flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center shrink-0">
                             <AlertCircle className="w-6 h-6 text-rose-400" />
                         </div>
@@ -182,7 +182,7 @@ export default function SubscriptionPage() {
 
                 {/* Status Banner */}
                 {success && (
-                    <div className="bg-gradient-to-r from-emerald-500/20 to-emerald-600/10 border border-emerald-500/30 rounded-[2rem] p-6 md:p-8 flex items-center gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="bg-gradient-to-r from-emerald-500/20 to-emerald-600/10 border border-emerald-500/30 rounded-3xl p-6 md:p-8 flex items-center gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
                         <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 flex items-center justify-center shrink-0">
                             <ShieldCheck className="w-7 h-7 text-emerald-400" />
                         </div>
@@ -195,8 +195,8 @@ export default function SubscriptionPage() {
 
                 {/* Main Status Card - Beautiful & Informative */}
                 <div className="relative">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-purple-500 to-blue-600 rounded-[2.5rem] blur opacity-30"></div>
-                    <div className="relative bg-gradient-to-br from-card via-card/80 to-primary/5 border border-white/10 rounded-[2rem] overflow-hidden">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-purple-500 to-blue-600 rounded-3xl blur opacity-30"></div>
+                    <div className="relative bg-gradient-to-br from-card via-card/80 to-primary/5 border border-white/10 rounded-3xl overflow-hidden">
                         {/* Background Pattern */}
                         <div className="absolute inset-0 opacity-5">
                             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,255,0.3),transparent_50%)]" />
@@ -280,20 +280,20 @@ export default function SubscriptionPage() {
                             {/* Action Button */}
                             {isActive ? (
                                 <button
-                                    onClick={handlePortal}
-                                    disabled={processing}
-                                    className="w-full py-4 rounded-2xl bg-white/5 text-sm font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-3 border border-white/10"
-                                >
+ onClick={handlePortal}
+ disabled={processing}
+ className="w-full py-4 rounded-2xl bg-white/5 text-sm font-black hover:bg-white/10 transition-all flex items-center justify-center gap-3 border border-white/10"
+ >
                                     {processing ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                                         <><CreditCard className="w-5 h-5" /> Gerenciar Assinatura Cakto</>
                                     )}
                                 </button>
                             ) : (
                                 <button
-                                    onClick={handleSubscribe}
-                                    disabled={processing}
-                                    className="w-full py-6 rounded-2xl bg-gradient-to-r from-primary via-purple-600 to-blue-600 text-white text-base font-black uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-[0_20px_50px_rgba(120,119,255,0.4)] relative overflow-hidden group/btn border border-white/20"
-                                >
+ onClick={handleSubscribe}
+ disabled={processing}
+ className="w-full py-6 rounded-2xl bg-gradient-to-r from-primary via-purple-600 to-blue-600 text-white text-base font-black hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-[0_20px_50px_rgba(120,119,255,0.4)] relative overflow-hidden group/btn border border-white/20"
+ >
                                     <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000 skew-x-[20deg]" />
                                     {processing ? <Loader2 className="w-6 h-6 animate-spin" /> : (
                                         <><Zap className="w-6 h-6 fill-current" /> Finalizar Compra - Ativar Pro <ArrowRight className="w-6 h-6" /></>
@@ -325,7 +325,7 @@ export default function SubscriptionPage() {
                             {/* Features */}
                             <div className="md:col-span-3 space-y-6">
                                 <div className="space-y-3">
-                                    <h2 className="text-2xl font-black tracking-tight leading-none uppercase">
+                                    <h2 className="text-2xl font-black tracking-tight leading-none ">
                                         Nexus OS <span className="text-primary">PRO</span>
                                     </h2>
                                     <p className="text-muted-foreground leading-relaxed">
@@ -347,7 +347,7 @@ export default function SubscriptionPage() {
 
                             {/* Pricing Card */}
                             <div className="md:col-span-2">
-                                <div className="bg-card border border-border rounded-[2rem] overflow-hidden shadow-2xl">
+                                <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-2xl">
                                     <div className="bg-gradient-to-br from-primary/10 to-transparent p-8">
                                         <div className="flex items-baseline gap-1 mb-2">
                                             <span className="text-5xl font-black tracking-tighter">R$ {MONTHLY_PRICE}</span>
@@ -365,10 +365,10 @@ export default function SubscriptionPage() {
                                         </div>
                                         
                                         <button
-                                            onClick={handleSubscribe}
-                                            disabled={processing}
-                                            className="w-full py-4 mt-2 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
-                                        >
+ onClick={handleSubscribe}
+ disabled={processing}
+ className="w-full py-4 mt-2 rounded-xl bg-primary text-white text-xs font-black hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+ >
                                             {processing ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                                                 <>Assinar Agora <ArrowRight className="w-4 h-4" /></>
                                             )}

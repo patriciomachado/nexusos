@@ -107,7 +107,7 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-1 bg-violet-500 rounded-full" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-violet-500/60">Agente Inteligente de IA</span>
+                        <span className="text-[11px] font-black uppercase tracking-wider text-violet-500/60">Agente Inteligente de IA</span>
                     </div>
                     <h2 className="text-3xl font-black text-foreground tracking-tighter">Integração Alice AI</h2>
                     <p className="text-muted-foreground font-medium text-sm leading-relaxed max-w-xl">
@@ -116,7 +116,7 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
                 </div>
             </div>
 
-            <div className="p-10 rounded-[3.5rem] bg-card/40 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group transition-all duration-500 hover:border-violet-500/20">
+            <div className="p-10 rounded-3xl bg-card/40 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group transition-all duration-500 hover:border-violet-500/20">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-violet-500/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/3 group-hover:bg-violet-500/10 transition-colors duration-700 pointer-events-none" />
                 
                 <form onSubmit={handleSave} className="space-y-8 relative z-10">
@@ -140,7 +140,7 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
                     <div className="grid md:grid-cols-2 gap-8">
                         {/* URL da API (Read only) */}
                         <div className="space-y-3">
-                            <label className="block text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] italic ml-2">
+                            <label className="block text-[13px] font-medium text-muted-foreground ml-2">
                                 URL da API do Nexus (Alice ➔ Nexus)
                             </label>
                             <div className="relative flex items-center">
@@ -160,14 +160,14 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
                                     {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
                                 </button>
                             </div>
-                            <span className="text-[10px] font-medium text-muted-foreground/60 block ml-2">
+                            <span className="text-[11px] font-medium text-muted-foreground block ml-2">
                                 Configure esta URL no card <strong>Integração Nexus ERP</strong> no painel de administração da Alice.
                             </span>
                         </div>
 
                         {/* Chave de Segurança */}
                         <div className="space-y-3">
-                            <label className="block text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] italic ml-2">
+                            <label className="block text-[13px] font-medium text-muted-foreground ml-2">
                                 Chave de Acesso (API Key / Bearer Token)
                             </label>
                             <div className="relative flex items-center">
@@ -180,21 +180,21 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
                                     className="pr-24"
                                 />
                                 <button
-                                    type="button"
-                                    onClick={generateToken}
-                                    className="absolute right-2 px-3 py-1.5 bg-violet-500/10 text-violet-500 hover:bg-violet-500/20 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all"
-                                >
+ type="button"
+ onClick={generateToken}
+ className="absolute right-2 px-3 py-1.5 bg-violet-500/10 text-violet-500 hover:bg-violet-500/20 rounded-xl font-black text-[13px] transition-all"
+ >
                                     Gerar Chave
                                 </button>
                             </div>
-                            <span className="text-[10px] font-medium text-muted-foreground/60 block ml-2">
+                            <span className="text-[11px] font-medium text-muted-foreground block ml-2">
                                 Um token arbitrário seguro. Deve ser idêntico ao configurado no painel da Alice.
                             </span>
                         </div>
 
                         {/* URL de Sincronização do Catálogo */}
                         <div className="md:col-span-2 space-y-3">
-                            <label className="block text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] italic ml-2">
+                            <label className="block text-[13px] font-medium text-muted-foreground ml-2">
                                 URL de Sincronização da Alice (Nexus ➔ Alice)
                             </label>
                             <PremiumInput
@@ -204,7 +204,7 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
                                 placeholder="https://aliceinteligence.com/api/integrations/nexus/sync"
                                 icon={<RefreshCw className="w-4 h-4 text-violet-500" />}
                             />
-                            <span className="text-[10px] font-medium text-muted-foreground/60 block ml-2">
+                            <span className="text-[11px] font-medium text-muted-foreground block ml-2">
                                 Endereço de webhook fornecido pela Alice AI para onde enviaremos o catálogo de serviços ativos.
                             </span>
                         </div>

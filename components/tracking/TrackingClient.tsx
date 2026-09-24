@@ -170,7 +170,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
             <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0a0a0f] flex items-center justify-center p-4">
                 <div className="max-w-xl w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <div className="text-center space-y-4">
-                        <div className="w-20 h-20 bg-indigo-500/10 rounded-[2rem] flex items-center justify-center mx-auto text-indigo-500 mb-6">
+                        <div className="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center mx-auto text-indigo-500 mb-6">
                             <ShieldCheck className="w-10 h-10" />
                         </div>
                         <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Termos de Garantia</h1>
@@ -179,7 +179,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                         </p>
                     </div>
 
-                    <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 shadow-xl shadow-indigo-500/5">
+                    <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-3xl p-8 shadow-xl shadow-indigo-500/5">
                         <div className="prose prose-slate dark:prose-invert max-w-none">
                             <div className="bg-slate-50 dark:bg-black/20 p-6 rounded-3xl border border-slate-200/50 dark:border-white/5 max-h-[30vh] overflow-y-auto custom-scrollbar mb-6 text-sm leading-relaxed whitespace-pre-line text-slate-600 dark:text-slate-300">
                                 {company?.warranty_terms || 'Termos não configurados.'}
@@ -189,7 +189,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                         {/* Signature Pad */}
                         <div className="space-y-3 mb-6">
                             <div className="flex items-center justify-between">
-                                <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Assinatura do Cliente</label>
+                                <label className="text-[13px] font-bold text-slate-500">Assinatura do Cliente</label>
                                 <button
                                     type="button"
                                     onClick={clearCanvas}
@@ -201,7 +201,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                             <div className="relative border border-slate-200 dark:border-white/10 rounded-2xl bg-slate-50 dark:bg-black/20 overflow-hidden">
                                 <canvas ref={canvasRef} className="w-full h-[180px] cursor-crosshair touch-none block bg-transparent" />
                                 <div className="absolute left-6 right-6 bottom-10 border-b border-dashed border-slate-300 dark:border-white/10 pointer-events-none" />
-                                <span className="absolute bottom-3 left-6 text-[10px] text-slate-400 font-bold uppercase tracking-wider pointer-events-none select-none">Assine aqui</span>
+                                <span className="absolute bottom-3 left-6 text-[11px] text-slate-400 font-bold uppercase tracking-wider pointer-events-none select-none">Assine aqui</span>
                             </div>
                         </div>
 
@@ -250,7 +250,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                         </button>
                     </div>
 
-                    <p className="text-center text-xs text-slate-400 font-bold uppercase tracking-[0.2em]">
+                    <p className="text-center text-xs text-slate-400 font-bold uppercase tracking-wider">
                         {company?.name || 'Nexus OS'} &bull; Protocolo #{os.order_number}
                     </p>
                 </div>
@@ -272,18 +272,18 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                     )}
                     <div>
                         <h1 className="font-bold text-sm md:text-base tracking-tight">{company?.name || 'Nexus OS'}</h1>
-                        <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 font-medium">Acompanhamento de OS</p>
+                        <p className="text-[11px] md:text-xs text-slate-500 dark:text-slate-400 font-medium">Acompanhamento de OS</p>
                     </div>
                 </div>
                 <div className="text-right">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Número da OS</p>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">Número da OS</p>
                     <p className="font-mono font-bold text-indigo-600 dark:text-indigo-400">#{os.order_number}</p>
                 </div>
             </header>
 
             <main className="max-w-3xl mx-auto px-4 py-8 md:py-12 space-y-6 md:space-y-8 animate-in fade-in duration-1000">
                 {/* Status Hero Card */}
-                <div className={`rounded-[2rem] p-6 md:p-10 border ${statusCfg.border} ${statusCfg.bg} flex flex-col md:flex-row items-center gap-6 md:gap-8 text-center md:text-left relative overflow-hidden`}>
+                <div className={`rounded-3xl p-6 md:p-10 border ${statusCfg.border} ${statusCfg.bg} flex flex-col md:flex-row items-center gap-6 md:gap-8 text-center md:text-left relative overflow-hidden`}>
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[80px] rounded-full pointer-events-none" />
 
                     <div className={`w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shrink-0 bg-white dark:bg-black/50 shadow-xl border ${statusCfg.border}`}>
@@ -291,7 +291,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                     </div>
 
                     <div className="flex-1 z-10">
-                        <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Status Atual</p>
+                        <p className="text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Status Atual</p>
                         <h2 className={`text-3xl md:text-4xl font-black tracking-tight ${statusCfg.text} mb-2`}>{statusCfg.label}</h2>
                         <p className="text-sm text-slate-600 dark:text-slate-400 font-medium max-w-md">
                             Atualizado em: {formatDateTime(os.updated_at)}
@@ -301,7 +301,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
 
                 {/* Rating Section (Visible if completed) */}
                 {isFinished && (
-                    <div className="rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12121a] shadow-lg p-6 md:p-8 relative overflow-hidden">
+                    <div className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12121a] shadow-lg p-6 md:p-8 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-8 opacity-5 dark:opacity-[0.02] pointer-events-none">
                             <Star className="w-64 h-64" />
                         </div>
@@ -460,7 +460,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                                     <div key={item.id} className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-white/5 last:border-0">
                                         <div>
                                             <p className="text-sm font-bold">{item.item_name}</p>
-                                            <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium">
+                                            <p className="text-[11px] text-slate-400 uppercase tracking-widest font-medium">
                                                 {item.quantity}x {formatCurrency(item.unit_price)}
                                             </p>
                                         </div>
@@ -490,7 +490,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                                         {discount > 0 && (
                                             <div className="flex items-center gap-3 text-sm font-medium">
                                                 <span className="text-slate-500">Subtotal: {formatCurrency(subtotal)}</span>
-                                                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full text-[10px] font-black uppercase">
+                                                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full text-[11px] font-black uppercase">
                                                     -{formatCurrency(discount)} DESC.
                                                 </span>
                                             </div>
@@ -524,7 +524,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
 
                     {/* Warranty Terms Section */}
                     {company?.warranty_terms && (
-                        <div className="md:col-span-2 rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12121a] p-6 md:p-8 shadow-sm">
+                        <div className="md:col-span-2 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12121a] p-6 md:p-8 shadow-sm">
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
@@ -532,7 +532,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                                     </div>
                                     <h3 className="font-bold tracking-tight">Termos de Garantia e Condições</h3>
                                 </div>
-                                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-widest border border-emerald-500/10">
+                                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-black uppercase tracking-widest border border-emerald-500/10">
                                     <CheckCircle2 className="w-3 h-3" />
                                     {os.signature_url ? 'Aceito e Assinado' : 'Aceito pelo Cliente'}
                                 </div>
@@ -543,7 +543,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                             
                             {os.signature_url && (
                                 <div className="mt-6 pt-6 border-t border-slate-100 dark:border-white/5 flex flex-col items-center">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3">Assinatura Digital do Cliente</p>
+                                    <p className="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-3">Assinatura Digital do Cliente</p>
                                     <div className="bg-slate-50 dark:bg-black/20 p-4 rounded-2xl border border-slate-200/50 dark:border-white/5 max-w-[280px] w-full flex items-center justify-center">
                                         <img src={os.signature_url} alt="Assinatura Digital" className="max-h-20 object-contain dark:invert" />
                                     </div>

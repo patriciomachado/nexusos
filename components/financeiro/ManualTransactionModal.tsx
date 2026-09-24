@@ -97,7 +97,7 @@ export default function ManualTransactionModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300">
-            <div className="bg-card border border-border w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 relative">
+            <div className="bg-card border border-border w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 relative">
                 <div className={cn(
                     "absolute inset-0 opacity-[0.03] pointer-events-none",
                     isEntry ? "bg-emerald-500" : "bg-rose-500"
@@ -113,7 +113,7 @@ export default function ManualTransactionModal({
                                 {isEntry ? <ArrowUpRight className="w-6 h-6" /> : <ArrowDownRight className="w-6 h-6" />}
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black tracking-tight uppercase">
+                                <h2 className="text-2xl font-black tracking-tight ">
                                     {title || (isEntry ? 'Registrar Suprimento' : 'Registrar Sangria')}
                                 </h2>
                                 <p className="text-xs text-muted-foreground font-semibold">Movimentação manual de valores em caixa</p>
@@ -127,7 +127,7 @@ export default function ManualTransactionModal({
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Valor (R$)</label>
+                                <label className="text-[13px] font-medium text-muted-foreground ml-1">Valor (R$)</label>
                                 <input
                                     type="number"
                                     step="0.01"
@@ -139,7 +139,7 @@ export default function ManualTransactionModal({
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Meio de Pagamento</label>
+                                <label className="text-[13px] font-medium text-muted-foreground ml-1">Meio de Pagamento</label>
                                 <select
                                     value={paymentMethodId}
                                     onChange={(e) => setPaymentMethodId(e.target.value)}
@@ -153,7 +153,7 @@ export default function ManualTransactionModal({
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Descrição Breve</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Descrição Breve</label>
                             <input
                                 type="text"
                                 value={description}
@@ -164,7 +164,7 @@ export default function ManualTransactionModal({
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-1.5 font-black">
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1 flex items-center gap-1.5 font-medium">
                                 Justificativa <span className="text-rose-500">*</span>
                                 <Info className="w-3 h-3 opacity-30" />
                             </label>
@@ -179,23 +179,23 @@ export default function ManualTransactionModal({
 
                         <div className="flex gap-4 pt-4 border-t border-border/50">
                             <button
-                                type="button"
-                                onClick={onClose}
-                                className="flex-1 py-4 rounded-2xl font-bold text-sm uppercase tracking-widest text-muted-foreground hover:bg-muted transition-all active:scale-95"
-                            >
+ type="button"
+ onClick={onClose}
+ className="flex-1 py-4 rounded-2xl font-bold text-sm text-muted-foreground hover:bg-muted transition-all active:scale-95"
+ >
                                 Cancelar
                             </button>
                             <button
-                                type="submit"
-                                disabled={loading}
-                                className={cn(
-                                    "flex-[2] py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-3 shadow-xl",
-                                    isEntry
-                                        ? "bg-emerald-500 text-white shadow-emerald-500/20 hover:bg-emerald-600"
-                                        : "bg-rose-500 text-white shadow-rose-500/20 hover:bg-rose-600",
-                                    loading && "opacity-50 cursor-not-allowed"
-                                )}
-                            >
+ type="submit"
+ disabled={loading}
+ className={cn(
+ "flex-[2] py-4 rounded-2xl font-black text-sm transition-all active:scale-95 flex items-center justify-center gap-3 shadow-xl",
+ isEntry
+ ? "bg-emerald-500 text-white shadow-emerald-500/20 hover:bg-emerald-600"
+ : "bg-rose-500 text-white shadow-rose-500/20 hover:bg-rose-600",
+ loading && "opacity-50 cursor-not-allowed"
+ )}
+ >
                                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                                 {title || (isEntry ? 'Registrar Suprimento' : 'Registrar Sangria')}
                             </button>

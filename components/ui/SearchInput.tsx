@@ -14,7 +14,7 @@ interface SearchInputProps {
 
 export default function SearchInput({
     placeholder = "Pesquisar...",
-    className = "w-full bg-muted/40 border border-border rounded-3xl py-3 pl-11 pr-4 md:text-sm text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 transition-all backdrop-blur-md",
+    className = "w-full h-10 bg-foreground/[0.06] border border-transparent rounded-xl pl-10 pr-3 md:text-[15px] text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:bg-card focus:border-primary focus:ring-4 focus:ring-primary/15 transition-colors",
     value,
     onChange,
     syncWithUrl = true
@@ -62,7 +62,7 @@ export default function SearchInput({
 
     return (
         <div className="relative w-full group">
-            <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${isPending ? 'text-primary animate-pulse' : 'text-muted-foreground/50 group-focus-within:text-primary'}`} />
+            <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${isPending ? 'text-primary animate-pulse' : 'text-muted-foreground group-focus-within:text-primary'}`} />
             <input
                 type="text"
                 placeholder={placeholder}

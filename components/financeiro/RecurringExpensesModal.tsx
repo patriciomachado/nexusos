@@ -145,7 +145,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                         </div>
                         <div>
                             <h2 className="text-lg font-bold">Contas Fixas</h2>
-                            <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">
+                            <p className="text-[11px] text-muted-foreground uppercase font-black tracking-widest">
                                 Gestão de Despesas Recorrentes Mensais
                             </p>
                         </div>
@@ -178,7 +178,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                         <form onSubmit={handleAdd} className="p-6 bg-muted/40 border border-border rounded-2xl space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2 md:col-span-2">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Descrição</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground ml-1">Descrição</label>
                                     <div className="relative">
                                         <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                         <input 
@@ -190,7 +190,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Valor Mensal</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground ml-1">Valor Mensal</label>
                                     <div className="relative">
                                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                         <input 
@@ -204,7 +204,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Dia do Vencimento</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground ml-1">Dia do Vencimento</label>
                                     <div className="relative">
                                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                         <select 
@@ -219,7 +219,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Método de Pagamento (Opcional)</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground ml-1">Método de Pagamento (Opcional)</label>
                                     <div className="relative">
                                         <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                         <select 
@@ -235,7 +235,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Categoria</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground ml-1">Categoria</label>
                                     <input 
                                         value={newExpense.category}
                                         onChange={e => setNewExpense({...newExpense, category: e.target.value})}
@@ -253,10 +253,10 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                                     Cancelar
                                 </button>
                                 <button 
-                                    type="submit"
-                                    disabled={saving}
-                                    className="flex-[2] py-2.5 px-4 bg-primary text-black rounded-xl text-sm font-black uppercase tracking-widest hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                                >
+ type="submit"
+ disabled={saving}
+ className="flex-[2] py-2.5 px-4 bg-primary text-black rounded-xl text-sm font-black hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+ >
                                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                     Salvar Despesa
                                 </button>
@@ -266,7 +266,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
 
                     {/* List */}
                     <div className="space-y-3">
-                        <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Contas Cadastradas</h3>
+                        <h3 className="text-xs font-black text-muted-foreground px-1">Contas Cadastradas</h3>
                         
                         {loading ? (
                             <div className="py-12 flex justify-center">
@@ -286,7 +286,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold">{expense.description}</p>
-                                                <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase font-medium">
+                                                <div className="flex items-center gap-2 text-[11px] text-muted-foreground uppercase font-medium">
                                                     <span>Dia {expense.day_of_month}</span>
                                                     <span className="w-1 h-1 bg-border rounded-full" />
                                                     <span>{expense.category}</span>
@@ -296,7 +296,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                                         <div className="flex items-center gap-4">
                                             <div className="text-right">
                                                 <p className="text-sm font-bold text-rose-400">{formatCurrency(expense.amount)}</p>
-                                                <p className="text-[9px] text-muted-foreground uppercase font-black tracking-widest">Mensal</p>
+                                                <p className="text-[11px] text-muted-foreground uppercase font-black tracking-widest">Mensal</p>
                                             </div>
                                             <button 
                                                 onClick={() => handleDelete(expense.id)}

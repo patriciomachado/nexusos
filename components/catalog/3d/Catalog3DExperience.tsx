@@ -194,11 +194,11 @@ export default function Catalog3DExperience({
                     <div className="w-full max-w-sm space-y-3 pointer-events-auto bg-black/80 backdrop-blur-xl p-4 sm:p-5 rounded-3xl border border-slate-800 shadow-2xl">
                         {/* Condition Selector: Novo vs Seminovo */}
                         <div className="space-y-1.5 border-b border-slate-800/80 pb-3">
-                            <span className="text-[10px] font-mono font-black uppercase text-slate-400">Condição do Aparelho:</span>
+                            <span className="text-[11px] font-mono font-black uppercase text-slate-400">Condição do Aparelho:</span>
                             <div className="grid grid-cols-3 gap-1 p-1 bg-slate-900/80 rounded-2xl border border-slate-800">
                                 <button
                                     onClick={() => setConditionFilter('todos')}
-                                    className={`py-1.5 text-[10px] font-bold rounded-xl transition-all ${
+                                    className={`py-1.5 text-[11px] font-bold rounded-xl transition-all ${
                                         conditionFilter === 'todos' ? 'bg-cyan-500 text-black font-black shadow-md' : 'text-slate-400 hover:text-white'
                                     }`}
                                 >
@@ -206,7 +206,7 @@ export default function Catalog3DExperience({
                                 </button>
                                 <button
                                     onClick={() => setConditionFilter('novos')}
-                                    className={`py-1.5 text-[10px] font-bold rounded-xl transition-all ${
+                                    className={`py-1.5 text-[11px] font-bold rounded-xl transition-all ${
                                         conditionFilter === 'novos' ? 'bg-cyan-500 text-black font-black shadow-md' : 'text-slate-400 hover:text-white'
                                     }`}
                                 >
@@ -214,7 +214,7 @@ export default function Catalog3DExperience({
                                 </button>
                                 <button
                                     onClick={() => setConditionFilter('seminovos')}
-                                    className={`py-1.5 text-[10px] font-bold rounded-xl transition-all ${
+                                    className={`py-1.5 text-[11px] font-bold rounded-xl transition-all ${
                                         conditionFilter === 'seminovos' ? 'bg-cyan-500 text-black font-black shadow-md' : 'text-slate-400 hover:text-white'
                                     }`}
                                 >
@@ -223,7 +223,7 @@ export default function Catalog3DExperience({
                             </div>
                         </div>
 
-                        <h3 className="text-xs font-mono font-black uppercase text-slate-400">Escolha o Aparelho:</h3>
+                        <h3 className="text-xs font-mono font-black text-slate-400">Escolha o Aparelho:</h3>
                         <div className="space-y-2 max-h-48 sm:max-h-60 overflow-y-auto pr-1">
                             {devices
                                 .filter((dev) => {
@@ -252,9 +252,9 @@ export default function Catalog3DExperience({
                                                 <span className="font-black text-white">{dev.brand} {dev.model}</span>
                                                 <span className="text-emerald-400 font-mono font-black shrink-0">{formatCurrency(dev.cash_price)}</span>
                                             </div>
-                                            <div className="flex items-center justify-between text-[10px] text-slate-400 font-normal mt-0.5">
+                                            <div className="flex items-center justify-between text-[11px] text-slate-400 font-normal mt-0.5">
                                                 <span>{dev.storage} • {dev.color}</span>
-                                                <span className="text-[9px] uppercase font-bold text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">
+                                                <span className="text-[11px] uppercase font-bold text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">
                                                     {dev.condition === 'novo_lacrado' ? 'Novo' : 'Seminovo'}
                                                 </span>
                                             </div>
@@ -267,8 +267,8 @@ export default function Catalog3DExperience({
                     {/* Right Panel: Integrated Photo Viewer & Specs HUD */}
                     <div className="w-full max-w-sm space-y-3 sm:space-y-4 pointer-events-auto bg-black/80 backdrop-blur-xl p-4 sm:p-5 rounded-3xl border border-cyan-500/40 shadow-2xl">
                         <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-mono font-black text-cyan-400 uppercase tracking-widest">ESPECIFICAÇÕES & FOTOS</span>
-                            <span className="text-[9px] font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">{currentDevice.brand}</span>
+                            <span className="text-[11px] font-mono font-black text-cyan-400 uppercase tracking-widest">ESPECIFICAÇÕES & FOTOS</span>
+                            <span className="text-[11px] font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">{currentDevice.brand}</span>
                         </div>
 
                         <h3 className="text-base font-black text-white">{currentDevice.brand} {currentDevice.model}</h3>
@@ -285,11 +285,11 @@ export default function Catalog3DExperience({
                                         alt={currentDevice.model}
                                         className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                                     />
-                                    <div className="absolute top-2 right-2 px-2.5 py-1 bg-black/80 hover:bg-black text-white rounded-xl text-[10px] font-bold backdrop-blur-md border border-slate-700 flex items-center gap-1 opacity-90 group-hover:opacity-100 transition-opacity">
+                                    <div className="absolute top-2 right-2 px-2.5 py-1 bg-black/80 hover:bg-black text-white rounded-xl text-[11px] font-bold backdrop-blur-md border border-slate-700 flex items-center gap-1 opacity-90 group-hover:opacity-100 transition-opacity">
                                         <Eye className="w-3.5 h-3.5 text-cyan-400" />
                                         <span>Ampliar</span>
                                     </div>
-                                    <span className="absolute bottom-2 left-2 text-[9px] font-mono font-bold bg-black/80 px-2 py-0.5 rounded-md text-cyan-400 border border-slate-800">
+                                    <span className="absolute bottom-2 left-2 text-[11px] font-mono font-bold bg-black/80 px-2 py-0.5 rounded-md text-cyan-400 border border-slate-800">
                                         {activePhotoIndex + 1}/{currentDevice.images.length} Fotos
                                     </span>
                                 </div>
@@ -350,11 +350,11 @@ export default function Catalog3DExperience({
                         {/* Card Installments */}
                         <div className="grid grid-cols-2 gap-3 text-left">
                             <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-2xl">
-                                <span className="text-[10px] font-black uppercase text-slate-400">12x no Cartão</span>
+                                <span className="text-[11px] font-black uppercase text-slate-400">12x no Cartão</span>
                                 <p className="text-sm font-black text-cyan-400 font-mono">12x {formatCurrency(price12x)}</p>
                             </div>
                             <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-2xl">
-                                <span className="text-[10px] font-black uppercase text-slate-400">24x no Cartão</span>
+                                <span className="text-[11px] font-black uppercase text-slate-400">24x no Cartão</span>
                                 <p className="text-sm font-black text-amber-300 font-mono">24x {formatCurrency(price24x)}</p>
                             </div>
                         </div>
@@ -384,9 +384,9 @@ export default function Catalog3DExperience({
                             Garanta a reserva do {currentDevice.brand} {currentDevice.model} antes que esgoste no estoque de {companyName}.
                         </p>
                         <button
-                            onClick={openWhatsApp}
-                            className="w-full py-5 bg-emerald-400 hover:bg-emerald-300 text-black font-black rounded-2xl text-sm md:text-base uppercase tracking-wider transition-all shadow-[0_0_30px_rgba(52,211,153,0.8)] hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
-                        >
+ onClick={openWhatsApp}
+ className="w-full py-5 bg-emerald-400 hover:bg-emerald-300 text-black font-black rounded-2xl text-sm md:text-base transition-all shadow-[0_0_30px_rgba(52,211,153,0.8)] hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
+ >
                             <MessageSquare className="w-6 h-6 fill-current" />
                             RESGATAR NO WHATSAPP AGORA ➔
                         </button>

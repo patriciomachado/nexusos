@@ -4,7 +4,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from 'sonner'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
 
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 
@@ -22,8 +22,11 @@ export const metadata: Metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F2F2F7' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+  ],
 }
 
 export default function RootLayout({
@@ -34,7 +37,7 @@ export default function RootLayout({
   return (
     <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
       <html lang="pt-BR" suppressHydrationWarning>
-        <body className={inter.className} suppressHydrationWarning>
+        <body className={`${inter.variable} font-sans`} suppressHydrationWarning>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -43,12 +46,14 @@ export default function RootLayout({
           >
             {children}
             <Toaster
-              position="top-right"
+              position="top-center"
               toastOptions={{
                 style: {
-                  background: 'hsl(var(--card))',
+                  background: 'hsl(var(--popover))',
                   border: '1px solid hsl(var(--border))',
                   color: 'hsl(var(--foreground))',
+                  borderRadius: '14px',
+                  boxShadow: '0 8px 32px rgb(0 0 0 / 0.12)',
                 },
               }}
             />

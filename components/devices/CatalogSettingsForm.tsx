@@ -236,7 +236,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Tipo de Aparelhos Vendidos */}
                         <div className="col-span-full space-y-1.5 bg-background p-4 rounded-2xl border border-border">
-                            <label className="text-[10px] font-black uppercase text-primary tracking-widest block">Tipos de Celulares Exibidos no Catálogo</label>
+                            <label className="text-[13px] font-medium text-primary block">Tipos de Celulares Exibidos no Catálogo</label>
                             <select
                                 value={deviceConditionMode}
                                 onChange={e => setDeviceConditionMode(e.target.value as any)}
@@ -250,7 +250,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                         {/* Garantia */}
                         <div className="space-y-1 bg-background p-3.5 rounded-2xl border border-border">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
+                            <label className="text-[13px] font-medium text-muted-foreground flex items-center gap-1.5">
                                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                                 Texto de Garantia
                             </label>
@@ -265,7 +265,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                         {/* Entrega */}
                         <div className="space-y-1 bg-background p-3.5 rounded-2xl border border-border">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
+                            <label className="text-[13px] font-medium text-muted-foreground flex items-center gap-1.5">
                                 <Truck className="w-3.5 h-3.5 text-emerald-400" />
                                 Opções de Entrega
                             </label>
@@ -280,7 +280,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                         {/* Parcelamento e Pagamentos */}
                         <div className="col-span-full space-y-1 bg-background p-3.5 rounded-2xl border border-border">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
+                            <label className="text-[13px] font-medium text-muted-foreground flex items-center gap-1.5">
                                 <CreditCard className="w-3.5 h-3.5 text-amber-400" />
                                 Texto de Parcelamento & Formas de Pagamento
                             </label>
@@ -296,11 +296,11 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         {/* Taxas de Juros da Maquininha (12x e 24x) */}
                         <div className="col-span-full space-y-3 bg-gradient-to-r from-amber-500/10 via-background to-background p-4 rounded-2xl border border-amber-500/20">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <label className="text-[11px] font-black uppercase text-amber-400 tracking-widest flex items-center gap-1.5">
+                                <label className="text-[13px] font-medium text-amber-400 flex items-center gap-1.5">
                                     <Percent className="w-4 h-4 text-amber-400" />
                                     Taxas de Juros da Maquininha (Cálculo Automático)
                                 </label>
-                                <span className="text-[10px] font-bold text-muted-foreground bg-amber-500/10 px-2 py-0.5 rounded-md text-amber-300 w-fit">
+                                <span className="text-[11px] font-bold text-muted-foreground bg-amber-500/10 px-2 py-0.5 rounded-md text-amber-300 w-fit">
                                     Calculado no Catálogo em 12x e 24x
                                 </span>
                             </div>
@@ -310,7 +310,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest block">Taxa Total 12x (%)</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground block">Taxa Total 12x (%)</label>
                                     <div className="flex items-center bg-card border border-border rounded-xl px-3 py-2">
                                         <input
                                             type="number"
@@ -324,13 +324,13 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                         />
                                         <span className="text-xs font-mono font-bold text-muted-foreground select-none">%</span>
                                     </div>
-                                    <span className="text-[10px] text-muted-foreground block font-medium">
+                                    <span className="text-[11px] text-muted-foreground block font-medium">
                                         💡 Exemplo em R$ 3.000: <strong className="text-emerald-400">12x de {formatCurrency((3000 * (1 + (installmentRate12x || 0) / 100)) / 12)}</strong>
                                     </span>
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest block">Taxa Total 24x (%)</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground block">Taxa Total 24x (%)</label>
                                     <div className="flex items-center bg-card border border-border rounded-xl px-3 py-2">
                                         <input
                                             type="number"
@@ -344,7 +344,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                         />
                                         <span className="text-xs font-mono font-bold text-muted-foreground select-none">%</span>
                                     </div>
-                                    <span className="text-[10px] text-muted-foreground block font-medium">
+                                    <span className="text-[11px] text-muted-foreground block font-medium">
                                         💡 Exemplo em R$ 3.000: <strong className="text-amber-400">24x de {formatCurrency((3000 * (1 + (installmentRate24x || 0) / 100)) / 24)}</strong>
                                     </span>
                                 </div>
@@ -367,7 +367,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                     {/* Presets Pré-Configurados de 1-Clique */}
                     <div className="space-y-2">
-                        <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Temas Pré-Configurados (1-Clique)</span>
+                        <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">Temas Pré-Configurados (1-Clique)</span>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                             {PRESET_THEMES.map((preset, idx) => (
                                 <button
@@ -395,7 +395,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                     {/* Color Selectors Box */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                         <div className="space-y-1.5 bg-background p-3 rounded-2xl border border-border">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest block">1. Cor Botões/PIX</label>
+                            <label className="text-[13px] font-medium text-muted-foreground block">1. Cor Botões/PIX</label>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="color"
@@ -408,7 +408,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         </div>
 
                         <div className="space-y-1.5 bg-background p-3 rounded-2xl border border-border">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest block">2. Cor Acentos</label>
+                            <label className="text-[13px] font-medium text-muted-foreground block">2. Cor Acentos</label>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="color"
@@ -421,7 +421,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         </div>
 
                         <div className="space-y-1.5 bg-background p-3 rounded-2xl border border-border">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest block">3. Fundo da Página</label>
+                            <label className="text-[13px] font-medium text-muted-foreground block">3. Fundo da Página</label>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="color"
@@ -434,7 +434,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         </div>
 
                         <div className="space-y-1.5 bg-background p-3 rounded-2xl border border-border">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest block">4. Fundo dos Cards</label>
+                            <label className="text-[13px] font-medium text-muted-foreground block">4. Fundo dos Cards</label>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="color"
@@ -462,7 +462,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                     <div className="space-y-4">
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Link Exclusivo da Sua Loja (Slug)</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Link Exclusivo da Sua Loja (Slug)</label>
                             <div className="flex items-center bg-background border border-border rounded-2xl px-3 py-2.5 text-xs font-mono font-bold">
                                 <span className="text-muted-foreground select-none">https://nexusgestor.com/loja/</span>
                                 <input
@@ -475,7 +475,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Título Principal do Catálogo</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Título Principal do Catálogo</label>
                             <input
                                 type="text"
                                 value={catalogTitle}
@@ -486,7 +486,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Barra Promocional de Topo (Marquee/Aviso)</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Barra Promocional de Topo (Marquee/Aviso)</label>
                             <input
                                 type="text"
                                 value={announcementBar}
@@ -497,7 +497,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Mensagem Padrão Enviada no WhatsApp pelo Cliente</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Mensagem Padrão Enviada no WhatsApp pelo Cliente</label>
                             <textarea
                                 value={whatsappCustomMessage}
                                 onChange={e => setWhatsappCustomMessage(e.target.value)}
@@ -540,7 +540,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                 <div className="flex-1 min-w-0">
                                     <p className="font-bold text-xs truncate">{item.model} ({item.storage})</p>
                                     <div className="flex items-center gap-1 mt-1">
-                                        <span className="text-[10px] font-bold text-muted-foreground">R$</span>
+                                        <span className="text-[11px] font-bold text-muted-foreground">R$</span>
                                         <input
                                             type="number"
                                             value={item.estimated_value}
@@ -555,10 +555,10 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                     <div className="pt-2 flex justify-end">
                         <button
-                            type="submit"
-                            disabled={isSaving}
-                            className="px-6 py-3 bg-primary text-black font-black text-xs uppercase tracking-wider rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
-                        >
+ type="submit"
+ disabled={isSaving}
+ className="px-6 py-3 bg-primary text-black font-black text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+ >
                             <Save className="w-4 h-4" />
                             {isSaving ? 'Salvando...' : 'Salvar Alterações'}
                         </button>
@@ -569,7 +569,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
             {/* MOCKUP DE PRÉ-VISUALIZAÇÃO EM TEMPO REAL (COLUNA DA DIREITA) */}
             <div className="lg:col-span-5 sticky top-24 space-y-4">
                 <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 flex items-center gap-1.5">
+                    <span className="text-[11px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5" />
                         Pré-Visualização ao Vivo do Catálogo
                     </span>
@@ -582,7 +582,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                 >
                     {/* Top Announcement Bar */}
                     {announcementBar && (
-                        <div className="py-1 px-3 rounded-xl text-[10px] font-bold text-center truncate text-black" style={{ backgroundColor: primaryColor }}>
+                        <div className="py-1 px-3 rounded-xl text-[11px] font-bold text-center truncate text-black" style={{ backgroundColor: primaryColor }}>
                             {announcementBar}
                         </div>
                     )}
@@ -595,17 +595,17 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                             </div>
                             <div>
                                 <h4 className="text-xs font-black truncate max-w-[140px]">{catalogTitle}</h4>
-                                <span className="text-[9px] font-mono opacity-70" style={{ color: accentColor }}>CNPJ: 00.000.000/0001-00</span>
+                                <span className="text-[11px] font-mono opacity-70" style={{ color: accentColor }}>CNPJ: 00.000.000/0001-00</span>
                             </div>
                         </div>
 
-                        <div className="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase text-black" style={{ backgroundColor: primaryColor }}>
+                        <div className="px-2.5 py-1 rounded-lg text-[11px] font-black uppercase text-black" style={{ backgroundColor: primaryColor }}>
                             WhatsApp
                         </div>
                     </div>
 
                     {/* Trust Strip Mockup */}
-                    <div className="p-3 rounded-2xl border border-white/10 space-y-2 text-[10px]" style={{ backgroundColor: cardBgColor }}>
+                    <div className="p-3 rounded-2xl border border-white/10 space-y-2 text-[11px]" style={{ backgroundColor: cardBgColor }}>
                         <div className="flex items-center gap-1.5 font-bold" style={{ color: primaryColor }}>
                             <ShieldCheck className="w-3.5 h-3.5" />
                             {warrantyText}
@@ -628,18 +628,18 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                         <div className="space-y-1">
                             <h6 className="text-xs font-black">iPhone 13 Pro 128GB</h6>
-                            <p className="text-[10px] opacity-70">Azul Sierra • Bateria 92%</p>
+                            <p className="text-[11px] opacity-70">Azul Sierra • Bateria 92%</p>
                         </div>
 
                         <div className="p-2 rounded-xl flex items-center justify-between bg-black/30">
                             <div>
-                                <span className="text-[7px] font-black uppercase opacity-60 block">À VISTA (PIX)</span>
+                                <span className="text-[11px] font-black uppercase opacity-60 block">À VISTA (PIX)</span>
                                 <span className="text-sm font-black" style={{ color: primaryColor }}>R$ 3.490,00</span>
                             </div>
-                            <span className="text-[9px] font-bold" style={{ color: accentColor }}>12x R$ 325</span>
+                            <span className="text-[11px] font-bold" style={{ color: accentColor }}>12x R$ 325</span>
                         </div>
 
-                        <div className="w-full py-2 rounded-xl text-[10px] font-black uppercase text-center text-black" style={{ backgroundColor: primaryColor }}>
+                        <div className="w-full py-2 rounded-xl text-[11px] font-black uppercase text-center text-black" style={{ backgroundColor: primaryColor }}>
                             Comprar pelo WhatsApp
                         </div>
                     </div>

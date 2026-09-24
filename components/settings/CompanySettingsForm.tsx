@@ -96,7 +96,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
         <form onSubmit={handleSubmit} className="space-y-12 animate-in fade-in duration-700">
             <div className="grid sm:grid-cols-2 gap-10">
                 <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-3 ml-2 italic">Logo da Empresa</label>
+                    <label className="block text-[13px] font-medium text-primary mb-3 ml-2">Logo da Empresa</label>
                     <div className="flex items-center gap-6 p-6 rounded-3xl border border-dashed border-border bg-card/30">
                         {logoPreview ? (
                             <div className="relative group">
@@ -116,14 +116,14 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                                     <Upload className="w-8 h-8" />
                                 </div>
                                 <span className="text-sm font-medium text-muted-foreground">Clique ou arraste a imagem</span>
-                                <span className="text-xs text-muted-foreground/60">PNG, JPG ou WEBP até 2MB</span>
+                                <span className="text-xs text-muted-foreground">PNG, JPG ou WEBP até 2MB</span>
                             </label>
                         )}
                     </div>
                 </div>
 
                 <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-3 ml-2 italic">Entidade Jurídica / Nome</label>
+                    <label className="block text-[13px] font-medium text-primary mb-3 ml-2">Entidade Jurídica / Nome</label>
                     <PremiumInput
                         name="name"
                         value={form.name}
@@ -135,7 +135,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Registro Fiscal (CNPJ/CPF)</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-3 ml-2">Registro Fiscal (CNPJ/CPF)</label>
                     <PremiumInput
                         name="cnpj"
                         value={form.cnpj}
@@ -146,7 +146,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">E-mail para Recibos</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-3 ml-2">E-mail para Recibos</label>
                     <PremiumInput
                         name="email"
                         value={form.email}
@@ -157,7 +157,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Telefone</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-3 ml-2">Telefone</label>
                     <PremiumInput
                         name="phone"
                         value={form.phone}
@@ -168,7 +168,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                 </div>
 
                 <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Endereço</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-3 ml-2">Endereço</label>
                     <PremiumInput
                         name="address"
                         value={form.address}
@@ -179,7 +179,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Cidade</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-3 ml-2">Cidade</label>
                     <PremiumInput
                         name="city"
                         value={form.city}
@@ -190,7 +190,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">Estado</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-3 ml-2">Estado</label>
                     <PremiumInput
                         name="state"
                         value={form.state}
@@ -201,7 +201,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-3 ml-2 italic">CEP</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-3 ml-2">CEP</label>
                     <PremiumInput
                         name="zip_code"
                         value={form.zip_code}
@@ -212,7 +212,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                 </div>
 
                 <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-3 ml-2 italic">Link de Avaliação do Google (Google Reviews)</label>
+                    <label className="block text-[13px] font-medium text-primary mb-3 ml-2">Link de Avaliação do Google (Google Reviews)</label>
                     <PremiumInput
                         name="google_review_url"
                         value={form.google_review_url}
@@ -220,7 +220,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
                         icon={<Globe className="w-4 h-4" />}
                         placeholder="https://g.page/r/YOUR_BUSINESS_ID/review"
                     />
-                    <p className="text-xs text-muted-foreground/60 mt-2 ml-2">
+                    <p className="text-xs text-muted-foreground mt-2 ml-2">
                         Insira a URL direta do seu perfil do Google para redirecionar clientes satisfeitos (que avaliarem com 4 ou 5 estrelas).
                     </p>
                 </div>

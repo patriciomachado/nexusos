@@ -391,30 +391,30 @@ export default function NewOSForm({
                         <Zap className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />
                     </div>
                     <div className="flex flex-col justify-center min-w-0">
-                        <h1 className="text-[11px] md:text-sm font-black uppercase tracking-widest text-foreground/80 flex items-center gap-2 leading-none mb-1">
+                        <h1 className="text-[13px] md:text-sm font-black text-foreground/80 flex items-center gap-2 leading-none mb-1">
                             {initialData ? 'Edição de OS' : 'Nova Abertura'}
                         </h1>
-                        <p className="text-[8px] md:text-[10px] font-medium text-muted-foreground uppercase tracking-widest leading-none truncate">Check-in de Equipamento</p>
+                        <p className="text-[11px] md:text-[11px] font-medium text-muted-foreground uppercase tracking-widest leading-none truncate">Check-in de Equipamento</p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2 md:gap-6 shrink-0">
                     <div className="hidden md:flex flex-col items-end">
-                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Subtotal</span>
+                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Subtotal</span>
                         <span className="text-sm font-bold text-foreground/60 tabular-nums leading-none">
                             R$ {(items.reduce((sum, item) => sum + (item.total_price || 0), 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </span>
                     </div>
 
                     <div className="hidden md:flex flex-col items-end">
-                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Desconto</span>
+                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Desconto</span>
                         <span className="text-sm font-bold text-rose-400 tabular-nums leading-none">
                             - R$ {(!form.discount_amount || isNaN(Number(form.discount_amount))) ? '0,00' : parseFloat(form.discount_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </span>
                     </div>
 
                     <div className="hidden md:flex flex-col items-end">
-                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Total Estimado</span>
+                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Total Estimado</span>
                         <span className="text-xl font-black text-emerald-400 tabular-nums leading-none">
                             R$ {(!form.estimated_cost || isNaN(Number(form.estimated_cost))) ? '0,00' : parseFloat(form.estimated_cost).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </span>
@@ -422,18 +422,18 @@ export default function NewOSForm({
 
                     <div className="flex gap-2">
                         <button
-                            type="button"
-                            onClick={() => router.back()}
-                            className="px-4 md:px-6 py-2.5 md:py-3 rounded-xl border border-white/5 bg-white/5 text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2"
-                        >
+ type="button"
+ onClick={() => router.back()}
+ className="px-4 md:px-6 py-2.5 md:py-3 rounded-xl border border-white/5 bg-white/5 text-[13px] md:text-[11px] font-black hover:bg-white/10 transition-all flex items-center gap-2"
+ >
                             <XCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
                             <span className="hidden xs:inline">Cancelar</span>
                         </button>
                         <button
-                            type="submit"
-                            disabled={isPending || isUploading}
-                            className="px-5 md:px-8 py-2.5 md:py-3 rounded-xl bg-indigo-500 text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-2 disabled:opacity-50"
-                        >
+ type="submit"
+ disabled={isPending || isUploading}
+ className="px-5 md:px-8 py-2.5 md:py-3 rounded-xl bg-indigo-500 text-white text-[13px] md:text-[11px] font-black hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-2 disabled:opacity-50"
+ >
                             {(isPending || isUploading) ? <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5 md:w-4 md:h-4" />}
                             {initialData ? 'Salvar' : 'Criar'}
                         </button>
@@ -446,7 +446,7 @@ export default function NewOSForm({
                 <div className="lg:col-span-8 space-y-8">
                     
                     {/* CARD 1: IDENTIFICAÇÃO (CHUNKING) */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[300] overflow-visible transition-all duration-500">
+                    <div className="bg-card/40 border border-white/5 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[300] overflow-visible transition-all duration-500">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[80px] rounded-full pointer-events-none" />
                         
                         <div className="relative flex items-center justify-between mb-8 border-b border-white/5 pb-4">
@@ -454,7 +454,7 @@ export default function NewOSForm({
                                 <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
                                     <User className="w-5 h-5" />
                                 </div>
-                                <h2 className="text-sm font-black uppercase tracking-widest text-foreground/60">
+                                <h2 className="text-sm font-black text-foreground/60">
                                     Identificação
                                 </h2>
                             </div>
@@ -463,7 +463,7 @@ export default function NewOSForm({
                         <div className="grid md:grid-cols-2 gap-8">
                             <div className="space-y-6 relative z-[50]">
                                 <div className="relative z-[100]">
-                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-[0.2em] italic">Tipo de dispositivo *</label>
+                                    <label className="block text-[13px] font-medium text-muted-foreground mb-2">Tipo de dispositivo *</label>
                                     <PremiumAutocomplete
                                         value={form.title}
                                         onChange={val => setForm(p => ({ ...p, title: val }))}
@@ -472,7 +472,7 @@ export default function NewOSForm({
                                     />
                                 </div>
                                 <div className="relative z-[90]">
-                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-[0.2em] italic">Cliente proprietário *</label>
+                                    <label className="block text-[13px] font-medium text-muted-foreground mb-2">Cliente proprietário *</label>
                                     <CustomerAutocomplete
                                         customers={localCustomers}
                                         selectedId={form.customer_id}
@@ -513,7 +513,7 @@ export default function NewOSForm({
                     </div>
 
                     {/* CARD 2: GESTÃO DE ITENS */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[200] overflow-visible">
+                    <div className="bg-card/40 border border-white/5 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[200] overflow-visible">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full pointer-events-none" />
                         
 
@@ -526,9 +526,9 @@ export default function NewOSForm({
 
                         <div className="mt-8 pt-8 border-t border-white/5 flex flex-col md:flex-row items-end md:items-center justify-end gap-8">
                             <div className="w-full md:w-64 space-y-2">
-                                <label className="block text-[10px] font-black text-rose-400/60 uppercase tracking-widest italic px-1">Conceder Desconto (R$)</label>
+                                <label className="block text-[13px] font-medium text-rose-400/60 px-1">Conceder Desconto (R$)</label>
                                 <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-rose-400/40 italic">R$</span>
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-rose-400/40">R$</span>
                                     <input
                                         type="number"
                                         inputMode="numeric"
@@ -560,27 +560,27 @@ export default function NewOSForm({
                             </div>
 
                             <div className="flex flex-col items-end gap-1">
-                                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Total Geral</span>
+                                <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Total Geral</span>
                                 <span className="text-4xl font-black text-emerald-400 tabular-nums tracking-tighter">
                                     R$ {(!form.estimated_cost || isNaN(Number(form.estimated_cost))) ? '0,00' : parseFloat(form.estimated_cost).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                 </span>
-                                <p className="text-[9px] font-bold text-muted-foreground italic uppercase tracking-widest">Sujeito a alterações conforme laudo técnico</p>
+                                <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Sujeito a alterações conforme laudo técnico</p>
                             </div>
                         </div>
                     </div>
 
                     {/* CARD 3: DIAGNÓSTICO & NOTAS */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner relative overflow-visible group z-[30]">
+                    <div className="bg-card/40 border border-white/5 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner relative overflow-visible group z-[30]">
                         <div className="relative flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
                             <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
                                 <FileText className="w-5 h-5" />
                             </div>
-                            <h2 className="text-sm font-black uppercase tracking-widest text-foreground/60">Relato do Problema & Diagnóstico</h2>
+                            <h2 className="text-sm font-black text-foreground/60">Relato do Problema & Diagnóstico</h2>
                         </div>
 
                         <div className="grid md:grid-cols-2 gap-8">
                             <div className="space-y-4">
-                                <label className="block text-[10px] font-black text-muted-foreground tracking-widest italic">Sintomas relatados pelo cliente</label>
+                                <label className="block text-[13px] font-medium text-muted-foreground">Sintomas relatados pelo cliente</label>
                                 <PremiumTextarea
                                     value={form.problem_description}
                                     onChange={e => setForm(p => ({ ...p, problem_description: e.target.value }))}
@@ -590,7 +590,7 @@ export default function NewOSForm({
                                 />
                             </div>
                             <div className="space-y-4">
-                                <label className="block text-[10px] font-black text-muted-foreground tracking-widest italic">Laudo Técnico / Observações</label>
+                                <label className="block text-[13px] font-medium text-muted-foreground">Laudo Técnico / Observações</label>
                                 <PremiumTextarea
                                     value={form.description}
                                     onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
@@ -607,18 +607,18 @@ export default function NewOSForm({
                 <div className="lg:col-span-4 space-y-8">
                     
                     {/* CARD 4: DETALHES DO APARELHO */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner relative group">
+                    <div className="bg-card/40 border border-white/5 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner relative group">
                         <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
                             <div className="p-2 rounded-xl bg-orange-500/10 text-orange-400">
                                 <Smartphone className="w-5 h-5" />
                             </div>
-                            <h2 className="text-sm font-black uppercase tracking-widest text-foreground/60">O Dispositivo</h2>
+                            <h2 className="text-sm font-black text-foreground/60">O Dispositivo</h2>
                         </div>
 
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 gap-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-widest">Modelo / Especificação</label>
+                                    <label className="block text-[13px] font-medium text-muted-foreground mb-2">Modelo / Especificação</label>
                                     <PremiumAutocomplete
                                         value={form.equipment_description}
                                         onChange={val => setForm(p => ({ ...p, equipment_description: val }))}
@@ -627,7 +627,7 @@ export default function NewOSForm({
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-widest">Serial / IMEI</label>
+                                    <label className="block text-[13px] font-medium text-muted-foreground mb-2">Serial / IMEI</label>
                                     <PremiumInput
                                         value={form.equipment_serial}
                                         onChange={e => setForm(p => ({ ...p, equipment_serial: e.target.value }))}
@@ -637,22 +637,22 @@ export default function NewOSForm({
                             </div>
 
                             <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                                <span className="text-[10px] font-black text-muted-foreground tracking-widest">Aparelho liga?</span>
+                                <span className="text-[11px] font-black text-muted-foreground tracking-widest">Aparelho liga?</span>
                                 <button
-                                    type="button"
-                                    onClick={() => setForm(p => ({ ...p, turns_on: !p.turns_on }))}
-                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${form.turns_on
-                                        ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20'
-                                        : 'bg-rose-500/20 text-rose-500 border border-rose-500/20'
-                                        }`}
-                                >
+ type="button"
+ onClick={() => setForm(p => ({ ...p, turns_on: !p.turns_on }))}
+ className={`px-4 py-2 rounded-xl text-[13px] font-black transition-all flex items-center gap-2 ${form.turns_on
+ ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/20'
+ : 'bg-rose-500/20 text-rose-500 border border-rose-500/20'
+ }`}
+ >
                                     {form.turns_on ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
                                     {form.turns_on ? 'Sim' : 'Não'}
                                 </button>
                             </div>
 
                             <div className="space-y-3 pt-4 border-t border-white/5">
-                                <label className="block text-[10px] font-black text-muted-foreground tracking-widest uppercase">Checklist do Dispositivo</label>
+                                <label className="block text-[13px] font-medium text-muted-foreground">Checklist do Dispositivo</label>
                                 <div className="grid grid-cols-2 gap-3">
                                     {(form.checklist_progress || DEFAULT_CHECKLIST).map((item: any, idx: number) => (
                                         <button
@@ -682,7 +682,7 @@ export default function NewOSForm({
                             </div>
 
                             <div className="space-y-4">
-                                <label className="block text-[10px] font-black text-muted-foreground tracking-widest">Estado físico</label>
+                                <label className="block text-[13px] font-medium text-muted-foreground">Estado físico</label>
                                 <PremiumTextarea
                                     value={form.device_condition}
                                     onChange={e => setForm(p => ({ ...p, device_condition: e.target.value }))}
@@ -694,7 +694,7 @@ export default function NewOSForm({
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Foto Frontal</span>
+                                    <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Foto Frontal</span>
                                     <div className="relative group/photo aspect-video rounded-xl border border-white/5 bg-white/5 overflow-hidden">
                                         <input
                                             type="file" accept="image/*" capture="environment"
@@ -706,15 +706,15 @@ export default function NewOSForm({
                                         ) : photoUrls.front ? (
                                             <img src={photoUrls.front} className="w-full h-full object-cover" />
                                         ) : (
-                                            <div className="flex flex-col items-center justify-center h-full text-muted-foreground/30">
+                                            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                                                 <CameraIcon className="w-6 h-6 mb-1" />
-                                                <span className="text-[8px] font-black uppercase tracking-widest">Anexar</span>
+                                                <span className="text-[11px] font-black uppercase tracking-widest">Anexar</span>
                                             </div>
                                         )}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Foto Traseira</span>
+                                    <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Foto Traseira</span>
                                     <div className="relative group/photo aspect-video rounded-xl border border-white/5 bg-white/5 overflow-hidden">
                                         <input
                                             type="file" accept="image/*" capture="environment"
@@ -726,9 +726,9 @@ export default function NewOSForm({
                                         ) : photoUrls.back ? (
                                             <img src={photoUrls.back} className="w-full h-full object-cover" />
                                         ) : (
-                                            <div className="flex flex-col items-center justify-center h-full text-muted-foreground/30">
+                                            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                                                 <CameraIcon className="w-6 h-6 mb-1" />
-                                                <span className="text-[8px] font-black uppercase tracking-widest">Anexar</span>
+                                                <span className="text-[11px] font-black uppercase tracking-widest">Anexar</span>
                                             </div>
                                         )}
                                     </div>
@@ -738,12 +738,12 @@ export default function NewOSForm({
                     </div>
 
                     {/* CARD 5: AGENDAMENTO & GARANTIA */}
-                    <div className="bg-card/40 border border-white/5 rounded-[2rem] p-4 md:p-8 backdrop-blur-xl shadow-inner">
+                    <div className="bg-card/40 border border-white/5 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner">
                         <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
                             <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
                                 <Clock className="w-5 h-5" />
                             </div>
-                            <h2 className="text-sm font-black uppercase tracking-widest text-foreground/60">Prazos & Garantia</h2>
+                            <h2 className="text-sm font-black text-foreground/60">Prazos & Garantia</h2>
                         </div>
 
                         <div className="space-y-6">
@@ -754,7 +754,7 @@ export default function NewOSForm({
                             />
 
                             <div>
-                                <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest italic">Meses de Garantia</label>
+                                <label className="block text-[13px] font-medium text-muted-foreground mb-2">Meses de Garantia</label>
                                 <PremiumInput
                                     type="number"
                                     inputMode="numeric"
@@ -773,18 +773,18 @@ export default function NewOSForm({
                                         <ShieldCheck className="w-3 h-3" />
                                     </div>
                                     <div className="flex-1">
-                                        <p className="text-[9px] font-medium text-muted-foreground leading-relaxed uppercase tracking-widest">
+                                        <p className="text-[11px] font-medium text-muted-foreground leading-relaxed uppercase tracking-widest">
                                             O cliente aceita os termos de garantia da assistência, bem como os <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline font-bold">Termos de Uso</a> e a <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline font-bold">Política de Privacidade</a> do Nexus OS.
                                         </p>
                                     </div>
                                 </div>
                                 <button
-                                    type="button"
-                                    onClick={() => setForm(p => ({ ...p, terms_accepted: !p.terms_accepted }))}
-                                    className={`w-full py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${form.terms_accepted 
-                                        ? 'bg-indigo-500 text-white' 
-                                        : 'bg-white/5 text-muted-foreground border border-white/5'}`}
-                                >
+ type="button"
+ onClick={() => setForm(p => ({ ...p, terms_accepted: !p.terms_accepted }))}
+ className={`w-full py-3 rounded-xl text-[13px] font-black transition-all ${form.terms_accepted 
+ ? 'bg-indigo-500 text-white' 
+ : 'bg-white/5 text-muted-foreground border border-white/5'}`}
+ >
                                     {form.terms_accepted ? 'Termos Aceitos' : 'Aceitar Termos'}
                                 </button>
                             </div>

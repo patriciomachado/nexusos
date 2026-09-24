@@ -25,7 +25,7 @@ export default function StudioDashboardWidget() {
                         <Sparkles className="w-6 h-6 animate-pulse text-amber-400" />
                     </div>
                     <div>
-                        <span className="text-[10px] font-black uppercase text-amber-400 tracking-widest bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+                        <span className="text-[11px] font-black uppercase text-amber-400 tracking-widest bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
                             Novo Módulo AI
                         </span>
                         <h3 className="text-lg font-black tracking-tight text-foreground mt-0.5">Nexus Studio</h3>
@@ -33,9 +33,9 @@ export default function StudioDashboardWidget() {
                 </div>
 
                 <Link
-                    href="/studio"
-                    className="px-4 py-2.5 bg-primary text-black rounded-2xl text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 group shrink-0"
-                >
+ href="/studio"
+ className="px-4 py-2.5 bg-primary text-black rounded-2xl text-xs font-black hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 group shrink-0"
+ >
                     <Wand2 className="w-4 h-4" />
                     Abrir Nexus Studio
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -75,7 +75,7 @@ export default function StudioDashboardWidget() {
                                 <Calendar className="w-4 h-4" />
                                 Próxima Data no Calendário Sazonal
                             </span>
-                            <span className="text-[9px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                            <span className="text-[11px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
                                 Dia {upcomingEvent.day}/{upcomingEvent.month}
                             </span>
                         </div>

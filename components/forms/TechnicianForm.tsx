@@ -53,7 +53,7 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
             <Header title={initial?.id ? 'Perfil do Especialista' : 'Novo Especialista Técnico'} />
 
             <form onSubmit={handleSubmit} className="p-6 max-w-4xl mx-auto space-y-12 mt-8">
-                <div className="bg-[#0a0a0f]/40 border border-white/5 rounded-[3rem] p-10 backdrop-blur-3xl relative overflow-hidden group">
+                <div className="bg-[#0a0a0f]/40 border border-white/5 rounded-3xl p-10 backdrop-blur-3xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[120px] rounded-full transition-all group-hover:bg-indigo-500/10" />
 
                     <div className="relative z-10 space-y-8">
@@ -62,14 +62,14 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
                                 <Award className="w-6 h-6" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black text-white tracking-tight uppercase">Dados do Técnico</h2>
+                                <h2 className="text-xl font-black text-white tracking-tight ">Dados do Técnico</h2>
                                 <p className="text-xs text-white/30 font-bold uppercase tracking-widest mt-1">Especialidades e Remuneração</p>
                             </div>
                         </div>
 
                         <div className="grid sm:grid-cols-2 gap-8">
                             <div className="sm:col-span-2">
-                                <label className="block text-[10px] font-black text-white/30 mb-3 uppercase tracking-widest">NOME DO PROFISSIONAL *</label>
+                                <label className="block text-[13px] font-medium text-white/30 mb-3">Nome do profissional *</label>
                                 <PremiumInput
                                     required
                                     value={form.name}
@@ -79,7 +79,7 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-white/30 mb-3 uppercase tracking-widest">E-MAIL CORPORATIVO</label>
+                                <label className="block text-[13px] font-medium text-white/30 mb-3">E-mail corporativo</label>
                                 <PremiumInput
                                     type="email"
                                     value={form.email}
@@ -89,7 +89,7 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-white/30 mb-3 uppercase tracking-widest">WHATSAPP / CELULAR</label>
+                                <label className="block text-[13px] font-medium text-white/30 mb-3">WhatsApp / celular</label>
                                 <PremiumInput
                                     type="tel"
                                     value={form.phone}
@@ -99,7 +99,7 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-white/30 mb-3 uppercase tracking-widest">VALOR/HORA TÉCNICA (R$)</label>
+                                <label className="block text-[13px] font-medium text-white/30 mb-3">Valor/hora técnica (R$)</label>
                                 <PremiumInput
                                     type="number"
                                     step="0.01"
@@ -110,7 +110,7 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-white/30 mb-3 uppercase tracking-widest">COMISSÃO SOBRE SERVIÇO (%)</label>
+                                <label className="block text-[13px] font-medium text-white/30 mb-3">Comissão sobre serviço (%)</label>
                                 <PremiumInput
                                     type="number"
                                     step="0.1"
@@ -124,7 +124,7 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
 
                         {/* Specialties */}
                         <div>
-                            <label className="block text-[10px] font-black text-white/30 mb-3 uppercase tracking-widest">ESPECIALIDADES TÉCNICAS</label>
+                            <label className="block text-[13px] font-medium text-white/30 mb-3">Especialidades técnicas</label>
                             <div className="flex gap-3 mb-4">
                                 <PremiumInput
                                     value={newSpecialty}
@@ -145,7 +145,7 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
                             {specialties.length > 0 && (
                                 <div className="flex flex-wrap gap-2 pt-2">
                                     {specialties.map(s => (
-                                        <span key={s} className="flex items-center gap-2 pl-4 pr-2 py-2 rounded-xl bg-white/5 border border-white/10 text-white/70 text-[10px] font-black uppercase tracking-widest group hover:border-indigo-500/30 hover:text-indigo-400 transition-all">
+                                        <span key={s} className="flex items-center gap-2 pl-4 pr-2 py-2 rounded-xl bg-white/5 border border-white/10 text-white/70 text-[11px] font-black uppercase tracking-widest group hover:border-indigo-500/30 hover:text-indigo-400 transition-all">
                                             {s}
                                             <button
                                                 type="button"
@@ -164,18 +164,18 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
 
                 <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
                     <button
-                        type="submit"
-                        disabled={isPending}
-                        className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
-                    >
+ type="submit"
+ disabled={isPending}
+ className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-5 rounded-2xl font-black text-xs shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
+ >
                         {isPending ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
                         {isPending ? 'PROCESSANDO...' : 'SALVAR CADASTRO'}
                     </button>
                     <button
-                        type="button"
-                        onClick={() => router.back()}
-                        className="w-full sm:w-auto px-10 py-5 rounded-2xl border border-white/5 bg-white/[0.02] text-white/40 font-black text-xs uppercase tracking-[0.2em] hover:bg-white/5 hover:text-white transition-all flex items-center justify-center gap-2"
-                    >
+ type="button"
+ onClick={() => router.back()}
+ className="w-full sm:w-auto px-10 py-5 rounded-2xl border border-white/5 bg-white/[0.02] text-white/40 font-black text-xs hover:bg-white/5 hover:text-white transition-all flex items-center justify-center gap-2"
+ >
                         CANCELAR
                     </button>
                 </div>

@@ -96,14 +96,14 @@ export default function CategoryManager({ onClose }: CategoryManagerProps) {
 
     const modalContent = (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-card w-full max-w-md rounded-[2.5rem] border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-300 relative">
+            <div className="bg-card w-full max-w-md rounded-3xl border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-300 relative">
                 {/* Header */}
                 <div className="p-8 border-b border-white/5 flex items-center justify-between bg-muted/30">
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 rounded-2xl bg-primary/10 text-primary border border-primary/20">
                             <Tag className="w-5 h-5" />
                         </div>
-                        <h2 className="text-xs font-black text-foreground uppercase tracking-[0.2em]">Gerenciar Categorias</h2>
+                        <h2 className="text-xs font-black text-foreground ">Gerenciar Categorias</h2>
                     </div>
                     <button
                         onClick={onClose}
@@ -141,7 +141,7 @@ export default function CategoryManager({ onClose }: CategoryManagerProps) {
                     ) : categories.length > 0 ? (
                         <div className="grid gap-3">
                             {categories.map((cat) => (
-                                <div key={cat.id} className="flex items-center justify-between p-5 rounded-[1.5rem] bg-white/5 border border-white/5 group hover:border-primary/20 hover:bg-white/[0.07] transition-all">
+                                <div key={cat.id} className="flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/5 group hover:border-primary/20 hover:bg-white/[0.07] transition-all">
                                     <span className="text-xs font-black text-foreground/80 tracking-tight uppercase tracking-wider">{cat.name}</span>
                                     <button
                                         onClick={() => setConfirmDeleteId(cat.id)}
@@ -156,15 +156,15 @@ export default function CategoryManager({ onClose }: CategoryManagerProps) {
                     ) : (
                         <div className="text-center py-20 opacity-30">
                             <Tag className="w-12 h-12 mx-auto mb-4 opacity-10" />
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em]">Nenhuma categoria</p>
-                            <p className="text-[8px] font-medium uppercase mt-2 opacity-60">Personalize seu estoque acima</p>
+                            <p className="text-[11px] font-black uppercase tracking-wider">Nenhuma categoria</p>
+                            <p className="text-[11px] font-medium uppercase mt-2 opacity-60">Personalize seu estoque acima</p>
                         </div>
                     )}
                 </div>
 
                 {/* Footer */}
                 <div className="p-6 bg-muted/40 border-t border-white/5 text-center">
-                    <p className="text-[9px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">As categorias não removerão os produtos existentes.</p>
+                    <p className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">As categorias não removerão os produtos existentes.</p>
                 </div>
             </div>
 

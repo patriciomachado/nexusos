@@ -46,7 +46,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {/* Category Badge */}
                 <div className="absolute top-4 left-4 z-20">
                     <span className={cn(
-                        "px-3 py-1 rounded-full backdrop-blur-md border border-white/10 text-[9px] font-black uppercase tracking-widest",
+                        "px-3 py-1 rounded-full backdrop-blur-md border border-white/10 text-[11px] font-black uppercase tracking-widest",
                         isService ? "bg-orange-500/20 text-orange-500" : "bg-background/50 text-foreground"
                     )}>
                         {product.category || (isService ? 'Serviço' : 'Produto')}
@@ -62,7 +62,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
                         <span className={cn(
-                            "text-[10px] font-bold uppercase tracking-wider",
+                            "text-[11px] font-bold uppercase tracking-wider",
                             !isService && Number(product.quantity_in_stock) <= Number(product.minimum_quantity) ? 'text-destructive' : 'text-muted-foreground'
                         )}>
                             {stockStatus}
@@ -72,7 +72,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
                 <div className="flex items-center justify-between pt-2">
                     <div className="flex flex-col">
-                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Valor Final</span>
+                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Valor Final</span>
                         <span className="text-xl font-black text-foreground tracking-tight">
                             {formatCurrency(price)}
                         </span>

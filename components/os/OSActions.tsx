@@ -156,7 +156,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
                     <div className="w-full border-t border-border/30"></div>
                 </div>
-                <div className="relative flex justify-center text-[9px] uppercase tracking-widest font-black text-muted-foreground/40">
+                <div className="relative flex justify-center text-[11px] uppercase tracking-widest font-black text-muted-foreground">
                     <span className="bg-card px-2">Status</span>
                 </div>
             </div>
@@ -171,7 +171,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                             key={status.value}
                             onClick={() => handleStatusChange(status.value)}
                             className={cn(
-                                "flex items-center gap-2 px-2 py-1.5 rounded-lg text-[9px] font-bold transition-all outline-none cursor-pointer border relative",
+                                "flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] font-bold transition-all outline-none cursor-pointer border relative",
                                 isActive
                                     ? "bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-500/10"
                                     : "bg-muted/20 border-transparent hover:bg-muted/50 hover:border-border/30 text-foreground/60"
@@ -203,7 +203,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                             }, 1000)
                         }
                     }}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[9px] font-bold transition-all text-foreground bg-muted/30 hover:bg-muted border border-border/20 outline-none cursor-pointer"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[11px] font-bold transition-all text-foreground bg-muted/30 hover:bg-muted border border-border/20 outline-none cursor-pointer"
                 >
                     <Printer className="w-3 h-3 opacity-60" />
                     Imprimir
@@ -211,7 +211,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
 
                 <button
                     onClick={() => setIsDeleteModalOpen(true)}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[9px] font-bold transition-all text-red-500 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 outline-none cursor-pointer"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[11px] font-bold transition-all text-red-500 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 outline-none cursor-pointer"
                 >
                     <Trash className="w-3 h-3 opacity-70" />
                     Excluir
@@ -225,13 +225,13 @@ export default function OSActions({ os, variant = 'list' }: Props) {
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                     <button
-                        className={cn(
-                            "flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 outline-none",
-                            variant === 'list'
-                                ? "p-2 rounded-xl text-muted-foreground/60 hover:text-foreground hover:bg-muted border border-transparent active:bg-muted"
-                                : "px-5 py-2.5 rounded-2xl border border-border bg-card text-foreground hover:bg-muted font-bold text-xs uppercase tracking-[0.2em]"
-                        )}
-                    >
+ className={cn(
+ "flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 outline-none",
+ variant === 'list'
+ ? "p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent active:bg-muted"
+ : "px-5 py-2.5 rounded-2xl border border-border bg-card text-foreground hover:bg-muted font-bold text-xs "
+ )}
+ >
                         {variant === 'list' ? (
                             <LayoutGrid className="w-5 h-5 md:hidden" />
                         ) : (
@@ -247,7 +247,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                             </div>
                         )}
 
-                        <span className="md:hidden font-bold text-[10px] uppercase tracking-widest">
+                        <span className="md:hidden font-bold text-[11px] uppercase tracking-widest">
                             {variant === 'list' ? '' : 'Ações'}
                         </span>
                     </button>
@@ -259,7 +259,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                         side="bottom"
                         sideOffset={8}
                         collisionPadding={16}
-                        className="rounded-[1.5rem] border border-white/10 bg-card/95 shadow-[0_20px_50px_rgba(0,0,0,0.4)] z-[2005] backdrop-blur-3xl animate-in fade-in duration-200 overflow-y-auto max-h-[calc(100vh-40px)] outline-none ring-1 ring-white/10"
+                        className="rounded-2xl border border-white/10 bg-card/95 shadow-[0_20px_50px_rgba(0,0,0,0.4)] z-[2005] backdrop-blur-3xl animate-in fade-in duration-200 overflow-y-auto max-h-[calc(100vh-40px)] outline-none ring-1 ring-white/10"
                     >
                         <ActionItems />
                     </DropdownMenu.Content>

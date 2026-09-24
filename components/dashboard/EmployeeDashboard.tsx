@@ -57,7 +57,7 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                 {/* Welcome */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary opacity-70">
+                        <span className="text-[11px] font-black uppercase tracking-wider text-primary opacity-70">
                             {roleLabel}
                         </span>
                         <h1 className="text-3xl font-black tracking-tight mt-1">
@@ -69,9 +69,9 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                     </div>
 
                     <Link
-                        href="/service-orders/new"
-                        className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all shrink-0"
-                    >
+ href="/service-orders/new"
+ className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground text-xs font-black shadow-xl shadow-primary/20 hover:scale-105 transition-all shrink-0"
+ >
                         <ClipboardList className="w-4 h-4" />
                         Nova OS
                     </Link>
@@ -92,7 +92,7 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                             <Icon className={cn('w-5 h-5', `text-${color}-400`)} />
                             <div>
                                 <p className={cn('text-3xl font-black', `text-${color}-400`)}>{value}</p>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-0.5">{label}</p>
+                                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mt-0.5">{label}</p>
                             </div>
                         </div>
                     ))}
@@ -104,13 +104,13 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                     {/* OS List */}
                     <div className="lg:col-span-2 space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-sm font-black uppercase tracking-widest">
+                            <h2 className="text-sm font-black ">
                                 Ordens de Serviço
                             </h2>
                             <Link
-                                href="/service-orders"
-                                className="text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity flex items-center gap-1"
-                            >
+ href="/service-orders"
+ className="text-[13px] font-black text-primary hover:opacity-70 transition-opacity flex items-center gap-1"
+ >
                                 Ver tudo <ChevronRight className="w-3 h-3" />
                             </Link>
                         </div>
@@ -129,7 +129,7 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                                             >
                                                 {/* ID badge */}
                                                 <div className="w-12 h-12 rounded-xl bg-muted flex flex-col items-center justify-center shrink-0 group-hover:bg-primary/10 group-hover:text-primary transition-all">
-                                                    <span className="text-[8px] font-black uppercase opacity-40">OS</span>
+                                                    <span className="text-[11px] font-black uppercase opacity-40">OS</span>
                                                     <span className="text-sm font-black leading-none">{os.id.slice(0, 4)}</span>
                                                 </div>
 
@@ -138,14 +138,14 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                                                     <p className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">
                                                         {os.title}
                                                     </p>
-                                                    <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                                                    <p className="text-[11px] text-muted-foreground truncate mt-0.5">
                                                         {os.customers?.name || 'Cliente Direto'} · {os.equipment_description}
                                                     </p>
                                                 </div>
 
                                                 {/* Status badge */}
                                                 <div className={cn(
-                                                    'flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[9px] font-black uppercase tracking-widest shrink-0',
+                                                    'flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-black uppercase tracking-widest shrink-0',
                                                     cfg?.bg ?? 'bg-muted border-border',
                                                     cfg?.color ?? 'text-muted-foreground'
                                                 )}>
@@ -164,9 +164,9 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                                         <p className="text-xs text-muted-foreground mt-1 opacity-60">Crie a primeira ordem de serviço</p>
                                     </div>
                                     <Link
-                                        href="/service-orders/new"
-                                        className="mt-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest hover:scale-105 transition-all"
-                                    >
+ href="/service-orders/new"
+ className="mt-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-black hover:scale-105 transition-all"
+ >
                                         Nova OS
                                     </Link>
                                 </div>
@@ -176,7 +176,7 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
 
                     {/* Quick Actions */}
                     <div className="space-y-4">
-                        <h2 className="text-sm font-black uppercase tracking-widest">Ações Rápidas</h2>
+                        <h2 className="text-sm font-black ">Ações Rápidas</h2>
 
                         <div className="space-y-3">
                             <Link
@@ -188,7 +188,7 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                                 </div>
                                 <div className="text-center">
                                     <p className="font-black uppercase text-sm">Nova OS</p>
-                                    <p className="text-[9px] text-blue-500/60 font-bold uppercase tracking-widest mt-0.5">Protocolo OS</p>
+                                    <p className="text-[11px] text-blue-500/60 font-bold uppercase tracking-widest mt-0.5">Protocolo OS</p>
                                 </div>
                             </Link>
 
@@ -202,7 +202,7 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                                     </div>
                                     <div className="text-center">
                                         <p className="font-black uppercase text-sm">PDV Caixa</p>
-                                        <p className="text-[9px] text-emerald-500/60 font-bold uppercase tracking-widest mt-0.5">Venda Expressa</p>
+                                        <p className="text-[11px] text-emerald-500/60 font-bold uppercase tracking-widest mt-0.5">Venda Expressa</p>
                                     </div>
                                 </Link>
                             )}
@@ -216,7 +216,7 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-sm font-bold">Ver todas as OS</p>
-                                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Histórico completo</p>
+                                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider">Histórico completo</p>
                                 </div>
                                 <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                             </Link>

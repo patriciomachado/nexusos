@@ -1,11 +1,10 @@
 'use client'
 
-import { Search, Command, Menu } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { useAppStore } from '@/store/appStore'
 import ThemeToggle from './ThemeToggle'
 import NotificationsDropdown from './NotificationsDropdown'
-import { UserButton, useUser } from '@clerk/nextjs'
-import { useRouter } from 'next/navigation'
+import { UserButton } from '@clerk/nextjs'
 import { useState, useEffect } from 'react'
 
 interface HeaderProps {
@@ -15,72 +14,52 @@ interface HeaderProps {
 }
 
 export default function Header({ title, subtitle, children }: HeaderProps) {
-    const { user: appUser, mobileMenuOpen, setMobileMenuOpen } = useAppStore()
-    const { user: clerkUser, isLoaded: clerkLoaded } = useUser()
-    const router = useRouter()
+    const { mobileMenuOpen, setMobileMenuOpen } = useAppStore()
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true)
     }, [])
 
-    if (!mounted) return null
-
     return (
-        <header className="h-14 lg:h-16 px-3 sm:px-4 lg:px-8 flex items-center justify-between sticky top-0 z-40 bg-background/40 backdrop-blur-3xl border-b border-border/40 transition-all duration-500" suppressHydrationWarning>
-
-            {/* Left: Breadcrumb & Mobile Menu Trigger */}
-            <div className="flex items-center gap-2 lg:gap-6 shrink-0" suppressHydrationWarning>
+        <header
+            className="h-14 lg:h-16 px-2 sm:px-4 lg:px-8 flex items-center justify-between gap-2 sticky top-0 z-40 material-bar border-b border-border/60"
+            suppressHydrationWarning
+        >
+            {/* Leading: menu + title */}
+            <div className="flex items-center gap-1 lg:gap-3 min-w-0 shrink" suppressHydrationWarning>
                 <button
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className="lg:hidden p-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all active:scale-95 flex items-center justify-center"
-                    aria-label="Abrir Menu"
-                    title="Menu Completo"
+                    className="lg:hidden w-11 h-11 -ml-1 rounded-full flex items-center justify-center text-primary hover:bg-foreground/[0.05] active:bg-foreground/[0.08] transition-colors"
+                    aria-label="Abrir menu"
+                    aria-expanded={mobileMenuOpen}
                 >
-                    <Menu className="w-5 h-5" />
+                    <Menu className="w-[22px] h-[22px]" />
                 </button>
-                <div className="flex flex-col" suppressHydrationWarning>
-                    <h1 className="text-sm font-black tracking-tight text-foreground/80 whitespace-nowrap">{title}</h1>
+                <div className="min-w-0">
+                    <h1 className="text-[17px] font-semibold tracking-tight text-foreground truncate leading-tight">{title}</h1>
+                    {subtitle && (
+                        <p className="hidden sm:block text-xs text-muted-foreground truncate leading-tight">{subtitle}</p>
+                    )}
                 </div>
             </div>
 
-            {/* Center: Search / Custom Content */}
-            <div className="flex-1 max-w-xl mx-2 sm:mx-4">
+            {/* Center: search or page controls */}
+            <div className="flex-1 max-w-xl mx-1 sm:mx-4 min-w-0">
                 {children}
             </div>
 
-            {/* Right: Actions & Profile */}
-            <div className="flex items-center gap-2 sm:gap-6 lg:gap-8 shrink-0" suppressHydrationWarning>
-                <div className="flex items-center gap-1 sm:gap-3">
-                    <NotificationsDropdown />
-
-                    <ThemeToggle />
-                </div>
-
-                <div className="hidden sm:block h-10 w-px bg-border/40" suppressHydrationWarning />
-
-                <div className="flex items-center gap-2 sm:gap-3 group cursor-pointer" suppressHydrationWarning>
-                    <div className="text-right hidden sm:block" suppressHydrationWarning>
-                        <p className="text-[10px] font-black text-foreground uppercase tracking-tight group-hover:text-primary transition-colors">
-                            {clerkLoaded && clerkUser ? (clerkUser.fullName || 'Operador Nexus') : 'Operador Nexus'}
-                        </p>
-                        <p className="text-[8px] font-bold text-muted-foreground/60 uppercase tracking-widest mt-0.5">Terminal Ativo</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 border-2 border-primary/20 p-1 flex items-center justify-center group-hover:border-primary/50 transition-all scale-100 group-hover:scale-105" suppressHydrationWarning>
-                        {mounted && (
-                            <UserButton
-                                appearance={{
-                                    elements: {
-                                        avatarBox: "w-full h-full rounded-xl",
-                                        userButtonTrigger: "w-full h-full focus:shadow-none focus:outline-none"
-                                    }
-                                }}
-                            />
-                        )}
-                    </div>
+            {/* Trailing: actions */}
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0" suppressHydrationWarning>
+                <NotificationsDropdown />
+                <ThemeToggle />
+                <div className="hidden sm:flex w-11 h-11 items-center justify-center" suppressHydrationWarning>
+                    {mounted && (
+                        <UserButton appearance={{ elements: { avatarBox: 'w-8 h-8' } }} />
+                    )}
                 </div>
             </div>
         </header>
     )
 }
-

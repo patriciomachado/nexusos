@@ -58,7 +58,7 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                     </div>
                     <div>
                         <h2 className="text-base font-bold text-white truncate max-w-xs md:max-w-md">{script.title}</h2>
-                        <p className="text-[10px] text-primary uppercase font-black tracking-widest">Modo Teleprompter • Olhe para a Câmera</p>
+                        <p className="text-[11px] text-primary uppercase font-black tracking-widest">Modo Teleprompter • Olhe para a Câmera</p>
                     </div>
                 </div>
 
@@ -81,13 +81,13 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                         <Type className="w-4 h-4 ml-2 text-white/50" />
                         {(['sm', 'md', 'lg', 'xl'] as const).map(size => (
                             <button
-                                key={size}
-                                onClick={() => setFontSize(size)}
-                                className={cn(
-                                    "px-2.5 py-1 text-xs font-bold uppercase rounded-lg transition-all",
-                                    fontSize === size ? "bg-primary text-black" : "text-white/60 hover:text-white"
-                                )}
-                            >
+ key={size}
+ onClick={() => setFontSize(size)}
+ className={cn(
+ "px-2.5 py-1 text-xs font-bold rounded-lg transition-all",
+ fontSize === size ? "bg-primary text-black" : "text-white/60 hover:text-white"
+ )}
+ >
                                 {size}
                             </button>
                         ))}
@@ -169,14 +169,14 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                 </button>
 
                 <button
-                    onClick={() => setIsPlaying(!isPlaying)}
-                    className={cn(
-                        "px-8 py-4 rounded-2xl font-black text-base uppercase tracking-widest flex items-center gap-3 transition-all shadow-xl active:scale-95",
-                        isPlaying 
-                            ? "bg-amber-500 text-black shadow-amber-500/20 hover:bg-amber-400" 
-                            : "bg-primary text-black shadow-primary/20 hover:bg-primary/90"
-                    )}
-                >
+ onClick={() => setIsPlaying(!isPlaying)}
+ className={cn(
+ "px-8 py-4 rounded-2xl font-black text-base flex items-center gap-3 transition-all shadow-xl active:scale-95",
+ isPlaying 
+ ? "bg-amber-500 text-black shadow-amber-500/20 hover:bg-amber-400" 
+ : "bg-primary text-black shadow-primary/20 hover:bg-primary/90"
+ )}
+ >
                     {isPlaying ? (
                         <>
                             <Pause className="w-6 h-6 fill-current" />

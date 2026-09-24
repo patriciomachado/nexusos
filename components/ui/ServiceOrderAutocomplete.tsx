@@ -46,7 +46,7 @@ export default function ServiceOrderAutocomplete({ serviceOrders, selectedId, on
     return (
         <div ref={containerRef} className="relative w-full">
             {label && (
-                <label className="block text-[10px] font-black text-muted-foreground/60 mb-2 uppercase tracking-[0.2em] px-1">
+                <label className="block text-[13px] font-medium text-muted-foreground mb-2 px-1">
                     {label}
                 </label>
             )}
@@ -60,25 +60,25 @@ export default function ServiceOrderAutocomplete({ serviceOrders, selectedId, on
                 )}
             >
                 <div className="flex items-center gap-3">
-                    <ClipboardList className={cn("w-4 h-4 transition-colors", selectedSO ? "text-primary" : "text-muted-foreground/30")} />
-                    <span className={cn("block truncate", !selectedSO && "text-muted-foreground/50")}>
+                    <ClipboardList className={cn("w-4 h-4 transition-colors", selectedSO ? "text-primary" : "text-muted-foreground")} />
+                    <span className={cn("block truncate", !selectedSO && "text-muted-foreground")}>
                         {selectedSO ? `#${selectedSO.order_number} - ${selectedSO.title}` : (placeholder || "Vincular OS...")}
                     </span>
                 </div>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-                    <ChevronsUpDown className="h-4 w-4 text-muted-foreground/30" aria-hidden="true" />
+                    <ChevronsUpDown className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 </span>
             </button>
 
             {isOpen && (
-                <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-[2rem] bg-card/95 border border-white/10 shadow-2xl backdrop-blur-3xl animate-in fade-in duration-200">
+                <div className="absolute z-50 mt-2 w-full overflow-hidden rounded-3xl bg-card/95 border border-white/10 shadow-2xl backdrop-blur-3xl animate-in fade-in duration-200">
                     <div className="p-3 border-b border-white/5">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/30" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <input
                                 autoFocus
                                 type="text"
-                                className="w-full h-10 bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 md:text-xs text-base text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-bold"
+                                className="w-full h-10 bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 md:text-xs text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-bold"
                                 placeholder="Procurar OS ou número..."
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
@@ -105,10 +105,10 @@ export default function ServiceOrderAutocomplete({ serviceOrders, selectedId, on
                                         )}
                                     >
                                         <div className={cn(
-                                            "w-10 h-7 rounded-lg flex items-center justify-center text-[9px] font-black uppercase transition-all",
+                                            "w-10 h-7 rounded-lg flex items-center justify-center text-[11px] font-black uppercase transition-all",
                                             so.id === selectedId
                                                 ? "bg-primary/20 text-primary"
-                                                : "bg-white/5 text-muted-foreground/40 group-hover:bg-primary/10 group-hover:text-primary"
+                                                : "bg-white/5 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
                                         )}>
                                             #{so.order_number}
                                         </div>
@@ -121,7 +121,7 @@ export default function ServiceOrderAutocomplete({ serviceOrders, selectedId, on
                             ))
                         ) : (
                             <li className="px-4 py-8 text-center">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/20">Nenhuma OS encontrada</p>
+                                <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Nenhuma OS encontrada</p>
                             </li>
                         )}
                     </ul>

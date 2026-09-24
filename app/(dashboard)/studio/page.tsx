@@ -402,7 +402,7 @@ function StudioContent() {
                                     )}
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Tema ou Assunto do Conteúdo</label>
+                                        <label className="text-[13px] font-medium text-muted-foreground ml-1">Tema ou Assunto do Conteúdo</label>
                                         <textarea
                                             value={topic}
                                             onChange={e => setTopic(e.target.value)}
@@ -414,7 +414,7 @@ function StudioContent() {
 
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Categoria</label>
+                                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Categoria</label>
                                             <select
                                                 value={category}
                                                 onChange={e => setCategory(e.target.value)}
@@ -430,7 +430,7 @@ function StudioContent() {
                                         </div>
 
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Tom de Voz</label>
+                                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Tom de Voz</label>
                                             <select
                                                 value={tone}
                                                 onChange={e => setTone(e.target.value)}
@@ -445,10 +445,10 @@ function StudioContent() {
                                     </div>
 
                                     <button
-                                        onClick={() => handleGenerate()}
-                                        disabled={isGenerating}
-                                        className="w-full py-4 bg-primary text-black rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50"
-                                    >
+ onClick={() => handleGenerate()}
+ disabled={isGenerating}
+ className="w-full py-4 bg-primary text-black rounded-2xl text-xs font-black hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50"
+ >
                                         {isGenerating ? (
                                             <>
                                                 <RefreshCw className="w-5 h-5 animate-spin" />
@@ -472,7 +472,7 @@ function StudioContent() {
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-4">
                                         <div>
                                             <h3 className="text-lg font-black text-foreground">{currentOutput.title}</h3>
-                                            <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">✨ Gerado por Claude AI via OpenRouter</span>
+                                            <span className="text-[11px] font-bold text-amber-500 uppercase tracking-widest">✨ Gerado por Claude AI via OpenRouter</span>
                                         </div>
 
                                         <div className="flex flex-wrap items-center gap-2">
@@ -485,18 +485,18 @@ function StudioContent() {
                                             </button>
 
                                             <button
-                                                onClick={() => openTeleprompter(currentOutput)}
-                                                className="px-4 py-2 bg-amber-500 text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-amber-400 transition-all flex items-center gap-1.5 shadow-md"
-                                            >
+ onClick={() => openTeleprompter(currentOutput)}
+ className="px-4 py-2 bg-amber-500 text-black rounded-xl text-xs font-black hover:bg-amber-400 transition-all flex items-center gap-1.5 shadow-md"
+ >
                                                 <Play className="w-4 h-4 fill-current" />
                                                 Teleprompter
                                             </button>
 
                                             <button
-                                                onClick={handleSaveScript}
-                                                disabled={isSaving}
-                                                className="px-4 py-2 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center gap-1.5 disabled:opacity-50"
-                                            >
+ onClick={handleSaveScript}
+ disabled={isSaving}
+ className="px-4 py-2 bg-primary text-black rounded-xl text-xs font-black hover:bg-primary/90 transition-all flex items-center gap-1.5 disabled:opacity-50"
+ >
                                                 <Copy className="w-4 h-4" />
                                                 Salvar
                                             </button>
@@ -505,31 +505,31 @@ function StudioContent() {
 
                                     {/* 1. Gancho 3s */}
                                     <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-amber-500 tracking-widest">⚡ Gancho Viral (Primeiros 3 segundos)</span>
+                                        <span className="text-[11px] font-black uppercase text-amber-500 tracking-widest">⚡ Gancho Viral (Primeiros 3 segundos)</span>
                                         <p className="text-base font-bold text-amber-200">"{currentOutput.hook_3s}"</p>
                                     </div>
 
                                     {/* 2. Roteiro de Bancada */}
                                     <div className="p-4 bg-muted/40 border border-border rounded-2xl space-y-2">
-                                        <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">🛠️ Roteiro da Bancada</span>
+                                        <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">🛠️ Roteiro da Bancada</span>
                                         <p className="text-sm font-medium whitespace-pre-line leading-relaxed">{currentOutput.body_script}</p>
                                     </div>
 
                                     {/* 3. CTA */}
                                     <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl space-y-1">
-                                        <span className="text-[9px] font-black uppercase text-emerald-500 tracking-widest">📣 Chamada para Ação (CTA)</span>
+                                        <span className="text-[11px] font-black uppercase text-emerald-500 tracking-widest">📣 Chamada para Ação (CTA)</span>
                                         <p className="text-sm font-bold text-emerald-200">"{currentOutput.cta_text}"</p>
                                     </div>
 
                                     {/* 4. Mídias de Exportação */}
                                     <div className="space-y-4 pt-4 border-t border-border">
-                                        <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Pronto para Copiar & Postar:</h4>
+                                        <h4 className="text-xs font-black text-muted-foreground">Pronto para Copiar & Postar:</h4>
                                         
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                             {/* Instagram */}
                                             <div className="p-3 bg-muted/20 border border-border rounded-2xl space-y-2 flex flex-col justify-between">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-bold text-purple-400">Instagram / TikTok</span>
+                                                    <span className="text-[11px] font-bold text-purple-400">Instagram / TikTok</span>
                                                     <button 
                                                         onClick={() => copyToClipboard(currentOutput.instagram_caption || '', 'ig')} 
                                                         className="text-xs text-muted-foreground hover:text-primary font-bold"
@@ -543,7 +543,7 @@ function StudioContent() {
                                             {/* WhatsApp */}
                                             <div className="p-3 bg-muted/20 border border-border rounded-2xl space-y-2 flex flex-col justify-between">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-bold text-emerald-400">Status do WhatsApp</span>
+                                                    <span className="text-[11px] font-bold text-emerald-400">Status do WhatsApp</span>
                                                     <button 
                                                         onClick={() => copyToClipboard(currentOutput.whatsapp_text || '', 'wa')} 
                                                         className="text-xs text-muted-foreground hover:text-primary font-bold"
@@ -557,7 +557,7 @@ function StudioContent() {
                                             {/* Google Meu Negócio */}
                                             <div className="p-3 bg-muted/20 border border-border rounded-2xl space-y-2 flex flex-col justify-between">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-bold text-blue-400">Google Meu Negócio</span>
+                                                    <span className="text-[11px] font-bold text-blue-400">Google Meu Negócio</span>
                                                     <button 
                                                         onClick={() => copyToClipboard(currentOutput.google_post || '', 'gmb')} 
                                                         className="text-xs text-muted-foreground hover:text-primary font-bold"
@@ -646,20 +646,20 @@ function StudioContent() {
                                 {WEEKLY_CONTENT_IDEAS.map((idea, idx) => (
                                     <div key={idx} className="bg-card/80 border border-border rounded-2xl p-4 space-y-3 flex flex-col justify-between hover:border-primary/40 transition-all">
                                         <div>
-                                            <span className="text-[10px] font-black uppercase text-primary tracking-wider bg-primary/10 px-2 py-0.5 rounded-md">
+                                            <span className="text-[11px] font-black uppercase text-primary tracking-wider bg-primary/10 px-2 py-0.5 rounded-md">
                                                 {idea.type}
                                             </span>
                                             <h3 className="font-bold text-sm mt-2 text-foreground">{idea.title}</h3>
                                             <p className="text-xs text-muted-foreground mt-1">{idea.desc}</p>
                                         </div>
                                         <button
-                                            onClick={() => {
-                                                setTopic(idea.title)
-                                                setActiveTab('generate')
-                                                handleGenerate(idea.title)
-                                            }}
-                                            className="w-full py-2 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all flex items-center justify-center gap-2 mt-2"
-                                        >
+ onClick={() => {
+ setTopic(idea.title)
+ setActiveTab('generate')
+ handleGenerate(idea.title)
+ }}
+ className="w-full py-2 bg-primary text-black rounded-xl text-xs font-black hover:bg-primary/90 transition-all flex items-center justify-center gap-2 mt-2"
+ >
                                             <Wand2 className="w-3.5 h-3.5" />
                                             Criar com Claude AI
                                         </button>
@@ -679,10 +679,10 @@ function StudioContent() {
                                     <div key={event.id} className="bg-card border border-border rounded-2xl p-5 space-y-4 flex flex-col justify-between group hover:border-primary/50 transition-all shadow-md">
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-lg">
+                                                <span className="text-[11px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-lg">
                                                     {monthNames[event.month - 1]} • Dia {event.day}
                                                 </span>
-                                                <span className="text-[9px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                                                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md">
                                                     {event.badge}
                                                 </span>
                                             </div>
@@ -692,9 +692,9 @@ function StudioContent() {
 
                                         <div className="pt-3 border-t border-border/50">
                                             <button
-                                                onClick={() => handleSelectSeasonalEvent(event)}
-                                                className="w-full py-2.5 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
-                                            >
+ onClick={() => handleSelectSeasonalEvent(event)}
+ className="w-full py-2.5 bg-primary text-black rounded-xl text-xs font-black hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+ >
                                                 <Wand2 className="w-4 h-4" />
                                                 ✨ Criar Conteúdo com Claude AI
                                             </button>
@@ -731,7 +731,7 @@ function StudioContent() {
                                     <div key={script.id} className="bg-card border border-border rounded-2xl p-5 space-y-4 flex flex-col justify-between group hover:border-primary/40 transition-all shadow-md">
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-[10px] font-black uppercase text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+                                                <span className="text-[11px] font-black uppercase text-primary bg-primary/10 px-2 py-0.5 rounded-md">
                                                     {script.category}
                                                 </span>
                                                 <button onClick={() => handleDeleteScript(script.id)} className="text-muted-foreground hover:text-rose-500 p-1">
@@ -793,7 +793,7 @@ function StudioContent() {
 
                                 {/* 1. Formato / Dimensão */}
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">1. Dimensão da Arte</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground ml-1">1. Dimensão da Arte</label>
                                     <div className="grid grid-cols-3 gap-2">
                                         <button
                                             onClick={() => setBannerAspect('1:1')}
@@ -832,7 +832,7 @@ function StudioContent() {
 
                                 {/* 2. Caixa de Cores da Marca */}
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">2. Paleta de Cores da Marca</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground ml-1">2. Paleta de Cores da Marca</label>
                                     <div className="flex flex-wrap gap-2">
                                         {COLOR_PRESETS.map((preset, idx) => (
                                             <button
@@ -869,7 +869,7 @@ function StudioContent() {
 
                                 {/* 3. Estilo Visual */}
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">3. Estilo de Imagem</label>
+                                    <label className="text-[13px] font-medium text-muted-foreground ml-1">3. Estilo de Imagem</label>
                                     <select
                                         value={bannerStyle}
                                         onChange={e => setBannerStyle(e.target.value)}
@@ -885,7 +885,7 @@ function StudioContent() {
                                 {/* 4. Textos que Vão na Imagem */}
                                 <div className="space-y-3">
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Título Estampado na Arte</label>
+                                        <label className="text-[13px] font-medium text-muted-foreground ml-1">Título Estampado na Arte</label>
                                         <input
                                             type="text"
                                             value={bannerTitle}
@@ -896,7 +896,7 @@ function StudioContent() {
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Selo de Oferta / Destaque</label>
+                                        <label className="text-[13px] font-medium text-muted-foreground ml-1">Selo de Oferta / Destaque</label>
                                         <input
                                             type="text"
                                             value={bannerSubtitle}
@@ -929,14 +929,14 @@ function StudioContent() {
                                     }}
                                 >
                                     <div className="flex items-center justify-between">
-                                        <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border bg-black/40 text-white" style={{ borderColor: bannerPrimaryColor }}>
+                                        <span className="text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full border bg-black/40 text-white" style={{ borderColor: bannerPrimaryColor }}>
                                             Assistência Técnica • {bannerAspect}
                                         </span>
                                         <div className="w-3 h-3 rounded-full animate-ping" style={{ backgroundColor: bannerSecondaryColor }} />
                                     </div>
 
                                     <div className="space-y-2 py-4">
-                                        <h2 className="text-xl font-black text-white uppercase tracking-tight drop-shadow-md">
+                                        <h2 className="text-xl font-black text-white tracking-tight drop-shadow-md">
                                             {bannerTitle || 'SEU TÍTULO AQUI'}
                                         </h2>
                                         <p className="text-xs font-bold text-amber-300 bg-black/50 p-2.5 rounded-xl border border-amber-500/30 inline-block">
@@ -952,7 +952,7 @@ function StudioContent() {
 
                                 {/* Prompts Formatados para ChatGPT e Nano Banana */}
                                 <div className="space-y-4 pt-2 border-t border-border">
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Prompts Profissionais em Inglês:</h4>
+                                    <h4 className="text-xs font-black text-muted-foreground">Prompts Profissionais em Inglês:</h4>
 
                                     {/* 1. Prompt ChatGPT (DALL-E 3) */}
                                     <div className="p-4 bg-muted/30 border border-border rounded-2xl space-y-3">

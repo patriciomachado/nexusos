@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/*
+ * NexusOS design system, grounded in Apple's Human Interface Guidelines.
+ *
+ * - Colors are semantic tokens (color.md › Dynamic system colors): grouped
+ *   backgrounds in light, true-black backgrounds in dark.
+ * - Accent is systemIndigo, which keeps the brand's violet identity while
+ *   giving white labels 5.5:1 contrast (primary buttons pass AA at any size).
+ * - Tailwind's hue palettes are remapped to Apple's system colors so every
+ *   existing `text-emerald-400`, `bg-rose-500/10`, etc. picks up the system
+ *   palette. In light mode the text shades (300/400/600/700) use Apple's
+ *   increased-contrast variants so they stay legible on white.
+ * - Type uses the system font (SF Pro on Apple devices) with Inter as fallback,
+ *   a black weight capped at bold and no text smaller than 11px (typography.md).
+ * - Materials: translucency only on the functional layer (sidebar, bars,
+ *   sheets). Content cards are solid (liquid-glass.md › The two layers).
+ */
+
 @theme {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -20,69 +37,327 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+  --color-success: hsl(var(--success));
+  --color-warning: hsl(var(--warning));
+
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.125rem;
+  --radius-3xl: 1.375rem;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", var(--font-inter), "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Heavy weights read as shouting at small sizes; cap them at bold. */
+  --font-weight-black: 700;
+  --font-weight-extrabold: 700;
+
+  /* Gentler tracking: SF already applies optical tracking. */
+  --tracking-tighter: -0.022em;
+  --tracking-tight: -0.012em;
+  --tracking-wide: 0.01em;
+  --tracking-wider: 0.03em;
+  --tracking-widest: 0.05em;
+
+  /* Soft, diffuse shadows instead of heavy drop shadows. */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 12px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 1px 3px rgb(0 0 0 / 0.05), 0 8px 24px rgb(0 0 0 / 0.07);
+  --shadow-xl: 0 2px 6px rgb(0 0 0 / 0.05), 0 16px 40px rgb(0 0 0 / 0.09);
+  --shadow-2xl: 0 4px 12px rgb(0 0 0 / 0.06), 0 24px 64px rgb(0 0 0 / 0.14);
+
+  --animate-sheet-up: sheet-up 0.32s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 :root {
-  --background: 210 30% 98%;
-  --foreground: 224 71% 4%;
+  /* systemGroupedBackground / secondarySystemGroupedBackground */
+  --background: 240 24% 96%;
+  --foreground: 240 3% 12%;
   --card: 0 0% 100%;
-  --card-foreground: 224 71% 4%;
+  --card-foreground: 240 3% 12%;
   --popover: 0 0% 100%;
-  --popover-foreground: 224 71% 4%;
-  --primary: 250 95% 60%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 250 95% 95%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 250 95% 60%;
-  --radius: 1.5rem;
+  --popover-foreground: 240 3% 12%;
+  /* systemIndigo #5856D6 */
+  --primary: 241 61% 59%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 11% 93%;
+  --secondary-foreground: 240 3% 12%;
+  --muted: 240 11% 94%;
+  /* #6E6E73: 5.0:1 on white, 4.5:1 on the grouped background */
+  --muted-foreground: 240 2% 44%;
+  --accent: 241 70% 96%;
+  --accent-foreground: 241 55% 40%;
+  /* systemRed */
+  --destructive: 3 100% 59%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 135 59% 49%;
+  --warning: 35 100% 50%;
+  --border: 240 6% 88%;
+  --input: 240 6% 85%;
+  --ring: 241 61% 59%;
+  --radius: 0.75rem;
+
+  /* Functional-layer material (bars, sidebar, sheets) */
+  --material: 240 24% 98%;
+  --material-opacity: 0.72;
 }
 
 .dark {
-  --background: 230 45% 5%;
-  /* Much darker, almost black navy */
-  --foreground: 0 0% 98%;
-  --card: 228 24% 8%;
-  --card-foreground: 0 0% 98%;
-  --popover: 228 24% 8%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 250 95% 65%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 228 24% 10%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 228 24% 10%;
-  --muted-foreground: 215 20% 65%;
-  --accent: 250 95% 65%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 228 24% 12%;
-  --input: 228 24% 12%;
-  --ring: 250 95% 65%;
+  /* systemBackground / secondarySystemBackground / tertiarySystemBackground */
+  --background: 0 0% 0%;
+  --foreground: 240 11% 96%;
+  --card: 240 3% 11%;
+  --card-foreground: 240 11% 96%;
+  --popover: 240 2% 15%;
+  --popover-foreground: 240 11% 96%;
+  /* systemIndigo (dark) #5E5CE6 */
+  --primary: 241 73% 63%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 2% 18%;
+  --secondary-foreground: 240 11% 96%;
+  --muted: 240 2% 18%;
+  /* #98989D: 6.4:1 on #1C1C1E */
+  --muted-foreground: 240 2% 61%;
+  --accent: 241 30% 20%;
+  --accent-foreground: 240 11% 96%;
+  --destructive: 3 100% 61%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 135 64% 50%;
+  --warning: 36 100% 52%;
+  --border: 240 2% 22%;
+  --input: 240 2% 26%;
+  --ring: 241 73% 63%;
+
+  --material: 240 3% 9%;
+  --material-opacity: 0.72;
+}
+
+/* Tinted text in dark mode uses the accessible indigo (#7D7AFF, 5.2:1 on
+ * #1C1C1E); filled controls keep systemIndigo so white labels stay legible. */
+.dark .text-primary {
+  color: #7D7AFF;
+}
+
+/* ---------------------------------------------------------------------------
+ * Apple system colors mapped onto Tailwind's hue palettes.
+ * red/rose → red, pink → pink, purple/violet/fuchsia → purple, indigo,
+ * blue, cyan/sky, teal, green/emerald/lime, orange/amber, yellow.
+ * ------------------------------------------------------------------------- */
+:root {
+  --color-red-300: #D70015;
+  --color-red-400: #D70015;
+  --color-red-600: #D70015;
+  --color-red-700: #D70015;
+  --color-red-500: #FF3B30;
+  --color-rose-300: #D70015;
+  --color-rose-400: #D70015;
+  --color-rose-600: #D70015;
+  --color-rose-700: #D70015;
+  --color-rose-500: #FF3B30;
+  --color-pink-300: #D30F45;
+  --color-pink-400: #D30F45;
+  --color-pink-600: #D30F45;
+  --color-pink-700: #D30F45;
+  --color-pink-500: #FF2D55;
+  --color-fuchsia-300: #8944AB;
+  --color-fuchsia-400: #8944AB;
+  --color-fuchsia-600: #8944AB;
+  --color-fuchsia-700: #8944AB;
+  --color-fuchsia-500: #AF52DE;
+  --color-purple-300: #8944AB;
+  --color-purple-400: #8944AB;
+  --color-purple-600: #8944AB;
+  --color-purple-700: #8944AB;
+  --color-purple-500: #AF52DE;
+  --color-violet-300: #8944AB;
+  --color-violet-400: #8944AB;
+  --color-violet-600: #8944AB;
+  --color-violet-700: #8944AB;
+  --color-violet-500: #AF52DE;
+  --color-indigo-300: #3634A3;
+  --color-indigo-400: #3634A3;
+  --color-indigo-600: #3634A3;
+  --color-indigo-700: #3634A3;
+  --color-indigo-500: #5856D6;
+  --color-blue-300: #0040DD;
+  --color-blue-400: #0040DD;
+  --color-blue-600: #0040DD;
+  --color-blue-700: #0040DD;
+  --color-blue-500: #007AFF;
+  --color-sky-300: #0071A4;
+  --color-sky-400: #0071A4;
+  --color-sky-600: #0071A4;
+  --color-sky-700: #0071A4;
+  --color-sky-500: #32ADE6;
+  --color-cyan-300: #0071A4;
+  --color-cyan-400: #0071A4;
+  --color-cyan-600: #0071A4;
+  --color-cyan-700: #0071A4;
+  --color-cyan-500: #32ADE6;
+  --color-teal-300: #008299;
+  --color-teal-400: #008299;
+  --color-teal-600: #008299;
+  --color-teal-700: #008299;
+  --color-teal-500: #30B0C7;
+  --color-emerald-300: #248A3D;
+  --color-emerald-400: #248A3D;
+  --color-emerald-600: #248A3D;
+  --color-emerald-700: #248A3D;
+  --color-emerald-500: #34C759;
+  --color-green-300: #248A3D;
+  --color-green-400: #248A3D;
+  --color-green-600: #248A3D;
+  --color-green-700: #248A3D;
+  --color-green-500: #34C759;
+  --color-lime-300: #248A3D;
+  --color-lime-400: #248A3D;
+  --color-lime-600: #248A3D;
+  --color-lime-700: #248A3D;
+  --color-lime-500: #34C759;
+  --color-yellow-300: #B25000;
+  --color-yellow-400: #B25000;
+  --color-yellow-600: #B25000;
+  --color-yellow-700: #B25000;
+  --color-yellow-500: #FFCC00;
+  --color-amber-300: #C93400;
+  --color-amber-400: #C93400;
+  --color-amber-600: #C93400;
+  --color-amber-700: #C93400;
+  --color-amber-500: #FF9500;
+  --color-orange-300: #C93400;
+  --color-orange-400: #C93400;
+  --color-orange-600: #C93400;
+  --color-orange-700: #C93400;
+  --color-orange-500: #FF9500;
+}
+
+.dark {
+  --color-red-300: #FF6961;
+  --color-red-400: #FF6961;
+  --color-red-500: #FF453A;
+  --color-red-600: #FF453A;
+  --color-red-700: #FF453A;
+  --color-rose-300: #FF6961;
+  --color-rose-400: #FF6961;
+  --color-rose-500: #FF453A;
+  --color-rose-600: #FF453A;
+  --color-rose-700: #FF453A;
+  --color-pink-300: #FF6482;
+  --color-pink-400: #FF6482;
+  --color-pink-500: #FF375F;
+  --color-pink-600: #FF375F;
+  --color-pink-700: #FF375F;
+  --color-fuchsia-300: #DA8FFF;
+  --color-fuchsia-400: #DA8FFF;
+  --color-fuchsia-500: #BF5AF2;
+  --color-fuchsia-600: #BF5AF2;
+  --color-fuchsia-700: #BF5AF2;
+  --color-purple-300: #DA8FFF;
+  --color-purple-400: #DA8FFF;
+  --color-purple-500: #BF5AF2;
+  --color-purple-600: #BF5AF2;
+  --color-purple-700: #BF5AF2;
+  --color-violet-300: #DA8FFF;
+  --color-violet-400: #DA8FFF;
+  --color-violet-500: #BF5AF2;
+  --color-violet-600: #BF5AF2;
+  --color-violet-700: #BF5AF2;
+  --color-indigo-300: #7D7AFF;
+  --color-indigo-400: #7D7AFF;
+  --color-indigo-500: #5E5CE6;
+  --color-indigo-600: #5E5CE6;
+  --color-indigo-700: #5E5CE6;
+  --color-blue-300: #409CFF;
+  --color-blue-400: #409CFF;
+  --color-blue-500: #0A84FF;
+  --color-blue-600: #0A84FF;
+  --color-blue-700: #0A84FF;
+  --color-sky-300: #70D7FF;
+  --color-sky-400: #70D7FF;
+  --color-sky-500: #64D2FF;
+  --color-sky-600: #64D2FF;
+  --color-sky-700: #64D2FF;
+  --color-cyan-300: #70D7FF;
+  --color-cyan-400: #70D7FF;
+  --color-cyan-500: #64D2FF;
+  --color-cyan-600: #64D2FF;
+  --color-cyan-700: #64D2FF;
+  --color-teal-300: #5DE6FF;
+  --color-teal-400: #5DE6FF;
+  --color-teal-500: #40C8E0;
+  --color-teal-600: #40C8E0;
+  --color-teal-700: #40C8E0;
+  --color-emerald-300: #30DB5B;
+  --color-emerald-400: #30DB5B;
+  --color-emerald-500: #30D158;
+  --color-emerald-600: #30D158;
+  --color-emerald-700: #30D158;
+  --color-green-300: #30DB5B;
+  --color-green-400: #30DB5B;
+  --color-green-500: #30D158;
+  --color-green-600: #30D158;
+  --color-green-700: #30D158;
+  --color-lime-300: #30DB5B;
+  --color-lime-400: #30DB5B;
+  --color-lime-500: #30D158;
+  --color-lime-600: #30D158;
+  --color-lime-700: #30D158;
+  --color-yellow-300: #FFD426;
+  --color-yellow-400: #FFD426;
+  --color-yellow-500: #FFD60A;
+  --color-yellow-600: #FFD60A;
+  --color-yellow-700: #FFD60A;
+  --color-amber-300: #FFB340;
+  --color-amber-400: #FFB340;
+  --color-amber-500: #FF9F0A;
+  --color-amber-600: #FF9F0A;
+  --color-amber-700: #FF9F0A;
+  --color-orange-300: #FFB340;
+  --color-orange-400: #FFB340;
+  --color-orange-500: #FF9F0A;
+  --color-orange-600: #FF9F0A;
+  --color-orange-700: #FF9F0A;
 }
 
 @layer utilities {
+  /* Content-layer card: solid surface, hairline border (no glass in content). */
   .glass-premium {
-    @apply bg-card/60 dark:bg-card/40 backdrop-blur-3xl border border-border/40 shadow-2xl;
+    @apply bg-card border border-border/70 shadow-sm;
+  }
+
+  /* Functional-layer material: bars, sidebar, sheets, popovers. */
+  .material-bar {
+    background-color: hsl(var(--material) / var(--material-opacity));
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  .material-thick {
+    background-color: hsl(var(--popover) / 0.88);
+    -webkit-backdrop-filter: saturate(180%) blur(30px);
+    backdrop-filter: saturate(180%) blur(30px);
   }
 
   .neon-glow-primary {
-    @apply shadow-indigo-500/20 shadow-lg;
+    @apply shadow-md;
   }
 
   .neon-glow-emerald {
-    @apply shadow-emerald-500/20 shadow-lg;
+    @apply shadow-md;
   }
+
+  /* HIG type scale (Large Title … Caption), for new screens. */
+  .type-large-title { font-size: 2.125rem; line-height: 1.2; font-weight: 700; letter-spacing: -0.022em; }
+  .type-title1 { font-size: 1.75rem; line-height: 1.22; font-weight: 700; letter-spacing: -0.02em; }
+  .type-title2 { font-size: 1.375rem; line-height: 1.27; font-weight: 700; letter-spacing: -0.016em; }
+  .type-title3 { font-size: 1.25rem; line-height: 1.25; font-weight: 600; letter-spacing: -0.012em; }
+  .type-headline { font-size: 1.0625rem; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; }
+  .type-body { font-size: 1.0625rem; line-height: 1.3; font-weight: 400; letter-spacing: -0.01em; }
+  .type-callout { font-size: 1rem; line-height: 1.3; font-weight: 400; }
+  .type-subhead { font-size: 0.9375rem; line-height: 1.33; font-weight: 400; }
+  .type-footnote { font-size: 0.8125rem; line-height: 1.38; font-weight: 400; }
+  .type-caption { font-size: 0.75rem; line-height: 1.33; font-weight: 400; }
 }
 
 @layer base {
@@ -94,26 +369,35 @@
   ::file-selector-button {
     border-color: var(--color-border, currentColor);
   }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
 }
 
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
   max-width: 100vw;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  @apply bg-background text-foreground;
+  @apply bg-background text-foreground font-sans;
   font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
   max-width: 100vw;
   width: 100%;
 }
 
-/* Custom scrollbar */
+/* Minimal overlay scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -121,12 +405,15 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
-  border-radius: 3px;
+  background: hsl(var(--muted-foreground) / 0.28);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: hsl(var(--muted-foreground) / 0.45);
+  background-clip: padding-box;
 }
 
 /* Hide scrollbar utility */
@@ -139,18 +426,14 @@ body {
   scrollbar-width: none;
 }
 
-/* Gradient text */
+/* Brand text: accent color, no gradient (branding.md › Best practices). */
 .gradient-text {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: hsl(var(--primary));
 }
 
-/* Glass effect */
+/* Legacy glass helper, kept for existing screens: now a quiet fill. */
 .glass {
-  background: hsl(var(--foreground) / 0.05);
-  backdrop-filter: blur(10px);
+  background: hsl(var(--foreground) / 0.04);
   border: 1px solid var(--color-border);
 }
 
@@ -158,7 +441,7 @@ body {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(6px);
   }
 
   to {
@@ -168,7 +451,19 @@ body {
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes sheet-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes pulse-slow {
@@ -196,6 +491,41 @@ body {
   select,
   textarea {
     font-size: 16px !important;
+  }
+}
+
+/* Accessibility: Reduce Motion (motion.md) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Accessibility: Reduce Transparency gets opaque materials (liquid-glass.md) */
+@media (prefers-reduced-transparency: reduce) {
+  .material-bar,
+  .material-thick {
+    background-color: hsl(var(--card));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Accessibility: Increase Contrast gets stronger separators and labels */
+@media (prefers-contrast: more) {
+  :root {
+    --border: 240 6% 70%;
+    --muted-foreground: 240 3% 32%;
+  }
+
+  .dark {
+    --border: 240 2% 45%;
+    --muted-foreground: 240 3% 78%;
   }
 }
 

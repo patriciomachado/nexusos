@@ -13,6 +13,8 @@ const isPublicRoute = createRouteMatcher([
     '/api/os(.*)',
     '/privacidade(.*)',
     '/termos(.*)',
+    // Scheduler calls; the route checks CRON_SECRET itself.
+    '/api/cron/(.*)',
 ])
 
 export default clerkMiddleware(async (auth, request) => {

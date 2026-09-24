@@ -17,6 +17,7 @@ import RevenueChart from '@/components/dashboard/RevenueChart'
 import { cn } from '@/lib/utils'
 import EmployeeDashboard from '@/components/dashboard/EmployeeDashboard'
 import DashboardOnboardingWrapper from '@/components/dashboard/DashboardOnboardingWrapper'
+import TasksTodayWidget from '@/components/tasks/TasksTodayWidget'
 
 interface ServiceOrder {
     id: string
@@ -272,34 +273,37 @@ export default async function DashboardPage() {
                         </p>
                     </div>
                     <div className="flex items-center gap-4" suppressHydrationWarning>
-                        <Link href="/reports" className="px-5 py-2.5 rounded-2xl bg-card border border-border/40 text-[10px] font-black uppercase tracking-widest hover:bg-muted transition-all">
+                        <Link href="/reports" className="px-5 py-2.5 rounded-2xl bg-card border border-border/40 text-[13px] font-black hover:bg-muted transition-all">
                             Ver Relatórios
                         </Link>
-                        <Link href="/service-orders/new" className="px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                        <Link href="/service-orders/new" className="px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground text-[13px] font-black shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
                             Nova OS
                         </Link>
                     </div>
                 </div>
+
+                {/* Seu dia (módulo Tarefas) */}
+                <TasksTodayWidget />
 
                 {/* Metrics Section */}
                 <div className="space-y-6">
                     {/* Mobile: Financial Hub & Quick Actions */}
                     <div className="flex flex-col gap-6 md:hidden">
                         {/* Financial Hub Card */}
-                        <div className="glass-premium rounded-3xl sm:rounded-[2.5rem] p-5 sm:p-8 border border-white/10 relative overflow-hidden bg-card/60 shadow-2xl">
+                        <div className="glass-premium rounded-3xl sm:rounded-3xl p-5 sm:p-8 border border-white/10 relative overflow-hidden bg-card/60 shadow-2xl">
                             
                             <div className="relative z-10 space-y-6">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="w-1.5 h-4 bg-primary rounded-full" />
-                                        <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Fluxo de Caixa</h3>
+                                        <h3 className="text-[13px] font-black text-muted-foreground ">Fluxo de Caixa</h3>
                                     </div>
                                     <TrendingUp className="w-4 h-4 text-primary opacity-60" />
                                 </div>
                                 
                                 {/* Main Metric: Revenue */}
                                 <div className="space-y-1">
-                                    <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest opacity-80 mb-1">Ganhos do Dia (Bruto)</p>
+                                    <p className="text-[11px] font-black text-emerald-400 uppercase tracking-widest opacity-80 mb-1">Ganhos do Dia (Bruto)</p>
                                     <div className="flex flex-col gap-1">
                                         <p className="text-3xl sm:text-4xl font-black text-foreground tracking-tighter leading-none">
                                             {formatCurrency(data.stats.todayRevenue)}
@@ -313,14 +317,14 @@ export default async function DashboardPage() {
                                 {/* Secondary Financial Metrics - Líquido grande e Bruto abaixo */}
                                 <div className="grid grid-cols-2 gap-4 sm:gap-6 pt-3 border-t border-white/5">
                                     <div className="space-y-1">
-                                        <p className="text-[8px] font-black text-emerald-400 uppercase tracking-widest opacity-80">Líquido</p>
+                                        <p className="text-[11px] font-black text-emerald-400 uppercase tracking-widest opacity-80">Líquido</p>
                                         <p className="text-xl font-black text-foreground tracking-tight">{formatCurrency(data.stats.monthNetProfit)}</p>
-                                        <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-50">{netMargin}% margem</p>
+                                        <p className="text-[11px] font-bold text-muted-foreground uppercase opacity-50">{netMargin}% margem</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[8px] font-black text-indigo-400 uppercase tracking-widest opacity-80">Bruto</p>
+                                        <p className="text-[11px] font-black text-indigo-400 uppercase tracking-widest opacity-80">Bruto</p>
                                         <p className="text-xl font-black text-foreground tracking-tight">{formatCurrency(data.stats.monthGrossProfit)}</p>
-                                        <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-50">{grossMargin}% margem</p>
+                                        <p className="text-[11px] font-bold text-muted-foreground uppercase opacity-50">{grossMargin}% margem</p>
                                     </div>
                                 </div>
                             </div>
@@ -334,7 +338,7 @@ export default async function DashboardPage() {
                                     <div className="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
                                         <ClipboardList className="w-4 h-4" />
                                     </div>
-                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">OS Ativas</p>
+                                    <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">OS Ativas</p>
                                 </div>
                                 <p className="text-lg font-black text-foreground tracking-tighter">{data.stats.openOS}</p>
                             </div>
@@ -343,7 +347,7 @@ export default async function DashboardPage() {
                                     <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20">
                                         <Users className="w-4 h-4" />
                                     </div>
-                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Clientes</p>
+                                    <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Clientes</p>
                                 </div>
                                 <p className="text-lg font-black text-foreground tracking-tighter">{data.stats.totalCustomers}</p>
                             </div>
@@ -353,7 +357,7 @@ export default async function DashboardPage() {
                     {/* Desktop: Original Grid Layout */}
                     <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-6">
                         {kpis.map((kpi) => (
-                            <div key={kpi.label} className="glass-premium rounded-[2rem] p-6 lg:p-8 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] hover:shadow-primary/5 group relative overflow-hidden h-full border border-white/5" suppressHydrationWarning>
+                            <div key={kpi.label} className="glass-premium rounded-3xl p-6 lg:p-8 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] hover:shadow-primary/5 group relative overflow-hidden h-full border border-white/5" suppressHydrationWarning>
                                 <div className="flex flex-col justify-between h-full relative z-10" suppressHydrationWarning>
                                     <div className="space-y-4">
                                         <div className={cn(
@@ -366,7 +370,7 @@ export default async function DashboardPage() {
                                             <kpi.icon className="w-6 h-6" />
                                         </div>
                                         <div suppressHydrationWarning>
-                                            <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] leading-none mb-2">{kpi.label}</h3>
+                                            <h3 className="text-[13px] font-black text-muted-foreground leading-none mb-2">{kpi.label}</h3>
                                             <p className="text-2xl lg:text-3xl font-black text-foreground tracking-tighter">{kpi.value}</p>
                                             {kpi.subValue && (
                                                 <p className="text-xs font-semibold text-muted-foreground mt-1.5 opacity-80">
@@ -376,7 +380,7 @@ export default async function DashboardPage() {
                                         </div>
                                     </div>
                                     <div className={cn(
-                                        "mt-4 px-3 py-1.5 rounded-xl text-[10px] font-black flex items-center gap-1.5 border backdrop-blur-md self-start",
+                                        "mt-4 px-3 py-1.5 rounded-xl text-[11px] font-black flex items-center gap-1.5 border backdrop-blur-md self-start",
                                         kpi.trend === 'up' ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
                                     )} suppressHydrationWarning>
                                         {kpi.change}
@@ -401,20 +405,20 @@ export default async function DashboardPage() {
                         </div>
 
                         {/* Recent Service Orders Table for Admin */}
-                        <div className="glass-premium rounded-3xl sm:rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl" suppressHydrationWarning>
+                        <div className="glass-premium rounded-3xl sm:rounded-3xl overflow-hidden border border-white/5 shadow-2xl" suppressHydrationWarning>
                             <div className="p-5 sm:p-8 border-b border-white/5 flex flex-col sm:flex-row items-start sm:justify-between gap-3 bg-white/[0.02]">
                                 <div>
-                                    <h2 className="text-xl font-black uppercase tracking-widest leading-none">Ordens de Serviço Recentes</h2>
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-2 opacity-50">Últimas movimentações do sistema</p>
+                                    <h2 className="text-xl font-black leading-none">Ordens de Serviço Recentes</h2>
+                                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-2 opacity-50">Últimas movimentações do sistema</p>
                                 </div>
-                                <Link href="/service-orders" className="px-6 py-3 rounded-2xl bg-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5 w-full sm:w-auto text-center">
+                                <Link href="/service-orders" className="px-6 py-3 rounded-2xl bg-white/5 text-[13px] font-black hover:bg-white/10 transition-all border border-white/5 w-full sm:w-auto text-center">
                                     Ver Tudo
                                 </Link>
                             </div>
                             {/* Desktop/Tablet Grid-based Table */}
                             <div className="hidden md:block">
                                 {/* Table Header */}
-                                <div className="grid grid-cols-12 gap-4 border-b border-white/5 bg-white/[0.01] p-4 sm:p-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 items-center">
+                                <div className="grid grid-cols-12 gap-4 border-b border-white/5 bg-white/[0.01] p-4 sm:p-6 text-[11px] font-black uppercase tracking-wider text-muted-foreground items-center">
                                     <div className="col-span-2">ID</div>
                                     <div className="col-span-5">Título</div>
                                     <div className="col-span-3">Cliente</div>
@@ -428,7 +432,7 @@ export default async function DashboardPage() {
                                             className="relative block w-full hover:bg-white/[0.02] transition-colors group cursor-pointer select-none"
                                         >
                                             <div className="grid grid-cols-12 gap-4 p-4 sm:p-6 items-center">
-                                                <div className="col-span-2 font-mono text-[10px] opacity-30">
+                                                <div className="col-span-2 font-mono text-[11px] opacity-30">
                                                     #{os.id.slice(0, 8)}
                                                 </div>
                                                 <div className="col-span-5">
@@ -444,7 +448,7 @@ export default async function DashboardPage() {
                                                 </div>
                                                 <div className="col-span-2 text-right relative z-10">
                                                     <span className={cn(
-                                                        "px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[8px] sm:text-[9px] font-black uppercase tracking-widest border",
+                                                        "px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-[11px] font-black uppercase tracking-widest border",
                                                         STATUS_CONFIG[os.status]?.bg || "bg-muted border-white/5 text-muted-foreground"
                                                     )}>
                                                         {STATUS_CONFIG[os.status]?.label || os.status}
@@ -453,7 +457,7 @@ export default async function DashboardPage() {
                                             </div>
                                         </div>
                                     )) : (
-                                        <div className="p-12 text-center text-muted-foreground/40 text-xs italic">
+                                        <div className="p-12 text-center text-muted-foreground text-xs italic">
                                             Nenhuma ordem de serviço recente.
                                         </div>
                                     )}
@@ -469,19 +473,19 @@ export default async function DashboardPage() {
                                         className="block p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-colors"
                                     >
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="font-mono text-[10px] opacity-30">#{os.id.slice(0, 8)}</span>
+                                            <span className="font-mono text-[11px] opacity-30">#{os.id.slice(0, 8)}</span>
                                             <span className={cn(
-                                                "px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border",
+                                                "px-2 py-1 rounded-lg text-[11px] font-black uppercase tracking-widest border",
                                                 STATUS_CONFIG[os.status]?.bg || "bg-muted border-white/5 text-muted-foreground"
                                             )}>
                                                 {STATUS_CONFIG[os.status]?.label || os.status}
                                             </span>
                                         </div>
                                         <p className="font-bold text-foreground truncate">{os.title}</p>
-                                        <p className="text-xs text-muted-foreground/70 mt-1">{os.customers?.name || 'Cliente Direto'}</p>
+                                        <p className="text-xs text-muted-foreground mt-1">{os.customers?.name || 'Cliente Direto'}</p>
                                     </Link>
                                 )) : (
-                                    <p className="p-8 text-center text-muted-foreground/40 text-xs italic">Nenhuma ordem de serviço recente.</p>
+                                    <p className="p-8 text-center text-muted-foreground text-xs italic">Nenhuma ordem de serviço recente.</p>
                                 )}
                             </div>
                         </div>

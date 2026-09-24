@@ -197,7 +197,7 @@ export default function BarcodeScannerModal({
                         </div>
                         <div>
                             <h3 className="font-black text-foreground text-base tracking-tight">{title}</h3>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Aproxime o código da câmera</p>
+                            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Aproxime o código da câmera</p>
                         </div>
                     </div>
 
@@ -283,9 +283,9 @@ export default function BarcodeScannerModal({
                                 autoFocus
                             />
                             <button
-                                type="submit"
-                                className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs uppercase tracking-wider flex items-center gap-1 hover:bg-primary/90 transition-all"
-                            >
+ type="submit"
+ className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center gap-1 hover:bg-primary/90 transition-all"
+ >
                                 <Check className="w-4 h-4" />
                                 <span>OK</span>
                             </button>

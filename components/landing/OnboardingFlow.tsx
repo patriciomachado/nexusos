@@ -157,7 +157,7 @@ export default function OnboardingFlow() {
                                 <span className={`font-black uppercase tracking-widest transition-colors ${step === 4 ? 'text-primary' : 'text-white/20'}`}>Onboarding</span>
                             </div>
                             <div className="h-6 w-px bg-white/10 mx-2 hidden sm:block" />
-                            <Link href="/sign-in" className="text-[10px] font-black uppercase tracking-widest text-[#A0A0B5] hover:text-white transition-colors">Entrar</Link>
+                            <Link href="/sign-in" className="text-[13px] font-black text-[#A0A0B5] hover:text-white transition-colors">Entrar</Link>
                         </div>
                     </div>
                 </div>
@@ -185,7 +185,7 @@ export default function OnboardingFlow() {
 function StepLanding({ onStartQuiz }: { onStartQuiz: () => void }) {
     return (
         <div className="text-center space-y-12 py-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-[11px] font-black uppercase tracking-widest mb-4">
                 <Sparkles className="w-3 h-3" />
                 <span>Simulação Exclusiva • Para Donos de Assistência Técnica</span>
             </div>
@@ -202,9 +202,9 @@ function StepLanding({ onStartQuiz }: { onStartQuiz: () => void }) {
 
             <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto pt-4">
                 <button
-                    onClick={onStartQuiz}
-                    className="group flex-1 flex items-center justify-center gap-3 bg-primary hover:bg-primary/95 text-white px-8 py-5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl shadow-primary/30"
-                >
+ onClick={onStartQuiz}
+ className="group flex-1 flex items-center justify-center gap-3 bg-primary hover:bg-primary/95 text-white px-8 py-5 rounded-2xl text-xs font-black transition-all hover:scale-105 shadow-xl shadow-primary/30"
+ >
                     Iniciar Teste de Perda
                     <Play className="w-4 h-4 fill-current group-hover:translate-x-1 transition-transform" />
                 </button>
@@ -216,21 +216,21 @@ function StepLanding({ onStartQuiz }: { onStartQuiz: () => void }) {
                     <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center">
                         <Wallet className="w-5 h-5" />
                     </div>
-                    <h3 className="text-sm font-black text-white uppercase tracking-wider">Perda de Faturamento</h3>
+                    <h3 className="text-sm font-black text-white ">Perda de Faturamento</h3>
                     <p className="text-xs text-[#A0A0B5] leading-relaxed">Orçamentos soltos no WhatsApp ou não cobrados geram prejuízos diários silenciosos.</p>
                 </div>
                 <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 text-left space-y-3">
                     <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
                         <Clock className="w-5 h-5" />
                     </div>
-                    <h3 className="text-sm font-black text-white uppercase tracking-wider">Tempo Desperdiçado</h3>
+                    <h3 className="text-sm font-black text-white ">Tempo Desperdiçado</h3>
                     <p className="text-xs text-[#A0A0B5] leading-relaxed">Horas gastas atualizando clientes de forma manual e organizando ordens antigas.</p>
                 </div>
                 <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 text-left space-y-3">
                     <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
                         <Smile className="w-5 h-5" />
                     </div>
-                    <h3 className="text-sm font-black text-white uppercase tracking-wider">Estresse e Cobrança</h3>
+                    <h3 className="text-sm font-black text-white ">Estresse e Cobrança</h3>
                     <p className="text-xs text-[#A0A0B5] leading-relaxed">Cobrança e ligações constantes de clientes insatisfeitos com a falta de retorno.</p>
                 </div>
             </div>
@@ -253,7 +253,7 @@ function StepQuiz({
         <div className="space-y-12 max-w-2xl mx-auto py-10">
             {/* Progress */}
             <div className="space-y-2">
-                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-[#A0A0B5]">
+                <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-[#A0A0B5]">
                     <span>Simulação de Impacto</span>
                     <span>Pergunta {question.id} de 3</span>
                 </div>
@@ -301,7 +301,7 @@ function StepQuiz({
 function StepQuizResult({ totals, onProceed }: { totals: { money: number; time: number; stress: number }; onProceed: () => void }) {
     return (
         <div className="space-y-12 max-w-3xl mx-auto py-10 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-rose-500/20 bg-rose-500/5 text-rose-400 text-[10px] font-black uppercase tracking-widest mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-rose-500/20 bg-rose-500/5 text-rose-400 text-[11px] font-black uppercase tracking-widest mb-4">
                 <Shield className="w-3 h-3" />
                 <span>Simulador de Desperdício Operacional</span>
             </div>
@@ -318,21 +318,21 @@ function StepQuizResult({ totals, onProceed }: { totals: { money: number; time: 
             {/* Results Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto pt-6">
                 <div className="p-8 rounded-3xl bg-rose-500/5 border border-rose-500/20 flex flex-col justify-between items-center space-y-4">
-                    <p className="text-[10px] font-black text-rose-400 uppercase tracking-widest">Dinheiro Perdido</p>
+                    <p className="text-[11px] font-black text-rose-400 uppercase tracking-widest">Dinheiro Perdido</p>
                     <p className="text-4xl font-black text-rose-400 tracking-tighter">R$ {totals.money}</p>
-                    <p className="text-[10px] text-[#A0A0B5] font-bold uppercase leading-tight">Por Mês em Cobranças e Peças Esquecidas</p>
+                    <p className="text-[11px] text-[#A0A0B5] font-bold uppercase leading-tight">Por Mês em Cobranças e Peças Esquecidas</p>
                 </div>
                 
                 <div className="p-8 rounded-3xl bg-amber-500/5 border border-amber-500/20 flex flex-col justify-between items-center space-y-4">
-                    <p className="text-[10px] font-black text-amber-400 uppercase tracking-widest">Tempo Perdido</p>
+                    <p className="text-[11px] font-black text-amber-400 uppercase tracking-widest">Tempo Perdido</p>
                     <p className="text-4xl font-black text-amber-400 tracking-tighter">{totals.time} hrs</p>
-                    <p className="text-[10px] text-[#A0A0B5] font-bold uppercase leading-tight">Semanalmente com Retornos Manuais e Desorganização</p>
+                    <p className="text-[11px] text-[#A0A0B5] font-bold uppercase leading-tight">Semanalmente com Retornos Manuais e Desorganização</p>
                 </div>
 
                 <div className="p-8 rounded-3xl bg-purple-500/5 border border-purple-500/20 flex flex-col justify-between items-center space-y-4">
-                    <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest">Nível de Estresse</p>
+                    <p className="text-[11px] font-black text-purple-400 uppercase tracking-widest">Nível de Estresse</p>
                     <p className="text-4xl font-black text-purple-400 tracking-tighter">{totals.stress}%</p>
-                    <p className="text-[10px] text-[#A0A0B5] font-bold uppercase leading-tight">Sobrecarga de Cobrança e Processos Manuais</p>
+                    <p className="text-[11px] text-[#A0A0B5] font-bold uppercase leading-tight">Sobrecarga de Cobrança e Processos Manuais</p>
                 </div>
             </div>
 
@@ -341,9 +341,9 @@ function StepQuizResult({ totals, onProceed }: { totals: { money: number; time: 
                     Você pode eliminar estes custos operacionais e economizar tempo criando sua conta grátis agora mesmo.
                 </p>
                 <button
-                    onClick={onProceed}
-                    className="group flex items-center justify-center gap-3 bg-primary hover:bg-primary/95 text-white px-12 py-5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl shadow-primary/30 mx-auto"
-                >
+ onClick={onProceed}
+ className="group flex items-center justify-center gap-3 bg-primary hover:bg-primary/95 text-white px-12 py-5 rounded-2xl text-xs font-black transition-all hover:scale-105 shadow-xl shadow-primary/30 mx-auto"
+ >
                     Criar Conta e Parar Perdas
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
@@ -357,7 +357,7 @@ function StepFinal({ onboardingData }: { onboardingData: { money: number; time: 
         <div className="text-center space-y-16 py-10">
             <div className="relative inline-block">
                 <div className="absolute inset-0 bg-primary blur-[80px] opacity-20 scale-150 animate-pulse" />
-                <div className="relative w-28 h-28 rounded-[2rem] bg-white flex items-center justify-center shadow-2xl mx-auto transform rotate-12 hover:rotate-0 transition-transform duration-700 p-5">
+                <div className="relative w-28 h-28 rounded-3xl bg-white flex items-center justify-center shadow-2xl mx-auto transform rotate-12 hover:rotate-0 transition-transform duration-700 p-5">
                     <img src="/logo.png" alt="Nexus Logo" className="w-full h-full object-contain" />
                 </div>
             </div>
@@ -372,10 +372,10 @@ function StepFinal({ onboardingData }: { onboardingData: { money: number; time: 
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 max-w-md mx-auto">
-                <Link href="/sign-up" className="w-full bg-primary hover:bg-primary/90 text-white px-10 py-5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all hover:scale-105 shadow-xl shadow-primary/30 text-center">
+                <Link href="/sign-up" className="w-full bg-primary hover:bg-primary/90 text-white px-10 py-5 rounded-2xl text-xs font-black transition-all hover:scale-105 shadow-xl shadow-primary/30 text-center">
                     Criar Minha Conta Grátis
                 </Link>
-                <Link href="/sign-in" className="w-full bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 text-white px-10 py-5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all text-center">
+                <Link href="/sign-in" className="w-full bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 text-white px-10 py-5 rounded-2xl text-xs font-black transition-all text-center">
                     Já Tenho Conta
                 </Link>
             </div>
@@ -384,27 +384,27 @@ function StepFinal({ onboardingData }: { onboardingData: { money: number; time: 
             <div className="max-w-lg mx-auto p-6 rounded-2xl bg-white/[0.01] border border-white/5 grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-left">Sem Cartão Necessário</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-left">Sem Cartão Necessário</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-left">Setup em 60 segundos</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-left">Setup em 60 segundos</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-left">Acesso Pro Total</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-left">Acesso Pro Total</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-left">PIX Disponível</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-left">PIX Disponível</span>
                 </div>
             </div>
 
             <div className="pt-10 space-y-2">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-[#505060]">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-[#505060]">
                     © 2026 Nexus OS. Todos os direitos reservados.
                 </p>
-                <div className="flex justify-center gap-4 text-[10px] font-bold uppercase tracking-widest text-[#505060]">
+                <div className="flex justify-center gap-4 text-[11px] font-bold uppercase tracking-widest text-[#505060]">
                     <Link href="/termos" target="_blank" className="hover:text-[#A0A0B5] transition-colors">Termos de Uso</Link>
                     <span>&bull;</span>
                     <Link href="/privacidade" target="_blank" className="hover:text-[#A0A0B5] transition-colors">Política de Privacidade</Link>

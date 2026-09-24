@@ -67,7 +67,7 @@ export default function TeamList({ users, onEdit, onRefresh }: TeamListProps) {
             {users.map((user) => (
                 <div
                     key={user.id}
-                    className="group relative bg-card/40 backdrop-blur-3xl border border-white/5 rounded-[3rem] p-10 shadow-2xl hover:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] hover:border-primary/30 transition-all duration-500 overflow-hidden"
+                    className="group relative bg-card/40 backdrop-blur-3xl border border-white/5 rounded-3xl p-10 shadow-2xl hover:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] hover:border-primary/30 transition-all duration-500 overflow-hidden"
                 >
                     {/* Background Glow Overlay */}
                     <div className={cn(
@@ -78,7 +78,7 @@ export default function TeamList({ users, onEdit, onRefresh }: TeamListProps) {
                     <div className="relative space-y-8">
                         <div className="flex items-start justify-between">
                             <div className="flex items-center gap-6">
-                                <div className="w-20 h-20 rounded-[1.75rem] bg-gradient-to-br from-primary/10 to-blue-500/10 flex items-center justify-center text-primary font-black text-3xl border border-primary/20 group-hover:scale-110 transition-transform shadow-inner relative">
+                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-blue-500/10 flex items-center justify-center text-primary font-black text-3xl border border-primary/20 group-hover:scale-110 transition-transform shadow-inner relative">
                                     {user.full_name?.charAt(0) || user.email.charAt(0).toUpperCase()}
                                     {user.is_active && (
                                         <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 border-4 border-card rounded-full shadow-lg" />
@@ -90,7 +90,7 @@ export default function TeamList({ users, onEdit, onRefresh }: TeamListProps) {
                                         {user.role === 'admin' && <ShieldCheck className="w-4 h-4 text-rose-500" />}
                                     </div>
                                     <div className={cn(
-                                        "inline-flex px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] border",
+                                        "inline-flex px-3 py-1 rounded-xl text-[11px] font-black uppercase tracking-wider border",
                                         roleColors[user.role]
                                     )}>
                                         {roleLabels[user.role]}
@@ -101,7 +101,7 @@ export default function TeamList({ users, onEdit, onRefresh }: TeamListProps) {
                             <div className="flex flex-col gap-2">
                                 <button
                                     onClick={() => onEdit(user)}
-                                    className="p-3 rounded-2xl bg-white/5 text-muted-foreground/40 hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20"
+                                    className="p-3 rounded-2xl bg-white/5 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20"
                                     title="Configurações"
                                 >
                                     <Edit2 className="w-4 h-4" />
@@ -109,7 +109,7 @@ export default function TeamList({ users, onEdit, onRefresh }: TeamListProps) {
                                 <button
                                     onClick={() => handleDelete(user.id)}
                                     disabled={deletingId === user.id}
-                                    className="p-3 rounded-2xl bg-white/5 text-muted-foreground/40 hover:text-rose-500 hover:bg-rose-500/10 transition-all border border-transparent hover:border-rose-500/20"
+                                    className="p-3 rounded-2xl bg-white/5 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-all border border-transparent hover:border-rose-500/20"
                                     title="Remover"
                                 >
                                     {deletingId === user.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
@@ -119,14 +119,14 @@ export default function TeamList({ users, onEdit, onRefresh }: TeamListProps) {
 
                         <div className="grid grid-cols-1 gap-4">
                             <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 group-hover:bg-primary/5 transition-colors">
-                                <div className="w-10 h-10 rounded-xl bg-card border border-white/5 flex items-center justify-center text-muted-foreground/30 group-hover:text-primary transition-colors">
+                                <div className="w-10 h-10 rounded-xl bg-card border border-white/5 flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors">
                                     <Mail className="w-4 h-4" />
                                 </div>
                                 <span className="text-xs font-bold text-foreground/60 truncate tracking-tight">{user.email}</span>
                             </div>
                             {user.phone && (
                                 <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 group-hover:bg-primary/5 transition-colors">
-                                    <div className="w-10 h-10 rounded-xl bg-card border border-white/5 flex items-center justify-center text-muted-foreground/30 group-hover:text-primary transition-colors">
+                                    <div className="w-10 h-10 rounded-xl bg-card border border-white/5 flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors">
                                         <Phone className="w-4 h-4" />
                                     </div>
                                     <span className="text-xs font-mono font-bold text-foreground/60 tracking-tight">{user.phone}</span>
@@ -137,13 +137,13 @@ export default function TeamList({ users, onEdit, onRefresh }: TeamListProps) {
                         <div className="pt-6 border-t border-white/5 flex items-center justify-between">
                             <div className="flex items-center gap-2 bg-emerald-500/10 text-emerald-500 px-4 py-2 rounded-full border border-emerald-500/20">
                                 <CheckCircle2 className="w-3.5 h-3.5" />
-                                <span className="text-[10px] font-black uppercase tracking-widest leading-none">
+                                <span className="text-[11px] font-black uppercase tracking-widest leading-none">
                                     {user.is_active ? 'Totalmente Ativo' : 'Pendente'}
                                 </span>
                             </div>
-                            <div className="flex items-center gap-2 text-muted-foreground/30">
+                            <div className="flex items-center gap-2 text-muted-foreground">
                                 <Calendar className="w-3.5 h-3.5" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">
+                                <span className="text-[11px] font-black uppercase tracking-widest">
                                     {mounted
                                         ? `Desde ${new Date(user.created_at).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })}`
                                         : '--'
@@ -154,7 +154,7 @@ export default function TeamList({ users, onEdit, onRefresh }: TeamListProps) {
                     </div>
 
                     {/* Interaction Glow Layer */}
-                    <div className="absolute inset-0 border border-primary/0 group-hover:border-primary/30 rounded-[3rem] pointer-events-none transition-all duration-500" />
+                    <div className="absolute inset-0 border border-primary/0 group-hover:border-primary/30 rounded-3xl pointer-events-none transition-all duration-500" />
                 </div>
             ))}
         </div>
