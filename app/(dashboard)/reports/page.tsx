@@ -1,4 +1,3 @@
-import PageHeader from '@/components/ui/PageHeader'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
@@ -124,15 +123,10 @@ export default async function ReportsPage() {
 
     return (
         <div className="animate-fade-in pb-20 bg-background min-h-screen transition-colors duration-300">
-            <Header title="Análise e Performance" />
+            <Header title="Análise e Performance" subtitle="Acompanhe o desempenho financeiro, produtividade da equipe e indicadores de crescimento em tempo real." />
 
             <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-10 space-y-8 max-w-7xl mx-auto">
                 {/* Section Header */}
-                <PageHeader
-                    eyebrow="Gestão de Performance"
-                    title="Análise e Relatórios"
-                    subtitle="Acompanhe o desempenho financeiro, produtividade da equipe e indicadores de crescimento em tempo real."
-                />
 
                 {/* Profitability Detailing Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

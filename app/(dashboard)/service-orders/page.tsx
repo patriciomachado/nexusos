@@ -55,14 +55,10 @@ export default async function ServiceOrdersPage({
 
     return (
         <div className="animate-fade-in pb-12 bg-background min-h-screen">
-            <Header title="Ordens de Serviço" />
+            <Header title="Ordens de Serviço" subtitle="Acompanhe e gerencie todas as manutenções da sua oficina em tempo real." />
             <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-10 space-y-6 max-w-screen-2xl mx-auto">
 
-                {/* Header Section */}
                 <PageHeader
-                    eyebrow="Controle de Oficina"
-                    title="Gestão de Ordens"
-                    subtitle="Acompanhe e gerencie todas as manutenções da sua oficina em tempo real."
                     actions={<>
 <Link
  href="/service-orders/new"

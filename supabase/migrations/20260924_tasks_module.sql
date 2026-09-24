@@ -233,3 +233,6 @@ REVOKE ALL ON FUNCTION claim_due_routine_reminders(UUID, DATE, TIME, TIME) FROM 
 GRANT EXECUTE ON FUNCTION tasks_rollover(UUID, DATE) TO service_role;
 GRANT EXECUTE ON FUNCTION claim_due_task_reminders(UUID, INTEGER) TO service_role;
 GRANT EXECUTE ON FUNCTION claim_due_routine_reminders(UUID, DATE, TIME, TIME) TO service_role;
+
+-- Make the new tables visible to the API right away (PostgREST schema cache).
+NOTIFY pgrst, 'reload schema';

@@ -16,7 +16,10 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
         cache: 'no-store',
     })
     const data = await res.json().catch(() => ({}))
-    if (!res.ok) throw new ApiError(data?.error || 'Algo deu errado. Tente de novo.', res.status, data?.code)
+    if (!res.ok) {
+        const message = data?.error || 'Algo deu errado. Tente de novo.'
+        throw new ApiError(data?.detail ? `${message} Detalhe: ${data.detail}` : message, res.status, data?.code)
+    }
     return data as T
 }
 

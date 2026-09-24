@@ -1,6 +1,5 @@
 'use client'
 
-import PageHeader from '@/components/ui/PageHeader'
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { 
@@ -314,11 +313,6 @@ function StudioContent() {
             <Header title="Nexus Studio" subtitle="Publicidade, Roteiros de Vídeo e Banners Promocionais com Claude AI" />
 
             <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-10 space-y-6 max-w-7xl mx-auto">
-                <PageHeader
-                    eyebrow="Marketing com IA"
-                    title="Nexus Studio"
-                    subtitle="Publicidade, roteiros de vídeo e banners promocionais gerados com IA."
-                />
 
                 {/* Header & Tabs Nav */}
                 <div className="bg-card border border-border rounded-2xl p-4 md:p-6 space-y-6">

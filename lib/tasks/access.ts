@@ -23,7 +23,12 @@ export function dbError(error: { message?: string; code?: string } | null, fallb
     // 42P01: table missing → the migration hasn't been applied yet.
     if (error?.code === '42P01' || error?.code === 'PGRST205' || /relation .* does not exist|Could not find the table/i.test(error?.message ?? '')) {
         return NextResponse.json(
-            { error: 'O módulo Tarefas ainda não foi ativado no banco de dados. Aplique a migration 20260924_tasks_module.sql no Supabase.', code: 'MIGRATION_MISSING' },
+            {
+                error: 'O módulo Tarefas ainda não foi ativado no banco de dados. Aplique a migration 20260924_tasks_module.sql no Supabase.',
+                code: 'MIGRATION_MISSING',
+                // Which table/function is missing, e.g. "Could not find the table 'public.tasks' in the schema cache".
+                detail: error?.message,
+            },
             { status: 503 }
         )
     }

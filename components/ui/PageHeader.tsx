@@ -6,7 +6,8 @@ import { cn } from '@/lib/utils'
  * page's actions on the right (below on phones).
  */
 interface PageHeaderProps {
-    title: React.ReactNode
+    /** Omit when the top bar already names the page: only the actions row is shown. */
+    title?: React.ReactNode
     subtitle?: React.ReactNode
     /** Short context above the title, e.g. "Controle de oficina". */
     eyebrow?: React.ReactNode
@@ -15,6 +16,9 @@ interface PageHeaderProps {
 }
 
 export default function PageHeader({ title, subtitle, eyebrow, actions, className }: PageHeaderProps) {
+    if (!title) {
+        return actions ? <div className={cn('flex flex-wrap items-center justify-end gap-2', className)}>{actions}</div> : null
+    }
     return (
         <div className={cn('flex flex-col sm:flex-row sm:items-end justify-between gap-4', className)}>
             <div className="min-w-0 space-y-1">

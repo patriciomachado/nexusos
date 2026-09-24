@@ -143,9 +143,6 @@ export default function PecasClient({
 
             {/* Page Header */}
             <PageHeader
-                eyebrow="Inteligência de Consumo"
-                title="Peças & Componentes"
-                subtitle="Acompanhe o consumo de peças extraído automaticamente das Ordens de Serviço — inclusive peças sem cadastro no estoque."
                 actions={<>
 <Link
  href="/inventory/new"

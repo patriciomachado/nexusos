@@ -239,9 +239,6 @@ function DevicesContent() {
 
             <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-10 space-y-6 max-w-7xl mx-auto">
                 <PageHeader
-                    eyebrow="Nexus Showcase Pro"
-                    title="Aparelhos"
-                    subtitle="Estoque de novos e seminovos, avaliação de troca e catálogo público integrado."
                     actions={<>
                             <button
                                 onClick={() => setIsTradeInModalOpen(true)}

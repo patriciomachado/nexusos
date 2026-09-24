@@ -60,15 +60,11 @@ export default async function InventoryPage({
 
     return (
         <div className="animate-fade-in pb-12 bg-background min-h-screen transition-colors duration-300">
-            <Header title="Estoque e Produtos" />
+            <Header title="Estoque e Produtos" subtitle="Gerencie seu inventário de peças e insumos com precisão." />
 
             <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-10 space-y-6 max-w-screen-2xl mx-auto">
 
-                {/* Header Section */}
                 <PageHeader
-                    eyebrow="Controle de Ativos"
-                    title="Estoque Central"
-                    subtitle="Gerencie seu inventário de peças e insumos com precisão."
                     actions={<>
 <Link
  href="/inventory/new"

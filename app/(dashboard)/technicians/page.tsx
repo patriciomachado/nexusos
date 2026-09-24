@@ -31,9 +31,6 @@ export default async function TechniciansPage() {
             <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-10 space-y-6 max-w-7xl mx-auto">
                 {/* Section Header */}
                 <PageHeader
-                    eyebrow="Gestão de Equipe"
-                    title="Especialistas e Técnicos"
-                    subtitle={<>Gerencie os especialistas, acompanhe a performance individual e organize a disponibilidade da sua equipe. Atualmente existem <span className="text-orange-500 font-bold">{technicians?.length || 0} profissionais ativos</span>.</>}
                     actions={<>
 <Link
  href="/technicians/new"
