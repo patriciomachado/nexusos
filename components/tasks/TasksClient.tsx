@@ -424,6 +424,9 @@ function ErrorState({ migration, message, onRetry }: { migration: boolean; messa
                     ? 'Rode o arquivo supabase/migrations/20260924_tasks_module.sql no SQL Editor do Supabase e recarregue esta página.'
                     : message}
             </p>
+            {migration && message.includes('Detalhe:') && (
+                <p className="text-[13px] text-muted-foreground/80 max-w-md break-words">{message.slice(message.indexOf('Detalhe:'))}</p>
+            )}
             <button type="button" onClick={onRetry} className="h-10 px-4 rounded-full bg-primary/12 text-primary text-[15px] font-medium inline-flex items-center gap-2">
                 <RefreshCw className="w-4 h-4" /> Tentar de novo
             </button>

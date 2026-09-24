@@ -1,6 +1,5 @@
 'use client'
 
-import PageHeader from '@/components/ui/PageHeader'
 import { useState, useEffect } from 'react'
 import Header from '@/components/layout/Header'
 import { Plus, Users, Loader2, X, Search, Sparkles, ShieldCheck } from 'lucide-react'
@@ -41,7 +40,7 @@ export default function TeamClient() {
 
     return (
         <div className="animate-fade-in pb-20 bg-background min-h-screen transition-colors duration-300">
-            <Header title="Equipe & Segurança">
+            <Header title="Equipe & Segurança" subtitle="Gerencie as permissões, cargos e acessos da sua equipe operacional e administrativa.">
                 <div className="flex items-center gap-4 w-full">
                     <div className="relative flex-1 max-w-md group">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
@@ -66,11 +65,6 @@ export default function TeamClient() {
             <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-10 space-y-6 max-w-screen-2xl mx-auto">
 
                 {/* Header Info */}
-                <PageHeader
-                    eyebrow="Controle de Acesso & Níveis"
-                    title="Gestão de Talentos"
-                    subtitle="Gerencie as permissões, cargos e acessos da sua equipe operacional e administrativa."
-                />
 
                 {/* Dashboard Insight Bar */}
                 <div className="glass-premium bg-card/65 border border-border/60 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-8">

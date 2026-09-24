@@ -41,15 +41,11 @@ export default async function CustomersPage({
 
     return (
         <div className="animate-fade-in pb-12 bg-background min-h-screen transition-colors duration-300">
-            <Header title="Base de Clientes" />
+            <Header title="Base de Clientes" subtitle="Centralize informações, histórico e preferências da sua base de clientes." />
 
             <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-10 space-y-6 max-w-screen-2xl mx-auto">
 
-                {/* Header Section */}
                 <PageHeader
-                    eyebrow="CRM & Relacionamento"
-                    title="Gestão de Clientes"
-                    subtitle="Centralize informações, histórico e preferências da sua base de clientes."
                     actions={<>
 <Link
  href="/customers/new"

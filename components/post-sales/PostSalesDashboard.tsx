@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import {
-    HeartHandshake, Star, TrendingUp, Search, Share2, 
+    Star, TrendingUp, Search, Share2, 
     AlertCircle, Calendar, ThumbsUp, 
     Smile, Meh, Frown, Users, ArrowUpRight
 } from 'lucide-react'
@@ -180,25 +180,8 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
 
     return (
         <div className="space-y-8 bg-background min-h-screen text-foreground transition-colors duration-300">
-            <Header title="Pós-Venda" />
+            <Header title="Pós-Venda" subtitle="Satisfação do cliente, NPS e análise de sentimentos." />
             <div className="p-4 lg:p-8 space-y-8">
-            {/* Header */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                    <div className="p-3 bg-primary/10 rounded-2xl text-primary border border-primary/20">
-                        <HeartHandshake className="w-8 h-8" />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight">Pós-Venda</h1>
-                        <p className="text-sm text-muted-foreground mt-0.5">Satisfação do cliente, NPS e análise de sentimentos.</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 bg-muted rounded-xl text-muted-foreground">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Monitoramento em Tempo Real
-                </div>
-            </div>
-
             {/* Grid Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Stat 1 */}
