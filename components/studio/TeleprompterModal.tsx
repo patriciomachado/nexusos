@@ -51,14 +51,14 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
     return (
         <div className="fixed inset-0 z-50 bg-black/95 text-white flex flex-col backdrop-blur-2xl animate-in fade-in duration-300">
             {/* Header Controls */}
-            <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-black/40 backdrop-blur-md shrink-0">
+            <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between bg-black/40 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-primary/20 rounded-2xl text-primary border border-primary/30">
                         <Sparkles className="w-5 h-5" />
                     </div>
                     <div>
                         <h2 className="text-base font-bold text-white truncate max-w-xs md:max-w-md">{script.title}</h2>
-                        <p className="text-[11px] text-primary uppercase font-black tracking-widest">Modo Teleprompter • Olhe para a Câmera</p>
+                        <p className="text-xs text-primary font-semibold">Modo Teleprompter • Olhe para a Câmera</p>
                     </div>
                 </div>
 
@@ -68,7 +68,7 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                         onClick={() => setIsMirrored(!isMirrored)}
                         className={cn(
                             "p-2.5 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-bold",
-                            isMirrored ? "bg-primary text-black border-primary" : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
+                            isMirrored ? "bg-primary text-primary-foreground border-primary" : "bg-white/5 border-border/60 text-white/70 hover:bg-foreground/[0.05]"
                         )}
                         title="Espelhar texto (câmera frontal)"
                     >
@@ -77,7 +77,7 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                     </button>
 
                     {/* Font Size Selector */}
-                    <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1">
+                    <div className="flex items-center bg-foreground/[0.03] border border-border/60 rounded-xl p-1">
                         <Type className="w-4 h-4 ml-2 text-white/50" />
                         {(['sm', 'md', 'lg', 'xl'] as const).map(size => (
                             <button
@@ -85,7 +85,7 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
  onClick={() => setFontSize(size)}
  className={cn(
  "px-2.5 py-1 text-xs font-bold rounded-lg transition-all",
- fontSize === size ? "bg-primary text-black" : "text-white/60 hover:text-white"
+ fontSize === size ? "bg-primary text-primary-foreground" : "text-white/60 hover:text-white"
  )}
  >
                                 {size}
@@ -94,7 +94,7 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                     </div>
 
                     {/* Speed Control */}
-                    <div className="flex items-center bg-white/5 border border-white/10 rounded-xl px-3 py-1 gap-2">
+                    <div className="flex items-center bg-foreground/[0.03] border border-border/60 rounded-xl px-3 py-1 gap-2">
                         <Gauge className="w-4 h-4 text-white/50 shrink-0" />
                         <input 
                             type="range"
@@ -127,8 +127,8 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
             >
                 <div className="max-w-4xl mx-auto space-y-12 pb-64">
                     {/* Gancho Section */}
-                    <div className="p-6 md:p-8 bg-amber-500/10 border-2 border-amber-500/40 rounded-3xl space-y-3">
-                        <div className="flex items-center justify-between text-amber-400 font-black text-xs uppercase tracking-widest">
+                    <div className="p-6 md:p-8 bg-amber-500/10 border-2 border-amber-500/40 rounded-2xl space-y-3">
+                        <div className="flex items-center justify-between text-amber-400 font-semibold text-xs">
                             <span>⚡ 0s - 3s | GANCHO VIRAL (ATENÇÃO DA CÂMERA)</span>
                         </div>
                         <p className={cn("font-bold text-amber-200", fontClasses[fontSize])}>
@@ -137,8 +137,8 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                     </div>
 
                     {/* Roteiro da Bancada Section */}
-                    <div className="p-6 md:p-8 bg-blue-500/10 border-2 border-blue-500/30 rounded-3xl space-y-4">
-                        <div className="text-blue-400 font-black text-xs uppercase tracking-widest">
+                    <div className="p-6 md:p-8 bg-blue-500/10 border-2 border-blue-500/30 rounded-2xl space-y-4">
+                        <div className="text-blue-400 font-semibold text-xs">
                             <span>🛠️ DEMONSTRAÇÃO NA BANCADA / CORPO DO VÍDEO</span>
                         </div>
                         <div className={cn("whitespace-pre-line text-white font-medium", fontClasses[fontSize])}>
@@ -147,8 +147,8 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                     </div>
 
                     {/* CTA Section */}
-                    <div className="p-6 md:p-8 bg-emerald-500/10 border-2 border-emerald-500/40 rounded-3xl space-y-3">
-                        <div className="text-emerald-400 font-black text-xs uppercase tracking-widest">
+                    <div className="p-6 md:p-8 bg-emerald-500/10 border-2 border-emerald-500/40 rounded-2xl space-y-3">
+                        <div className="text-emerald-400 font-semibold text-xs">
                             <span>📣 CHAMADA PARA AÇÃO (CTA / VENDAS)</span>
                         </div>
                         <p className={cn("font-bold text-emerald-200", fontClasses[fontSize])}>
@@ -159,7 +159,7 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
             </div>
 
             {/* Bottom Playback Control Bar */}
-            <div className="p-4 border-t border-white/10 bg-black/60 backdrop-blur-md flex items-center justify-center gap-4 shrink-0">
+            <div className="p-4 border-t border-border/60 bg-black/60 flex items-center justify-center gap-4 shrink-0">
                 <button
                     onClick={resetScroll}
                     className="p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-all text-white/80 flex items-center gap-2 font-bold text-sm"
@@ -171,10 +171,10 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                 <button
  onClick={() => setIsPlaying(!isPlaying)}
  className={cn(
- "px-8 py-4 rounded-2xl font-black text-base flex items-center gap-3 transition-all shadow-xl active:scale-95",
+ "px-8 py-4 rounded-2xl font-black text-base flex items-center gap-3 transition-all active:scale-95",
  isPlaying 
- ? "bg-amber-500 text-black shadow-amber-500/20 hover:bg-amber-400" 
- : "bg-primary text-black shadow-primary/20 hover:bg-primary/90"
+ ? "bg-amber-500 text-black hover:bg-amber-400" 
+ : "bg-primary text-primary-foreground hover:bg-primary/90"
  )}
  >
                     {isPlaying ? (

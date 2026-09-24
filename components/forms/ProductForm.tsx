@@ -248,7 +248,7 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
             />
 
             <form onSubmit={handleSubmit} className="p-4 max-w-5xl mx-auto space-y-6 mt-4">
-                <div className="bg-card/40 border border-border/50 rounded-3xl p-6 backdrop-blur-3xl relative overflow-hidden group">
+                <div className="bg-card/40 border border-border/50 rounded-2xl p-6 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[120px] rounded-full transition-all group-hover:bg-indigo-500/10" />
 
                     <div className="relative z-10 space-y-6">
@@ -257,7 +257,7 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                                 <Package className="w-5 h-5" />
                             </div>
                             <div>
-                                <h2 className="text-sm font-black text-muted-foreground tracking-tight ">Identificação do Produto</h2>
+                                <h2 className="text-sm font-semibold text-muted-foreground tracking-tight">Identificação do Produto</h2>
                             </div>
                         </div>
 
@@ -276,7 +276,7 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">SKU / código interno</label>
-                                        <input name="sku" value={form.sku} onChange={handleChange} className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-all font-mono uppercase" placeholder="TELA-IP11-INC" />
+                                        <input name="sku" value={form.sku} onChange={handleChange} className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-all font-mono" placeholder="TELA-IP11-INC" />
                                     </div>
                                     <div>
                                         <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">Categoria</label>
@@ -294,23 +294,23 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
 
                             <div className="space-y-4">
                                 <div className="p-4 rounded-2xl bg-muted/30 border border-border/50 shadow-inner">
-                                    <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest mb-3">Análise de Lucratividade</p>
+                                    <p className="text-xs font-semibold text-muted-foreground mb-3">Análise de Lucratividade</p>
                                     <div className="space-y-2">
                                         <div className="flex justify-between items-end">
                                             <span className="text-[11px] text-muted-foreground font-bold">LUCRO BRUTO:</span>
-                                            <span className={`text-sm font-black tracking-tight ${profit > 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-muted-foreground'}`}>
+                                            <span className={`text-sm font-semibold tracking-tight ${profit > 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-muted-foreground'}`}>
                                                 {formatCurrency(profit)}
                                             </span>
                                         </div>
                                         <div className="flex justify-between items-end">
                                             <span className="text-[11px] text-muted-foreground font-bold">MARGEM:</span>
-                                            <span className={`text-sm font-black tracking-tight ${margin > 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-muted-foreground'}`}>
+                                            <span className={`text-sm font-semibold tracking-tight ${margin > 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-muted-foreground'}`}>
                                                 {margin.toFixed(1)}%
                                             </span>
                                         </div>
                                         <div className="h-1 bg-muted rounded-full overflow-hidden mt-2">
                                             <div
-                                                className="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 transition-all duration-500"
+                                                className="h-full transition-all duration-500"
                                                 style={{ width: `${Math.min(Math.max(margin, 0), 100)}%` }}
                                             />
                                         </div>
@@ -327,7 +327,7 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                                         className="absolute inset-0 opacity-0 cursor-pointer z-20"
                                         onChange={e => setPhoto(e.target.files?.[0] || null)}
                                     />
-                                    <div className="h-full min-h-[160px] rounded-3xl border-2 border-dashed border-border/50 bg-white/5 flex flex-col items-center justify-center gap-3 group-hover/photo:border-primary/30 transition-all overflow-hidden relative">
+                                    <div className="h-full min-h-[160px] rounded-2xl border-2 border-dashed border-border/50 bg-foreground/[0.03] flex flex-col items-center justify-center gap-3 group-hover/photo:border-primary/30 transition-all overflow-hidden relative">
                                         {preview ? (
                                             <img src={preview} alt="Preview" className="w-full h-full object-cover" />
                                         ) : form.image_url ? (
@@ -339,11 +339,11 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                                                     <Camera className="w-8 h-8" />
                                                 </div>
                                                 <div className="text-center">
-                                                    <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest leading-relaxed">
+                                                    <p className="text-xs font-semibold text-muted-foreground leading-relaxed">
                                                         Clique para escolher<br />
                                                         <span className="text-primary/40">ou pressione Ctrl+V para colar</span>
                                                     </p>
-                                                    <p className="text-[11px] text-muted-foreground uppercase mt-2">PNG, JPG ou WebP</p>
+                                                    <p className="text-xs text-muted-foreground mt-2">PNG, JPG ou WebP</p>
                                                 </div>
                                             </>
                                         )}
@@ -351,7 +351,7 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/photo:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
                                                 <div className="flex flex-col items-center gap-2">
                                                     <ImageIcon className="w-5 h-5 text-white" />
-                                                    <span className="text-[11px] font-black text-white uppercase tracking-widest leading-none">Substituir Imagem</span>
+                                                    <span className="text-xs font-semibold text-white leading-none">Substituir Imagem</span>
                                                 </div>
                                             </div>
                                         )}
@@ -370,14 +370,14 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                                 <input type="number" step="0.01" name="selling_price" value={form.selling_price} onChange={handleChange} className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-sm text-foreground font-bold tracking-tight focus:outline-none focus:border-primary/50 transition-all" placeholder="0,00" />
                             </div>
                             <div className="md:col-span-2 flex flex-col justify-end">
-                                <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest mb-2">Sugestão de Lucro (Markup)</p>
+                                <p className="text-xs font-semibold text-muted-foreground mb-2">Sugestão de Lucro (Markup)</p>
                                 <div className="flex gap-2">
                                     {[30, 50, 100].map(p => (
                                         <button
  key={p}
  type="button"
  onClick={() => applyMarkup(p)}
- className="grow py-2 rounded-lg bg-primary/5 border border-primary/10 text-primary text-[13px] font-black hover:bg-primary/20 transition-all"
+ className="grow py-2 rounded-lg bg-primary/5 border border-primary/10 text-primary text-[13px] font-semibold hover:bg-primary/20 transition-all"
  >
                                             +{p}%
                                         </button>
@@ -437,11 +437,11 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                 />
 
                 <div className="flex flex-col sm:flex-row items-center gap-4">
-                    <button type="submit" disabled={isPending || isUploading} className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-4 rounded-xl font-black text-[13px] shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2">
+                    <button type="submit" disabled={isPending || isUploading} className="bg-primary w-full sm:flex-1 disabled:opacity-50 text-white p-4 rounded-xl font-semibold text-[13px] transition-all active:scale-95 flex items-center justify-center gap-2">
                         {(isPending || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                         {(isPending || isUploading) ? 'PROCESSANDO...' : (productId ? 'SALVAR ALTERAÇÕES' : 'CADASTRAR PRODUTO')}
                     </button>
-                    <button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-10 py-4 rounded-xl border border-border bg-card text-foreground/40 font-black text-[13px] hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2">
+                    <button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-10 py-4 rounded-xl border border-border bg-card text-foreground/40 font-semibold text-[13px] hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2">
                         <X className="w-4 h-4" />
                         ABORTAR
                     </button>

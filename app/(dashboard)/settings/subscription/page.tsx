@@ -166,12 +166,12 @@ export default function SubscriptionPage() {
             <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8">
                 {/* Error Banner */}
                 {error && (
-                    <div className="bg-rose-500/10 border border-rose-500/20 rounded-3xl p-6 flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="bg-rose-500/10 border border-rose-500/20 rounded-2xl p-6 flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center shrink-0">
                             <AlertCircle className="w-6 h-6 text-rose-400" />
                         </div>
                         <div className="flex-1">
-                            <p className="text-sm font-bold text-rose-400 uppercase tracking-wider">Erro na Operação</p>
+                            <p className="text-sm font-bold text-rose-400">Erro na Operação</p>
                             <p className="text-xs text-muted-foreground mt-0.5">{error}</p>
                         </div>
                         <button onClick={() => setError('')} className="text-muted-foreground hover:text-foreground">
@@ -182,12 +182,12 @@ export default function SubscriptionPage() {
 
                 {/* Status Banner */}
                 {success && (
-                    <div className="bg-gradient-to-r from-emerald-500/20 to-emerald-600/10 border border-emerald-500/30 rounded-3xl p-6 md:p-8 flex items-center gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="border border-emerald-500/30 rounded-2xl p-6 md:p-8 flex items-center gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
                         <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 flex items-center justify-center shrink-0">
                             <ShieldCheck className="w-7 h-7 text-emerald-400" />
                         </div>
                         <div className="flex-1">
-                            <p className="text-xl font-black tracking-tight uppercase gradient-text">Pagamento Confirmado!</p>
+                            <p className="text-xl font-black tracking-tight gradient-text">Pagamento Confirmado!</p>
                             <p className="text-sm text-muted-foreground mt-1">Sua conta Nexus OS agora está em modo profissional.</p>
                         </div>
                     </div>
@@ -195,8 +195,8 @@ export default function SubscriptionPage() {
 
                 {/* Main Status Card - Beautiful & Informative */}
                 <div className="relative">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary via-purple-500 to-blue-600 rounded-3xl blur opacity-30"></div>
-                    <div className="relative bg-gradient-to-br from-card via-card/80 to-primary/5 border border-white/10 rounded-3xl overflow-hidden">
+                    <div className="absolute -inset-0.5 rounded-3xl blur opacity-30"></div>
+                    <div className="relative border border-border/60 rounded-2xl overflow-hidden">
                         {/* Background Pattern */}
                         <div className="absolute inset-0 opacity-5">
                             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,255,0.3),transparent_50%)]" />
@@ -215,7 +215,7 @@ export default function SubscriptionPage() {
                                         )}
                                     </div>
                                     <div>
-                                        <p className="text-xs font-black uppercase tracking-widest opacity-50 mb-1">Status da Conta</p>
+                                        <p className="text-xs font-semibold opacity-50 mb-1">Status da Conta</p>
                                         <div className={cn("inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-bold", statusConfig.bg)}>
                                             <StatusIcon className="w-4 h-4" />
                                             {statusConfig.label}
@@ -247,30 +247,30 @@ export default function SubscriptionPage() {
                             {/* Info Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                                 {/* Plan Info */}
-                                <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
+                                <div className="bg-foreground/[0.03] rounded-2xl p-5 border border-border/60">
                                     <div className="flex items-center gap-2 mb-3">
                                         <Sparkles className="w-4 h-4 text-purple-400" />
-                                        <p className="text-xs font-black uppercase tracking-widest opacity-50">Plano Atual</p>
+                                        <p className="text-xs font-semibold opacity-50">Plano Atual</p>
                                     </div>
                                     <p className="text-xl font-black">{isActive ? 'Nexus OS Pro' : 'Teste-Grátis'}</p>
                                     <p className="text-xs text-muted-foreground mt-1">{isActive ? 'Assinatura mensal ativa' : `${TRIAL_DAYS} dias de acesso total`}</p>
                                 </div>
 
                                 {/* Start Date */}
-                                <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
+                                <div className="bg-foreground/[0.03] rounded-2xl p-5 border border-border/60">
                                     <div className="flex items-center gap-2 mb-3">
                                         <Calendar className="w-4 h-4 text-blue-400" />
-                                        <p className="text-xs font-black uppercase tracking-widest opacity-50">Início do Período</p>
+                                        <p className="text-xs font-semibold opacity-50">Início do Período</p>
                                     </div>
                                     <p className="text-xl font-black">{formatDate(subscription?.current_period_start || '')}</p>
                                     <p className="text-xs text-muted-foreground mt-1">{isTrialing ? 'Início do teste-grátis' : 'Renovação automática'}</p>
                                 </div>
 
                                 {/* End Date */}
-                                <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
+                                <div className="bg-foreground/[0.03] rounded-2xl p-5 border border-border/60">
                                     <div className="flex items-center gap-2 mb-3">
                                         <Activity className="w-4 h-4 text-rose-400" />
-                                        <p className="text-xs font-black uppercase tracking-widest opacity-50">Próximo Vencimento</p>
+                                        <p className="text-xs font-semibold opacity-50">Próximo Vencimento</p>
                                     </div>
                                     <p className="text-xl font-black">{formatDate(subscription?.current_period_end || '')}</p>
                                     <p className="text-xs text-muted-foreground mt-1">{isActive ? 'Renovação automática' : 'Expira automaticamente'}</p>
@@ -282,7 +282,7 @@ export default function SubscriptionPage() {
                                 <button
  onClick={handlePortal}
  disabled={processing}
- className="w-full py-4 rounded-2xl bg-white/5 text-sm font-black hover:bg-white/10 transition-all flex items-center justify-center gap-3 border border-white/10"
+ className="w-full py-4 rounded-2xl bg-foreground/[0.03] text-sm font-semibold hover:bg-foreground/[0.05] transition-all flex items-center justify-center gap-3 border border-border/60"
  >
                                     {processing ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                                         <><CreditCard className="w-5 h-5" /> Gerenciar Assinatura Cakto</>
@@ -292,7 +292,7 @@ export default function SubscriptionPage() {
                                 <button
  onClick={handleSubscribe}
  disabled={processing}
- className="w-full py-6 rounded-2xl bg-gradient-to-r from-primary via-purple-600 to-blue-600 text-white text-base font-black hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-[0_20px_50px_rgba(120,119,255,0.4)] relative overflow-hidden group/btn border border-white/20"
+ className="bg-primary w-full py-6 rounded-2xl text-white text-base font-black active:scale-[0.98] transition-all flex items-center justify-center gap-3 relative overflow-hidden group/btn border border-border/60"
  >
                                     <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000 skew-x-[20deg]" />
                                     {processing ? <Loader2 className="w-6 h-6 animate-spin" /> : (
@@ -308,7 +308,7 @@ export default function SubscriptionPage() {
                 {isActive && (
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {PLAN_FEATURES.slice(0, 4).map((feature) => (
-                            <div key={feature} className="flex items-center gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+                            <div key={feature} className="flex items-center gap-3 p-4 rounded-2xl bg-foreground/[0.03] border border-border/60">
                                 <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
                                     <Check className="w-4 h-4 text-emerald-400" />
                                 </div>
@@ -325,7 +325,7 @@ export default function SubscriptionPage() {
                             {/* Features */}
                             <div className="md:col-span-3 space-y-6">
                                 <div className="space-y-3">
-                                    <h2 className="text-2xl font-black tracking-tight leading-none ">
+                                    <h2 className="text-2xl font-black tracking-tight leading-none">
                                         Nexus OS <span className="text-primary">PRO</span>
                                     </h2>
                                     <p className="text-muted-foreground leading-relaxed">
@@ -347,12 +347,12 @@ export default function SubscriptionPage() {
 
                             {/* Pricing Card */}
                             <div className="md:col-span-2">
-                                <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-2xl">
-                                    <div className="bg-gradient-to-br from-primary/10 to-transparent p-8">
+                                <div className="bg-card border border-border rounded-2xl overflow-hidden">
+                                    <div className="p-8">
                                         <div className="flex items-baseline gap-1 mb-2">
-                                            <span className="text-5xl font-black tracking-tighter">R$ {MONTHLY_PRICE}</span>
+                                            <span className="text-[28px] sm:text-[34px] leading-tight font-black tracking-tighter">R$ {MONTHLY_PRICE}</span>
                                         </div>
-                                        <p className="text-sm font-bold text-muted-foreground uppercase">mensal</p>
+                                        <p className="text-sm font-bold text-muted-foreground">mensal</p>
                                     </div>
                                     <div className="p-6 pt-2 space-y-4">
                                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -367,7 +367,7 @@ export default function SubscriptionPage() {
                                         <button
  onClick={handleSubscribe}
  disabled={processing}
- className="w-full py-4 mt-2 rounded-xl bg-primary text-white text-xs font-black hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+ className="w-full py-4 mt-2 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
  >
                                             {processing ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                                                 <>Assinar Agora <ArrowRight className="w-4 h-4" /></>

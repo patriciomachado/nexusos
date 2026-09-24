@@ -107,7 +107,7 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-1 bg-violet-500 rounded-full" />
-                        <span className="text-[11px] font-black uppercase tracking-wider text-violet-500/60">Agente Inteligente de IA</span>
+                        <span className="text-xs font-semibold text-violet-500/60">Agente Inteligente de IA</span>
                     </div>
                     <h2 className="text-3xl font-black text-foreground tracking-tighter">Integração Alice AI</h2>
                     <p className="text-muted-foreground font-medium text-sm leading-relaxed max-w-xl">
@@ -116,12 +116,12 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
                 </div>
             </div>
 
-            <div className="p-10 rounded-3xl bg-card/40 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group transition-all duration-500 hover:border-violet-500/20">
+            <div className="p-10 rounded-2xl bg-card/40 border border-border/60 relative overflow-hidden group transition-all duration-500 hover:border-violet-500/20">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-violet-500/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/3 group-hover:bg-violet-500/10 transition-colors duration-700 pointer-events-none" />
                 
                 <form onSubmit={handleSave} className="space-y-8 relative z-10">
                     {/* Toggle Switch */}
-                    <div className="flex items-center justify-between p-6 rounded-3xl bg-violet-500/5 border border-violet-500/10">
+                    <div className="flex items-center justify-between p-6 rounded-2xl bg-violet-500/5 border border-violet-500/10">
                         <div className="space-y-1">
                             <span className="text-sm font-bold text-foreground">Status da Integração</span>
                             <p className="text-xs text-muted-foreground">Ative para expor a rota pública e liberar a comunicação bidirecional.</p>
@@ -182,7 +182,7 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
                                 <button
  type="button"
  onClick={generateToken}
- className="absolute right-2 px-3 py-1.5 bg-violet-500/10 text-violet-500 hover:bg-violet-500/20 rounded-xl font-black text-[13px] transition-all"
+ className="absolute right-2 px-3 py-1.5 bg-violet-500/10 text-violet-500 hover:bg-violet-500/20 rounded-xl font-semibold text-[13px] transition-all"
  >
                                     Gerar Chave
                                 </button>
@@ -211,7 +211,7 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
                     </div>
 
                     {/* Informative Alert box */}
-                    <div className="flex gap-4 p-5 rounded-2xl bg-muted/20 border border-white/5 text-xs text-muted-foreground leading-relaxed">
+                    <div className="flex gap-4 p-5 rounded-2xl bg-muted/20 border border-border/60 text-xs text-muted-foreground leading-relaxed">
                         <Info className="w-5 h-5 text-violet-500 shrink-0 mt-0.5" />
                         <div>
                             <p className="font-bold text-foreground mb-1">Mapeamento de Prazos de Entrega</p>
@@ -243,7 +243,7 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
                         <button
                             type="submit"
                             disabled={isPending || isSyncing}
-                            className="flex items-center justify-center gap-2 px-10 h-14 rounded-2xl bg-violet-500 text-white font-bold hover:bg-violet-400 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-violet-500/20 transition-all"
+                            className="flex items-center justify-center gap-2 px-10 h-14 rounded-2xl bg-violet-500 text-white font-bold hover:bg-violet-400 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                         >
                             {isPending ? (
                                 <>

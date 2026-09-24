@@ -66,15 +66,15 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
         <>
             {/* Device Photos */}
             {(devicesPhotos?.photo_front_url || devicesPhotos?.photo_back_url) && (
-                <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm">
-                    <h2 className="text-[13px] font-black text-muted-foreground mb-4 md:mb-6 flex items-center gap-2">
+                <div className="rounded-2xl border border-border/50 bg-card/30 p-4 md:p-6 shadow-sm">
+                    <h2 className="text-[13px] font-semibold text-muted-foreground mb-4 md:mb-6 flex items-center gap-2">
                         <Info className="w-3 h-3" />
                         Fotos do Dispositivo
                     </h2>
                     <div className="grid grid-cols-2 gap-3 md:gap-4">
                         {devicesPhotos?.photo_front_url && (
                             <div className="space-y-2">
-                                <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider block text-center">Frontal</span>
+                                <span className="text-xs font-semibold text-muted-foreground block text-center">Frontal</span>
                                 <div 
                                     className="aspect-video rounded-xl overflow-hidden border border-border bg-muted/50 cursor-pointer"
                                     onClick={() => openLightbox(0)}
@@ -82,14 +82,14 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
                                     <img 
                                         src={devicesPhotos.photo_front_url} 
                                         alt="Frontal" 
-                                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+                                        className="w-full h-full object-cover transition-transform duration-500" 
                                     />
                                 </div>
                             </div>
                         )}
                         {devicesPhotos?.photo_back_url && (
                             <div className="space-y-2">
-                                <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider block text-center">Traseira</span>
+                                <span className="text-xs font-semibold text-muted-foreground block text-center">Traseira</span>
                                 <div 
                                     className="aspect-video rounded-xl overflow-hidden border border-border bg-muted/50 cursor-pointer"
                                     onClick={() => openLightbox(devicesPhotos?.photo_front_url ? 1 : 0)}
@@ -97,7 +97,7 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
                                     <img 
                                         src={devicesPhotos.photo_back_url} 
                                         alt="Traseira" 
-                                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+                                        className="w-full h-full object-cover transition-transform duration-500" 
                                     />
                                 </div>
                             </div>
@@ -108,8 +108,8 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
 
             {/* Attachments */}
             {attachments && attachments.length > 0 && (
-                <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm">
-                    <h2 className="text-[13px] font-black text-muted-foreground mb-4 md:mb-6 flex items-center gap-2">
+                <div className="rounded-2xl border border-border/50 bg-card/30 p-4 md:p-6 shadow-sm">
+                    <h2 className="text-[13px] font-semibold text-muted-foreground mb-4 md:mb-6 flex items-center gap-2">
                         <Info className="w-3 h-3" />
                         Imagens Adicionadas
                     </h2>
@@ -131,7 +131,7 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
                                         />
                                     </div>
                                     {attachment.description && (
-                                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider block text-center truncate">
+                                        <span className="text-xs font-semibold text-muted-foreground block text-center truncate">
                                             {attachment.description}
                                         </span>
                                     )}

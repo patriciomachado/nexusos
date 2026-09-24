@@ -97,7 +97,7 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
             <div className="grid sm:grid-cols-2 gap-10">
                 <div className="sm:col-span-2">
                     <label className="block text-[13px] font-medium text-primary mb-3 ml-2">Logo da Empresa</label>
-                    <div className="flex items-center gap-6 p-6 rounded-3xl border border-dashed border-border bg-card/30">
+                    <div className="flex items-center gap-6 p-6 rounded-2xl border border-dashed border-border bg-card/30">
                         {logoPreview ? (
                             <div className="relative group">
                                 <img src={logoPreview} alt="Logo" className="w-32 h-32 object-contain rounded-2xl bg-white p-2" />

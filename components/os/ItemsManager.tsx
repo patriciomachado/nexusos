@@ -139,7 +139,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                         <ShoppingBag className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="text-sm font-black text-muted-foreground tracking-tight ">Peças e Serviços</h2>
+                        <h2 className="text-sm font-semibold text-muted-foreground tracking-tight">Peças e Serviços</h2>
                         <p className="text-[11px] text-muted-foreground font-medium">Gerencie os itens vinculados a esta ordem de serviço</p>
                     </div>
                 </div>
@@ -192,10 +192,10 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                 </div>
                                                 <div className="flex-1">
                                                     <p className="text-xs font-bold text-foreground truncate">{item.name}</p>
-                                                    <p className="text-[11px] text-muted-foreground uppercase font-black tracking-tighter">{item.category || 'Peça'}</p>
+                                                    <p className="text-xs text-muted-foreground font-semibold tracking-tighter">{item.category || 'Peça'}</p>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-xs font-black text-indigo-500">R$ {item.selling_price.toFixed(2)}</p>
+                                                    <p className="text-xs font-semibold text-indigo-500">R$ {item.selling_price.toFixed(2)}</p>
                                                 </div>
                                             </button>
                                         ))}
@@ -213,7 +213,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                 </div>
                                                 <div className="flex-1">
                                                     <p className="text-xs font-bold text-amber-700">Adição Rápida</p>
-                                                    <p className="text-[11px] text-amber-600/60 font-black uppercase tracking-widest">Configurar item fora do estoque</p>
+                                                    <p className="text-xs text-amber-600/60 font-semibold">Configurar item fora do estoque</p>
                                                 </div>
                                                 <Plus className="w-4 h-4 text-amber-500" />
                                             </button>
@@ -223,7 +223,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                             )}
                         </div>
                     ) : (
-                        <div className="p-6 rounded-3xl bg-amber-500/5 border-2 border-amber-500/20 space-y-4 animate-in duration-200 shadow-xl shadow-amber-500/5 relative overflow-hidden">
+                        <div className="p-6 rounded-2xl bg-amber-500/5 border-2 border-amber-500/20 space-y-4 animate-in duration-200 relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-4 opacity-5">
                                 <Zap className="w-24 h-24 fill-current text-amber-500" />
                             </div>
@@ -233,11 +233,11 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                     <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-600">
                                         <Zap className="w-4 h-4 fill-current" />
                                     </div>
-                                    <span className="text-xs font-black uppercase tracking-widest text-amber-700">Serviço Rápido (O RAIO)</span>
+                                    <span className="text-xs font-semibold text-amber-700">Serviço Rápido (O RAIO)</span>
                                 </div>
                                 <button 
  onClick={() => setIsQuickAdd(false)}
- className="px-3 py-1.5 rounded-lg hover:bg-white/10 text-[13px] font-black text-muted-foreground hover:text-foreground transition-all"
+ className="px-3 py-1.5 rounded-lg hover:bg-foreground/[0.05] text-[13px] font-semibold text-muted-foreground hover:text-foreground transition-all"
  >
                                     Fechar
                                 </button>
@@ -260,7 +260,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                     <div className="space-y-1.5">
                                         <label className="text-[13px] font-medium text-amber-700/60 px-1">Custo (Opcional)</label>
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-black text-amber-700/40">R$</span>
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-amber-700/40">R$</span>
                                             <input
                                                 type="number"
                                                 value={quickCost}
@@ -272,7 +272,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                     <div className="space-y-1.5">
                                         <label className="text-[13px] font-medium text-amber-700/60 px-1">Preço de Venda *</label>
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-black text-amber-700/40">R$</span>
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-amber-700/40">R$</span>
                                             <input
                                                 type="number"
                                                 value={quickPrice}
@@ -286,7 +286,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                 <button
  type="button"
  onClick={handleQuickAdd}
- className="w-full h-14 bg-amber-500 text-white rounded-2xl text-xs font-black shadow-xl shadow-amber-500/20 hover:bg-amber-600 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-3 mt-2"
+ className="w-full h-14 bg-amber-500 text-white rounded-2xl text-xs font-semibold hover:bg-amber-600 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-3 mt-2"
  >
                                     <Plus className="w-5 h-5" />
                                     Confirmar Adição
@@ -295,10 +295,10 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                         </div>
                     )}
 
-                    <div className="p-5 rounded-3xl bg-indigo-500/5 border border-indigo-500/10 space-y-3">
+                    <div className="p-5 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 space-y-3">
                         <div className="flex items-center gap-2 text-indigo-500">
                             <Info className="w-4 h-4" />
-                            <span className="text-[11px] font-black uppercase tracking-widest">Informação</span>
+                            <span className="text-xs font-semibold">Informação</span>
                         </div>
                         <p className="text-[11px] text-indigo-900/60 leading-relaxed font-medium">
                             Itens adicionados via <span className="font-bold text-amber-600">Zap (Raio)</span> são exclusivos desta OS e não gerenciam estoque. Use para serviços rápidos ou peças esporádicas.
@@ -310,15 +310,15 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                 <div className="lg:col-span-7">
                     <div className="space-y-4">
                         {/* Desktop Table */}
-                        <div className="hidden md:block bg-card/20 border border-border/50 rounded-3xl overflow-hidden">
+                        <div className="hidden md:block bg-card/20 border border-border/50 rounded-2xl overflow-hidden">
                             <table className="w-full border-collapse">
                                 <thead>
                                     <tr className="border-b border-border/50">
-                                        <th className="text-[11px] font-black text-muted-foreground uppercase tracking-widest p-4 text-left">Item</th>
-                                        <th className="text-[11px] font-black text-muted-foreground uppercase tracking-widest p-4 text-center w-20">Qtd</th>
-                                        <th className="text-[11px] font-black text-muted-foreground uppercase tracking-widest p-4 text-right w-28">Custo Unit.</th>
-                                        <th className="text-[11px] font-black text-muted-foreground uppercase tracking-widest p-4 text-right w-28">Preço Venda</th>
-                                        <th className="text-[11px] font-black text-muted-foreground uppercase tracking-widest p-4 text-right w-28">Total</th>
+                                        <th className="text-xs font-semibold text-muted-foreground p-4 text-left">Item</th>
+                                        <th className="text-xs font-semibold text-muted-foreground p-4 text-center w-20">Qtd</th>
+                                        <th className="text-xs font-semibold text-muted-foreground p-4 text-right w-28">Custo Unit.</th>
+                                        <th className="text-xs font-semibold text-muted-foreground p-4 text-right w-28">Preço Venda</th>
+                                        <th className="text-xs font-semibold text-muted-foreground p-4 text-right w-28">Total</th>
                                         <th className="w-24 p-4"></th>
                                     </tr>
                                 </thead>
@@ -328,13 +328,13 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                             <td colSpan={6} className="p-12 text-center">
                                                 <div className="flex flex-col items-center gap-3 opacity-20">
                                                     <ShoppingBag className="w-8 h-8" />
-                                                    <p className="text-[11px] font-black uppercase tracking-wider">Nenhum item adicionado</p>
+                                                    <p className="text-xs font-semibold">Nenhum item adicionado</p>
                                                 </div>
                                             </td>
                                         </tr>
                                     ) : (
                                         items.map((item, index) => (
-                                            <tr key={item.client_key || item.id || `item-${index}`} className="group hover:bg-white/5 transition-all">
+                                            <tr key={item.client_key || item.id || `item-${index}`} className="group hover:bg-foreground/[0.05] transition-all">
                                                 <td className="p-4">
                                                     <div className="flex items-center gap-3">
                                                         {item.inventory_item_id ? (
@@ -345,7 +345,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                         <span className="text-xs font-bold text-foreground/80">{item.item_name}</span>
                                                     </div>
                                                 </td>
-                                                <td className="p-4 text-center text-xs font-black text-foreground">
+                                                <td className="p-4 text-center text-xs font-semibold text-foreground">
                                                     {item.quantity}
                                                 </td>
                                                 <td className="p-4 text-right text-xs font-bold text-amber-600">
@@ -354,7 +354,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                 <td className="p-4 text-right text-xs font-bold text-indigo-500">
                                                     R$ {item.unit_price.toFixed(2)}
                                                 </td>
-                                                <td className="p-4 text-right text-xs font-black text-foreground">
+                                                <td className="p-4 text-right text-xs font-semibold text-foreground">
                                                     R$ {item.total_price.toFixed(2)}
                                                 </td>
                                                 <td className="p-4 text-right">
@@ -382,7 +382,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                 {items.length > 0 && (
                                     <tfoot className="bg-muted/5 border-t border-border/50">
                                         <tr>
-                                            <td colSpan={4} className="p-6 text-right text-[11px] font-black text-muted-foreground uppercase tracking-widest">Subtotal Geral</td>
+                                            <td colSpan={4} className="p-6 text-right text-xs font-semibold text-muted-foreground">Subtotal Geral</td>
                                             <td className="p-6 text-right whitespace-nowrap">
                                                 <span className="text-lg font-black text-indigo-500 tracking-tighter">R$ {total.toFixed(2)}</span>
                                             </td>
@@ -396,16 +396,16 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                         {/* Mobile List Card View */}
                         <div className="md:hidden space-y-4">
                             {items.length === 0 ? (
-                                <div className="p-12 text-center bg-card/20 border border-border/50 rounded-3xl">
+                                <div className="p-12 text-center bg-card/20 border border-border/50 rounded-2xl">
                                     <div className="flex flex-col items-center gap-3 opacity-20">
                                         <ShoppingBag className="w-8 h-8" />
-                                        <p className="text-[11px] font-black uppercase tracking-wider">Nenhum item adicionado</p>
+                                        <p className="text-xs font-semibold">Nenhum item adicionado</p>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="space-y-4">
                                     {items.map((item, index) => (
-                                        <div key={item.client_key || item.id || `item-${index}`} className="p-5 rounded-3xl bg-card/40 border border-border/50 relative overflow-hidden space-y-4">
+                                        <div key={item.client_key || item.id || `item-${index}`} className="p-5 rounded-2xl bg-card/40 border border-border/50 relative overflow-hidden space-y-4">
                                             <div className="flex items-start justify-between">
                                                 <div className="flex items-center gap-2">
                                                     {item.inventory_item_id ? (
@@ -415,7 +415,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                     )}
                                                     <div>
                                                         <p className="text-xs font-bold text-foreground">{item.item_name}</p>
-                                                        <p className="text-[11px] font-black uppercase text-muted-foreground tracking-wider">
+                                                        <p className="text-xs font-semibold text-muted-foreground">
                                                             {item.inventory_item_id ? 'Estoque' : 'Serviço Rápido'}
                                                         </p>
                                                     </div>
@@ -438,37 +438,37 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                 </div>
                                             </div>
                                             
-                                            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/5 text-center">
+                                            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-border/60 text-center">
                                                 <div>
-                                                    <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Custo</span>
-                                                    <span className="text-xs font-black text-amber-600">R$ {item.unit_cost.toFixed(2)}</span>
+                                                    <span className="text-xs font-semibold text-muted-foreground block mb-0.5">Custo</span>
+                                                    <span className="text-xs font-semibold text-amber-600">R$ {item.unit_cost.toFixed(2)}</span>
                                                 </div>
                                                 <div>
-                                                    <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Venda</span>
-                                                    <span className="text-xs font-black text-indigo-500">R$ {item.unit_price.toFixed(2)}</span>
+                                                    <span className="text-xs font-semibold text-muted-foreground block mb-0.5">Venda</span>
+                                                    <span className="text-xs font-semibold text-indigo-500">R$ {item.unit_price.toFixed(2)}</span>
                                                 </div>
                                                 <div>
-                                                    <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Total</span>
-                                                    <span className="text-xs font-black text-foreground">R$ {item.total_price.toFixed(2)}</span>
+                                                    <span className="text-xs font-semibold text-muted-foreground block mb-0.5">Total</span>
+                                                    <span className="text-xs font-semibold text-foreground">R$ {item.total_price.toFixed(2)}</span>
                                                 </div>
                                             </div>
                                             
-                                            <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                                                <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Quantidade</span>
+                                            <div className="flex items-center justify-between pt-2 border-t border-border/60">
+                                                <span className="text-xs font-semibold text-muted-foreground">Quantidade</span>
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         type="button"
                                                         disabled={item.quantity <= 1}
                                                         onClick={() => updateItem(index, { quantity: Math.max(1, item.quantity - 1) })}
-                                                        className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center font-black text-foreground hover:bg-white/10 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all text-xs"
+                                                        className="w-7 h-7 rounded-lg bg-foreground/[0.03] flex items-center justify-center font-semibold text-foreground hover:bg-foreground/[0.05] active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all text-xs"
                                                     >
                                                         -
                                                     </button>
-                                                    <span className="text-xs font-black text-foreground tabular-nums w-4 text-center">{item.quantity}</span>
+                                                    <span className="text-xs font-semibold text-foreground tabular-nums w-4 text-center">{item.quantity}</span>
                                                     <button
                                                         type="button"
                                                         onClick={() => updateItem(index, { quantity: item.quantity + 1 })}
-                                                        className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center font-black text-foreground hover:bg-white/10 active:scale-95 transition-all text-xs"
+                                                        className="w-7 h-7 rounded-lg bg-foreground/[0.03] flex items-center justify-center font-semibold text-foreground hover:bg-foreground/[0.05] active:scale-95 transition-all text-xs"
                                                     >
                                                         +
                                                     </button>
@@ -477,8 +477,8 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                         </div>
                                     ))}
                                     
-                                    <div className="p-5 rounded-3xl bg-muted/5 border border-border/50 flex justify-between items-center">
-                                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Subtotal Geral</span>
+                                    <div className="p-5 rounded-2xl bg-muted/5 border border-border/50 flex justify-between items-center">
+                                        <span className="text-xs font-semibold text-muted-foreground">Subtotal Geral</span>
                                         <span className="text-lg font-black text-indigo-500 tracking-tighter">R$ {total.toFixed(2)}</span>
                                     </div>
                                 </div>
@@ -507,7 +507,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                 disabled={!!editingItem.inventory_item_id}
                                 value={editingItem.item_name}
                                 onChange={(e) => setEditingItem({ ...editingItem, item_name: e.target.value })}
-                                className="w-full h-12 bg-white/5 border border-border rounded-xl px-4 md:text-sm text-base font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50 disabled:bg-transparent transition-all"
+                                className="w-full h-12 bg-foreground/[0.03] border border-border rounded-xl px-4 md:text-sm text-base font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50 disabled:bg-transparent transition-all"
                             />
                         </div>
                         
@@ -515,45 +515,45 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                             <div className="space-y-2">
                                 <label className="text-[13px] font-medium text-muted-foreground block font-medium text-amber-600">Custo Unitário</label>
                                 <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-black text-amber-600/40">R$</span>
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-amber-600/40">R$</span>
                                     <input
                                         type="number"
                                         value={editingItem.unit_cost ?? ''}
                                         onChange={(e) => setEditingItem({ ...editingItem, unit_cost: Number(e.target.value) })}
-                                        className="w-full h-12 bg-white/5 border border-border rounded-xl pl-10 pr-4 md:text-sm text-base font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all text-amber-600"
+                                        className="w-full h-12 bg-foreground/[0.03] border border-border rounded-xl pl-10 pr-4 md:text-sm text-base font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/20 transition-all text-amber-600"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[13px] font-medium text-muted-foreground block font-medium text-indigo-500">Preço de Venda</label>
                                 <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-black text-indigo-500/40">R$</span>
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-indigo-500/40">R$</span>
                                     <input
                                         type="number"
                                         value={editingItem.unit_price ?? ''}
                                         onChange={(e) => setEditingItem({ ...editingItem, unit_price: Number(e.target.value) })}
-                                        className="w-full h-12 bg-white/5 border border-border rounded-xl pl-10 pr-4 md:text-sm text-base font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-indigo-600"
+                                        className="w-full h-12 bg-foreground/[0.03] border border-border rounded-xl pl-10 pr-4 md:text-sm text-base font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-indigo-600"
                                     />
                                 </div>
                             </div>
                         </div>
                         
-                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl">
-                            <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">Quantidade</span>
+                        <div className="flex items-center justify-between p-4 bg-foreground/[0.03] rounded-2xl">
+                            <span className="text-xs font-semibold text-muted-foreground">Quantidade</span>
                             <div className="flex items-center gap-4">
                                 <button
                                     type="button"
                                     disabled={editingItem.quantity <= 1}
                                     onClick={() => setEditingItem({ ...editingItem, quantity: Math.max(1, editingItem.quantity - 1) })}
-                                    className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center font-bold text-foreground hover:bg-white/10 active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all"
+                                    className="w-10 h-10 rounded-xl bg-foreground/[0.03] flex items-center justify-center font-bold text-foreground hover:bg-foreground/[0.05] active:scale-95 disabled:opacity-30 disabled:pointer-events-none transition-all"
                                 >
                                     -
                                 </button>
-                                <span className="text-sm font-black text-foreground tabular-nums w-6 text-center">{editingItem.quantity}</span>
+                                <span className="text-sm font-semibold text-foreground tabular-nums w-6 text-center">{editingItem.quantity}</span>
                                 <button
                                     type="button"
                                     onClick={() => setEditingItem({ ...editingItem, quantity: editingItem.quantity + 1 })}
-                                    className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center font-bold text-foreground hover:bg-white/10 active:scale-95 transition-all"
+                                    className="w-10 h-10 rounded-xl bg-foreground/[0.03] flex items-center justify-center font-bold text-foreground hover:bg-foreground/[0.05] active:scale-95 transition-all"
                                 >
                                     +
                                 </button>
@@ -563,7 +563,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                         <button
  type="button"
  onClick={handleSaveEdit}
- className="w-full h-14 bg-indigo-500 hover:bg-indigo-600 text-white rounded-2xl text-xs font-black shadow-xl shadow-indigo-500/20 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-3 mt-4"
+ className="w-full h-14 bg-indigo-500 hover:bg-indigo-600 text-white rounded-2xl text-xs font-semibold hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-3 mt-4"
  >
                             Confirmar Alterações
                         </button>

@@ -155,12 +155,12 @@ export default function ProductCatalog() {
                     onMouseLeave={handleMouseLeave}
                     onMouseUp={handleMouseUp}
                     onMouseMove={handleMouseMove}
-                    className="flex items-center gap-2 glass-premium bg-white/[0.02] p-1.5 rounded-2xl border border-white/5 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none"
+                    className="flex items-center gap-2 glass-premium bg-foreground/[0.03] p-1.5 rounded-2xl border border-border/60 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none"
                 >
                     <button
  onClick={() => setActiveCategory('all')}
- className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black transition-all shrink-0 ${activeCategory === 'all'
- ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
+ className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-semibold transition-all shrink-0 ${activeCategory === 'all'
+ ? 'bg-primary text-primary-foreground scale-105'
  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
  }`}
  >
@@ -169,8 +169,8 @@ export default function ProductCatalog() {
                     </button>
                     <button
  onClick={() => setActiveCategory('servicos')}
- className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black transition-all shrink-0 ${activeCategory === 'servicos'
- ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
+ className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-semibold transition-all shrink-0 ${activeCategory === 'servicos'
+ ? 'bg-primary text-primary-foreground scale-105'
  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
  }`}
  >
@@ -181,8 +181,8 @@ export default function ProductCatalog() {
                         <button
  key={cat.id}
  onClick={() => setActiveCategory(cat.id)}
- className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black transition-all shrink-0 ${activeCategory === cat.id
- ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
+ className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-semibold transition-all shrink-0 ${activeCategory === cat.id
+ ? 'bg-primary text-primary-foreground scale-105'
  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
  }`}
  >
@@ -194,7 +194,7 @@ export default function ProductCatalog() {
 
                 <div className="flex items-center gap-4 text-muted-foreground whitespace-nowrap">
                     <Package className="w-5 h-5 opacity-40" />
-                    <span className="text-[11px] font-bold uppercase tracking-wider">
+                    <span className="text-xs font-bold">
                         {loading ? 'Carregando...' : `${products.length} itens no catálogo`}
                     </span>
                 </div>
@@ -205,7 +205,7 @@ export default function ProductCatalog() {
                 {loading ? (
                     <div className="flex flex-col items-center justify-center h-64 space-y-4">
                         <Loader2 className="w-12 h-12 animate-spin text-primary opacity-20" />
-                        <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Sincronizando Catálogo...</p>
+                        <p className="text-xs font-semibold text-muted-foreground">Sincronizando Catálogo...</p>
                     </div>
                 ) : products.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
@@ -214,12 +214,12 @@ export default function ProductCatalog() {
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center p-24 text-center space-y-6 border-2 border-dashed border-border rounded-3xl opacity-40">
+                    <div className="flex flex-col items-center justify-center p-24 text-center space-y-6 border-2 border-dashed border-border rounded-2xl opacity-40">
                         <div className="p-8 rounded-full bg-muted">
                             <Search className="w-16 h-16 text-muted-foreground" />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="font-black text-2xl tracking-tighter ">Nenhum item encontrado</h3>
+                            <h3 className="font-black text-2xl tracking-tighter">Nenhum item encontrado</h3>
                             <p className="text-sm font-bold opacity-60">Tente ajustar sua busca ou categoria.</p>
                         </div>
                     </div>

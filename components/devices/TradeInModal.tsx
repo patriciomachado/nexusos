@@ -94,7 +94,7 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
 
     return (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-            <div className="bg-card border border-border rounded-3xl p-6 md:p-8 max-w-2xl w-full space-y-6 shadow-2xl relative my-8 animate-in zoom-in-95 duration-200">
+            <div className="bg-card border border-border rounded-2xl p-6 md:p-8 max-w-2xl w-full space-y-6 relative my-8 animate-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between border-b border-border pb-4">
                     <div className="flex items-center gap-3">
                         <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-400 border border-amber-500/20">
@@ -160,7 +160,7 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
 
                     {/* Checklist de Testes Físicos */}
                     <div className="p-4 bg-muted/30 border border-border rounded-2xl space-y-3">
-                        <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">Checklist Técnico de Inspeção</span>
+                        <span className="text-xs font-semibold text-muted-foreground">Checklist Técnico de Inspeção</span>
                         
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
                             <label className="flex items-center gap-2 cursor-pointer font-bold bg-background p-2.5 rounded-xl border border-border">
@@ -238,9 +238,9 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
                     </div>
 
                     {/* Resultado da Sugestão da Avaliação */}
-                    <div className="p-5 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div className="p-5 border border-amber-500/30 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                         <div className="space-y-1">
-                            <span className="text-[11px] font-black uppercase text-amber-400 tracking-widest">Valor Sugerido para Pagamento/Abate</span>
+                            <span className="text-xs font-semibold text-amber-400">Valor Sugerido para Pagamento/Abate</span>
                             <h3 className="text-2xl font-black text-amber-300 tracking-tight">
                                 {formatCurrency(suggestedOffer)}
                             </h3>
@@ -250,7 +250,7 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
                         <button
  onClick={handleSubmit}
  disabled={isSubmitting}
- className="w-full md:w-auto px-6 py-3 bg-amber-500 text-black rounded-2xl text-xs font-black hover:bg-amber-400 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-amber-500/20"
+ className="w-full md:w-auto px-6 py-3 bg-amber-500 text-black rounded-2xl text-xs font-semibold hover:bg-amber-400 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
  >
                             <CheckCircle2 className="w-4 h-4" />
                             Registrar Avaliação

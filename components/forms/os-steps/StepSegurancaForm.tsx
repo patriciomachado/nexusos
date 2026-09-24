@@ -150,7 +150,7 @@ function PatternGrid({ pattern, onChange }: PatternGridProps) {
                     <div key={i} className="w-2 h-2 rounded-full bg-indigo-500/60" />
                 ))}
                 {points.length === 0 && (
-                    <span className="text-[11px] text-muted-foreground font-black uppercase tracking-widest">
+                    <span className="text-xs text-muted-foreground font-semibold">
                         Arraste para criar o padrão
                     </span>
                 )}
@@ -160,7 +160,7 @@ function PatternGrid({ pattern, onChange }: PatternGridProps) {
                 <button
  type="button"
  onClick={() => { setCurrentPattern([]); onChange([]) }}
- className="text-[13px] font-black text-muted-foreground hover:text-rose-400 transition-colors flex items-center gap-1"
+ className="text-[13px] font-semibold text-muted-foreground hover:text-rose-400 transition-colors flex items-center gap-1"
  >
                     <Delete className="w-3 h-3" />
                     Limpar padrão
@@ -191,9 +191,9 @@ function PinPad({ pin, onChange }: { pin: string; onChange: (pin: string) => voi
                     <div
                         key={i}
                         className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-black border transition-all ${i < pin.length
-                            ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300'
-                            : 'bg-white/5 border-white/5 text-muted-foreground'
-                            }`}
+ ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300'
+ : 'bg-foreground/[0.03] border-border/60 text-muted-foreground'
+ }`}
                     >
                         {i < pin.length ? (showPin ? pin[i] : '●') : ''}
                     </div>
@@ -215,12 +215,12 @@ function PinPad({ pin, onChange }: { pin: string; onChange: (pin: string) => voi
                         type="button"
                         onClick={() => handleKey(key)}
                         disabled={key === ''}
-                        className={`h-12 rounded-xl font-black text-lg transition-all ${key === ''
-                            ? 'invisible'
-                            : key === '⌫'
-                                ? 'bg-white/5 border border-white/5 text-rose-400 hover:bg-rose-500/10 text-sm'
-                                : 'bg-white/5 border border-white/5 text-foreground hover:bg-white/10 hover:border-white/10'
-                            }`}
+                        className={`h-12 rounded-xl font-semibold text-lg transition-all ${key === ''
+ ? 'invisible'
+ : key === '⌫'
+ ? 'bg-foreground/[0.03] border border-border/60 text-rose-400 hover:bg-rose-500/10 text-sm'
+ : 'bg-foreground/[0.03] border border-border/60 text-foreground hover:bg-foreground/[0.05] hover:border-white/10'
+ }`}
                     >
                         {key}
                     </button>
@@ -231,7 +231,7 @@ function PinPad({ pin, onChange }: { pin: string; onChange: (pin: string) => voi
                 <button
  type="button"
  onClick={() => onChange('')}
- className="text-[13px] font-black text-muted-foreground hover:text-rose-400 transition-colors flex items-center gap-1"
+ className="text-[13px] font-semibold text-muted-foreground hover:text-rose-400 transition-colors flex items-center gap-1"
  >
                     <Delete className="w-3 h-3" />
                     Limpar senha
@@ -262,7 +262,7 @@ export default function StepSegurancaForm({
         <div className="max-w-xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
             <div className="text-center space-y-2 py-4">
-                <div className="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20 shadow-[0_0_40px_rgba(245,158,11,0.15)]">
+                <div className="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20">
                     <ShieldCheck className="w-8 h-8" />
                 </div>
                 <h2 className="text-2xl font-black text-foreground tracking-tight">Segurança do Dispositivo</h2>
@@ -270,13 +270,13 @@ export default function StepSegurancaForm({
             </div>
 
             {/* Card */}
-            <div className="bg-card/40 border border-white/5 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-inner space-y-6">
+            <div className="bg-card/40 border border-border/60 rounded-2xl p-6 md:p-8 shadow-inner space-y-6">
                 {/* Type toggle */}
-                <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
+                <div className="flex gap-2 p-1 bg-foreground/[0.03] rounded-xl border border-border/60">
                     <button
  type="button"
  onClick={() => onChangePasswordType('pin')}
- className={`flex-1 py-2.5 rounded-lg text-[13px] font-black transition-all flex items-center justify-center gap-2 ${devicePasswordType === 'pin'
+ className={`flex-1 py-2.5 rounded-lg text-[13px] font-semibold transition-all flex items-center justify-center gap-2 ${devicePasswordType === 'pin'
  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/20'
  : 'text-muted-foreground hover:text-muted-foreground'
  }`}
@@ -287,7 +287,7 @@ export default function StepSegurancaForm({
                     <button
  type="button"
  onClick={() => onChangePasswordType('pattern')}
- className={`flex-1 py-2.5 rounded-lg text-[13px] font-black transition-all flex items-center justify-center gap-2 ${devicePasswordType === 'pattern'
+ className={`flex-1 py-2.5 rounded-lg text-[13px] font-semibold transition-all flex items-center justify-center gap-2 ${devicePasswordType === 'pattern'
  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/20'
  : 'text-muted-foreground hover:text-muted-foreground'
  }`}
@@ -313,7 +313,7 @@ export default function StepSegurancaForm({
                 </div>
 
                 {/* Skip notice */}
-                <p className="text-center text-[11px] text-muted-foreground font-bold uppercase tracking-widest">
+                <p className="text-center text-xs text-muted-foreground font-bold">
                     Este campo é opcional. A senha fica registrada apenas na OS.
                 </p>
             </div>
@@ -323,7 +323,7 @@ export default function StepSegurancaForm({
                 <button
  type="button"
  onClick={onBack}
- className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-[13px] font-black hover:bg-white/10 transition-all flex items-center gap-2 text-muted-foreground"
+ className="px-6 py-3 rounded-xl border border-border/60 bg-foreground/[0.03] text-[13px] font-semibold hover:bg-foreground/[0.05] transition-all flex items-center gap-2 text-muted-foreground"
  >
                     <ChevronLeft className="w-4 h-4" />
                     Voltar
@@ -331,7 +331,7 @@ export default function StepSegurancaForm({
                 <button
  type="button"
  onClick={onNext}
- className="px-8 py-4 rounded-2xl bg-amber-500 text-black text-sm font-black hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/20 flex items-center gap-3"
+ className="px-8 py-4 rounded-2xl bg-amber-500 text-black text-sm font-semibold hover:bg-amber-400 transition-all flex items-center gap-3"
  >
                     Próximo
                     <ChevronRight className="w-4 h-4" />

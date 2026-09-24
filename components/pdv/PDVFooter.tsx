@@ -31,28 +31,28 @@ export default function PDVFooter() {
     return (
         <footer className="h-10 bg-background border-t border-border flex items-center px-6 justify-between shrink-0">
             <div className="flex items-center gap-6 divide-x divide-border">
-                <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-emerald-500">
+                <div className="flex items-center gap-2 text-xs font-semibold text-emerald-500">
                     <Wifi className="w-3 h-3" />
                     <span>Servidor Online</span>
                 </div>
 
-                <div className="flex items-center gap-2 pl-6 text-[11px] font-black uppercase tracking-widest text-muted-foreground">
+                <div className="flex items-center gap-2 pl-6 text-xs font-semibold text-muted-foreground">
                     <User className="w-3 h-3 opacity-40" />
                     <span>Operador: <span className="text-foreground">{!isLoaded ? 'Carregando...' : (clerkUser?.fullName || 'Operador')}</span></span>
                 </div>
 
-                <div className="flex items-center gap-2 pl-6 text-[11px] font-black uppercase tracking-widest text-muted-foreground">
+                <div className="flex items-center gap-2 pl-6 text-xs font-semibold text-muted-foreground">
                     <Store className="w-3 h-3 opacity-40" />
                     <span>Loja: {loading ? <Loader2 className="w-2 h-2 animate-spin inline ml-1" /> : <span className="text-foreground">{companyName}</span>}</span>
                 </div>
             </div>
 
             <div className="flex items-center gap-6">
-                <div className="text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <div className="text-xs font-semibold text-muted-foreground flex items-center gap-2">
                     <ShieldCheck className="w-3 h-3 opacity-40" />
                     <span>V: 2.4.0-STABLE</span>
                 </div>
-                <div className="text-[11px] font-black uppercase tracking-widest text-muted-foreground border-l border-border pl-6">
+                <div className="text-xs font-semibold text-muted-foreground border-l border-border pl-6">
                     NEXUS OS © {year} • <span className="text-primary opacity-60">Excellence in Retail</span>
                 </div>
             </div>

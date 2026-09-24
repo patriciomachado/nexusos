@@ -40,13 +40,13 @@ export default function MesaClient({
             <main className="px-4 lg:px-8 py-4 flex-1 flex flex-col max-w-7xl mx-auto w-full space-y-6">
                 {/* View Selector Controls */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="inline-flex p-1 bg-white/[0.02] border border-white/5 rounded-xl self-start">
+                    <div className="inline-flex p-1 bg-foreground/[0.03] border border-border/60 rounded-xl self-start">
                         <button
                             onClick={() => setActiveTab('kanban')}
                             className={cn(
                                 "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",
                                 activeTab === 'kanban' 
-                                    ? "bg-primary text-primary-foreground shadow-lg" 
+                                    ? "bg-primary text-primary-foreground" 
                                     : "text-muted-foreground hover:text-foreground"
                             )}
                         >
@@ -58,7 +58,7 @@ export default function MesaClient({
                             className={cn(
                                 "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",
                                 activeTab === 'calendar' 
-                                    ? "bg-primary text-primary-foreground shadow-lg" 
+                                    ? "bg-primary text-primary-foreground" 
                                     : "text-muted-foreground hover:text-foreground"
                             )}
                         >
@@ -70,7 +70,7 @@ export default function MesaClient({
                     <div className="flex items-center gap-3">
                         <button 
                             onClick={() => router.refresh()}
-                            className="p-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-muted-foreground hover:text-foreground hover:border-white/10 transition-all active:scale-95"
+                            className="p-2.5 rounded-xl bg-foreground/[0.03] border border-border/60 text-muted-foreground hover:text-foreground hover:border-white/10 transition-all active:scale-95"
                             title="Atualizar dados"
                         >
                             <RefreshCw className="w-5 h-5" />
@@ -90,7 +90,7 @@ export default function MesaClient({
                             customers={customers}
                         />
                     ) : (
-                        <div className="glass-premium bg-card/40 border border-white/5 rounded-3xl p-2 flex-1 flex flex-col min-h-0 overflow-hidden shadow-2xl">
+                        <div className="glass-premium bg-card/40 border border-border/60 rounded-2xl p-2 flex-1 flex flex-col min-h-0 overflow-hidden">
                             <AppointmentsCalendar
                                 initialAppointments={initialAppointments}
                                 customers={customers}

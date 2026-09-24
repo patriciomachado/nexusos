@@ -69,14 +69,14 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
                             setShowCustom(false)
                         }}
                         className={cn(
-                            "group relative p-2.5 rounded-2xl border transition-all hover:scale-[1.02] active:scale-95 text-center overflow-hidden",
+                            "group relative p-2.5 rounded-2xl border transition-all active:scale-95 text-center overflow-hidden",
                             value.startsWith(preset.getValue().slice(0, 10)) && !showCustom
                                 ? preset.color + " ring-1 ring-border/50"
                                 : "bg-muted/30 border-border/50 text-muted-foreground hover:bg-muted/50 hover:border-border"
                         )}
                     >
                         <span className="flex flex-col gap-0.5 relative z-10 w-full">
-                            <span className="text-[11px] font-black uppercase tracking-tighter opacity-50">
+                            <span className="text-xs font-semibold tracking-tighter opacity-50">
                                 {preset.label.split(' ')[0]}
                             </span>
                             <span className="text-[11px] font-bold white-text transition-colors group-hover:text-white truncate">
@@ -100,7 +100,7 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
                 >
                     <span className="flex items-center gap-2">
                         <CalendarIcon className="w-3.5 h-3.5" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest">
+                        <span className="text-xs font-bold">
                             {showCustom ? 'Customizado' : 'Outra Data'}
                         </span>
                     </span>
@@ -108,7 +108,7 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
                 </button>
 
                 {showCustom && (
-                    <div className="mt-2 p-3 rounded-2xl bg-card border border-border shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="mt-2 p-3 rounded-2xl bg-card border border-border animate-in fade-in slide-in-from-top-2 duration-200">
                         <input
                             type="datetime-local"
                             value={value}

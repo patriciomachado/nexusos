@@ -123,7 +123,7 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
             <form onSubmit={handleSubmit} className={cn("p-4 max-w-5xl mx-auto space-y-6", !hideHeader && "mt-4")}>
                 <div className={cn(
                     "relative overflow-hidden group transition-all",
-                    !hideHeader ? "bg-card/40 border border-border rounded-3xl p-6 shadow-lg backdrop-blur-3xl" : "p-0"
+                    !hideHeader ? "bg-card/40 border border-border rounded-2xl p-6" : "p-0"
                 )}>
                     {!hideHeader && <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[120px] rounded-full transition-all group-hover:bg-indigo-500/10" />}
 
@@ -133,7 +133,7 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
                                 <User className="w-5 h-5" />
                             </div>
                             <div>
-                                <h2 className="text-sm font-black text-foreground/70 tracking-tight ">Informações Básicas</h2>
+                                <h2 className="text-sm font-semibold text-foreground/70 tracking-tight">Informações Básicas</h2>
                             </div>
                         </div>
 
@@ -176,7 +176,7 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
                         <button
  type="button"
  onClick={() => setShowDeleteConfirm(true)}
- className="w-full sm:w-auto px-6 h-14 rounded-xl border border-rose-500/20 bg-rose-500/5 text-rose-500 font-black text-[13px] hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center gap-2"
+ className="w-full sm:w-auto px-6 h-14 rounded-xl border border-rose-500/20 bg-rose-500/5 text-rose-500 font-semibold text-[13px] hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center gap-2"
  >
                             <Trash2 className="w-3.5 h-3.5" />
                             EXCLUIR
@@ -185,7 +185,7 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
                     <button
  type="submit"
  disabled={isPending}
- className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-4 h-14 rounded-xl font-black text-[13px] shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3"
+ className="bg-primary w-full sm:flex-1 disabled:opacity-50 text-white p-4 h-14 rounded-xl font-semibold text-[13px] transition-all active:scale-95 flex items-center justify-center gap-3"
  >
                         {isPending ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                         {isPending ? 'PROCESSANDO...' : 'SALVAR ALTERAÇÕES'}
@@ -193,7 +193,7 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
                     <button
  type="button"
  onClick={() => onSuccess ? onSuccess({ id: '', name: '' }) : router.back()}
- className="w-full sm:w-auto px-8 h-14 rounded-xl border border-border bg-card text-foreground/40 font-black text-[13px] hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2"
+ className="w-full sm:w-auto px-8 h-14 rounded-xl border border-border bg-card text-foreground/40 font-semibold text-[13px] hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2"
  >
                         <X className="w-3.5 h-3.5" />
                         ABORTAR

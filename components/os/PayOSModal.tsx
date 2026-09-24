@@ -79,7 +79,7 @@ export default function PayOSModal({
 
     const modalContent = (
         <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 lg:p-8 bg-black/80 backdrop-blur-xl animate-in fade-in duration-500">
-            <div className="bg-card border border-border w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 duration-500 max-h-[90vh] flex flex-col -mt-20">
+            <div className="bg-card border border-border w-full max-w-md rounded-2xl overflow-hidden animate-in slide-in-from-bottom-10 duration-500 max-h-[90vh] flex flex-col -mt-20">
                 <div className="p-8 space-y-6 overflow-y-auto scrollbar-hide">
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-4">
@@ -88,7 +88,7 @@ export default function PayOSModal({
                             </div>
                             <div>
                                 <h2 className="text-xl font-black tracking-tight">Faturar OS</h2>
-                                <p className="text-[11px] text-foreground/40 font-black uppercase tracking-widest">OS Nº {osNumber}</p>
+                                <p className="text-xs text-foreground/40 font-semibold">OS Nº {osNumber}</p>
                             </div>
                         </div>
                         <button 
@@ -99,8 +99,8 @@ export default function PayOSModal({
                         </button>
                     </div>
 
-                    <div className="p-6 rounded-3xl bg-muted/30 border border-border/50">
-                        <span className="text-[11px] text-foreground/60 font-black uppercase tracking-widest">Valor a Receber</span>
+                    <div className="p-6 rounded-2xl bg-muted/30 border border-border/50">
+                        <span className="text-xs text-foreground/60 font-semibold">Valor a Receber</span>
                         <p className="text-3xl font-black text-foreground tracking-tighter">{formatCurrency(amount)}</p>
                     </div>
 
@@ -114,7 +114,7 @@ export default function PayOSModal({
                                     className={cn(
                                         "flex items-center justify-between p-3.5 rounded-2xl border transition-all text-sm font-bold",
                                         paymentMethodId === m.id
-                                            ? "bg-primary/10 border-primary text-primary shadow-[0_0_15px_rgba(59,130,246,0.1)]"
+                                            ? "bg-primary/10 border-primary text-primary"
                                             : "bg-muted/20 border-border hover:border-muted-foreground/30 text-foreground/80 focus:text-foreground hover:text-foreground"
                                     )}
                                 >
@@ -143,7 +143,7 @@ export default function PayOSModal({
                         <button
  onClick={handleConfirm}
  disabled={loading}
- className="flex-[2] py-3.5 rounded-2xl bg-foreground text-background font-black text-xs transition-all active:scale-95 flex items-center justify-center gap-3 shadow-2xl hover:bg-foreground/90 disabled:opacity-50"
+ className="flex-[2] py-3.5 rounded-2xl bg-foreground text-background font-semibold text-xs transition-all active:scale-95 flex items-center justify-center gap-3 hover:bg-foreground/90 disabled:opacity-50"
  >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <DollarSign className="w-4 h-4" />}
                             Confirmar Pagamento

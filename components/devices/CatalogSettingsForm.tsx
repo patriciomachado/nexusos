@@ -222,7 +222,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
             <form onSubmit={handleSave} className="lg:col-span-7 space-y-6">
                 
                 {/* 1. NOVAS CAIXAS DE CONFIGURAÇÃO (GARANTIA, ENTREGA, PAGAMENTO E TIPOS DE APARELHOS) */}
-                <div className="bg-card border border-border rounded-3xl p-6 space-y-5 shadow-xl">
+                <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
                     <div className="flex items-center gap-3 border-b border-border pb-4">
                         <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-400 border border-emerald-500/20">
                             <Layers className="w-5 h-5" />
@@ -294,7 +294,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         </div>
 
                         {/* Taxas de Juros da Maquininha (12x e 24x) */}
-                        <div className="col-span-full space-y-3 bg-gradient-to-r from-amber-500/10 via-background to-background p-4 rounded-2xl border border-amber-500/20">
+                        <div className="col-span-full space-y-3 p-4 rounded-2xl border border-amber-500/20">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                 <label className="text-[13px] font-medium text-amber-400 flex items-center gap-1.5">
                                     <Percent className="w-4 h-4 text-amber-400" />
@@ -354,7 +354,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                 </div>
 
                 {/* 2. SELEÇÃO DA PALETA DE 4 CORES */}
-                <div className="bg-card border border-border rounded-3xl p-6 space-y-5 shadow-xl">
+                <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
                     <div className="flex items-center gap-3 border-b border-border pb-4">
                         <div className="p-3 bg-purple-500/10 rounded-2xl text-purple-400 border border-purple-500/20">
                             <Palette className="w-5 h-5" />
@@ -367,7 +367,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                     {/* Presets Pré-Configurados de 1-Clique */}
                     <div className="space-y-2">
-                        <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">Temas Pré-Configurados (1-Clique)</span>
+                        <span className="text-xs font-semibold text-muted-foreground">Temas Pré-Configurados (1-Clique)</span>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                             {PRESET_THEMES.map((preset, idx) => (
                                 <button
@@ -403,7 +403,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                     onChange={e => setPrimaryColor(e.target.value)}
                                     className="w-9 h-9 rounded-xl border border-border cursor-pointer bg-transparent"
                                 />
-                                <span className="text-xs font-mono font-bold uppercase">{primaryColor}</span>
+                                <span className="text-xs font-mono font-bold">{primaryColor}</span>
                             </div>
                         </div>
 
@@ -416,7 +416,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                     onChange={e => setAccentColor(e.target.value)}
                                     className="w-9 h-9 rounded-xl border border-border cursor-pointer bg-transparent"
                                 />
-                                <span className="text-xs font-mono font-bold uppercase">{accentColor}</span>
+                                <span className="text-xs font-mono font-bold">{accentColor}</span>
                             </div>
                         </div>
 
@@ -429,7 +429,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                     onChange={e => setBackgroundColor(e.target.value)}
                                     className="w-9 h-9 rounded-xl border border-border cursor-pointer bg-transparent"
                                 />
-                                <span className="text-xs font-mono font-bold uppercase">{backgroundColor}</span>
+                                <span className="text-xs font-mono font-bold">{backgroundColor}</span>
                             </div>
                         </div>
 
@@ -442,14 +442,14 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                     onChange={e => setCardBgColor(e.target.value)}
                                     className="w-9 h-9 rounded-xl border border-border cursor-pointer bg-transparent"
                                 />
-                                <span className="text-xs font-mono font-bold uppercase">{cardBgColor}</span>
+                                <span className="text-xs font-mono font-bold">{cardBgColor}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* 3. SLUG E MENSAGENS DO CATÁLOGO */}
-                <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl">
+                <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
                     <div className="flex items-center gap-3 border-b border-border pb-4">
                         <div className="p-3 bg-primary/10 rounded-2xl text-primary border border-primary/20">
                             <Globe className="w-5 h-5" />
@@ -509,7 +509,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                 </div>
 
                 {/* 4. TABELA DE AVALIAÇÃO DE USADOS (TRADE-IN) */}
-                <div className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl">
+                <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-border pb-4">
                         <div className="flex items-center gap-3">
                             <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-400 border border-amber-500/20">
@@ -557,7 +557,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         <button
  type="submit"
  disabled={isSaving}
- className="px-6 py-3 bg-primary text-black font-black text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+ className="px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2"
  >
                             <Save className="w-4 h-4" />
                             {isSaving ? 'Salvando...' : 'Salvar Alterações'}
@@ -569,7 +569,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
             {/* MOCKUP DE PRÉ-VISUALIZAÇÃO EM TEMPO REAL (COLUNA DA DIREITA) */}
             <div className="lg:col-span-5 sticky top-24 space-y-4">
                 <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-black uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 flex items-center gap-1.5">
+                    <span className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5" />
                         Pré-Visualização ao Vivo do Catálogo
                     </span>
@@ -577,7 +577,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                 {/* Smartphone Screen Mockup Container */}
                 <div 
-                    className="rounded-3xl border-4 border-slate-800 p-4 space-y-4 shadow-2xl overflow-hidden transition-all duration-300 font-sans"
+                    className="rounded-2xl border-4 border-slate-800 p-4 space-y-4 overflow-hidden transition-all duration-300 font-sans"
                     style={{ backgroundColor: backgroundColor, color: '#FFFFFF' }}
                 >
                     {/* Top Announcement Bar */}
@@ -588,24 +588,24 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                     )}
 
                     {/* Header Mockup */}
-                    <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                    <div className="flex items-center justify-between border-b border-border/60 pb-3">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs text-black" style={{ backgroundColor: primaryColor }}>
+                            <div className="w-8 h-8 rounded-xl flex items-center justify-center font-semibold text-xs text-black" style={{ backgroundColor: primaryColor }}>
                                 SS
                             </div>
                             <div>
-                                <h4 className="text-xs font-black truncate max-w-[140px]">{catalogTitle}</h4>
+                                <h4 className="text-xs font-semibold truncate max-w-[140px]">{catalogTitle}</h4>
                                 <span className="text-[11px] font-mono opacity-70" style={{ color: accentColor }}>CNPJ: 00.000.000/0001-00</span>
                             </div>
                         </div>
 
-                        <div className="px-2.5 py-1 rounded-lg text-[11px] font-black uppercase text-black" style={{ backgroundColor: primaryColor }}>
+                        <div className="px-2.5 py-1 rounded-lg text-xs font-semibold text-black" style={{ backgroundColor: primaryColor }}>
                             WhatsApp
                         </div>
                     </div>
 
                     {/* Trust Strip Mockup */}
-                    <div className="p-3 rounded-2xl border border-white/10 space-y-2 text-[11px]" style={{ backgroundColor: cardBgColor }}>
+                    <div className="p-3 rounded-2xl border border-border/60 space-y-2 text-[11px]" style={{ backgroundColor: cardBgColor }}>
                         <div className="flex items-center gap-1.5 font-bold" style={{ color: primaryColor }}>
                             <ShieldCheck className="w-3.5 h-3.5" />
                             {warrantyText}
@@ -621,25 +621,25 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                     </div>
 
                     {/* Sample Product Card Mockup */}
-                    <div className="p-3 rounded-2xl border border-white/10 space-y-3" style={{ backgroundColor: cardBgColor }}>
-                        <div className="w-full h-24 bg-black/40 rounded-xl flex items-center justify-center border border-white/10">
+                    <div className="p-3 rounded-2xl border border-border/60 space-y-3" style={{ backgroundColor: cardBgColor }}>
+                        <div className="w-full h-24 bg-black/40 rounded-xl flex items-center justify-center border border-border/60">
                             <Smartphone className="w-8 h-8 opacity-40" />
                         </div>
 
                         <div className="space-y-1">
-                            <h6 className="text-xs font-black">iPhone 13 Pro 128GB</h6>
+                            <h6 className="text-xs font-semibold">iPhone 13 Pro 128GB</h6>
                             <p className="text-[11px] opacity-70">Azul Sierra • Bateria 92%</p>
                         </div>
 
                         <div className="p-2 rounded-xl flex items-center justify-between bg-black/30">
                             <div>
-                                <span className="text-[11px] font-black uppercase opacity-60 block">À VISTA (PIX)</span>
-                                <span className="text-sm font-black" style={{ color: primaryColor }}>R$ 3.490,00</span>
+                                <span className="text-xs font-semibold opacity-60 block">À VISTA (PIX)</span>
+                                <span className="text-sm font-semibold" style={{ color: primaryColor }}>R$ 3.490,00</span>
                             </div>
                             <span className="text-[11px] font-bold" style={{ color: accentColor }}>12x R$ 325</span>
                         </div>
 
-                        <div className="w-full py-2 rounded-xl text-[11px] font-black uppercase text-center text-black" style={{ backgroundColor: primaryColor }}>
+                        <div className="w-full py-2 rounded-xl text-xs font-semibold text-center text-black" style={{ backgroundColor: primaryColor }}>
                             Comprar pelo WhatsApp
                         </div>
                     </div>

@@ -96,36 +96,36 @@ export default function CategoryManager({ onClose }: CategoryManagerProps) {
 
     const modalContent = (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-card w-full max-w-md rounded-3xl border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-300 relative">
+            <div className="bg-card w-full max-w-md rounded-2xl border border-border/60 overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-300 relative">
                 {/* Header */}
-                <div className="p-8 border-b border-white/5 flex items-center justify-between bg-muted/30">
+                <div className="p-8 border-b border-border/60 flex items-center justify-between bg-muted/30">
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 rounded-2xl bg-primary/10 text-primary border border-primary/20">
                             <Tag className="w-5 h-5" />
                         </div>
-                        <h2 className="text-xs font-black text-foreground ">Gerenciar Categorias</h2>
+                        <h2 className="text-xs font-semibold text-foreground">Gerenciar Categorias</h2>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2.5 hover:bg-white/10 rounded-xl transition-all text-muted-foreground hover:text-foreground active:scale-90"
+                        className="p-2.5 hover:bg-foreground/[0.05] rounded-xl transition-all text-muted-foreground hover:text-foreground active:scale-90"
                     >
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
                 {/* Form */}
-                <div className="p-8 border-b border-white/5 bg-muted/10">
+                <div className="p-8 border-b border-border/60 bg-muted/10">
                     <form onSubmit={handleAdd} className="flex gap-3">
                         <input
                             value={newCategory}
                             onChange={(e) => setNewCategory(e.target.value)}
                             placeholder="Nova categoria..."
-                            className="flex-1 bg-background/50 border border-white/5 rounded-2xl px-5 py-4 text-xs font-medium focus:outline-none focus:border-primary/50 transition-all placeholder:opacity-30"
+                            className="flex-1 bg-background/50 border border-border/60 rounded-2xl px-5 py-4 text-xs font-medium focus:outline-none focus:border-primary/50 transition-all placeholder:opacity-30"
                         />
                         <button
                             type="submit"
                             disabled={isAdding || !newCategory.trim()}
-                            className="px-5 bg-primary text-primary-foreground rounded-2xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50 shadow-xl shadow-primary/20"
+                            className="px-5 bg-primary text-primary-foreground rounded-2xl active:scale-95 transition-all disabled:opacity-50"
                         >
                             {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
                         </button>
@@ -141,8 +141,8 @@ export default function CategoryManager({ onClose }: CategoryManagerProps) {
                     ) : categories.length > 0 ? (
                         <div className="grid gap-3">
                             {categories.map((cat) => (
-                                <div key={cat.id} className="flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/5 group hover:border-primary/20 hover:bg-white/[0.07] transition-all">
-                                    <span className="text-xs font-black text-foreground/80 tracking-tight uppercase tracking-wider">{cat.name}</span>
+                                <div key={cat.id} className="flex items-center justify-between p-5 rounded-2xl bg-foreground/[0.03] border border-border/60 group hover:border-primary/20 hover:bg-foreground/[0.05] transition-all">
+                                    <span className="text-xs font-semibold text-foreground/80 tracking-tight">{cat.name}</span>
                                     <button
                                         onClick={() => setConfirmDeleteId(cat.id)}
                                         disabled={deletingId === cat.id}
@@ -156,15 +156,15 @@ export default function CategoryManager({ onClose }: CategoryManagerProps) {
                     ) : (
                         <div className="text-center py-20 opacity-30">
                             <Tag className="w-12 h-12 mx-auto mb-4 opacity-10" />
-                            <p className="text-[11px] font-black uppercase tracking-wider">Nenhuma categoria</p>
-                            <p className="text-[11px] font-medium uppercase mt-2 opacity-60">Personalize seu estoque acima</p>
+                            <p className="text-xs font-semibold">Nenhuma categoria</p>
+                            <p className="text-xs font-medium mt-2 opacity-60">Personalize seu estoque acima</p>
                         </div>
                     )}
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 bg-muted/40 border-t border-white/5 text-center">
-                    <p className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">As categorias não removerão os produtos existentes.</p>
+                <div className="p-6 bg-muted/40 border-t border-border/60 text-center">
+                    <p className="text-xs font-semibold text-muted-foreground">As categorias não removerão os produtos existentes.</p>
                 </div>
             </div>
 

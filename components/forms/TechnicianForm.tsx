@@ -53,17 +53,17 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
             <Header title={initial?.id ? 'Perfil do Especialista' : 'Novo Especialista Técnico'} />
 
             <form onSubmit={handleSubmit} className="p-6 max-w-4xl mx-auto space-y-12 mt-8">
-                <div className="bg-[#0a0a0f]/40 border border-white/5 rounded-3xl p-10 backdrop-blur-3xl relative overflow-hidden group">
+                <div className="bg-[#0a0a0f]/40 border border-border/60 rounded-2xl p-10 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[120px] rounded-full transition-all group-hover:bg-indigo-500/10" />
 
                     <div className="relative z-10 space-y-8">
-                        <div className="flex items-center gap-4 border-b border-white/5 pb-6">
+                        <div className="flex items-center gap-4 border-b border-border/60 pb-6">
                             <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
                                 <Award className="w-6 h-6" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black text-white tracking-tight ">Dados do Técnico</h2>
-                                <p className="text-xs text-white/30 font-bold uppercase tracking-widest mt-1">Especialidades e Remuneração</p>
+                                <h2 className="text-xl font-black text-white tracking-tight">Dados do Técnico</h2>
+                                <p className="text-xs text-white/30 font-bold mt-1">Especialidades e Remuneração</p>
                             </div>
                         </div>
 
@@ -137,7 +137,7 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
                                 <button
                                     type="button"
                                     onClick={addSpecialty}
-                                    className="px-6 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500 hover:text-white transition-all shadow-lg shadow-indigo-500/10"
+                                    className="px-6 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500 hover:text-white transition-all"
                                 >
                                     <Plus className="w-5 h-5" />
                                 </button>
@@ -145,7 +145,7 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
                             {specialties.length > 0 && (
                                 <div className="flex flex-wrap gap-2 pt-2">
                                     {specialties.map(s => (
-                                        <span key={s} className="flex items-center gap-2 pl-4 pr-2 py-2 rounded-xl bg-white/5 border border-white/10 text-white/70 text-[11px] font-black uppercase tracking-widest group hover:border-indigo-500/30 hover:text-indigo-400 transition-all">
+                                        <span key={s} className="flex items-center gap-2 pl-4 pr-2 py-2 rounded-xl bg-white/5 border border-border/60 text-white/70 text-xs font-semibold group hover:border-indigo-500/30 hover:text-indigo-400 transition-all">
                                             {s}
                                             <button
                                                 type="button"
@@ -166,7 +166,7 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
                     <button
  type="submit"
  disabled={isPending}
- className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-5 rounded-2xl font-black text-xs shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
+ className="bg-primary w-full sm:flex-1 disabled:opacity-50 text-white p-5 rounded-2xl font-semibold text-xs transition-all active:scale-95 flex items-center justify-center gap-3"
  >
                         {isPending ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
                         {isPending ? 'PROCESSANDO...' : 'SALVAR CADASTRO'}
@@ -174,7 +174,7 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
                     <button
  type="button"
  onClick={() => router.back()}
- className="w-full sm:w-auto px-10 py-5 rounded-2xl border border-white/5 bg-white/[0.02] text-white/40 font-black text-xs hover:bg-white/5 hover:text-white transition-all flex items-center justify-center gap-2"
+ className="w-full sm:w-auto px-10 py-5 rounded-2xl border border-border/60 bg-white/[0.02] text-white/40 font-semibold text-xs hover:bg-foreground/[0.05] hover:text-white transition-all flex items-center justify-center gap-2"
  >
                         CANCELAR
                     </button>

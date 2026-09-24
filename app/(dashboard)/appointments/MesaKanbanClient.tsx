@@ -112,17 +112,17 @@ export default function MesaKanbanClient({
 
     const handleDragEnter = (e: React.DragEvent) => {
         e.preventDefault()
-        e.currentTarget.classList.add('bg-white/[0.06]', 'border-primary/20', 'scale-[1.01]', 'shadow-[0_0_20px_rgba(59,130,246,0.05)]')
+        e.currentTarget.classList.add('bg-primary/[0.06]', 'border-primary/20')
     }
 
     const handleDragLeave = (e: React.DragEvent) => {
         e.preventDefault()
-        e.currentTarget.classList.remove('bg-white/[0.06]', 'border-primary/20', 'scale-[1.01]', 'shadow-[0_0_20px_rgba(59,130,246,0.05)]')
+        e.currentTarget.classList.remove('bg-primary/[0.06]', 'border-primary/20')
     }
 
     const handleDrop = async (e: React.DragEvent, targetStatus: string) => {
         e.preventDefault()
-        e.currentTarget.classList.remove('bg-white/[0.06]', 'border-primary/20', 'scale-[1.01]', 'shadow-[0_0_20px_rgba(59,130,246,0.05)]')
+        e.currentTarget.classList.remove('bg-primary/[0.06]', 'border-primary/20')
         const osId = e.dataTransfer.getData('text/plain')
         setActiveDragId(null)
 
@@ -235,59 +235,59 @@ export default function MesaKanbanClient({
         <div className="space-y-6 flex flex-col flex-1 min-h-0 min-w-0">
             {/* Real-time Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div className="p-4 rounded-2xl glass-premium bg-card/65 border border-white/5 shadow-md flex items-center gap-4">
+                <div className="p-4 rounded-2xl glass-premium bg-card/65 border border-border/60 shadow-md flex items-center gap-4">
                     <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500">
                         <Wrench className="w-5 h-5" />
                     </div>
                     <div>
-                        <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Na Bancada</p>
+                        <p className="text-xs font-semibold text-muted-foreground">Na Bancada</p>
                         <p className="text-xl font-black text-foreground">{stats.naBancada}</p>
                     </div>
                 </div>
 
-                <div className="p-4 rounded-2xl glass-premium bg-card/65 border border-white/5 shadow-md flex items-center gap-4">
+                <div className="p-4 rounded-2xl glass-premium bg-card/65 border border-border/60 shadow-md flex items-center gap-4">
                     <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500">
                         <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <div>
-                        <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Consertados Hoje</p>
+                        <p className="text-xs font-semibold text-muted-foreground">Consertados Hoje</p>
                         <p className="text-xl font-black text-foreground">{stats.consertadosHoje}</p>
                     </div>
                 </div>
 
-                <div className="p-4 rounded-2xl glass-premium bg-card/65 border border-white/5 shadow-md flex items-center gap-4">
+                <div className="p-4 rounded-2xl glass-premium bg-card/65 border border-border/60 shadow-md flex items-center gap-4">
                     <div className="p-2.5 rounded-xl bg-orange-500/10 text-orange-500">
                         <PackageOpen className="w-5 h-5" />
                     </div>
                     <div>
-                        <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Sem Peças</p>
+                        <p className="text-xs font-semibold text-muted-foreground">Sem Peças</p>
                         <p className="text-xl font-black text-foreground">{stats.aguardandoPecas}</p>
                     </div>
                 </div>
 
-                <div className="p-4 rounded-2xl glass-premium bg-card/65 border border-white/5 shadow-md flex items-center gap-4">
+                <div className="p-4 rounded-2xl glass-premium bg-card/65 border border-border/60 shadow-md flex items-center gap-4">
                     <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-500">
                         <Clock className="w-5 h-5" />
                     </div>
                     <div>
-                        <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Novas Entradas</p>
+                        <p className="text-xs font-semibold text-muted-foreground">Novas Entradas</p>
                         <p className="text-xl font-black text-foreground">{stats.novasEntradas}</p>
                     </div>
                 </div>
 
-                <div className="col-span-2 md:col-span-1 p-4 rounded-2xl glass-premium bg-card/65 border border-white/5 shadow-md flex items-center gap-4">
+                <div className="col-span-2 md:col-span-1 p-4 rounded-2xl glass-premium bg-card/65 border border-border/60 shadow-md flex items-center gap-4">
                     <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-500">
                         <DollarSign className="w-5 h-5" />
                     </div>
                     <div>
-                        <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Ticket Médio</p>
+                        <p className="text-xs font-semibold text-muted-foreground">Ticket Médio</p>
                         <p className="text-xl font-black text-foreground">{formatCurrency(stats.ticketMedio)}</p>
                     </div>
                 </div>
             </div>
 
             {/* Filter and Search Bar */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white/[0.02] border border-white/5 rounded-2xl p-4">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-foreground/[0.03] border border-border/60 rounded-2xl p-4">
                 <div className="relative w-full md:max-w-md">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
@@ -295,12 +295,12 @@ export default function MesaKanbanClient({
                         placeholder="Buscar por OS, cliente ou aparelho..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-muted/40 border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        className="w-full bg-muted/40 border border-border/60 rounded-xl pl-10 pr-4 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                     />
                 </div>
 
                 <div className="flex items-center gap-3 w-full md:w-auto">
-                    <div className="flex items-center gap-2 bg-muted/40 border border-white/5 rounded-xl px-3 py-1.5 w-full md:w-auto">
+                    <div className="flex items-center gap-2 bg-muted/40 border border-border/60 rounded-xl px-3 py-1.5 w-full md:w-auto">
                         <Filter className="w-3.5 h-3.5 text-muted-foreground/55" />
                         <select
                             value={selectedTechFilter}
@@ -330,12 +330,12 @@ export default function MesaKanbanClient({
                             className="flex-1 min-w-[280px] max-w-[320px] rounded-2xl bg-card/15 border border-white/[0.03] flex flex-col transition-all duration-300"
                         >
                             {/* Column Header */}
-                            <div className="p-4 border-b border-white/[0.04] flex items-center justify-between bg-white/[0.01]">
+                            <div className="p-4 border-b border-white/[0.04] flex items-center justify-between bg-foreground/[0.03]">
                                 <div className="flex items-center gap-2">
                                     <div className={cn("w-1.5 h-1.5 rounded-full", col.accent)} />
                                     <h3 className="text-xs font-bold text-foreground">{col.title}</h3>
                                 </div>
-                                <span className={cn("text-[11px] font-black px-2 py-0.5 rounded-full border", col.badge)}>
+                                <span className={cn("text-[11px] font-semibold px-2 py-0.5 rounded-full border", col.badge)}>
                                     {colOrders.length}
                                 </span>
                             </div>
@@ -345,7 +345,7 @@ export default function MesaKanbanClient({
                                 {colOrders.length === 0 ? (
                                     <div className="h-28 border border-dashed border-white/[0.03] rounded-2xl flex flex-col items-center justify-center text-muted-foreground">
                                         <PackageOpen className="w-5 h-5 mb-1" />
-                                        <span className="text-[11px] uppercase tracking-widest font-black">Coluna Vazia</span>
+                                        <span className="text-xs font-semibold">Coluna Vazia</span>
                                     </div>
                                 ) : (
                                     colOrders.map(order => {
@@ -361,7 +361,7 @@ export default function MesaKanbanClient({
                                                 onDragEnd={handleDragEnd}
                                                 onClick={() => setSelectedOSDetails(order)}
                                                 className={cn(
-                                                    "p-4 rounded-2xl bg-card/60 border border-white/5 hover:border-white/10 shadow-sm cursor-grab active:cursor-grabbing hover:-translate-y-0.5 transition-all duration-200 group relative overflow-hidden",
+                                                    "p-4 rounded-2xl bg-card/60 border border-border/60 hover:border-white/10 shadow-sm cursor-grab active:cursor-grabbing hover:-translate-y-0.5 transition-all duration-200 group relative overflow-hidden",
                                                     activeDragId === order.id && "opacity-40 scale-95"
                                                 )}
                                             >
@@ -374,8 +374,8 @@ export default function MesaKanbanClient({
 
                                                 <div className="space-y-3 pl-1">
                                                     <div className="flex items-start justify-between gap-2">
-                                                        <span className="text-[11px] font-black text-primary font-mono tracking-tight">#{order.order_number}</span>
-                                                        <span className={cn("text-[11px] font-black px-1.5 py-0.5 rounded-full border uppercase tracking-wider", priority.style)}>
+                                                        <span className="text-[11px] font-semibold text-primary font-mono tracking-tight">#{order.order_number}</span>
+                                                        <span className={cn("text-xs font-semibold px-1.5 py-0.5 rounded-full border", priority.style)}>
                                                             {priority.label}
                                                         </span>
                                                     </div>
@@ -387,7 +387,7 @@ export default function MesaKanbanClient({
 
                                                     {/* Device Description */}
                                                     {order.equipment_description && (
-                                                        <div className="text-[11px] text-muted-foreground bg-white/[0.02] border border-white/5 rounded px-2 py-1 flex items-center gap-1.5">
+                                                        <div className="text-[11px] text-muted-foreground bg-foreground/[0.03] border border-border/60 rounded px-2 py-1 flex items-center gap-1.5">
                                                             <Wrench className="w-2.5 h-2.5 text-muted-foreground" />
                                                             <span className="truncate">{order.equipment_description}</span>
                                                         </div>
@@ -429,7 +429,7 @@ export default function MesaKanbanClient({
             {checkoutOS && (
                 <div className="fixed inset-0 bg-background/85 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
                     <div
-                        className="bg-card border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl space-y-6 relative overflow-hidden animate-in zoom-in-95 duration-200"
+                        className="bg-card border border-border/60 rounded-2xl p-8 max-w-md w-full space-y-6 relative overflow-hidden animate-in zoom-in-95 duration-200"
                     >
                         <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 blur-[80px] rounded-full -mr-32 -mt-32" />
 
@@ -439,11 +439,11 @@ export default function MesaKanbanClient({
                             </div>
                             <div>
                                 <h3 className="text-lg font-black text-foreground">Faturar Ordem de Serviço</h3>
-                                <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest">Liquidando OS #{checkoutOS.order_number}</p>
+                                <p className="text-xs text-muted-foreground font-semibold">Liquidando OS #{checkoutOS.order_number}</p>
                             </div>
                         </div>
 
-                        <div className="p-5 rounded-2xl bg-muted/20 border border-white/5 space-y-3 relative z-10">
+                        <div className="p-5 rounded-2xl bg-muted/20 border border-border/60 space-y-3 relative z-10">
                             <div className="flex justify-between items-center text-xs">
                                 <span className="text-muted-foreground">Equipamento:</span>
                                 <span className="font-bold text-foreground">{checkoutOS.equipment_description || 'Geral'}</span>
@@ -452,9 +452,9 @@ export default function MesaKanbanClient({
                                 <span className="text-muted-foreground">Cliente:</span>
                                 <span className="font-bold text-foreground">{checkoutOS.customers?.name || 'Consumidor Final'}</span>
                             </div>
-                            <hr className="border-white/5" />
+                            <hr className="border-border/60" />
                             <div className="flex justify-between items-end">
-                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Total a Faturar:</span>
+                                <span className="text-xs font-bold text-muted-foreground mb-1">Total a Faturar:</span>
                                 <span className="text-2xl font-black text-cyan-400 tabular-nums">{formatCurrency(checkoutOS.final_cost || checkoutOS.estimated_cost || 0)}</span>
                             </div>
                         </div>
@@ -465,7 +465,7 @@ export default function MesaKanbanClient({
                             <select
                                 value={selectedPaymentMethodId}
                                 onChange={(e) => setSelectedPaymentMethodId(e.target.value)}
-                                className="w-full bg-muted/50 border border-white/5 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground"
+                                className="w-full bg-muted/50 border border-border/60 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground"
                             >
                                 {paymentMethods.map(pm => (
                                     <option key={pm.id} value={pm.id}>{pm.name}</option>
@@ -483,7 +483,7 @@ export default function MesaKanbanClient({
                             <button
  onClick={handleCheckoutSubmit}
  disabled={isCheckoutLoading}
- className="flex-1 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-cyan-500/10 flex items-center justify-center gap-2"
+ className="flex-1 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-xs transition-all active:scale-[0.98] flex items-center justify-center gap-2"
  >
                                 {isCheckoutLoading ? 'Processando...' : (
                                     <>
@@ -504,12 +504,12 @@ export default function MesaKanbanClient({
                     <div className="absolute inset-0" onClick={() => setSelectedOSDetails(null)} />
 
                     <div
-                        className="bg-card border-l border-white/10 w-full max-w-md h-full relative z-10 p-8 overflow-y-auto flex flex-col space-y-6 shadow-2xl animate-in slide-in-from-right duration-300"
+                        className="bg-card border-l border-border/60 w-full max-w-md h-full relative z-10 p-8 overflow-y-auto flex flex-col space-y-6 animate-in slide-in-from-right duration-300"
                     >
                         {/* Drawer Header */}
-                        <div className="flex items-center justify-between pb-4 border-b border-white/5">
+                        <div className="flex items-center justify-between pb-4 border-b border-border/60">
                             <div>
-                                <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-primary font-bold text-xs">
                                     <Wrench className="w-3.5 h-3.5" />
                                     Ficha Rápida de Bancada
                                 </div>
@@ -517,7 +517,7 @@ export default function MesaKanbanClient({
                             </div>
                             <button
                                 onClick={() => setSelectedOSDetails(null)}
-                                className="p-2 hover:bg-white/5 rounded-xl border border-transparent hover:border-white/10 transition-all"
+                                className="p-2 hover:bg-foreground/[0.05] rounded-xl border border-transparent hover:border-white/10 transition-all"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -532,7 +532,7 @@ export default function MesaKanbanClient({
                                     type="text"
                                     id="detail-title"
                                     defaultValue={selectedOSDetails.title}
-                                    className="w-full bg-muted/40 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                    className="w-full bg-muted/40 border border-border/60 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                                 />
                             </div>
 
@@ -543,7 +543,7 @@ export default function MesaKanbanClient({
                                     <select
                                         id="detail-priority"
                                         defaultValue={selectedOSDetails.priority}
-                                        className="w-full bg-muted/40 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                        className="w-full bg-muted/40 border border-border/60 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                                     >
                                         <option value="baixa">Baixa</option>
                                         <option value="normal">Normal</option>
@@ -558,7 +558,7 @@ export default function MesaKanbanClient({
                                     <select
                                         id="detail-tech"
                                         defaultValue={selectedOSDetails.technician_id || ''}
-                                        className="w-full bg-muted/40 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                        className="w-full bg-muted/40 border border-border/60 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                                     >
                                         <option value="">Não Atribuído</option>
                                         {technicians.map(t => (
@@ -575,7 +575,7 @@ export default function MesaKanbanClient({
                                     id="detail-problem"
                                     rows={3}
                                     defaultValue={selectedOSDetails.problem_description || ''}
-                                    className="w-full bg-muted/40 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                                    className="w-full bg-muted/40 border border-border/60 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
                                 />
                             </div>
 
@@ -586,33 +586,33 @@ export default function MesaKanbanClient({
                                     id="detail-solution"
                                     rows={3}
                                     defaultValue={selectedOSDetails.solution_applied || ''}
-                                    className="w-full bg-muted/40 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                                    className="w-full bg-muted/40 border border-border/60 rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
                                     placeholder="Descreva o procedimento executado..."
                                 />
                             </div>
 
                             {/* Quick costs display */}
-                            <div className="p-4 rounded-2xl bg-muted/30 border border-white/5 grid grid-cols-3 gap-2 text-center">
+                            <div className="p-4 rounded-2xl bg-muted/30 border border-border/60 grid grid-cols-3 gap-2 text-center">
                                 <div>
-                                    <span className="block text-[11px] text-muted-foreground uppercase font-black">Mão de Obra</span>
+                                    <span className="block text-xs text-muted-foreground font-semibold">Mão de Obra</span>
                                     <span className="text-xs font-bold text-foreground">{formatCurrency(selectedOSDetails.labor_cost || 0)}</span>
                                 </div>
                                 <div>
-                                    <span className="block text-[11px] text-muted-foreground uppercase font-black">Peças</span>
+                                    <span className="block text-xs text-muted-foreground font-semibold">Peças</span>
                                     <span className="text-xs font-bold text-foreground">{formatCurrency(selectedOSDetails.parts_cost || 0)}</span>
                                 </div>
                                 <div>
-                                    <span className="block text-[11px] text-primary/80 uppercase font-black">Custo Total</span>
-                                    <span className="text-xs font-black text-primary">{formatCurrency(selectedOSDetails.final_cost || selectedOSDetails.estimated_cost || 0)}</span>
+                                    <span className="block text-xs text-primary/80 font-semibold">Custo Total</span>
+                                    <span className="text-xs font-semibold text-primary">{formatCurrency(selectedOSDetails.final_cost || selectedOSDetails.estimated_cost || 0)}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Actions bar */}
-                        <div className="flex gap-3 pt-4 border-t border-white/5">
+                        <div className="flex gap-3 pt-4 border-t border-border/60">
                             <Link
                                 href={`/service-orders/${selectedOSDetails.id}`}
-                                className="flex-1 py-3.5 rounded-xl bg-muted/50 border border-white/5 hover:bg-muted text-xs font-bold text-center text-foreground transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                                className="flex-1 py-3.5 rounded-xl bg-muted/50 border border-border/60 hover:bg-muted text-xs font-bold text-center text-foreground transition-all active:scale-95 flex items-center justify-center gap-1.5"
                             >
                                 <CalendarDays className="w-3.5 h-3.5" />
                                 Ver OS Completa
@@ -628,7 +628,7 @@ export default function MesaKanbanClient({
  handleSaveDetails({ title, priority, technician_id, problem_description, solution_applied })
  }}
  disabled={isSavingDetails}
- className="flex-1 py-3.5 rounded-xl bg-primary text-primary-foreground font-black text-xs hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+ className="flex-1 py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold text-xs active:scale-[0.98] transition-all flex items-center justify-center gap-2"
  >
                                 {isSavingDetails ? 'Salvando...' : (
                                     <>

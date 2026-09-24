@@ -60,14 +60,14 @@ export default function ImportPage() {
                 <h1 className="text-3xl font-black tracking-tighter flex items-center gap-3">
                     Importação <span className="text-primary">uMDB Plus</span>
                 </h1>
-                <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider opacity-60">
+                <p className="text-muted-foreground text-xs font-bold opacity-60">
                     Migre seus dados históricos com tecnologia Nexus
                 </p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Clientes Card */}
-                <div className="bg-card border border-border rounded-3xl p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
                         <FileText size={120} />
                     </div>
@@ -77,7 +77,7 @@ export default function ImportPage() {
                                 <FileText className="w-6 h-6" />
                             </div>
                             <div>
-                                <h3 className="font-black text-xs">Clientes</h3>
+                                <h3 className="font-semibold text-xs">Clientes</h3>
                                 <p className="text-xs text-muted-foreground font-medium">Upload do arquivo CLIENTES.PDF</p>
                             </div>
                         </div>
@@ -97,7 +97,7 @@ export default function ImportPage() {
                 </div>
 
                 {/* Ordens Card */}
-                <div className="bg-card border border-border rounded-3xl p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
                         <Zap size={120} />
                     </div>
@@ -107,7 +107,7 @@ export default function ImportPage() {
                                 <Zap className="w-6 h-6" />
                             </div>
                             <div>
-                                <h3 className="font-black text-xs">Ordens de Serviço</h3>
+                                <h3 className="font-semibold text-xs">Ordens de Serviço</h3>
                                 <p className="text-xs text-muted-foreground font-medium">Upload do arquivo ORDEMS.PDF</p>
                             </div>
                         </div>
@@ -129,11 +129,11 @@ export default function ImportPage() {
 
             {/* Status & Progress */}
             {status !== 'idle' && (
-                <div className="bg-muted/30 border border-border rounded-3xl p-8 space-y-6 relative overflow-hidden">
+                <div className="bg-muted/30 border border-border rounded-2xl p-8 space-y-6 relative overflow-hidden">
                     <div className="flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-4">
                             <div className={cn(
-                                "w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg",
+                                "w-12 h-12 rounded-2xl flex items-center justify-center",
                                 status === 'completed' ? "bg-green-500/20 text-green-500" : "bg-primary/20 text-primary"
                             )}>
                                 {status === 'processing' || status === 'uploading' ? (
@@ -145,13 +145,13 @@ export default function ImportPage() {
                                 )}
                             </div>
                             <div>
-                                <h4 className="font-black text-sm">
+                                <h4 className="font-semibold text-sm">
                                     {status === 'processing' && 'Processando PDFs...'}
                                     {status === 'uploading' && 'Sincronizando Banco...'}
                                     {status === 'completed' && 'Sucesso!'}
                                     {status === 'error' && 'Falha na Importação'}
                                 </h4>
-                                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest opacity-60">
+                                <p className="text-xs text-muted-foreground font-bold opacity-60">
                                     {status === 'processing' && 'Extraindo dados e filtrando duplicatas'}
                                     {status === 'uploading' && 'Enviando lotes para o Supabase'}
                                     {status === 'completed' && 'Sua base de dados foi atualizada'}
@@ -165,7 +165,7 @@ export default function ImportPage() {
 
                     <div className="h-3 w-full bg-muted rounded-full overflow-hidden border border-border p-0.5">
                         <div 
-                            className="h-full bg-gradient-to-r from-primary to-blue-400 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+                            className="h-full rounded-full transition-all duration-500" 
                             style={{ width: `${progress}%` }}
                         />
                     </div>
@@ -173,11 +173,11 @@ export default function ImportPage() {
                     {status === 'completed' && result && (
                         <div className="grid grid-cols-2 gap-4 pt-4 animate-in slide-in-from-bottom-4 duration-500">
                             <div className="p-6 bg-background rounded-2xl border border-border shadow-sm flex flex-col items-center justify-center text-center">
-                                <span className="text-[11px] font-black uppercase tracking-wider text-muted-foreground mb-1">Clientes</span>
+                                <span className="text-xs font-semibold text-muted-foreground mb-1">Clientes</span>
                                 <span className="text-4xl font-black text-primary">{result.customers}</span>
                             </div>
                             <div className="p-6 bg-background rounded-2xl border border-border shadow-sm flex flex-col items-center justify-center text-center">
-                                <span className="text-[11px] font-black uppercase tracking-wider text-muted-foreground mb-1">Ordens</span>
+                                <span className="text-xs font-semibold text-muted-foreground mb-1">Ordens</span>
                                 <span className="text-4xl font-black text-indigo-500">{result.orders}</span>
                             </div>
                         </div>
@@ -191,10 +191,10 @@ export default function ImportPage() {
  onClick={handleImport}
  disabled={isImporting || !customerFile || !orderFile}
  className={cn(
- "w-full md:w-auto min-w-[280px] h-16 rounded-2xl font-black text-lg transition-all duration-500 flex items-center justify-center gap-3 shadow-2xl",
+ "w-full md:w-auto min-w-[280px] h-16 rounded-2xl font-black text-lg transition-all duration-500 flex items-center justify-center gap-3",
  isImporting 
  ? "bg-muted text-muted-foreground cursor-not-allowed" 
- : "bg-primary text-white hover:scale-[1.02] hover:shadow-primary/40 active:scale-95"
+ : "bg-primary text-white active:scale-95"
  )}
  >
                     {isImporting ? (
@@ -212,7 +212,7 @@ export default function ImportPage() {
 
                 <div className="flex items-center gap-2 p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10 max-w-2xl text-center">
                     <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
-                    <p className="text-[11px] font-black text-amber-500/80 uppercase tracking-widest leading-relaxed">
+                    <p className="text-xs font-semibold text-amber-500/80 leading-relaxed">
                         Aviso: Este processo é irreversível e processa dados em larga escala. Certifique-se de que os PDFs são originais do uMDB Plus.
                     </p>
                 </div>

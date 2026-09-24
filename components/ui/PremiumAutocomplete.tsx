@@ -105,7 +105,7 @@ export default function PremiumAutocomplete({
                 <div
                     ref={dropdownRef}
                     style={dropdownStyle}
-                    className="overflow-hidden rounded-2xl bg-card/95 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-3xl animate-in fade-in duration-200"
+                    className="overflow-hidden rounded-2xl bg-card/95 border border-border/60 animate-in fade-in duration-200"
                 >
                     <ul className="p-1 max-h-64 overflow-y-auto custom-scrollbar">
                         {filteredOptions.map((opt, i) => (
@@ -138,7 +138,7 @@ export default function PremiumAutocomplete({
  toast.error('Digite um nome para a categoria')
  }
  }}
- className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black transition-all text-primary hover:bg-primary/5 text-left "
+ className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold transition-all text-primary hover:bg-primary/5 text-left"
  >
                                     {isAdding ? (
                                         <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />

@@ -57,7 +57,7 @@ export default function CustomerAutocomplete({
                     <button
                         type="button"
                         className={cn(
-                            "relative h-12 w-full bg-muted/40 border rounded-2xl py-3 pl-4 pr-10 text-left md:text-sm text-base transition-all backdrop-blur-2xl",
+                            "relative h-12 w-full bg-muted/40 border rounded-2xl py-3 pl-4 pr-10 text-left md:text-sm text-base transition-all",
                             error ? "border-destructive/50" : "border-border",
                             isOpen ? "ring-2 ring-primary/30 border-primary/50" : "hover:bg-muted/60 hover:border-border/80"
                         )}
@@ -76,17 +76,17 @@ export default function CustomerAutocomplete({
 
                 <Popover.Portal>
                     <Popover.Content 
-                        className="z-[9999] w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-3xl bg-card/95 border border-white/10 shadow-2xl backdrop-blur-3xl animate-in fade-in duration-200"
+                        className="z-[9999] w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-3xl bg-card/95 border border-border/60 shadow-2xl backdrop-blur-3xl animate-in fade-in duration-200"
                         sideOffset={8}
                         align="start"
                     >
-                        <div className="p-3 border-b border-white/5">
+                        <div className="p-3 border-b border-border/60">
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                 <input
                                     autoFocus
                                     type="text"
-                                    className="w-full h-10 bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 md:text-xs text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-bold"
+                                    className="w-full h-10 bg-foreground/[0.03] border border-border/60 rounded-xl pl-10 pr-4 md:text-xs text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-bold"
                                     placeholder="Procurar cliente..."
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
@@ -113,10 +113,10 @@ export default function CustomerAutocomplete({
                                             )}
                                         >
                                             <div className={cn(
-                                                "w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black uppercase transition-all shadow-inner",
+                                                "w-7 h-7 rounded-lg flex items-center justify-center text-xs font-semibold transition-all shadow-inner",
                                                 c.id === selectedId
                                                     ? "bg-primary/20 text-primary border border-primary/30"
-                                                    : "bg-white/5 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary border border-white/5"
+                                                    : "bg-foreground/[0.03] text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary border border-border/60"
                                             )}>
                                                 {c.name?.charAt(0) || '?'}
                                             </div>
@@ -129,12 +129,12 @@ export default function CustomerAutocomplete({
                                 ))
                             ) : !showAddOption && (
                                 <li className="px-4 py-8 text-center">
-                                    <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Nenhum cliente encontrado</p>
+                                    <p className="text-xs font-semibold text-muted-foreground">Nenhum cliente encontrado</p>
                                 </li>
                             )}
 
                             {showAddOption && (
-                                <li className="mt-1 border-t border-white/5 pt-1">
+                                <li className="mt-1 border-t border-border/60 pt-1">
                                     <button
  type="button"
  disabled={isAdding}
@@ -143,7 +143,7 @@ export default function CustomerAutocomplete({
  setIsOpen(false)
  setQuery('')
  }}
- className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-black transition-all text-primary hover:bg-primary/5 text-left "
+ className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-semibold transition-all text-primary hover:bg-primary/5 text-left"
  >
                                         {isAdding ? (
                                             <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />

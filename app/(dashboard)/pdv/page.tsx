@@ -152,7 +152,7 @@ export default function PDVPage() {
                             <Link
  key={item.path}
  href={item.path}
- className={`text-[13px] font-black transition-all hover:text-primary ${pathname === item.path ? 'text-primary' : 'text-muted-foreground'
+ className={`text-[13px] font-semibold transition-all hover:text-primary ${pathname === item.path ? 'text-primary' : 'text-muted-foreground'
  }`}
  >
                                 {item.label}
@@ -177,11 +177,11 @@ export default function PDVPage() {
                         </button>
                         <button 
                             onClick={() => setIsCartOpen(true)}
-                            className="w-9 h-9 flex items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/20 relative"
+                            className="w-9 h-9 flex items-center justify-center rounded-lg bg-primary text-primary-foreground relative"
                         >
                             <ShoppingCart className="w-4 h-4" />
                             {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[11px] font-black rounded-full flex items-center justify-center border-2 border-background">
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[11px] font-semibold rounded-full flex items-center justify-center border-2 border-background">
                                     {cartCount}
                                 </span>
                             )}

@@ -104,7 +104,7 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
                 <div
                     ref={dropdownRef}
                     style={dropdownStyle}
-                    className="overflow-hidden rounded-xl material-thick border border-border/70 shadow-xl animate-in fade-in duration-150"
+                    className="overflow-hidden rounded-xl material-thick border border-border/70 animate-in fade-in duration-150"
                 >
                     <ul className="max-h-60 overflow-y-auto p-1 py-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
                         {options.length > 0 ? (

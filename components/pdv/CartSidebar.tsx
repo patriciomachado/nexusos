@@ -9,18 +9,18 @@ export default function CartSidebar() {
 
     if (cart.length === 0) {
         return (
-            <div className="flex flex-col h-full bg-card/30 backdrop-blur-3xl p-6 lg:p-8 animate-in fade-in duration-700">
+            <div className="flex flex-col h-full bg-card/30 p-6 lg:p-8 animate-in fade-in duration-700">
                 <div className="flex items-center justify-between mb-12">
                     <h2 className="font-black text-2xl tracking-tighter underline decoration-primary decoration-4 underline-offset-8">Carrinho</h2>
                     <ShoppingBag className="w-8 h-8 text-muted-foreground opacity-20" />
                 </div>
 
                 <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 opacity-40">
-                    <div className="p-10 rounded-3xl bg-muted shadow-inner">
+                    <div className="p-10 rounded-2xl bg-muted shadow-inner">
                         <ShoppingCart className="w-20 h-20 text-muted-foreground" />
                     </div>
                     <div className="space-y-2">
-                        <h3 className="font-black text-xl tracking-tight ">Carrinho Vazio</h3>
+                        <h3 className="font-black text-xl tracking-tight">Carrinho Vazio</h3>
                         <p className="text-sm font-bold opacity-60">Selecione produtos no catálogo<br />para começar.</p>
                     </div>
                 </div>
@@ -29,12 +29,12 @@ export default function CartSidebar() {
     }
 
     return (
-        <div className="flex flex-col h-full bg-card/30 backdrop-blur-3xl animate-in fade-in duration-500 overflow-hidden relative">
+        <div className="flex flex-col h-full bg-card/30 animate-in fade-in duration-500 overflow-hidden relative">
             {/* Cart Header */}
             <div className="p-4 lg:p-8 pb-2 lg:pb-4 flex items-center justify-between shrink-0">
                 <div className="flex flex-col">
                     <h2 className="font-black text-xl lg:text-2xl tracking-tighter whitespace-nowrap">Carrinho</h2>
-                    <span className="text-[11px] lg:text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Consumidor Final</span>
+                    <span className="text-xs lg:text-[11px] font-bold text-muted-foreground mt-1">Consumidor Final</span>
                 </div>
                 <button
                     onClick={clearCart}
@@ -47,7 +47,7 @@ export default function CartSidebar() {
             {/* Scrollable Cart List */}
             <div className="flex-1 overflow-y-auto p-4 lg:p-8 pt-2 lg:pt-4 space-y-3 lg:space-y-4 custom-scrollbar">
                 {cart.map((item) => (
-                    <div key={item.id} className="group bg-white/[0.01] border border-white/5 rounded-3xl p-4 flex items-center gap-4 hover:border-primary/20 transition-all duration-300 hover:bg-white/[0.03]">
+                    <div key={item.id} className="group bg-foreground/[0.03] border border-border/60 rounded-2xl p-4 flex items-center gap-4 hover:border-primary/20 transition-all duration-300 hover:bg-foreground/[0.05]">
                         <div className="w-20 h-20 rounded-2xl bg-muted overflow-hidden flex-shrink-0 border border-border/30 flex items-center justify-center">
                             {item.product.image_url ? (
                                 <img
@@ -63,7 +63,7 @@ export default function CartSidebar() {
                         </div>
                         <div className="flex-1 min-w-0 flex flex-col justify-center">
                             <h4 className="font-bold text-sm text-foreground truncate">{item.product.name}</h4>
-                            <span className="text-primary font-black text-xs mt-1">{formatCurrency(item.price)}</span>
+                            <span className="text-primary font-semibold text-xs mt-1">{formatCurrency(item.price)}</span>
                         </div>
                         <div className="flex flex-col items-end gap-2 shrink-0">
                             <div className="flex items-center gap-3 bg-muted/50 p-1.5 rounded-xl border border-border/30">
@@ -73,7 +73,7 @@ export default function CartSidebar() {
                                 >
                                     <Minus className="w-3 h-3" />
                                 </button>
-                                <span className="text-xs font-black min-w-[20px] text-center">{item.quantity}</span>
+                                <span className="text-xs font-semibold min-w-[20px] text-center">{item.quantity}</span>
                                 <button
                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                     className="p-1 hover:bg-background rounded-lg text-primary transition-colors"
@@ -83,7 +83,7 @@ export default function CartSidebar() {
                             </div>
                             <button
  onClick={() => removeItem(item.id)}
- className="text-[13px] font-black text-destructive/60 hover:text-destructive transition-colors "
+ className="text-[13px] font-semibold text-destructive/60 hover:text-destructive transition-colors"
  >
                                 <Trash2 className="w-3 h-3" />
                             </button>
@@ -97,17 +97,17 @@ export default function CartSidebar() {
                 {/* Detailed Summary */}
                 <div className="space-y-4">
                     <div className="flex justify-between items-center text-xs">
-                        <span className="font-bold text-muted-foreground uppercase tracking-widest">Subtotal</span>
+                        <span className="font-bold text-muted-foreground">Subtotal</span>
                         <span className="font-black text-foreground">{formatCurrency(subtotal)}</span>
                     </div>
                     <div className="flex justify-between items-center text-xs group">
-                        <span className="font-bold text-destructive/60 uppercase tracking-widest group-hover:text-destructive transition-colors">Descontos</span>
+                        <span className="font-bold text-destructive/60 group-hover:text-destructive transition-colors">Descontos</span>
                         <div className="flex items-center gap-2">
                             <span className="font-black text-destructive">- {formatCurrency(discount)}</span>
                         </div>
                     </div>
                     <div className="pt-2 lg:pt-4 border-t border-border flex justify-between items-baseline">
-                        <span className="font-black text-base lg:text-lg tracking-tighter uppercase">Total</span>
+                        <span className="font-black text-base lg:text-lg tracking-tighter">Total</span>
                         <span className="text-3xl lg:text-4xl font-black text-primary tracking-tighter drop-shadow-sm">{formatCurrency(total)}</span>
                     </div>
                 </div>
@@ -123,13 +123,13 @@ export default function CartSidebar() {
                             key={method.id}
                             //@ts-ignore
                             onClick={() => setPaymentMethod(method.id)}
-                            className={`flex flex-col items-center justify-center gap-2 py-4 rounded-3xl border transition-all duration-300 active:scale-95 ${paymentMethod === method.id
-                                    ? 'bg-primary/20 border-primary text-primary shadow-lg shadow-primary/15 scale-105'
-                                    : 'bg-white/[0.02] border-white/5 text-muted-foreground hover:border-primary/20 hover:text-foreground hover:bg-white/[0.04]'
-                                }`}
+                            className={`flex flex-col items-center justify-center gap-2 py-4 rounded-2xl border transition-all duration-300 active:scale-95 ${paymentMethod === method.id
+ ? 'bg-primary/20 border-primary text-primary scale-105'
+ : 'bg-foreground/[0.03] border-border/60 text-muted-foreground hover:border-primary/20 hover:text-foreground hover:bg-foreground/[0.05]'
+ }`}
                         >
                             <method.icon className="w-5 h-5" />
-                            <span className="text-[11px] font-black uppercase tracking-widest">{method.label}</span>
+                            <span className="text-xs font-semibold">{method.label}</span>
                         </button>
                     )))}
                 </div>
@@ -137,7 +137,7 @@ export default function CartSidebar() {
                 {/* Final Button */}
                 <button
  onClick={() => setIsFinishModalOpen(true)}
- className="w-full bg-primary text-primary-foreground py-4 lg:py-6 rounded-2xl lg:rounded-3xl font-black lg:tracking-wider text-xs lg:text-sm shadow-2xl shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-1 transition-all active:translate-y-0 active:scale-98 flex items-center justify-center gap-3 lg:gap-4"
+ className="w-full bg-primary text-primary-foreground py-4 lg:py-6 rounded-2xl lg:rounded-3xl font-semibold lg:tracking-wider text-xs lg:text-sm hover:-translate-y-1 transition-all active:translate-y-0 active:scale-98 flex items-center justify-center gap-3 lg:gap-4"
  >
                     <ShoppingCart className="w-5 h-5" />
                     Finalizar Venda

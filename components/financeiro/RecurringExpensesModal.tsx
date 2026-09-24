@@ -136,7 +136,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-card border border-border w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl">
+            <div className="bg-card border border-border w-full max-w-2xl rounded-2xl overflow-hidden">
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-muted/30">
                     <div className="flex items-center gap-3">
@@ -145,7 +145,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                         </div>
                         <div>
                             <h2 className="text-lg font-bold">Contas Fixas</h2>
-                            <p className="text-[11px] text-muted-foreground uppercase font-black tracking-widest">
+                            <p className="text-xs text-muted-foreground font-semibold">
                                 Gestão de Despesas Recorrentes Mensais
                             </p>
                         </div>
@@ -255,7 +255,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                                 <button 
  type="submit"
  disabled={saving}
- className="flex-[2] py-2.5 px-4 bg-primary text-black rounded-xl text-sm font-black hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+ className="flex-[2] py-2.5 px-4 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
  >
                                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                     Salvar Despesa
@@ -266,7 +266,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
 
                     {/* List */}
                     <div className="space-y-3">
-                        <h3 className="text-xs font-black text-muted-foreground px-1">Contas Cadastradas</h3>
+                        <h3 className="text-xs font-semibold text-muted-foreground px-1">Contas Cadastradas</h3>
                         
                         {loading ? (
                             <div className="py-12 flex justify-center">
@@ -286,7 +286,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold">{expense.description}</p>
-                                                <div className="flex items-center gap-2 text-[11px] text-muted-foreground uppercase font-medium">
+                                                <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
                                                     <span>Dia {expense.day_of_month}</span>
                                                     <span className="w-1 h-1 bg-border rounded-full" />
                                                     <span>{expense.category}</span>
@@ -296,7 +296,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                                         <div className="flex items-center gap-4">
                                             <div className="text-right">
                                                 <p className="text-sm font-bold text-rose-400">{formatCurrency(expense.amount)}</p>
-                                                <p className="text-[11px] text-muted-foreground uppercase font-black tracking-widest">Mensal</p>
+                                                <p className="text-xs text-muted-foreground font-semibold">Mensal</p>
                                             </div>
                                             <button 
                                                 onClick={() => handleDelete(expense.id)}
