@@ -73,7 +73,7 @@ export async function deliverDueReminders(db: SupabaseClient, companyId?: string
     })
 
     if (delivered.length > 0) {
-        await db.from('notifications').insert(delivered.map(d => ({
+        const { error: notifyError } = await db.from('notifications').insert(delivered.map(d => ({
             company_id: d.company_id,
             type: 'push',
             title: d.title,
@@ -83,6 +83,8 @@ export async function deliverDueReminders(db: SupabaseClient, companyId?: string
             related_entity_id: d.task_id,
             sent_at: new Date().toISOString(),
         })))
+        // Reminders are already claimed; push still goes out even if the bell insert fails.
+        if (notifyError) console.error('[tasks/reminders] could not add to notifications:', notifyError)
         await sendPush(db, delivered)
     }
 
