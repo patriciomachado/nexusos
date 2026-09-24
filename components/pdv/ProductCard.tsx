@@ -26,11 +26,11 @@ export default function ProductCard({ product }: ProductCardProps) {
     const price = Number(product.selling_price || 0)
 
     return (
-        <div className="group glass-premium bg-card/65 backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-primary/5 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 shadow-lg">
+        <div className="group glass-premium bg-card/65 border border-border/60 rounded-2xl overflow-hidden hover:shadow-2xl active:scale-[0.97] transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
             {/* Image Section */}
-            <div className="relative h-48 bg-white/[0.02] overflow-hidden">
+            <div className="relative h-48 bg-foreground/[0.03] overflow-hidden">
                 {/* Image Placeholder with Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent z-10" />
+                <div className="absolute inset-0 z-10" />
                 {product.image_url ? (
                     <img
                         src={product.image_url}
@@ -46,7 +46,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {/* Category Badge */}
                 <div className="absolute top-4 left-4 z-20">
                     <span className={cn(
-                        "px-3 py-1 rounded-full backdrop-blur-md border border-white/10 text-[11px] font-black uppercase tracking-widest",
+                        "px-3 py-1 rounded-full border border-border/60 text-xs font-semibold",
                         isService ? "bg-orange-500/20 text-orange-500" : "bg-background/50 text-foreground"
                     )}>
                         {product.category || (isService ? 'Serviço' : 'Produto')}
@@ -62,7 +62,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
                         <span className={cn(
-                            "text-[11px] font-bold uppercase tracking-wider",
+                            "text-xs font-bold",
                             !isService && Number(product.quantity_in_stock) <= Number(product.minimum_quantity) ? 'text-destructive' : 'text-muted-foreground'
                         )}>
                             {stockStatus}
@@ -72,7 +72,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
                 <div className="flex items-center justify-between pt-2">
                     <div className="flex flex-col">
-                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Valor Final</span>
+                        <span className="text-xs font-semibold text-muted-foreground leading-none mb-1">Valor Final</span>
                         <span className="text-xl font-black text-foreground tracking-tight">
                             {formatCurrency(price)}
                         </span>
@@ -81,10 +81,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <button
                         onClick={() => addItem(product)}
                         className={cn(
-                            "p-3 rounded-2xl transition-all active:scale-95 flex items-center gap-2 group/btn shadow-lg",
+                            "p-3 rounded-2xl transition-all active:scale-95 flex items-center gap-2 group/btn",
                             isService
-                                ? "bg-orange-500/10 text-orange-500 hover:bg-orange-500 hover:text-white shadow-orange-500/10"
-                                : "bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500 hover:text-white shadow-indigo-500/10"
+                                ? "bg-orange-500/10 text-orange-500 hover:bg-orange-500 hover:text-white"
+                                : "bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500 hover:text-white"
                         )}
                         title="Adicionar ao Carrinho"
                     >

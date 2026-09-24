@@ -187,7 +187,7 @@ export default function BarcodeScannerModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xl p-4 animate-in fade-in duration-300">
-            <div className="relative w-full max-w-lg bg-card/95 border border-border/50 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="relative w-full max-w-lg bg-card/95 border border-border/50 rounded-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 
                 {/* Header */}
                 <div className="p-4 sm:p-5 border-b border-border/40 flex items-center justify-between bg-muted/20">
@@ -197,7 +197,7 @@ export default function BarcodeScannerModal({
                         </div>
                         <div>
                             <h3 className="font-black text-foreground text-base tracking-tight">{title}</h3>
-                            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Aproxime o código da câmera</p>
+                            <p className="text-xs font-bold text-muted-foreground">Aproxime o código da câmera</p>
                         </div>
                     </div>
 
@@ -230,7 +230,7 @@ export default function BarcodeScannerModal({
                     {/* Viewfinder Target Overlay */}
                     {isScanning && !showManualInput && (
                         <div className="absolute inset-0 pointer-events-none flex items-center justify-center p-6">
-                            <div className="relative w-[280px] h-[160px] border-2 border-primary/40 rounded-2xl shadow-[0_0_50px_rgba(59,130,246,0.3)] bg-primary/5">
+                            <div className="relative w-[280px] h-[160px] border-2 border-primary/40 rounded-2xl bg-primary/5">
                                 {/* Corners */}
                                 <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-xl" />
                                 <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-xl" />
@@ -238,7 +238,7 @@ export default function BarcodeScannerModal({
                                 <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-xl" />
 
                                 {/* Scanning Line Animation */}
-                                <div className="absolute inset-x-2 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse shadow-[0_0_12px_#3b82f6] top-1/2 -translate-y-1/2" />
+                                <div className="absolute inset-x-2 h-0.5 animate-pulse shadow-[0_0_12px_#3b82f6] top-1/2 -translate-y-1/2" />
                             </div>
                         </div>
                     )}

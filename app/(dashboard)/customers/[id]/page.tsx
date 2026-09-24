@@ -48,11 +48,11 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
 
                 {/* Profile Header Card */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 p-8 rounded-3xl bg-card/60 backdrop-blur-3xl border border-border shadow-2xl relative overflow-hidden group">
+                    <div className="lg:col-span-2 p-8 rounded-2xl bg-card/60 border border-border relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px] rounded-full" />
 
                         <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start">
-                            <div className="w-24 h-24 rounded-3xl bg-muted/20 border border-border flex items-center justify-center text-4xl font-black text-indigo-400 shadow-inner">
+                            <div className="w-24 h-24 rounded-2xl bg-muted/20 border border-border flex items-center justify-center text-4xl font-black text-indigo-400 shadow-inner">
                                 {customer.name.charAt(0).toUpperCase()}
                             </div>
 
@@ -60,7 +60,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                                 <div className="flex items-start justify-between">
                                     <div>
                                         <h1 className="text-3xl font-black text-foreground tracking-tight">{customer.name}</h1>
-                                        <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider mt-1">ID: {customer.id.split('-')[0]}</p>
+                                        <p className="text-muted-foreground text-xs font-bold mt-1">ID: {customer.id.split('-')[0]}</p>
                                     </div>
                                     <CustomerActions customerId={customer.id} customerName={customer.name} />
                                 </div>
@@ -91,18 +91,18 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
 
                     {/* Quick Stats */}
                     <div className="space-y-4">
-                        <div className="p-6 rounded-3xl bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent border border-emerald-500/20 backdrop-blur-xl">
+                        <div className="p-6 rounded-2xl border border-emerald-500/20">
                             <div className="flex items-center gap-3 mb-2">
                                 <Wallet className="w-5 h-5 text-emerald-400" />
-                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Investimento Total</span>
+                                <span className="text-xs font-bold text-muted-foreground">Investimento Total</span>
                             </div>
                             <p className="text-3xl font-black text-foreground tracking-tighter">{formatCurrency(totalSpent)}</p>
                         </div>
 
-                        <div className="p-6 rounded-3xl bg-gradient-to-br from-amber-500/10 via-transparent to-transparent border border-amber-500/20 backdrop-blur-xl">
+                        <div className="p-6 rounded-2xl border border-amber-500/20">
                             <div className="flex items-center gap-3 mb-2">
                                 <DollarSign className="w-5 h-5 text-amber-400" />
-                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Saldo Pendente</span>
+                                <span className="text-xs font-bold text-muted-foreground">Saldo Pendente</span>
                             </div>
                             <p className="text-3xl font-black text-foreground tracking-tighter">{formatCurrency(pendingAmount)}</p>
                         </div>
@@ -118,7 +118,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                                 <ClipboardList className="w-6 h-6 text-indigo-400" />
                                 Histórico de Serviços
                             </h2>
-                            <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{serviceOrders?.length || 0} Registros</span>
+                            <span className="text-xs font-bold text-muted-foreground">{serviceOrders?.length || 0} Registros</span>
                         </div>
 
                         <div className="space-y-4">
@@ -128,7 +128,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                                     <Link
                                         key={os.id}
                                         href={`/service-orders/${os.id}`}
-                                        className="block p-6 rounded-3xl bg-card/40 border border-border hover:border-indigo-500/30 transition-all group"
+                                        className="block p-6 rounded-2xl bg-card/40 border border-border hover:border-indigo-500/30 transition-all group"
                                     >
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-start gap-4">
@@ -140,14 +140,14 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                                                         {os.title}
                                                     </h3>
                                                     <div className="flex items-center gap-3 mt-1">
-                                                        <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">#{os.order_number}</span>
+                                                        <span className="text-xs font-mono text-muted-foreground">#{os.order_number}</span>
                                                         <span className="text-muted-foreground text-[11px]">•</span>
-                                                        <span className="text-[11px] font-bold text-muted-foreground uppercase">{formatDateTime(os.created_at)}</span>
+                                                        <span className="text-xs font-bold text-muted-foreground">{formatDateTime(os.created_at)}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <span className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest border ${statusClasses}`}>
+                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusClasses}`}>
                                                     {OS_STATUS_LABELS[os.status]}
                                                 </span>
                                                 <p className="mt-2 text-lg font-black text-foreground tracking-tighter">{formatCurrency(os.final_cost || 0)}</p>
@@ -156,7 +156,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                                     </Link>
                                 )
                             }) : (
-                                <div className="p-16 text-center border-2 border-dashed border-border/5 rounded-3xl">
+                                <div className="p-16 text-center border-2 border-dashed border-border/5 rounded-2xl">
                                     <User className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                                     <p className="text-muted-foreground text-sm italic">Nenhum histórico de serviço para este cliente.</p>
                                 </div>
@@ -170,7 +170,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
                             <h2 className="text-xl font-bold text-foreground">Notas e Preferências</h2>
                         </div>
 
-                        <div className="p-6 rounded-3xl bg-card/40 border border-border backdrop-blur-2xl">
+                        <div className="p-6 rounded-2xl bg-card/40 border border-border">
                             <textarea
                                 readOnly
                                 value={customer.notes || 'Sem observações adicionais.'}
@@ -180,9 +180,9 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
 
                         <Link
                             href={`/customers/${customer.id}/edit`}
-                            className="p-1 block rounded-3xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-border/10 group/edit cursor-pointer"
+                            className="p-1 block rounded-2xl border border-border/10 group/edit cursor-pointer"
                         >
-                            <div className="w-full py-4 rounded-2xl bg-card/80 text-foreground font-black text-xs uppercase tracking-wider group-hover/edit:bg-transparent transition-all text-center">
+                            <div className="w-full py-4 rounded-2xl bg-card/80 text-foreground font-semibold text-xs group-hover/edit:bg-transparent transition-all text-center">
                                 Editar Perfil Completo
                             </div>
                         </Link>

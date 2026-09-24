@@ -97,7 +97,7 @@ export default function ManualTransactionModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300">
-            <div className="bg-card border border-border w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 relative">
+            <div className="bg-card border border-border w-full max-w-lg rounded-2xl overflow-hidden animate-in zoom-in-95 duration-300 relative">
                 <div className={cn(
                     "absolute inset-0 opacity-[0.03] pointer-events-none",
                     isEntry ? "bg-emerald-500" : "bg-rose-500"
@@ -113,7 +113,7 @@ export default function ManualTransactionModal({
                                 {isEntry ? <ArrowUpRight className="w-6 h-6" /> : <ArrowDownRight className="w-6 h-6" />}
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black tracking-tight ">
+                                <h2 className="text-2xl font-black tracking-tight">
                                     {title || (isEntry ? 'Registrar Suprimento' : 'Registrar Sangria')}
                                 </h2>
                                 <p className="text-xs text-muted-foreground font-semibold">Movimentação manual de valores em caixa</p>
@@ -189,10 +189,10 @@ export default function ManualTransactionModal({
  type="submit"
  disabled={loading}
  className={cn(
- "flex-[2] py-4 rounded-2xl font-black text-sm transition-all active:scale-95 flex items-center justify-center gap-3 shadow-xl",
+ "flex-[2] py-4 rounded-2xl font-semibold text-sm transition-all active:scale-95 flex items-center justify-center gap-3",
  isEntry
- ? "bg-emerald-500 text-white shadow-emerald-500/20 hover:bg-emerald-600"
- : "bg-rose-500 text-white shadow-rose-500/20 hover:bg-rose-600",
+ ? "bg-emerald-500 text-white hover:bg-emerald-600"
+ : "bg-rose-500 text-white hover:bg-rose-600",
  loading && "opacity-50 cursor-not-allowed"
  )}
  >

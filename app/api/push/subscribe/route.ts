@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireTaskAccess, dbError } from '@/lib/tasks/access'
 import { pushSubscriptionSchema, firstError } from '@/lib/tasks/schemas'
-import { pushConfigured, sendTestPush } from '@/lib/tasks/reminders'
+import { pushStatus, sendTestPush, vapidPublicKey } from '@/lib/tasks/reminders'
 
 /** Whether push is available on the server. */
 export async function GET() {
     const { response } = await requireTaskAccess()
     if (response) return response
-    return NextResponse.json({ configured: pushConfigured(), publicKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null })
+    const status = pushStatus()
+    return NextResponse.json({ configured: status.ok, reason: status.reason ?? null, publicKey: status.ok ? vapidPublicKey() : null })
 }
 
 /** Saves this device's push subscription and sends a confirmation. */
@@ -16,8 +17,9 @@ export async function POST(req: NextRequest) {
     if (response) return response
     const { db, companyId, dbUser } = ctx
 
-    if (!pushConfigured()) {
-        return NextResponse.json({ error: 'As notificações no celular ainda não foram configuradas no servidor (chaves VAPID).' }, { status: 503 })
+    const status = pushStatus()
+    if (!status.ok) {
+        return NextResponse.json({ error: status.reason ?? 'Notificações não configuradas no servidor.' }, { status: 503 })
     }
 
     const body = await req.json().catch(() => null)
@@ -35,12 +37,30 @@ export async function POST(req: NextRequest) {
     }, { onConflict: 'endpoint' })
     if (error) return dbError(error)
 
-    try {
-        await sendTestPush({ endpoint, p256dh: keys.p256dh, auth: keys.auth })
-    } catch (err) {
-        console.error('[push] test notification failed:', err)
-    }
-    return NextResponse.json({ ok: true }, { status: 201 })
+    const testError = await sendTestPush({ endpoint, p256dh: keys.p256dh, auth: keys.auth })
+    return NextResponse.json({ ok: true, testError }, { status: 201 })
+}
+
+/** Sends a test notification to this device (PUT { endpoint }). */
+export async function PUT(req: NextRequest) {
+    const { ctx, response } = await requireTaskAccess()
+    if (response) return response
+    const body = await req.json().catch(() => null)
+    const endpoint = typeof body?.endpoint === 'string' ? body.endpoint : null
+    if (!endpoint) return NextResponse.json({ error: 'Informe o endpoint' }, { status: 400 })
+
+    const { data: sub, error } = await ctx.db
+        .from('push_subscriptions')
+        .select('endpoint, p256dh, auth')
+        .eq('endpoint', endpoint)
+        .eq('company_id', ctx.companyId)
+        .maybeSingle()
+    if (error) return dbError(error)
+    if (!sub) return NextResponse.json({ error: 'Este aparelho não está inscrito. Ative os lembretes de novo.' }, { status: 404 })
+
+    const testError = await sendTestPush(sub, 'Teste de notificação')
+    if (testError) return NextResponse.json({ error: testError }, { status: 502 })
+    return NextResponse.json({ ok: true })
 }
 
 /** Removes this device's subscription. */

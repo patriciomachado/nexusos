@@ -37,6 +37,7 @@ export default function PushToggle({ className }: { className?: string }) {
     const [publicKey, setPublicKey] = useState<string | null>(null)
     const [help, setHelp] = useState(false)
     const [busy, setBusy] = useState(false)
+    const [serverReason, setServerReason] = useState<string | null>(null)
 
     useEffect(() => {
         let cancelled = false
@@ -48,11 +49,18 @@ export default function PushToggle({ className }: { className?: string }) {
             }
             const res = await fetch('/api/push/subscribe').then(r => r.json()).catch(() => null)
             if (cancelled) return
-            if (!res?.configured || !res.publicKey) { setState('server-off'); return }
+            if (!res?.configured || !res.publicKey) { setServerReason(res?.reason ?? null); setState('server-off'); return }
             setPublicKey(res.publicKey)
             if (Notification.permission === 'denied') { setState('denied'); return }
             const reg = await registerServiceWorker()
-            const sub = await reg?.pushManager.getSubscription()
+            let sub = await reg?.pushManager.getSubscription()
+            // A subscription made with an older key can never receive pushes: drop it.
+            const subKey = sub?.options?.applicationServerKey
+            if (sub && subKey) {
+                const current = urlBase64ToUint8Array(res.publicKey)
+                const same = new Uint8Array(subKey).every((b, i) => b === current[i]) && new Uint8Array(subKey).length === current.length
+                if (!same) { await sub.unsubscribe(); sub = null }
+            }
             if (!cancelled) setState(sub ? 'on' : 'off')
         }
         check()
@@ -75,7 +83,12 @@ export default function PushToggle({ className }: { className?: string }) {
             const res = await fetch('/api/push/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sub.toJSON()) })
             if (!res.ok) throw new Error((await res.json().catch(() => ({})))?.error || 'save')
             setState('on')
-            toast.success('Lembretes ativados neste aparelho', { description: 'Enviamos uma notificação de teste.' })
+            const saved = await res.json().catch(() => ({}))
+            if (saved?.testError) {
+                toast.error('Inscrição salva, mas a notificação de teste falhou', { description: saved.testError, duration: 12000 })
+            } else {
+                toast.success('Lembretes ativados neste aparelho', { description: 'Enviamos uma notificação de teste. Se ela não aparecer, confira as notificações do NexusOS nos ajustes do aparelho.' })
+            }
         } catch (e) {
             toast.error('Não foi possível ativar os lembretes', { description: e instanceof Error && e.message.length > 10 ? e.message : 'Tente de novo em alguns instantes.' })
         } finally {
@@ -99,6 +112,21 @@ export default function PushToggle({ className }: { className?: string }) {
         }
     }
 
+    const sendTest = async () => {
+        setBusy(true)
+        try {
+            const reg = await navigator.serviceWorker.getRegistration('/sw.js')
+            const sub = await reg?.pushManager.getSubscription()
+            if (!sub) { setState('off'); toast.error('Este aparelho não está inscrito. Ative os lembretes de novo.'); return }
+            const res = await fetch('/api/push/subscribe', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ endpoint: sub.endpoint }) })
+            const data = await res.json().catch(() => ({}))
+            if (res.ok) toast.success('Notificação de teste enviada', { description: 'Ela deve chegar em alguns segundos.' })
+            else toast.error('O teste falhou', { description: data?.error, duration: 12000 })
+        } finally {
+            setBusy(false)
+        }
+    }
+
     if (state === 'loading') return null
 
     const on = state === 'on'
@@ -106,14 +134,14 @@ export default function PushToggle({ className }: { className?: string }) {
         <>
             <button
                 type="button"
-                onClick={() => (state === 'off' ? enable() : state === 'on' ? disable() : setHelp(true))}
+                onClick={() => (state === 'off' ? enable() : setHelp(true))}
                 disabled={busy}
                 className={cn(
                     'h-9 px-3 rounded-full text-[13px] font-medium inline-flex items-center gap-1.5 transition-colors disabled:opacity-50',
                     on ? 'bg-green-500/12 text-green-700 dark:text-green-300' : 'bg-foreground/[0.06] text-foreground hover:bg-foreground/[0.1]',
                     className
                 )}
-                title={on ? 'Desativar lembretes neste aparelho' : 'Receber lembretes neste aparelho'}
+                title={on ? 'Lembretes ativos: testar ou desativar' : 'Receber lembretes neste aparelho'}
             >
                 {on ? <BellRing className="w-4 h-4" /> : state === 'off' ? <Smartphone className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
                 {on ? 'Lembretes ativos' : 'Lembretes no celular'}
@@ -135,7 +163,25 @@ export default function PushToggle({ className }: { className?: string }) {
                         <p>As notificações estão bloqueadas para este site. Libere nas configurações do navegador (ícone de cadeado ao lado do endereço) e tente de novo.</p>
                     )}
                     {state === 'server-off' && (
-                        <p>O envio de notificações ainda não foi configurado no servidor. É preciso cadastrar as chaves VAPID nas variáveis de ambiente da Vercel. Enquanto isso, os lembretes aparecem aqui no app e no sininho.</p>
+                        <>
+                            <p>O servidor ainda não consegue enviar notificações.</p>
+                            {serverReason && <p className="text-[15px] rounded-xl bg-orange-500/10 text-orange-700 dark:text-orange-300 px-3 py-2">{serverReason}</p>}
+                            <p className="text-muted-foreground">Confira as variáveis na Vercel (sem aspas nem espaços) e faça um novo deploy. Enquanto isso, os lembretes aparecem no app e no sininho.</p>
+                        </>
+                    )}
+                    {state === 'on' && (
+                        <>
+                            <p>Os lembretes estão ativos neste aparelho.</p>
+                            <p className="text-muted-foreground text-[15px]">Tarefas criadas com horário já ganham um lembrete na hora marcada. No editor da tarefa você pode adicionar outros (15 min antes, 1 dia antes…).</p>
+                            <div className="flex flex-col gap-2 pt-1">
+                                <button type="button" onClick={sendTest} disabled={busy} className="h-11 rounded-xl bg-primary text-primary-foreground text-[15px] font-semibold disabled:opacity-50">
+                                    Enviar notificação de teste
+                                </button>
+                                <button type="button" onClick={() => { setHelp(false); disable() }} disabled={busy} className="h-11 rounded-xl text-[15px] text-red-600 dark:text-red-400 hover:bg-red-500/10">
+                                    Desativar neste aparelho
+                                </button>
+                            </div>
+                        </>
                     )}
                     {state === 'unsupported' && (
                         <p>Este navegador não aceita notificações push. Use o Chrome, Edge, Firefox ou o Safari (macOS 13+ / iOS 16.4+).</p>

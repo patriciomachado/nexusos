@@ -274,74 +274,74 @@ export default function TransactionHistory({
         <div className="space-y-8 animate-in fade-in duration-700">
             {/* Profit Snapshot Bar */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div className="glass-premium rounded-3xl p-6 border border-emerald-500/20 relative overflow-hidden group">
+                <div className="glass-premium rounded-2xl p-6 border border-emerald-500/20 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-500/10 transition-all" />
                     <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-500">
                             <Wallet className="w-5 h-5" />
                         </div>
-                        <span className="text-[11px] font-black uppercase tracking-widest text-emerald-500/60">Caixa Mês Anterior</span>
+                        <span className="text-xs font-semibold text-emerald-500/60">Caixa Mês Anterior</span>
                     </div>
                     <p className="text-2xl font-black text-emerald-500 tracking-tighter">{formatCurrency(metrics.prevMonthNetCashFlow)}</p>
                     <div className="flex items-center gap-1.5 mt-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Fluxo Líquido Caixa</span>
+                        <span className="text-xs font-bold text-muted-foreground opacity-60">Fluxo Líquido Caixa</span>
                     </div>
                 </div>
 
-                <div className="glass-premium rounded-3xl p-6 border border-border/40 relative overflow-hidden group">
+                <div className="glass-premium rounded-2xl p-6 border border-border/40 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/10 transition-all" />
                     <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-500">
                             <DollarSign className="w-5 h-5" />
                         </div>
-                        <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Faturamento do Período</span>
+                        <span className="text-xs font-semibold text-muted-foreground">Faturamento do Período</span>
                     </div>
                     <p className="text-2xl font-black text-foreground tracking-tighter">{formatCurrency(metrics.totalRevenue)}</p>
                     <div className="flex items-center gap-1.5 mt-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Entradas Processadas</span>
+                        <span className="text-xs font-bold text-muted-foreground opacity-60">Entradas Processadas</span>
                     </div>
                 </div>
 
-                <div className="glass-premium rounded-3xl p-6 border border-indigo-500/20 relative overflow-hidden group">
+                <div className="glass-premium rounded-2xl p-6 border border-indigo-500/20 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-500/10 transition-all" />
                     <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-500">
                             <TrendingUp className="w-5 h-5" />
                         </div>
-                        <span className="text-[11px] font-black uppercase tracking-widest text-indigo-500/60">Lucro Bruto Período</span>
+                        <span className="text-xs font-semibold text-indigo-500/60">Lucro Bruto Período</span>
                     </div>
                     <p className="text-2xl font-black text-indigo-500 tracking-tighter">{formatCurrency(metrics.grossProfit)}</p>
-                    <p className="text-[11px] text-muted-foreground mt-2 uppercase font-bold tracking-tight">Receita - Custo de Peças</p>
+                    <p className="text-xs text-muted-foreground mt-2 font-bold tracking-tight">Receita - Custo de Peças</p>
                 </div>
 
-                <div className="glass-premium rounded-3xl p-6 border border-emerald-500/20 relative overflow-hidden group">
+                <div className="glass-premium rounded-2xl p-6 border border-emerald-500/20 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-500/10 transition-all" />
                     <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-500">
                             <Activity className="w-5 h-5" />
                         </div>
-                        <span className="text-[11px] font-black uppercase tracking-widest text-emerald-500/60">Lucro Líquido Período</span>
+                        <span className="text-xs font-semibold text-emerald-500/60">Lucro Líquido Período</span>
                     </div>
                     <p className="text-2xl font-black text-emerald-500 tracking-tighter">{formatCurrency(metrics.netProfit)}</p>
                     <div className="flex items-center gap-2 mt-2">
-                        <span className="text-[11px] font-black bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-lg border border-emerald-500/10">
+                        <span className="text-[11px] font-semibold bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-lg border border-emerald-500/10">
                             {metrics.margin.toFixed(1)}% MARGEM
                         </span>
                     </div>
                 </div>
 
-                <div className="glass-premium rounded-3xl p-6 border border-rose-500/20 relative overflow-hidden group">
+                <div className="glass-premium rounded-2xl p-6 border border-rose-500/20 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-rose-500/10 transition-all" />
                     <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 rounded-2xl bg-rose-500/10 text-rose-500">
                             <TrendingDown className="w-5 h-5" />
                         </div>
-                        <span className="text-[11px] font-black uppercase tracking-widest text-rose-500/60">Despesas do Período</span>
+                        <span className="text-xs font-semibold text-rose-500/60">Despesas do Período</span>
                     </div>
                     <p className="text-2xl font-black text-rose-500 tracking-tighter">{formatCurrency(metrics.totalExpenses)}</p>
-                    <p className="text-[11px] text-muted-foreground mt-2 uppercase font-bold tracking-tight">Retiradas e Exclusões</p>
+                    <p className="text-xs text-muted-foreground mt-2 font-bold tracking-tight">Retiradas e Exclusões</p>
                 </div>
             </div>
 
@@ -351,7 +351,7 @@ export default function TransactionHistory({
                         <Clock className="w-5 h-5 text-primary" />
                         Histórico Unificado
                     </h2>
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60">
+                    <p className="text-xs text-muted-foreground font-medium opacity-60">
                         Visualização completa de fluxos financeiros
                     </p>
                 </div>
@@ -364,7 +364,7 @@ export default function TransactionHistory({
  key={monthOption.value}
  onClick={() => setTimeRange(monthOption.value)}
  className={cn(
- "px-3 py-1.5 rounded-xl text-[13px] font-black transition-all",
+ "px-3 py-1.5 rounded-xl text-[13px] font-semibold transition-all",
  timeRange === monthOption.value ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
  )}
  >
@@ -376,7 +376,7 @@ export default function TransactionHistory({
                             <button
  onClick={() => setShowMonthPicker(!showMonthPicker)}
  className={cn(
- "px-3 py-1.5 rounded-xl text-[13px] font-black transition-all flex items-center gap-2",
+ "px-3 py-1.5 rounded-xl text-[13px] font-semibold transition-all flex items-center gap-2",
  timeRange.includes('-') ? "bg-primary/10 text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
  )}
  >
@@ -397,7 +397,7 @@ export default function TransactionHistory({
  setShowMonthPicker(false)
  }}
  className={cn(
- "w-full text-left px-4 py-2 text-[13px] font-black transition-colors",
+ "w-full text-left px-4 py-2 text-[13px] font-semibold transition-colors",
  timeRange === m.value ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
  )}
  >
@@ -411,7 +411,7 @@ export default function TransactionHistory({
  setShowMonthPicker(false)
  }}
  className={cn(
- "w-full text-left px-4 py-2 text-[13px] font-black transition-colors",
+ "w-full text-left px-4 py-2 text-[13px] font-semibold transition-colors",
  timeRange === 'all' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
  )}
  >
@@ -430,7 +430,7 @@ export default function TransactionHistory({
                         <button
  onClick={() => setFilterType('all')}
  className={cn(
- "px-3 py-1.5 rounded-xl text-[13px] font-black transition-all",
+ "px-3 py-1.5 rounded-xl text-[13px] font-semibold transition-all",
  filterType === 'all' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
  )}
  >
@@ -439,7 +439,7 @@ export default function TransactionHistory({
                         <button
  onClick={() => setFilterType('entry')}
  className={cn(
- "px-3 py-1.5 rounded-xl text-[13px] font-black transition-all",
+ "px-3 py-1.5 rounded-xl text-[13px] font-semibold transition-all",
  filterType === 'entry' ? "bg-emerald-500/10 text-emerald-500 shadow-sm" : "text-muted-foreground hover:text-emerald-500"
  )}
  >
@@ -448,7 +448,7 @@ export default function TransactionHistory({
                         <button
  onClick={() => setFilterType('exit')}
  className={cn(
- "px-3 py-1.5 rounded-xl text-[13px] font-black transition-all",
+ "px-3 py-1.5 rounded-xl text-[13px] font-semibold transition-all",
  filterType === 'exit' ? "bg-rose-500/10 text-rose-500 shadow-sm" : "text-muted-foreground hover:text-rose-500"
  )}
  >
@@ -469,16 +469,16 @@ export default function TransactionHistory({
                 />
             </div>
 
-            <div className="bg-card border border-border/50 rounded-3xl overflow-hidden shadow-xl">
+            <div className="bg-card border border-border/50 rounded-2xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="border-b border-border/10 bg-muted/10">
-                                <th className="px-6 py-5 text-left text-[11px] font-black text-muted-foreground uppercase tracking-widest">Movimentação</th>
-                                <th className="px-6 py-5 text-left text-[11px] font-black text-muted-foreground uppercase tracking-widest">Categoria</th>
-                                <th className="px-6 py-5 text-left text-[11px] font-black text-muted-foreground uppercase tracking-widest">Data/Hora</th>
-                                <th className="px-6 py-5 text-right text-[11px] font-black text-muted-foreground uppercase tracking-widest">Valor</th>
-                                <th className="px-6 py-5 text-center text-[11px] font-black text-muted-foreground uppercase tracking-widest"></th>
+                                <th className="px-6 py-5 text-left text-xs font-semibold text-muted-foreground">Movimentação</th>
+                                <th className="px-6 py-5 text-left text-xs font-semibold text-muted-foreground">Categoria</th>
+                                <th className="px-6 py-5 text-left text-xs font-semibold text-muted-foreground">Data/Hora</th>
+                                <th className="px-6 py-5 text-right text-xs font-semibold text-muted-foreground">Valor</th>
+                                <th className="px-6 py-5 text-center text-xs font-semibold text-muted-foreground"></th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border/5">
@@ -494,14 +494,14 @@ export default function TransactionHistory({
                                             </div>
                                             <div>
                                                 <p className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">{item.description}</p>
-                                                <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest opacity-60">{item.method}</p>
+                                                <p className="text-xs text-muted-foreground font-semibold opacity-60">{item.method}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-5">
                                         <div className="flex items-center gap-2">
                                             <div className={cn("w-1.5 h-1.5 rounded-full", item.type === 'entry' ? "bg-emerald-500" : "bg-rose-500")} />
-                                            <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest opacity-80">
+                                            <span className="text-xs font-semibold text-muted-foreground opacity-80">
                                                 {item.category}
                                             </span>
                                         </div>
@@ -509,7 +509,7 @@ export default function TransactionHistory({
                                     <td className="px-6 py-5">
                                         <div className="flex flex-col">
                                             <span className="text-xs font-bold text-foreground">{formatDateTime(item.date).split(',')[0]}</span>
-                                            <span className="text-[11px] text-muted-foreground font-black uppercase tracking-widest opacity-40">{formatDateTime(item.date).split(',')[1]}</span>
+                                            <span className="text-xs text-muted-foreground font-semibold opacity-40">{formatDateTime(item.date).split(',')[1]}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-5 text-right">
@@ -553,28 +553,28 @@ export default function TransactionHistory({
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-2">
                         <div>
-                            <h3 className="text-sm font-black text-muted-foreground flex items-center gap-2">
+                            <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
                                 <ShieldCheck className="w-4 h-4 text-primary" />
                                 Histórico de Fechamentos (Expedientes)
                             </h3>
-                            <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">
+                            <p className="text-xs text-muted-foreground font-medium opacity-60">
                                 Conferência de saldos e encerramentos anteriores
                             </p>
                         </div>
                     </div>
 
-                    <div className="glass-premium rounded-3xl border border-border/40 overflow-hidden">
+                    <div className="glass-premium rounded-2xl border border-border/40 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="border-b border-border/10 bg-muted/20">
-                                        <th className="px-6 py-4 text-[11px] font-black text-muted-foreground uppercase tracking-widest">Data/Hora</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-muted-foreground uppercase tracking-widest">Operador</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-muted-foreground uppercase tracking-widest">Abertura</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-muted-foreground uppercase tracking-widest text-right">Fechamento Esperado</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-muted-foreground uppercase tracking-widest text-right">Real Informado</th>
-                                        <th className="px-6 py-4 text-[11px] font-black text-muted-foreground uppercase tracking-widest text-center">Status</th>
-                                        <th className="px-4 py-4 text-[11px] font-black text-muted-foreground uppercase tracking-widest text-center">Ação</th>
+                                        <th className="px-6 py-4 text-xs font-semibold text-muted-foreground">Data/Hora</th>
+                                        <th className="px-6 py-4 text-xs font-semibold text-muted-foreground">Operador</th>
+                                        <th className="px-6 py-4 text-xs font-semibold text-muted-foreground">Abertura</th>
+                                        <th className="px-6 py-4 text-xs font-semibold text-muted-foreground text-right">Fechamento Esperado</th>
+                                        <th className="px-6 py-4 text-xs font-semibold text-muted-foreground text-right">Real Informado</th>
+                                        <th className="px-6 py-4 text-xs font-semibold text-muted-foreground text-center">Status</th>
+                                        <th className="px-4 py-4 text-xs font-semibold text-muted-foreground text-center">Ação</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border/5">
@@ -583,7 +583,7 @@ export default function TransactionHistory({
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col">
                                                     <span className="text-xs font-bold text-foreground">{formatDateTime(reg.opened_at).split(',')[0]}</span>
-                                                    <span className="text-[11px] text-muted-foreground font-black uppercase tracking-widest opacity-40">
+                                                    <span className="text-xs text-muted-foreground font-semibold opacity-40">
                                                         {new Date(reg.opened_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     </span>
                                                 </div>
@@ -598,12 +598,12 @@ export default function TransactionHistory({
                                                 <span className="text-xs font-bold text-foreground">{formatCurrency(reg.closing_balance || 0)}</span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <span className="text-xs font-black text-primary">{formatCurrency(reg.actual_balance || reg.closing_balance || 0)}</span>
+                                                <span className="text-xs font-semibold text-primary">{formatCurrency(reg.actual_balance || reg.closing_balance || 0)}</span>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex justify-center">
                                                     <span className={cn(
-                                                        "text-[11px] font-black px-2 py-0.5 rounded-lg uppercase tracking-widest border",
+                                                        "text-xs font-semibold px-2 py-0.5 rounded-lg border",
                                                         reg.status === 'open' 
                                                             ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" 
                                                             : "bg-muted text-muted-foreground border-border/20"
@@ -635,15 +635,15 @@ export default function TransactionHistory({
             )}
             
             {/* Legend/Info */}
-            <div className="p-6 glass-premium rounded-3xl border border-border/30 flex items-start gap-4">
+            <div className="p-6 glass-premium rounded-2xl border border-border/30 flex items-start gap-4">
                 <div className="p-2 rounded-xl bg-primary/10 text-primary mt-1">
                     <Info className="w-4 h-4" />
                 </div>
                 <div className="space-y-1">
-                    <p className="text-xs font-black uppercase tracking-widest text-foreground/80">Sobre os Cálculos</p>
+                    <p className="text-xs font-semibold text-foreground/80">Sobre os Cálculos</p>
                     <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">
-                        O <strong className="text-indigo-500 uppercase tracking-widest">Lucro Bruto</strong> é calculado subtraindo o custo de peças e produtos do faturamento total. 
-                        O <strong className="text-emerald-500 uppercase tracking-widest">Lucro Líquido</strong> subtrai também as despesas operacionais (saídas de caixa). 
+                        O <strong className="text-indigo-500">Lucro Bruto</strong> é calculado subtraindo o custo de peças e produtos do faturamento total. 
+                        O <strong className="text-emerald-500">Lucro Líquido</strong> subtrai também as despesas operacionais (saídas de caixa). 
                         Transações manuais de entrada são contabilizadas no faturamento, enquanto saídas são despesas.
                     </p>
                 </div>
@@ -652,7 +652,7 @@ export default function TransactionHistory({
             {/* Delete Transaction Modal */}
             {deleteModal.open && deleteModal.transaction && (
                 <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-card border border-border rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                    <div className="bg-card border border-border rounded-2xl p-6 max-w-sm w-full animate-in zoom-in-95 duration-200">
                         <div className="flex items-center gap-4 mb-6">
                             <div className="p-3 rounded-2xl bg-destructive/10 text-destructive">
                                 <AlertTriangle className="w-6 h-6" />

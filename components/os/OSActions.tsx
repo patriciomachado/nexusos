@@ -156,7 +156,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
                     <div className="w-full border-t border-border/30"></div>
                 </div>
-                <div className="relative flex justify-center text-[11px] uppercase tracking-widest font-black text-muted-foreground">
+                <div className="relative flex justify-center text-xs font-semibold text-muted-foreground">
                     <span className="bg-card px-2">Status</span>
                 </div>
             </div>
@@ -173,7 +173,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                             className={cn(
                                 "flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] font-bold transition-all outline-none cursor-pointer border relative",
                                 isActive
-                                    ? "bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-500/10"
+                                    ? "bg-indigo-600 text-white border-indigo-500"
                                     : "bg-muted/20 border-transparent hover:bg-muted/50 hover:border-border/30 text-foreground/60"
                             )}
                         >
@@ -247,7 +247,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                             </div>
                         )}
 
-                        <span className="md:hidden font-bold text-[11px] uppercase tracking-widest">
+                        <span className="md:hidden font-bold text-xs">
                             {variant === 'list' ? '' : 'Ações'}
                         </span>
                     </button>
@@ -259,7 +259,7 @@ export default function OSActions({ os, variant = 'list' }: Props) {
                         side="bottom"
                         sideOffset={8}
                         collisionPadding={16}
-                        className="rounded-2xl border border-white/10 bg-card/95 shadow-[0_20px_50px_rgba(0,0,0,0.4)] z-[2005] backdrop-blur-3xl animate-in fade-in duration-200 overflow-y-auto max-h-[calc(100vh-40px)] outline-none ring-1 ring-white/10"
+                        className="rounded-2xl border border-border/60 bg-card/95 shadow-[0_20px_50px_rgba(0,0,0,0.4)] z-[2005] backdrop-blur-3xl animate-in fade-in duration-200 overflow-y-auto max-h-[calc(100vh-40px)] outline-none ring-1 ring-white/10"
                     >
                         <ActionItems />
                     </DropdownMenu.Content>

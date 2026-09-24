@@ -55,9 +55,9 @@ export default function CustomerActions({
                 <button
                     onClick={() => setShowDeleteConfirm(true)}
                     disabled={isPending}
-                    className="w-full p-1 rounded-3xl bg-rose-500/10 border border-rose-500/20 group/del hover:bg-rose-500/20 transition-all cursor-pointer"
+                    className="w-full p-1 rounded-2xl bg-rose-500/10 border border-rose-500/20 group/del hover:bg-rose-500/20 transition-all cursor-pointer"
                 >
-                    <div className="w-full py-4 rounded-2xl bg-card/40 text-rose-500 font-black text-xs uppercase tracking-wider group-hover/del:text-rose-400 transition-all text-center flex items-center justify-center gap-2">
+                    <div className="w-full py-4 rounded-2xl bg-card/40 text-rose-500 font-semibold text-xs group-hover/del:text-rose-400 transition-all text-center flex items-center justify-center gap-2">
                         {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                         Excluir Cliente
                     </div>
@@ -95,7 +95,7 @@ export default function CustomerActions({
                         className="fixed inset-0 z-40" 
                         onClick={() => setShowMenu(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-48 bg-card border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="absolute right-0 mt-2 w-48 bg-card border border-border/60 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         <button
  onClick={(e) => {
  e.preventDefault()
@@ -103,7 +103,7 @@ export default function CustomerActions({
  router.push(`/customers/${customerId}/edit`)
  setShowMenu(false)
  }}
- className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black text-muted-foreground hover:bg-white/5 hover:text-foreground transition-colors border-b border-white/5"
+ className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-muted-foreground hover:bg-foreground/[0.05] hover:text-foreground transition-colors border-b border-border/60"
  >
                             <Edit className="w-4 h-4" />
                             Editar Dados
@@ -115,7 +115,7 @@ export default function CustomerActions({
  setShowDeleteConfirm(true)
  setShowMenu(false)
  }}
- className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black text-rose-500 hover:bg-rose-500/10 transition-colors"
+ className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-rose-500 hover:bg-rose-500/10 transition-colors"
  >
                             <Trash2 className="w-4 h-4" />
                             Excluir Cliente

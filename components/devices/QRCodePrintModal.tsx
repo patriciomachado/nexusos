@@ -80,7 +80,7 @@ export default function QRCodePrintModal({ isOpen, onClose, device }: QRCodePrin
                     </button>
                     <button
                         onClick={handlePrint}
-                        className="px-6 py-2.5 rounded-xl bg-primary text-black text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
+                        className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
                     >
                         <Printer className="w-4 h-4" />
                         Imprimir Etiqueta

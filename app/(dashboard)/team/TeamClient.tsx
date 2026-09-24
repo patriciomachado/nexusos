@@ -1,5 +1,6 @@
 'use client'
 
+import PageHeader from '@/components/ui/PageHeader'
 import { useState, useEffect } from 'react'
 import Header from '@/components/layout/Header'
 import { Plus, Users, Loader2, X, Search, Sparkles, ShieldCheck } from 'lucide-react'
@@ -54,7 +55,7 @@ export default function TeamClient() {
                     </div>
                     <button
  onClick={() => { setSelectedUser(undefined); setIsModalOpen(true); }}
- className="flex items-center gap-2 bg-primary text-primary-foreground h-9 px-4 rounded-lg font-black text-[13px] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 group"
+ className="flex items-center gap-2 bg-primary text-primary-foreground h-9 px-4 rounded-lg font-semibold text-[13px] active:scale-95 transition-all group"
  >
                         <Plus className="w-3.5 h-3.5 group-hover:rotate-90 transition-transform" />
                         Novo Membro
@@ -62,39 +63,34 @@ export default function TeamClient() {
                 </div>
             </Header>
 
-            <div className="p-8 lg:p-12 max-w-screen-2xl mx-auto space-y-12">
+            <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-10 space-y-6 max-w-screen-2xl mx-auto">
 
                 {/* Header Info */}
-                <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-10">
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-1 bg-primary rounded-full" />
-                            <span className="text-[11px] font-black uppercase tracking-wider text-primary/60">Controle de Acesso & Níveis</span>
-                        </div>
-                        <h2 className="text-4xl lg:text-5xl font-black text-foreground tracking-tighter">Gestão de Talentos</h2>
-                        <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-xl">Gerencie as permissões, cargos e acessos da sua equipe operacional e administrativa.</p>
-                    </div>
-                </div>
+                <PageHeader
+                    eyebrow="Controle de Acesso & Níveis"
+                    title="Gestão de Talentos"
+                    subtitle="Gerencie as permissões, cargos e acessos da sua equipe operacional e administrativa."
+                />
 
                 {/* Dashboard Insight Bar */}
-                <div className="glass-premium bg-card/65 backdrop-blur-3xl border border-white/5 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
+                <div className="glass-premium bg-card/65 border border-border/60 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="flex items-center gap-6">
                         <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
                             <Users className="w-7 h-7" />
                         </div>
                         <div>
                             <h4 className="text-lg font-black text-foreground tracking-tight">{users.length} Colaboradores</h4>
-                            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Base de talentos ativa no Nexus OS</p>
+                            <p className="text-xs font-bold text-muted-foreground">Base de talentos ativa no Nexus OS</p>
                         </div>
                     </div>
-                    <div className="h-10 w-px bg-white/5 hidden md:block" />
+                    <div className="h-10 w-px bg-foreground/[0.03] hidden md:block" />
                     <div className="flex items-center gap-10">
                         <div className="text-center">
-                            <p className="text-[11px] font-black text-primary uppercase tracking-wider mb-1">Cargos</p>
+                            <p className="text-xs font-semibold text-primary mb-1">Cargos</p>
                             <p className="text-sm font-bold text-foreground">6 Categorias</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-[11px] font-black text-primary uppercase tracking-wider mb-1">Status</p>
+                            <p className="text-xs font-semibold text-primary mb-1">Status</p>
                             <div className="flex items-center gap-1.5 justify-center">
                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                 <p className="text-sm font-bold text-foreground">100% Online</p>
@@ -108,10 +104,10 @@ export default function TeamClient() {
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-40 space-y-8">
                             <div className="relative">
-                                <div className="w-20 h-20 rounded-3xl border-2 border-primary/20 animate-pulse" />
+                                <div className="w-20 h-20 rounded-2xl border-2 border-primary/20 animate-pulse" />
                                 <Loader2 className="w-10 h-10 animate-spin text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                             </div>
-                            <span className="text-[11px] font-black uppercase tracking-wider text-primary/40 animate-pulse">Sincronizando Hierarquias</span>
+                            <span className="text-xs font-semibold text-primary/40 animate-pulse">Sincronizando Hierarquias</span>
                         </div>
                     ) : filteredUsers.length > 0 ? (
                         <TeamList
@@ -120,19 +116,19 @@ export default function TeamClient() {
                             onRefresh={fetchUsers}
                         />
                     ) : (
-                        <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-3xl p-32 text-center space-y-10 shadow-2xl">
-                            <div className="w-32 h-32 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto group hover:rotate-12 transition-transform shadow-inner">
+                        <div className="bg-card/40 border border-border/60 rounded-2xl p-32 text-center space-y-10">
+                            <div className="w-32 h-32 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto group hover:rotate-12 transition-transform shadow-inner">
                                 <Users className="w-16 h-16 text-primary/40" />
                             </div>
                             <div className="space-y-4">
-                                <h3 className="text-4xl font-black text-foreground tracking-tighter">Equipe não localizada</h3>
+                                <h3 className="text-[28px] sm:text-[34px] leading-tight font-black text-foreground tracking-tighter">Equipe não localizada</h3>
                                 <p className="text-muted-foreground text-lg max-w-sm mx-auto leading-relaxed">
                                     Não encontramos nenhum colaborador correspondente à sua busca ou sua base está vazia.
                                 </p>
                             </div>
                             <button
  onClick={() => setIsModalOpen(true)}
- className="bg-primary hover:bg-primary/90 text-primary-foreground h-16 px-12 rounded-3xl font-black text-xs shadow-2xl shadow-primary/20 transition-all hover:scale-105"
+ className="bg-primary hover:bg-primary/90 text-primary-foreground h-16 px-12 rounded-2xl font-semibold text-xs transition-all"
  >
                                 Convidar Primeiro Membro
                             </button>
@@ -144,21 +140,21 @@ export default function TeamClient() {
             {/* Premium Modal for UserForm */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-background/80 backdrop-blur-2xl animate-in fade-in duration-500">
-                    <div className="bg-card/60 backdrop-blur-3xl border border-white/10 w-full max-w-3xl rounded-3xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-500 relative">
+                    <div className="bg-card/60 border border-border/60 w-full max-w-3xl rounded-2xl overflow-hidden animate-in zoom-in-95 duration-500 relative">
                         {/* Backgroundglow */}
                         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
 
-                        <div className="flex items-center justify-between p-12 border-b border-white/5 relative z-10">
+                        <div className="flex items-center justify-between p-12 border-b border-border/60 relative z-10">
                             <div className="space-y-2">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2.5 rounded-2xl bg-primary text-primary-foreground shadow-2xl shadow-primary/40">
+                                    <div className="p-2.5 rounded-2xl bg-primary text-primary-foreground">
                                         <Sparkles className="w-5 h-5" />
                                     </div>
                                     <h2 className="text-3xl font-black tracking-tighter text-foreground">{selectedUser ? 'Ajustar Perfil' : 'Integrar Talento'}</h2>
                                 </div>
-                                <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-black">Nexus OS Security Management</p>
+                                <p className="text-xs text-muted-foreground font-semibold">Nexus OS Security Management</p>
                             </div>
-                            <button onClick={() => setIsModalOpen(false)} className="p-4 rounded-2xl hover:bg-white/5 text-muted-foreground hover:text-foreground transition-all border border-transparent hover:border-white/10 group">
+                            <button onClick={() => setIsModalOpen(false)} className="p-4 rounded-2xl hover:bg-foreground/[0.05] text-muted-foreground hover:text-foreground transition-all border border-transparent hover:border-white/10 group">
                                 <X className="w-7 h-7 group-hover:rotate-90 transition-transform" />
                             </button>
                         </div>

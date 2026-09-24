@@ -1,5 +1,6 @@
 'use client'
 
+import PageHeader, { primaryActionClass } from '@/components/ui/PageHeader'
 import { useState, useEffect, Suspense } from 'react'
 import { 
     Smartphone, Plus, Search, Filter, RefreshCw, QrCode, Wand2, 
@@ -236,25 +237,15 @@ function DevicesContent() {
         <div className="min-h-screen bg-background text-foreground pb-20">
             <Header title="Gestão de Aparelhos Celulares" subtitle="Estoque de Novos e Seminovos, Avaliação de Troca e Catálogo Digital" />
 
-            <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
-                {/* Top Header & Navigation Tabs */}
-                <div className="bg-card border border-border rounded-3xl p-4 md:p-6 shadow-xl space-y-6">
-                    <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-border/50 pb-4">
-                        <div className="flex items-center gap-3">
-                            <div className="p-3 bg-primary/10 rounded-2xl text-primary border border-primary/20">
-                                <Smartphone className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h1 className="text-xl font-black tracking-tight">Nexus Showcase Pro</h1>
-                                <p className="text-xs text-muted-foreground font-medium">Gestão Comercial de Celulares & Catálogo Público Integrado</p>
-                            </div>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+            <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-10 space-y-6 max-w-7xl mx-auto">
+                <PageHeader
+                    eyebrow="Nexus Showcase Pro"
+                    title="Aparelhos"
+                    subtitle="Estoque de novos e seminovos, avaliação de troca e catálogo público integrado."
+                    actions={<>
                             <button
                                 onClick={() => setIsTradeInModalOpen(true)}
-                                className="px-4 py-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold hover:bg-amber-500 hover:text-black transition-all flex items-center gap-1.5"
+                                className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-full bg-amber-500/12 text-amber-600 dark:text-amber-400 text-[15px] font-semibold hover:bg-amber-500/18 transition-colors shrink-0"
                             >
                                 <Calculator className="w-4 h-4" />
                                 Avaliar Usado (Trade-In)
@@ -265,28 +256,31 @@ function DevicesContent() {
  setDeviceToEdit(null)
  setIsDeviceModalOpen(true)
  }}
- className="px-5 py-2.5 rounded-2xl bg-primary text-black text-xs font-black hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-1.5"
+ className={primaryActionClass}
  >
                                 <Plus className="w-4 h-4" />
                                 Adicionar Aparelho
                             </button>
-                        </div>
-                    </div>
+                    </>}
+                />
+
+                {/* Top Header & Navigation Tabs */}
+                <div className="bg-card border border-border rounded-2xl p-4 md:p-6 space-y-6">
 
                     {/* KPI Cards */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                         <div className="p-4 bg-background border border-border rounded-2xl space-y-1">
-                            <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">Aparelhos Disponíveis</span>
+                            <span className="text-xs font-semibold text-muted-foreground">Aparelhos Disponíveis</span>
                             <p className="text-2xl font-black text-foreground">{totalAvailable} unidades</p>
                         </div>
 
                         <div className="p-4 bg-background border border-border rounded-2xl space-y-1">
-                            <span className="text-[11px] font-black uppercase text-emerald-400 tracking-widest">Valor em Estoque (À Vista)</span>
+                            <span className="text-xs font-semibold text-emerald-400">Valor em Estoque (À Vista)</span>
                             <p className="text-2xl font-black text-emerald-400">{formatCurrency(totalInventoryValue)}</p>
                         </div>
 
                         <div className="p-4 bg-background border border-border rounded-2xl space-y-1">
-                            <span className="text-[11px] font-black uppercase text-primary tracking-widest">Seminovos Com Passaporte Técnico</span>
+                            <span className="text-xs font-semibold text-primary">Seminovos Com Passaporte Técnico</span>
                             <p className="text-2xl font-black text-primary">{totalRevised} revisados</p>
                         </div>
                     </div>
@@ -297,7 +291,7 @@ function DevicesContent() {
                             onClick={() => setActiveTab('inventory')}
                             className={cn(
                                 "px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2",
-                                activeTab === 'inventory' ? "bg-primary text-black font-black shadow-lg shadow-primary/20" : "text-muted-foreground hover:text-foreground"
+                                activeTab === 'inventory' ? "bg-primary text-primary-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                             )}
                         >
                             <Smartphone className="w-4 h-4" />
@@ -308,7 +302,7 @@ function DevicesContent() {
                             onClick={() => setActiveTab('tradein')}
                             className={cn(
                                 "px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2",
-                                activeTab === 'tradein' ? "bg-primary text-black font-black shadow-lg shadow-primary/20" : "text-muted-foreground hover:text-foreground"
+                                activeTab === 'tradein' ? "bg-primary text-primary-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                             )}
                         >
                             <Calculator className="w-4 h-4" />
@@ -319,7 +313,7 @@ function DevicesContent() {
                             onClick={() => setActiveTab('catalog')}
                             className={cn(
                                 "px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2",
-                                activeTab === 'catalog' ? "bg-primary text-black font-black shadow-lg shadow-primary/20" : "text-muted-foreground hover:text-foreground"
+                                activeTab === 'catalog' ? "bg-primary text-primary-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                             )}
                         >
                             <Globe className="w-4 h-4" />
@@ -332,7 +326,7 @@ function DevicesContent() {
                 {activeTab === 'inventory' && (
                     <div className="space-y-6 animate-in fade-in duration-300">
                         {/* Filters Bar */}
-                        <div className="bg-card border border-border rounded-3xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg">
+                        <div className="bg-card border border-border rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
                             <div className="relative w-full md:w-80">
                                 <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
                                 <input
@@ -382,7 +376,7 @@ function DevicesContent() {
                                 <RefreshCw className="w-8 h-8 text-primary animate-spin opacity-30" />
                             </div>
                         ) : devices.length === 0 ? (
-                            <div className="py-20 text-center bg-card border border-dashed border-border rounded-3xl p-8 space-y-3">
+                            <div className="py-20 text-center bg-card border border-dashed border-border rounded-2xl p-8 space-y-3">
                                 <Smartphone className="w-10 h-10 text-muted-foreground mx-auto" />
                                 <h3 className="font-bold text-base">Nenhum aparelho encontrado</h3>
                                 <p className="text-xs text-muted-foreground max-w-sm mx-auto">
@@ -392,15 +386,15 @@ function DevicesContent() {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {devices.map(device => (
-                                    <div key={device.id} className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl flex flex-col justify-between hover:border-primary/50 transition-all group">
+                                    <div key={device.id} className="bg-card border border-border rounded-2xl p-6 space-y-4 flex flex-col justify-between hover:border-primary/50 transition-all group">
                                         <div className="space-y-3">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-[11px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-lg">
+                                                <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-lg">
                                                     {device.brand} • {device.storage || 'Estoque'}
                                                 </span>
 
                                                 <span className={cn(
-                                                    "text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md",
+                                                    "text-xs font-bold px-2 py-0.5 rounded-md",
                                                     device.status === 'disponivel' ? "bg-emerald-500/10 text-emerald-400" : "bg-muted text-muted-foreground"
                                                 )}>
                                                     {device.status}
@@ -428,13 +422,13 @@ function DevicesContent() {
                                             {/* Preços */}
                                             <div className="p-3 bg-muted/30 border border-border rounded-2xl flex items-center justify-between">
                                                 <div>
-                                                    <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">À VISTA (PIX)</span>
+                                                    <span className="text-xs font-semibold text-muted-foreground">À VISTA (PIX)</span>
                                                     <p className="text-lg font-black text-emerald-400">{formatCurrency(device.cash_price)}</p>
                                                 </div>
 
                                                 {device.installment_price && (
                                                     <div className="text-right">
-                                                        <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">PARCELADO 12X</span>
+                                                        <span className="text-xs font-semibold text-muted-foreground">PARCELADO 12X</span>
                                                         <p className="text-xs font-bold text-amber-300">12x de {formatCurrency(device.installment_price / 12)}</p>
                                                     </div>
                                                 )}
@@ -453,7 +447,7 @@ function DevicesContent() {
                                             {device.status === 'disponivel' && (
                                                 <button
                                                     onClick={() => handleOpenMarkAsSold(device)}
-                                                    className="flex-1 py-2 px-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-black rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                                                    className="flex-1 py-2 px-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-white rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-sm"
                                                     title="Marcar como Vendido e Lançar no Caixa"
                                                 >
                                                     <DollarSign className="w-4 h-4" />
@@ -471,7 +465,7 @@ function DevicesContent() {
 
                                             <Link
                                                 href={`/studio?topic=${encodeURIComponent(`Venda de ${device.brand} ${device.model}`)}`}
-                                                className="p-2.5 bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-black rounded-xl text-xs font-bold transition-all"
+                                                className="p-2.5 bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-white rounded-xl text-xs font-bold transition-all"
                                                 title="Criar Anúncio no Studio AI"
                                             >
                                                 <Wand2 className="w-4 h-4" />
@@ -514,7 +508,7 @@ function DevicesContent() {
 
                             <button
  onClick={() => setIsTradeInModalOpen(true)}
- className="px-4 py-2 bg-amber-500 text-black rounded-xl text-xs font-black hover:bg-amber-400 transition-all flex items-center gap-1.5"
+ className="px-4 py-2 bg-amber-500 text-black rounded-xl text-xs font-semibold hover:bg-amber-400 transition-all flex items-center gap-1.5"
  >
                                 <Plus className="w-4 h-4" />
                                 Nova Avaliação
@@ -522,7 +516,7 @@ function DevicesContent() {
                         </div>
 
                         {tradeIns.length === 0 ? (
-                            <div className="py-16 text-center bg-card border border-dashed border-border rounded-3xl p-8 space-y-2">
+                            <div className="py-16 text-center bg-card border border-dashed border-border rounded-2xl p-8 space-y-2">
                                 <p className="text-sm font-bold">Nenhuma avaliação registrada</p>
                                 <p className="text-xs text-muted-foreground">Avalie aparelhos usados trazidos pelos seus clientes e calcule o valor exato de abate na compra de um novo.</p>
                             </div>
@@ -531,7 +525,7 @@ function DevicesContent() {
                                 {tradeIns.map(item => (
                                     <div key={item.id} className="bg-card border border-border rounded-2xl p-5 space-y-3 shadow-md">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[11px] font-black uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                                            <span className="text-xs font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
                                                 {item.status}
                                             </span>
                                             <span className="text-xs text-muted-foreground font-mono">
@@ -559,7 +553,7 @@ function DevicesContent() {
                 {activeTab === 'catalog' && (
                     <div className="space-y-6 animate-in fade-in duration-300">
                         {/* Top Bar Banner with Quick Link */}
-                        <div className="bg-card border border-border rounded-3xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+                        <div className="bg-card border border-border rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div>
                                 <h2 className="text-lg font-black flex items-center gap-2">
                                     <Globe className="w-5 h-5 text-primary" />
@@ -583,7 +577,7 @@ function DevicesContent() {
                                 <Link
  href={`/loja/${myStoreSlug}`}
  target="_blank"
- className="px-5 py-2.5 bg-primary text-black rounded-xl text-xs font-black hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+ className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-xs font-semibold hover:bg-primary/90 transition-all flex items-center gap-2"
  >
                                     Abrir Catálogo Público
                                     <ExternalLink className="w-4 h-4" />
@@ -625,7 +619,7 @@ function DevicesContent() {
             {/* MODAL DE CONFIRMAÇÃO DE VENDA & LANÇAMENTO NO CAIXA */}
             {isMarkAsSoldModalOpen && deviceToSell && (
                 <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-card border border-border rounded-3xl p-6 max-w-md w-full space-y-5 shadow-2xl animate-in zoom-in-95 duration-200">
+                    <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full space-y-5 animate-in zoom-in-95 duration-200">
                         <div className="flex items-center justify-between border-b border-border pb-3">
                             <div className="flex items-center gap-2">
                                 <div className="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-xl">
@@ -642,7 +636,7 @@ function DevicesContent() {
                         </div>
 
                         <div className="p-4 bg-muted/30 border border-border rounded-2xl space-y-1">
-                            <span className="text-[11px] font-black uppercase text-primary tracking-widest">{deviceToSell.brand}</span>
+                            <span className="text-xs font-semibold text-primary">{deviceToSell.brand}</span>
                             <h4 className="font-black text-base">{deviceToSell.model} ({deviceToSell.storage || 'Estoque'})</h4>
                             <p className="text-xs text-muted-foreground">{deviceToSell.color ? `Cor: ${deviceToSell.color}` : ''}</p>
                         </div>
@@ -674,7 +668,7 @@ function DevicesContent() {
                             <button
  disabled={isSubmittingSale}
  onClick={handleConfirmSale}
- className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-2xl text-xs transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20"
+ className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-semibold rounded-2xl text-xs transition-all flex items-center justify-center gap-1.5"
  >
                                 {isSubmittingSale ? 'Processando...' : 'Confirmar Venda'}
                             </button>

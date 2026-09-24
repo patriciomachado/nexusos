@@ -236,7 +236,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
 
     return (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-            <div className="bg-card border border-border rounded-3xl p-6 md:p-8 max-w-2xl w-full space-y-6 shadow-2xl relative my-8 animate-in zoom-in-95 duration-200">
+            <div className="bg-card border border-border rounded-2xl p-6 md:p-8 max-w-2xl w-full space-y-6 relative my-8 animate-in zoom-in-95 duration-200">
                 <div className="flex items-center justify-between border-b border-border pb-4">
                     <div className="flex items-center gap-3">
                         <div className="p-3 bg-primary/10 rounded-2xl text-primary border border-primary/20">
@@ -341,7 +341,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                     {/* SEÇÃO MULTI-MODO DE UPLOAD DE FOTOS */}
                     <div className="p-4 bg-muted/20 border border-border rounded-2xl space-y-3">
                         <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
+                            <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
                                 <ImageIcon className="w-4 h-4 text-purple-400" />
                                 Fotos do Aparelho (Adicione do Arquivo, Tire Foto ou Cole com Ctrl+V)
                             </span>
@@ -375,7 +375,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                                 <button
                                     type="button"
                                     onClick={handleAddImage}
-                                    className="p-2 bg-purple-500/20 text-purple-300 rounded-xl text-xs font-bold hover:bg-purple-500 hover:text-black transition-all"
+                                    className="p-2 bg-purple-500/20 text-purple-300 rounded-xl text-xs font-bold hover:bg-purple-500 hover:text-white transition-all"
                                 >
                                     <Plus className="w-4 h-4" />
                                 </button>
@@ -470,7 +470,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
 
                     {/* Passaporte Técnico & Garantia */}
                     <div className="p-4 bg-primary/10 border border-primary/20 rounded-2xl space-y-3">
-                        <span className="text-[11px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
+                        <span className="text-xs font-semibold text-primary flex items-center gap-1.5">
                             <ShieldCheck className="w-4 h-4" />
                             Passaporte Técnico & Garantia Nexus
                         </span>
@@ -532,7 +532,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         <button
  type="submit"
  disabled={isSaving}
- className="px-6 py-2.5 rounded-xl bg-primary text-black text-xs font-black hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 disabled:opacity-50"
+ className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-all flex items-center gap-2 disabled:opacity-50"
  >
                             {isSaving ? 'Salvando...' : deviceToEdit ? 'Atualizar Aparelho' : 'Salvar no Estoque'}
                         </button>

@@ -56,7 +56,7 @@ export default function PremiumModal({
                 aria-modal="true"
                 aria-label={title}
                 className={cn(
-                    "bg-card w-full rounded-t-3xl sm:rounded-3xl border border-border/60 shadow-2xl overflow-hidden flex flex-col animate-sheet-up relative max-h-[92vh]",
+                    "bg-card w-full rounded-t-3xl sm:rounded-3xl border border-border/60 overflow-hidden flex flex-col animate-sheet-up relative max-h-[92vh]",
                     maxWidthClasses[maxWidth]
                 )}
             >

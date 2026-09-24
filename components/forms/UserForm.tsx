@@ -124,7 +124,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                                 : "bg-rose-500/10 border-rose-500/20 text-rose-500"
                         )}
                     >
-                        <span className="text-xs font-black uppercase tracking-widest">
+                        <span className="text-xs font-semibold">
                             {form.is_active ? 'Totalmente Ativo' : 'Inativo / Bloqueado'}
                         </span>
                         <div className={cn(
@@ -144,7 +144,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                 <button
  type="submit"
  disabled={isPending}
- className="flex-1 bg-primary text-primary-foreground h-14 rounded-2xl font-black text-xs shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+ className="flex-1 bg-primary text-primary-foreground h-14 rounded-2xl font-semibold text-xs active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
  >
                     {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     {initial?.id ? 'ATUALIZAR' : 'CONVIDAR MEMBRO'}
@@ -153,7 +153,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                     <button
  type="button"
  onClick={onCancel}
- className="px-8 h-14 rounded-2xl bg-muted text-muted-foreground font-black text-xs hover:bg-muted/80 transition-all"
+ className="px-8 h-14 rounded-2xl bg-muted text-muted-foreground font-semibold text-xs hover:bg-muted/80 transition-all"
  >
                         CANCELAR
                     </button>

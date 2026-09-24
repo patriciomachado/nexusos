@@ -32,7 +32,7 @@ export default function OSSecurityView({ type, value }: OSSecurityViewProps) {
                         {type === 'pin' ? <Lock className="w-4 h-4" /> : <Grid3X3 className="w-4 h-4" />}
                     </div>
                     <div>
-                        <h4 className="text-[13px] font-black text-amber-600 dark:text-amber-400 ">Segurança do Dispositivo</h4>
+                        <h4 className="text-[13px] font-semibold text-amber-600 dark:text-amber-400">Segurança do Dispositivo</h4>
                         <p className="text-[11px] text-muted-foreground">Credenciais de acesso técnico fornecidas pelo cliente</p>
                     </div>
                 </div>
@@ -41,10 +41,10 @@ export default function OSSecurityView({ type, value }: OSSecurityViewProps) {
  type="button"
  onClick={() => setVisible(!visible)}
  className={cn(
- "px-3 py-1.5 rounded-lg text-[13px] font-black transition-all flex items-center gap-1.5 border",
+ "px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all flex items-center gap-1.5 border",
  visible
  ? "bg-amber-500/10 border-amber-500/20 text-amber-500 hover:bg-amber-500/20"
- : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
+ : "bg-foreground/[0.03] border-border/60 text-muted-foreground hover:bg-foreground/[0.05]"
  )}
  >
                     {visible ? (
@@ -66,16 +66,16 @@ export default function OSSecurityView({ type, value }: OSSecurityViewProps) {
                 {visible ? (
                     type === 'pin' ? (
                         <div className="text-center py-2">
-                            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">Senha / PIN</span>
-                            <span className="text-xl font-mono font-black text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/25 px-4 py-2 rounded-xl inline-block shadow-inner tracking-wider">
+                            <span className="text-xs font-bold text-muted-foreground block mb-1">Senha / PIN</span>
+                            <span className="text-xl font-mono font-black text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/25 px-4 py-2 rounded-xl inline-block shadow-inner">
                                 {value}
                             </span>
                         </div>
                     ) : (
                         <div className="flex flex-col items-center gap-3 animate-in fade-in zoom-in-95 duration-200">
-                            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest text-center">Desenho de Desbloqueio</span>
+                            <span className="text-xs font-bold text-muted-foreground text-center">Desenho de Desbloqueio</span>
                             
-                            <div className="relative p-3 bg-white/[0.02] border border-foreground/5 rounded-2xl">
+                            <div className="relative p-3 bg-foreground/[0.03] border border-foreground/5 rounded-2xl">
                                 <svg
                                     viewBox="0 0 300 300"
                                     className="w-44 h-44 select-none pointer-events-none"
@@ -111,7 +111,7 @@ export default function OSSecurityView({ type, value }: OSSecurityViewProps) {
                                                     x={pos.x} y={pos.y + 4}
                                                     textAnchor="middle"
                                                     fill="rgb(245,158,11)"
-                                                    className="text-xs font-black"
+                                                    className="text-xs font-semibold"
                                                 >
                                                     {index + 1}
                                                 </text>
@@ -145,7 +145,7 @@ export default function OSSecurityView({ type, value }: OSSecurityViewProps) {
                 ) : (
                     <div className="flex flex-col items-center gap-1.5 py-4 text-muted-foreground">
                         <Lock className="w-5 h-5 opacity-40 animate-pulse" />
-                        <span className="text-[11px] font-black uppercase tracking-wider">Credencial Ocultada por Segurança</span>
+                        <span className="text-xs font-semibold">Credencial Ocultada por Segurança</span>
                     </div>
                 )}
             </div>

@@ -1,3 +1,4 @@
+import PageHeader from '@/components/ui/PageHeader'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
@@ -125,20 +126,17 @@ export default async function ReportsPage() {
         <div className="animate-fade-in pb-20 bg-background min-h-screen transition-colors duration-300">
             <Header title="Análise e Performance" />
 
-            <div className="p-6 max-w-7xl mx-auto space-y-12">
+            <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-10 space-y-8 max-w-7xl mx-auto">
                 {/* Section Header */}
-                <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-1 bg-indigo-500 rounded-full" />
-                        <span className="text-[11px] font-black uppercase tracking-wider text-indigo-500/60">Gestão de Performance</span>
-                    </div>
-                    <h2 className="text-4xl lg:text-5xl font-black text-foreground tracking-tighter">Análise e Relatórios</h2>
-                    <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-xl">Acompanhe o desempenho financeiro, produtividade da equipe e indicadores de crescimento em tempo real.</p>
-                </div>
+                <PageHeader
+                    eyebrow="Gestão de Performance"
+                    title="Análise e Relatórios"
+                    subtitle="Acompanhe o desempenho financeiro, produtividade da equipe e indicadores de crescimento em tempo real."
+                />
 
                 {/* Profitability Detailing Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="p-8 rounded-3xl glass-premium bg-card/65 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group transition-all duration-300 hover:scale-[1.01] hover:shadow-primary/5">
+                    <div className="p-8 rounded-2xl glass-premium bg-card/65 border border-border/60 relative overflow-hidden group transition-all duration-300">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-500/10 transition-all" />
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-3">
@@ -147,23 +145,23 @@ export default async function ReportsPage() {
                                 </div>
                                 <h3 className="text-xl font-black text-foreground">Lucratividade Bruta</h3>
                             </div>
-                            <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">Margem de Operação</span>
+                            <span className="text-xs font-semibold text-muted-foreground">Margem de Operação</span>
                         </div>
                         
                         <div className="space-y-6">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Este Mês</p>
+                                    <p className="text-xs font-bold text-muted-foreground mb-1">Este Mês</p>
                                     <p className="text-2xl font-black text-foreground tracking-tighter">{formatCurrency(monthRevenue)}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Mês Anterior</p>
+                                    <p className="text-xs font-bold text-muted-foreground mb-1">Mês Anterior</p>
                                     <p className="text-xl font-bold text-muted-foreground tracking-tighter">{formatCurrency(prevMonthRevenue)}</p>
                                 </div>
                             </div>
                             
                             <div className="flex justify-between items-center">
-                                <p className="text-[11px] font-black text-emerald-500 uppercase tracking-widest">
+                                <p className="text-xs font-semibold text-emerald-500">
                                     {revenueGrowth >= 0 ? '+' : ''}{revenueGrowth.toFixed(1)}%
                                 </p>
                                 <p className="text-xs text-muted-foreground">vs mês anterior</p>
@@ -171,14 +169,14 @@ export default async function ReportsPage() {
 
                             <div className="p-5 rounded-2xl bg-muted/20 border border-border/50">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm font-black text-foreground uppercase tracking-widest">Lucro Bruto</span>
+                                    <span className="text-sm font-semibold text-foreground">Lucro Bruto</span>
                                     <span className="text-lg font-black text-indigo-500">{formatCurrency(monthGrossProfit)}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="p-8 rounded-3xl glass-premium bg-card/65 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group transition-all duration-300 hover:scale-[1.01] hover:shadow-primary/5">
+                    <div className="p-8 rounded-2xl glass-premium bg-card/65 border border-border/60 relative overflow-hidden group transition-all duration-300">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-500/10 transition-all" />
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-3">
@@ -187,34 +185,34 @@ export default async function ReportsPage() {
                                 </div>
                                 <h3 className="text-xl font-black text-foreground">Lucratividade Líquida</h3>
                             </div>
-                            <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">Resultado Final</span>
+                            <span className="text-xs font-semibold text-muted-foreground">Resultado Final</span>
                         </div>
 
                         <div className="space-y-6">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Este Mês</p>
+                                    <p className="text-xs font-bold text-muted-foreground mb-1">Este Mês</p>
                                     <p className="text-2xl font-black text-emerald-500 tracking-tighter">{formatCurrency(monthNetProfit)}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Mês Anterior</p>
+                                    <p className="text-xs font-bold text-muted-foreground mb-1">Mês Anterior</p>
                                     <p className="text-xl font-bold text-muted-foreground tracking-tighter">{formatCurrency(prevMonthNetProfit)}</p>
                                 </div>
                             </div>
                             
                             <div className="flex justify-between items-center">
-                                <p className="text-[11px] font-black text-primary uppercase tracking-widest mb-1">Margem Real</p>
+                                <p className="text-xs font-semibold text-primary mb-1">Margem Real</p>
                                 <p className="text-sm font-bold text-primary">{monthRevenue > 0 ? ((monthNetProfit / monthRevenue) * 100).toFixed(1) : 0}%</p>
                             </div>
 
                             <div className="p-5 rounded-2xl bg-muted/20 border border-border/50 space-y-3">
                                 <div className="flex justify-between items-center text-xs">
-                                    <span className="font-bold text-muted-foreground uppercase">Despesas Operacionais</span>
+                                    <span className="font-bold text-muted-foreground">Despesas Operacionais</span>
                                     <span className="font-black text-rose-500">-{formatCurrency(totalExpenses)}</span>
                                 </div>
                                 <div className="h-[1px] bg-border/20 w-full" />
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm font-black text-foreground uppercase tracking-widest">Lucro Líquido</span>
+                                    <span className="text-sm font-semibold text-foreground">Lucro Líquido</span>
                                     <span className="text-lg font-black text-emerald-500">{formatCurrency(monthNetProfit)}</span>
                                 </div>
                             </div>
@@ -223,7 +221,7 @@ export default async function ReportsPage() {
                 </div>
 
                 {/* Caixa & Liquidez Detail */}
-                <div className="p-8 rounded-3xl glass-premium bg-card/65 border border-white/5 backdrop-blur-3xl shadow-2xl relative overflow-hidden group transition-all duration-300 hover:scale-[1.01] hover:shadow-primary/5">
+                <div className="p-8 rounded-2xl glass-premium bg-card/65 border border-border/60 relative overflow-hidden group transition-all duration-300">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/10 transition-all" />
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
@@ -232,21 +230,21 @@ export default async function ReportsPage() {
                             </div>
                             <h3 className="text-xl font-black text-foreground">Fluxo de Caixa Consolidado (Mês Anterior)</h3>
                         </div>
-                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">Resultado dos Terminais</span>
+                        <span className="text-xs font-semibold text-muted-foreground">Resultado dos Terminais</span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="p-5 rounded-2xl bg-muted/20 border border-border/50">
-                            <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest mb-1">Movimentado Líquido</p>
+                            <p className="text-xs font-semibold text-muted-foreground mb-1">Movimentado Líquido</p>
                             <p className="text-2xl font-black text-foreground tracking-tighter">{formatCurrency(prevMonthDrawerLiquidity)}</p>
                             <p className="text-[11px] text-muted-foreground mt-1">Diferença de fechamento total</p>
                         </div>
                         <div className="p-5 rounded-2xl bg-muted/20 border border-border/50">
-                            <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest mb-1">Terminais Fechados</p>
+                            <p className="text-xs font-semibold text-muted-foreground mb-1">Terminais Fechados</p>
                             <p className="text-2xl font-black text-foreground tracking-tighter">{prevMonthRegisters.length}</p>
                             <p className="text-[11px] text-muted-foreground mt-1">Caixas fechados no mês</p>
                         </div>
                         <div className="p-5 rounded-2xl bg-muted/20 border border-border/50">
-                            <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest mb-1">Média por Terminal</p>
+                            <p className="text-xs font-semibold text-muted-foreground mb-1">Média por Terminal</p>
                             <p className="text-2xl font-black text-emerald-500 tracking-tighter">
                                 {formatCurrency(prevMonthRegisters.length > 0 ? prevMonthDrawerLiquidity / prevMonthRegisters.length : 0)}
                             </p>
@@ -257,7 +255,7 @@ export default async function ReportsPage() {
 
                 <div className="grid md:grid-cols-2 gap-8">
                     {/* Status Distribution */}
-                    <div className="p-8 rounded-3xl glass-premium bg-card/65 border border-white/5 backdrop-blur-3xl shadow-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-primary/5">
+                    <div className="p-8 rounded-2xl glass-premium bg-card/65 border border-border/60 transition-all duration-300">
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-3">
                                 <div className="p-2.5 rounded-2xl bg-primary/10 text-primary border border-primary/20">
@@ -265,7 +263,7 @@ export default async function ReportsPage() {
                                 </div>
                                 <h3 className="text-lg font-bold text-foreground">Distribuição de Status</h3>
                             </div>
-                            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Live Data</span>
+                            <span className="text-xs font-bold text-muted-foreground">Live Data</span>
                         </div>
 
                         <div className="space-y-6">
@@ -282,7 +280,7 @@ export default async function ReportsPage() {
                                             </span>
                                             <div className="flex items-center gap-2">
                                                 <span className="text-xs font-bold text-foreground">{count as number}</span>
-                                                <span className="text-[11px] text-muted-foreground uppercase font-bold tracking-tighter">ordens</span>
+                                                <span className="text-xs text-muted-foreground font-bold tracking-tighter">ordens</span>
                                             </div>
                                         </div>
                                         <div className="h-2 bg-muted/50 rounded-full overflow-hidden p-[1px]">
@@ -303,7 +301,7 @@ export default async function ReportsPage() {
                     </div>
 
                     {/* Financial Performance */}
-                    <div className="p-8 rounded-3xl glass-premium bg-card/65 border border-white/5 backdrop-blur-3xl shadow-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-primary/5">
+                    <div className="p-8 rounded-2xl glass-premium bg-card/65 border border-border/60 transition-all duration-300">
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-3">
                                 <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -311,7 +309,7 @@ export default async function ReportsPage() {
                                 </div>
                                 <h3 className="text-lg font-bold text-foreground">Meios de Pagamento</h3>
                             </div>
-                            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Ciclo Atual</span>
+                            <span className="text-xs font-bold text-muted-foreground">Ciclo Atual</span>
                         </div>
 
                         <div className="space-y-6">
@@ -334,11 +332,11 @@ export default async function ReportsPage() {
                                             <span className="text-sm font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
                                                 {labels[method] || method}
                                             </span>
-                                            <span className="text-xs font-black text-foreground">{formatCurrency(total as number)}</span>
+                                            <span className="text-xs font-semibold text-foreground">{formatCurrency(total as number)}</span>
                                         </div>
                                         <div className="h-2 bg-muted/50 rounded-full overflow-hidden p-[1px]">
                                             <div
-                                                className="h-full bg-gradient-to-r from-emerald-600 to-teal-400 rounded-full transition-all duration-1000 ease-out"
+                                                className="h-full rounded-full transition-all duration-1000 ease-out"
                                                 style={{ width: `${pct}%` }}
                                             />
                                         </div>

@@ -80,7 +80,7 @@ export default function StepOSCriada({ orderId, orderNumber }: Props) {
 
             {/* Success icon */}
             <div className="relative z-10 flex flex-col items-center gap-4">
-                <div className="w-24 h-24 rounded-3xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shadow-[0_0_60px_rgba(16,185,129,0.25)] animate-pulse">
+                <div className="w-24 h-24 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 animate-pulse">
                     <CheckCircle2 className="w-12 h-12" />
                 </div>
 
@@ -92,7 +92,7 @@ export default function StepOSCriada({ orderId, orderNumber }: Props) {
                 {orderNumber && (
                     <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-5 py-3 rounded-2xl">
                         <Hash className="w-4 h-4 text-indigo-400" />
-                        <span className="text-lg font-black text-indigo-300 tracking-widest">{orderNumber}</span>
+                        <span className="text-lg font-black text-indigo-300">{orderNumber}</span>
                     </div>
                 )}
             </div>
@@ -102,7 +102,7 @@ export default function StepOSCriada({ orderId, orderNumber }: Props) {
                 <button
  type="button"
  onClick={() => router.push(`/service-orders/${orderId}`)}
- className="w-full px-8 py-4 rounded-2xl bg-emerald-500 text-white font-black hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-3"
+ className="w-full px-8 py-4 rounded-2xl bg-emerald-500 text-white font-black hover:bg-emerald-400 transition-all flex items-center justify-center gap-3"
  >
                     <ExternalLink className="w-4 h-4" />
                     Ver Ordem de Serviço
@@ -110,7 +110,7 @@ export default function StepOSCriada({ orderId, orderNumber }: Props) {
                 <button
  type="button"
  onClick={() => router.push('/service-orders/new')}
- className="w-full px-8 py-4 rounded-2xl border border-white/10 bg-white/5 text-foreground/60 font-black hover:bg-white/10 transition-all flex items-center justify-center gap-3"
+ className="w-full px-8 py-4 rounded-2xl border border-border/60 bg-foreground/[0.03] text-foreground/60 font-black hover:bg-foreground/[0.05] transition-all flex items-center justify-center gap-3"
  >
                     <Plus className="w-4 h-4" />
                     Nova OS
@@ -118,7 +118,7 @@ export default function StepOSCriada({ orderId, orderNumber }: Props) {
                 <button
  type="button"
  onClick={() => router.push('/service-orders')}
- className="w-full text-[13px] text-muted-foreground hover:text-muted-foreground font-black transition-colors py-2"
+ className="w-full text-[13px] text-muted-foreground hover:text-muted-foreground font-semibold transition-colors py-2"
  >
                     Voltar para lista
                 </button>

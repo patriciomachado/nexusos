@@ -51,7 +51,7 @@ export default function StepClienteForm({ form, setForm, customers, setCustomers
         <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Card header */}
             <div className="text-center space-y-2 py-4">
-                <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto border border-indigo-500/20 shadow-[0_0_40px_rgba(99,102,241,0.15)]">
+                <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto border border-indigo-500/20">
                     <User className="w-8 h-8" />
                 </div>
                 <h2 className="text-2xl font-black text-foreground tracking-tight">Quem é o cliente?</h2>
@@ -59,7 +59,7 @@ export default function StepClienteForm({ form, setForm, customers, setCustomers
             </div>
 
             {/* Card */}
-            <div className="bg-card/40 border border-white/5 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-inner space-y-6">
+            <div className="bg-card/40 border border-border/60 rounded-2xl p-6 md:p-8 shadow-inner space-y-6">
                 {/* Cliente */}
                 <div className="space-y-2 relative z-[100]">
                     <label className="block text-[13px] font-medium text-muted-foreground">
@@ -76,7 +76,7 @@ export default function StepClienteForm({ form, setForm, customers, setCustomers
                     />
                 </div>
 
-                <div className="border-t border-white/5 pt-6 space-y-4">
+                <div className="border-t border-border/60 pt-6 space-y-4">
                     <label className="block text-[13px] font-medium text-muted-foreground">
                         Detalhes da OS
                     </label>
@@ -112,7 +112,7 @@ export default function StepClienteForm({ form, setForm, customers, setCustomers
                 <button
  type="button"
  onClick={handleNext}
- className="px-8 py-4 rounded-2xl bg-indigo-500 text-white text-sm font-black hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-3"
+ className="px-8 py-4 rounded-2xl bg-indigo-500 text-white text-sm font-semibold hover:bg-indigo-400 transition-all flex items-center gap-3"
  >
                     Próximo
                     <ChevronRight className="w-4 h-4" />

@@ -53,7 +53,7 @@ export default function PremiumConfirmDialog({
                 role="alertdialog"
                 aria-modal="true"
                 aria-labelledby="confirm-title"
-                className="material-thick w-full max-w-[300px] rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200"
+                className="material-thick w-full max-w-[300px] rounded-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200"
             >
                 <div className="px-5 pt-5 pb-4 flex flex-col items-center text-center">
                     <div className={cn("w-11 h-11 rounded-full flex items-center justify-center mb-3", iconStyles[variant])}>

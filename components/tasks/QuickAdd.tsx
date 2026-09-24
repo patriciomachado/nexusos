@@ -17,8 +17,17 @@ const CHIP_ICON = {
     duration: Timer,
 } as const
 
+/** A reminder at the task's own time, when that moment is still ahead. */
+export function atTimeReminder(doDate: string | null | undefined, doTime: string | null | undefined): string[] {
+    if (!doDate || !doTime) return []
+    const at = new Date(`${doDate}T${doTime.slice(0, 5)}:00`)
+    return at.getTime() > Date.now() ? [at.toISOString()] : []
+}
+
 export function parsedToInput(parsed: ParsedTask, defaults: Partial<TaskInput> = {}): TaskInput {
+    const doDate = parsed.do_date ?? (defaults.do_date !== undefined ? defaults.do_date : null)
     return {
+        reminders: atTimeReminder(doDate, parsed.do_time),
         title: parsed.title,
         do_date: parsed.do_date ?? (defaults.do_date !== undefined ? defaults.do_date : null),
         do_time: parsed.do_time ?? null,

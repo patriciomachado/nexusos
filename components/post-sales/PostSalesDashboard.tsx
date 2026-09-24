@@ -185,11 +185,11 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 bg-primary/10 rounded-2xl text-primary border border-primary/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                    <div className="p-3 bg-primary/10 rounded-2xl text-primary border border-primary/20">
                         <HeartHandshake className="w-8 h-8" />
                     </div>
                     <div>
-                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight ">Pós-Venda</h1>
+                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight">Pós-Venda</h1>
                         <p className="text-sm text-muted-foreground mt-0.5">Satisfação do cliente, NPS e análise de sentimentos.</p>
                     </div>
                 </div>
@@ -202,11 +202,11 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
             {/* Grid Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Stat 1 */}
-                <div className="p-6 rounded-3xl border border-border/50 bg-card/65 backdrop-blur-md shadow-sm relative overflow-hidden animate-fade-in">
+                <div className="p-6 rounded-2xl border border-border/50 bg-card/65 shadow-sm relative overflow-hidden animate-fade-in">
                     <div className="absolute top-0 right-0 p-4 opacity-10">
                         <Star className="w-16 h-16 text-primary fill-primary" />
                     </div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Média de Notas</p>
+                    <p className="text-xs font-bold text-muted-foreground">Média de Notas</p>
                     <div className="flex items-baseline gap-2 mt-4">
                         <span className="text-4xl lg:text-5xl font-black tracking-tight">{stats.avgRating}</span>
                         <span className="text-sm text-muted-foreground">/ 5.0</span>
@@ -226,11 +226,11 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                 </div>
 
                 {/* Stat 2 */}
-                <div className="p-6 rounded-3xl border border-border/50 bg-card/65 backdrop-blur-md shadow-sm relative overflow-hidden animate-fade-in">
+                <div className="p-6 rounded-2xl border border-border/50 bg-card/65 shadow-sm relative overflow-hidden animate-fade-in">
                     <div className="absolute top-0 right-0 p-4 opacity-10">
                         <TrendingUp className="w-16 h-16 text-primary" />
                     </div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">NPS Global</p>
+                    <p className="text-xs font-bold text-muted-foreground">NPS Global</p>
                     <div className="flex items-baseline gap-2 mt-4">
                         <span className={cn(
                             "text-4xl lg:text-5xl font-black tracking-tight",
@@ -247,11 +247,11 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                 </div>
 
                 {/* Stat 3 */}
-                <div className="p-6 rounded-3xl border border-border/50 bg-card/65 backdrop-blur-md shadow-sm relative overflow-hidden animate-fade-in">
+                <div className="p-6 rounded-2xl border border-border/50 bg-card/65 shadow-sm relative overflow-hidden animate-fade-in">
                     <div className="absolute top-0 right-0 p-4 opacity-10">
                         <Users className="w-16 h-16 text-primary" />
                     </div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Total de Avaliações</p>
+                    <p className="text-xs font-bold text-muted-foreground">Total de Avaliações</p>
                     <div className="flex items-baseline gap-2 mt-4">
                         <span className="text-4xl lg:text-5xl font-black tracking-tight">{allRatings.length}</span>
                         <span className="text-sm text-muted-foreground">clientes</span>
@@ -262,11 +262,11 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                 </div>
 
                 {/* Stat 4 */}
-                <div className="p-6 rounded-3xl border border-border/50 bg-card/65 backdrop-blur-md shadow-sm relative overflow-hidden animate-fade-in">
+                <div className="p-6 rounded-2xl border border-border/50 bg-card/65 shadow-sm relative overflow-hidden animate-fade-in">
                     <div className="absolute top-0 right-0 p-4 opacity-10">
                         <Smile className="w-16 h-16 text-primary" />
                     </div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Sentimento da IA</p>
+                    <p className="text-xs font-bold text-muted-foreground">Sentimento da IA</p>
                     <div className="flex items-baseline gap-2 mt-4">
                         <span className="text-4xl lg:text-5xl font-black tracking-tight">
                             {Math.round((stats.positiveCount / allRatings.length) * 100 || 80)}%
@@ -282,7 +282,7 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
             {/* Graphs Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Trend Chart */}
-                <div className="p-6 rounded-3xl border border-border/50 bg-card/65 backdrop-blur-md shadow-sm lg:col-span-2 space-y-4">
+                <div className="p-6 rounded-2xl border border-border/50 bg-card/65 shadow-sm lg:col-span-2 space-y-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-lg font-bold tracking-tight">Evolução do Índice de Satisfação</h2>
@@ -318,7 +318,7 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                 </div>
 
                 {/* Sentiment Donut */}
-                <div className="p-6 rounded-3xl border border-border/50 bg-card/65 backdrop-blur-md shadow-sm flex flex-col justify-between space-y-4">
+                <div className="p-6 rounded-2xl border border-border/50 bg-card/65 shadow-sm flex flex-col justify-between space-y-4">
                     <div>
                         <h2 className="text-lg font-bold tracking-tight">Distribuição de Sentimentos</h2>
                         <p className="text-xs text-muted-foreground">Análise das descrições das ordens de serviço.</p>
@@ -350,7 +350,7 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                         </ResponsiveContainer>
                         <div className="absolute flex flex-col items-center justify-center">
                             <span className="text-3xl font-black">{allRatings.length}</span>
-                            <span className="text-[11px] text-muted-foreground uppercase font-bold tracking-wider">Avaliações</span>
+                            <span className="text-xs text-muted-foreground font-bold">Avaliações</span>
                         </div>
                     </div>
                     {/* Legend */}
@@ -440,7 +440,7 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                             return (
                                 <div 
                                     key={item.id}
-                                    className="p-5 rounded-2xl border border-border/50 bg-card/65 backdrop-blur-md shadow-sm flex flex-col justify-between gap-4 animate-fade-in"
+                                    className="p-5 rounded-2xl border border-border/50 bg-card/65 shadow-sm flex flex-col justify-between gap-4 animate-fade-in"
                                 >
                                     <div className="space-y-2">
                                         {/* Row 1: Header */}
@@ -448,7 +448,7 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                                             <div>
                                                 <h4 className="font-bold text-sm tracking-tight">{item.customer_name}</h4>
                                                 <div className="flex items-center gap-1.5 mt-0.5">
-                                                    <span className="text-[11px] font-bold text-muted-foreground uppercase">{item.order_number}</span>
+                                                    <span className="text-xs font-bold text-muted-foreground">{item.order_number}</span>
                                                     <span className="text-muted-foreground text-[11px]">•</span>
                                                     <span className="text-[11px] text-muted-foreground truncate max-w-[150px]">{item.order_title}</span>
                                                 </div>
@@ -456,7 +456,7 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                                             {/* Stars */}
                                             <div className="flex items-center gap-0.5 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/25">
                                                 <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                                                <span className="text-xs font-black text-amber-600 dark:text-amber-500">{item.rating}.0</span>
+                                                <span className="text-xs font-semibold text-amber-600 dark:text-amber-500">{item.rating}.0</span>
                                             </div>
                                         </div>
 
@@ -475,7 +475,7 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                                             </span>
                                             {item.sentiment && (
                                                 <span className={cn(
-                                                    "text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border",
+                                                    "text-xs font-bold px-2 py-0.5 rounded-full border",
                                                     isPositive && "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
                                                     isNeutral && "bg-amber-500/10 text-amber-500 border-amber-500/20",
                                                     isNegative && "bg-rose-500/10 text-rose-500 border-rose-500/20"

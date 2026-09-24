@@ -58,7 +58,7 @@ export default function CloseCashModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300">
-            <div className="bg-card border border-border w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 relative">
+            <div className="bg-card border border-border w-full max-w-lg rounded-2xl overflow-hidden animate-in zoom-in-95 duration-300 relative">
 
                 {step === 'review' ? (
                     <div className="p-10 space-y-8">
@@ -68,8 +68,8 @@ export default function CloseCashModal({
                                     <Lock className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-black tracking-tight ">{title}</h2>
-                                    <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest">Resumo do Período</p>
+                                    <h2 className="text-2xl font-black tracking-tight">{title}</h2>
+                                    <p className="text-xs text-muted-foreground font-semibold">Resumo do Período</p>
                                 </div>
                             </div>
                             {!loading && (
@@ -80,12 +80,12 @@ export default function CloseCashModal({
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="p-6 bg-muted/30 border border-border rounded-3xl space-y-1">
-                                <span className="text-[11px] text-muted-foreground font-black uppercase tracking-widest">Saldo Inicial</span>
+                            <div className="p-6 bg-muted/30 border border-border rounded-2xl space-y-1">
+                                <span className="text-xs text-muted-foreground font-semibold">Saldo Inicial</span>
                                 <p className="text-xl font-bold text-foreground">{formatCurrency(cashRegister.opening_balance)}</p>
                             </div>
-                            <div className="p-6 bg-muted/60 border border-border rounded-3xl space-y-1 ring-1 ring-primary/20">
-                                <span className="text-[11px] text-primary font-black uppercase tracking-widest">Saldo Esperado</span>
+                            <div className="p-6 bg-muted/60 border border-border rounded-2xl space-y-1 ring-1 ring-primary/20">
+                                <span className="text-xs text-primary font-semibold">Saldo Esperado</span>
                                 <p className="text-xl font-black text-primary">{formatCurrency(balance)}</p>
                             </div>
                         </div>
@@ -111,7 +111,7 @@ export default function CloseCashModal({
                                 )}>
                                     <div className="flex items-center gap-2">
                                         {difference === 0 ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-                                        <span className="text-xs font-bold uppercase tracking-widest">Diferença</span>
+                                        <span className="text-xs font-bold">Diferença</span>
                                     </div>
                                     <span className="font-black text-lg">{formatCurrency(difference)}</span>
                                 </div>
@@ -135,7 +135,7 @@ export default function CloseCashModal({
                             <button
  onClick={handleConfirm}
  disabled={loading}
- className="flex-[2] py-4 rounded-2xl bg-foreground text-background font-black text-sm transition-all active:scale-95 flex items-center justify-center gap-3 shadow-2xl hover:bg-foreground/90 disabled:opacity-50"
+ className="flex-[2] py-4 rounded-2xl bg-foreground text-background font-semibold text-sm transition-all active:scale-95 flex items-center justify-center gap-3 hover:bg-foreground/90 disabled:opacity-50"
  >
                                 {loading && <Loader2 className="w-5 h-5 animate-spin" />}
                                 Confirmar e Fechar
@@ -148,10 +148,10 @@ export default function CloseCashModal({
                             <CheckCircle2 className="w-12 h-12" />
                         </div>
                         <div className="space-y-2">
-                            <h2 className="text-3xl font-black tracking-tight ">Caixa Fechado!</h2>
+                            <h2 className="text-3xl font-black tracking-tight">Caixa Fechado!</h2>
                             <p className="text-muted-foreground text-sm font-medium">Relatório gerado com sucesso para auditoria.</p>
                         </div>
-                        <div className="p-1 px-4 rounded-full bg-muted text-[11px] font-black uppercase tracking-widest animate-pulse">
+                        <div className="p-1 px-4 rounded-full bg-muted text-xs font-semibold animate-pulse">
                             Redirecionando...
                         </div>
                     </div>

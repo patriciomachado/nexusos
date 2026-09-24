@@ -41,7 +41,7 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
         <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
             <div className="text-center space-y-2 py-4">
-                <div className="w-16 h-16 rounded-2xl bg-violet-500/20 text-violet-400 flex items-center justify-center mx-auto border border-violet-500/20 shadow-[0_0_40px_rgba(139,92,246,0.15)]">
+                <div className="w-16 h-16 rounded-2xl bg-violet-500/20 text-violet-400 flex items-center justify-center mx-auto border border-violet-500/20">
                     <Stethoscope className="w-8 h-8" />
                 </div>
                 <h2 className="text-2xl font-black text-foreground tracking-tight">Diagnóstico e Estado Físico</h2>
@@ -52,8 +52,8 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
                 {/* Coluna esquerda */}
                 <div className="space-y-6">
                     {/* Sintomas */}
-                    <div className="bg-card/40 border border-white/5 rounded-3xl p-5 backdrop-blur-xl space-y-4">
-                        <h3 className="text-[13px] font-black text-muted-foreground ">Relato do Problema</h3>
+                    <div className="bg-card/40 border border-border/60 rounded-2xl p-5 space-y-4">
+                        <h3 className="text-[13px] font-semibold text-muted-foreground">Relato do Problema</h3>
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-[13px] font-medium text-muted-foreground mb-2">Sintomas relatados pelo cliente</label>
@@ -62,7 +62,7 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
                                     onChange={e => setForm(p => ({ ...p, problem_description: e.target.value }))}
                                     placeholder="Descreva o que o cliente relatou..."
                                     rows={3}
-                                    className="bg-white/5 border-white/5 focus:border-violet-500/30 p-4"
+                                    className="bg-foreground/[0.03] border-border/60 focus:border-violet-500/30 p-4"
                                 />
                             </div>
                             <div>
@@ -72,31 +72,31 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
                                     onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
                                     placeholder="Sua avaliação técnica inicial..."
                                     rows={3}
-                                    className="bg-white/5 border-white/5 focus:border-violet-500/30 p-4"
+                                    className="bg-foreground/[0.03] border-border/60 focus:border-violet-500/30 p-4"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Estado físico */}
-                    <div className="bg-card/40 border border-white/5 rounded-3xl p-5 backdrop-blur-xl space-y-4">
-                        <h3 className="text-[13px] font-black text-muted-foreground ">Estado Físico</h3>
+                    <div className="bg-card/40 border border-border/60 rounded-2xl p-5 space-y-4">
+                        <h3 className="text-[13px] font-semibold text-muted-foreground">Estado Físico</h3>
                         <PremiumTextarea
                             value={form.device_condition}
                             onChange={e => setForm(p => ({ ...p, device_condition: e.target.value }))}
                             placeholder="Ex: Riscos na tela, batida no canto superior..."
                             rows={3}
-                            className="bg-white/5 border-white/5 p-4"
+                            className="bg-foreground/[0.03] border-border/60 p-4"
                         />
 
                         {/* Fotos */}
                         <div className="grid grid-cols-2 gap-3">
                             {(['front', 'back'] as const).map((side) => (
                                 <div key={side} className="space-y-1.5">
-                                    <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">
+                                    <span className="text-xs font-semibold text-muted-foreground">
                                         Foto {side === 'front' ? 'Frontal' : 'Traseira'}
                                     </span>
-                                    <div className="relative aspect-video rounded-xl border border-white/5 bg-white/5 overflow-hidden group">
+                                    <div className="relative aspect-video rounded-xl border border-border/60 bg-foreground/[0.03] overflow-hidden group">
                                         <input
                                             type="file" accept="image/*" capture="environment"
                                             className="absolute inset-0 opacity-0 cursor-pointer z-20"
@@ -109,7 +109,7 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
                                         ) : (
                                             <div className="flex flex-col items-center justify-center h-full text-muted-foreground group-hover:text-muted-foreground transition-colors">
                                                 <Camera className="w-5 h-5 mb-1" />
-                                                <span className="text-[11px] font-black uppercase tracking-widest">Anexar</span>
+                                                <span className="text-xs font-semibold">Anexar</span>
                                             </div>
                                         )}
                                     </div>
@@ -122,9 +122,9 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
                 {/* Coluna direita */}
                 <div className="space-y-6">
                     {/* Checklist */}
-                    <div className="bg-card/40 border border-white/5 rounded-3xl p-5 backdrop-blur-xl space-y-4">
+                    <div className="bg-card/40 border border-border/60 rounded-2xl p-5 space-y-4">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-[13px] font-black text-muted-foreground ">Checklist do Dispositivo</h3>
+                            <h3 className="text-[13px] font-semibold text-muted-foreground">Checklist do Dispositivo</h3>
                             <span className="text-[11px] text-muted-foreground font-bold">
                                 {checklist.filter((i: any) => i.completed).length}/{checklist.length}
                             </span>
@@ -136,15 +136,15 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
                                     type="button"
                                     onClick={() => toggleCheckItem(idx)}
                                     className={`p-3 rounded-xl text-[11px] font-bold text-left transition-all border flex items-center justify-between gap-2 select-none ${item.completed
-                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                        : 'bg-white/5 text-foreground/50 border-white/5 hover:border-white/10'
-                                        }`}
+ ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+ : 'bg-foreground/[0.03] text-foreground/50 border-border/60 hover:border-white/10'
+ }`}
                                 >
                                     <span className="truncate">{item.text}</span>
                                     {item.completed ? (
                                         <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-500" />
                                     ) : (
-                                        <div className="w-3.5 h-3.5 shrink-0 rounded-full border-2 border-white/10" />
+                                        <div className="w-3.5 h-3.5 shrink-0 rounded-full border-2 border-border/60" />
                                     )}
                                 </button>
                             ))}
@@ -152,8 +152,8 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
                     </div>
 
                     {/* Agendamento e Garantia */}
-                    <div className="bg-card/40 border border-white/5 rounded-3xl p-5 backdrop-blur-xl space-y-5">
-                        <h3 className="text-[13px] font-black text-muted-foreground ">Prazos & Garantia</h3>
+                    <div className="bg-card/40 border border-border/60 rounded-2xl p-5 space-y-5">
+                        <h3 className="text-[13px] font-semibold text-muted-foreground">Prazos & Garantia</h3>
                         <PremiumDateTimePicker
                             label="Data de Entrega / Agendamento"
                             value={form.scheduled_date}
@@ -178,7 +178,7 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
                 <button
  type="button"
  onClick={onBack}
- className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-[13px] font-black hover:bg-white/10 transition-all flex items-center gap-2 text-muted-foreground"
+ className="px-6 py-3 rounded-xl border border-border/60 bg-foreground/[0.03] text-[13px] font-semibold hover:bg-foreground/[0.05] transition-all flex items-center gap-2 text-muted-foreground"
  >
                     <ChevronLeft className="w-4 h-4" />
                     Voltar
@@ -186,7 +186,7 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
                 <button
  type="button"
  onClick={onNext}
- className="px-8 py-4 rounded-2xl bg-violet-500 text-white text-sm font-black hover:bg-violet-400 transition-all shadow-lg shadow-violet-500/20 flex items-center gap-3"
+ className="px-8 py-4 rounded-2xl bg-violet-500 text-white text-sm font-semibold hover:bg-violet-400 transition-all flex items-center gap-3"
  >
                     Próximo
                     <ChevronRight className="w-4 h-4" />
