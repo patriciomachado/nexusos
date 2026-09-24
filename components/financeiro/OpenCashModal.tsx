@@ -55,7 +55,7 @@ export default function OpenCashModal({ isOpen, onClose, onSuccess, title = "Abe
                 <div className="p-8 space-y-8">
                     <div className="flex justify-between items-start">
                         <div className="space-y-1">
-                            <h2 className="text-2xl font-black tracking-tight uppercase">{title}</h2>
+                            <h2 className="text-2xl font-black tracking-tight ">{title}</h2>
                             <p className="text-xs text-muted-foreground font-medium">Informe o valor em dinheiro disponível agora</p>
                         </div>
                         <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors">
@@ -84,15 +84,15 @@ export default function OpenCashModal({ isOpen, onClose, onSuccess, title = "Abe
                         </div>
 
                         <button
-                            type="submit"
-                            disabled={loading}
-                            className={cn(
-                                "w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-3",
-                                loading
-                                    ? "bg-muted text-muted-foreground cursor-not-allowed"
-                                    : "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/30"
-                            )}
-                        >
+ type="submit"
+ disabled={loading}
+ className={cn(
+ "w-full py-5 rounded-2xl font-black text-sm transition-all active:scale-95 flex items-center justify-center gap-3",
+ loading
+ ? "bg-muted text-muted-foreground cursor-not-allowed"
+ : "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/30"
+ )}
+ >
                             {loading ? (
                                 <ArrowRight className="w-5 h-5 animate-spin" />
                             ) : (

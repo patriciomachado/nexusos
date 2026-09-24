@@ -153,9 +153,9 @@ export default function PecasClient({
                     </p>
                 </div>
                 <Link
-                    href="/inventory/new"
-                    className="flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3.5 rounded-2xl font-black uppercase text-xs tracking-wider shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group"
-                >
+ href="/inventory/new"
+ className="flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3.5 rounded-2xl font-black text-xs shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group"
+ >
                     <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
                     Adicionar ao Estoque
                 </Link>
@@ -360,9 +360,9 @@ export default function PecasClient({
                                     <p className="text-[11px] text-muted-foreground mt-0.5">{part.totalQty} uso{part.totalQty !== 1 ? 's' : ''} · {formatCurrency(part.totalRevenue)}</p>
                                 </div>
                                 <Link
-                                    href="/inventory/new"
-                                    className="shrink-0 ml-3 text-[11px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/25 px-2.5 py-1.5 rounded-lg hover:bg-amber-500/20 transition-colors"
-                                >
+ href="/inventory/new"
+ className="shrink-0 ml-3 text-[13px] font-black text-amber-400 bg-amber-500/10 border border-amber-500/25 px-2.5 py-1.5 rounded-lg hover:bg-amber-500/20 transition-colors"
+ >
                                     Cadastrar
                                 </Link>
                             </div>
@@ -393,9 +393,9 @@ export default function PecasClient({
                                     </p>
                                 </div>
                                 <Link
-                                    href={`/inventory/${item.id}/edit`}
-                                    className="shrink-0 ml-3 text-[11px] font-black uppercase tracking-wider text-rose-400 bg-rose-500/10 border border-rose-500/25 px-2.5 py-1.5 rounded-lg hover:bg-rose-500/20 transition-colors"
-                                >
+ href={`/inventory/${item.id}/edit`}
+ className="shrink-0 ml-3 text-[13px] font-black text-rose-400 bg-rose-500/10 border border-rose-500/25 px-2.5 py-1.5 rounded-lg hover:bg-rose-500/20 transition-colors"
+ >
                                     Ajustar
                                 </Link>
                             </div>
@@ -523,9 +523,9 @@ export default function PecasClient({
                                                 )
                                             ) : (
                                                 <Link
-                                                    href="/inventory/new"
-                                                    className="text-[11px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-full hover:bg-amber-500/20 transition-colors"
-                                                >
+ href="/inventory/new"
+ className="text-[13px] font-black text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-full hover:bg-amber-500/20 transition-colors"
+ >
                                                     + Cadastrar
                                                 </Link>
                                             )}

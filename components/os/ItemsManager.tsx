@@ -139,7 +139,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                         <ShoppingBag className="w-5 h-5" />
                     </div>
                     <div>
-                        <h2 className="text-sm font-black text-muted-foreground tracking-tight uppercase tracking-widest">Peças e Serviços</h2>
+                        <h2 className="text-sm font-black text-muted-foreground tracking-tight ">Peças e Serviços</h2>
                         <p className="text-[11px] text-muted-foreground font-medium">Gerencie os itens vinculados a esta ordem de serviço</p>
                     </div>
                 </div>
@@ -236,9 +236,9 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                     <span className="text-xs font-black uppercase tracking-widest text-amber-700">Serviço Rápido (O RAIO)</span>
                                 </div>
                                 <button 
-                                    onClick={() => setIsQuickAdd(false)}
-                                    className="px-3 py-1.5 rounded-lg hover:bg-white/10 text-[11px] font-black uppercase text-muted-foreground hover:text-foreground transition-all"
-                                >
+ onClick={() => setIsQuickAdd(false)}
+ className="px-3 py-1.5 rounded-lg hover:bg-white/10 text-[13px] font-black text-muted-foreground hover:text-foreground transition-all"
+ >
                                     Fechar
                                 </button>
                             </div>
@@ -284,10 +284,10 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                 </div>
 
                                 <button
-                                    type="button"
-                                    onClick={handleQuickAdd}
-                                    className="w-full h-14 bg-amber-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-amber-500/20 hover:bg-amber-600 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-3 mt-2"
-                                >
+ type="button"
+ onClick={handleQuickAdd}
+ className="w-full h-14 bg-amber-500 text-white rounded-2xl text-xs font-black shadow-xl shadow-amber-500/20 hover:bg-amber-600 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-3 mt-2"
+ >
                                     <Plus className="w-5 h-5" />
                                     Confirmar Adição
                                 </button>
@@ -561,10 +561,10 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                         </div>
                         
                         <button
-                            type="button"
-                            onClick={handleSaveEdit}
-                            className="w-full h-14 bg-indigo-500 hover:bg-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-indigo-500/20 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-3 mt-4"
-                        >
+ type="button"
+ onClick={handleSaveEdit}
+ className="w-full h-14 bg-indigo-500 hover:bg-indigo-600 text-white rounded-2xl text-xs font-black shadow-xl shadow-indigo-500/20 hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-3 mt-4"
+ >
                             Confirmar Alterações
                         </button>
                     </div>

@@ -87,7 +87,7 @@ export default function PayOSModal({
                                 <DollarSign className="w-6 h-6" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black uppercase tracking-tight">Faturar OS</h2>
+                                <h2 className="text-xl font-black tracking-tight">Faturar OS</h2>
                                 <p className="text-[11px] text-foreground/40 font-black uppercase tracking-widest">OS Nº {osNumber}</p>
                             </div>
                         </div>
@@ -135,16 +135,16 @@ export default function PayOSModal({
 
                     <div className="flex gap-3 pt-2">
                         <button
-                            onClick={onClose}
-                            className="flex-1 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-widest text-muted-foreground hover:bg-muted transition-all active:scale-95"
-                        >
+ onClick={onClose}
+ className="flex-1 py-3.5 rounded-2xl font-bold text-xs text-muted-foreground hover:bg-muted transition-all active:scale-95"
+ >
                             Cancelar
                         </button>
                         <button
-                            onClick={handleConfirm}
-                            disabled={loading}
-                            className="flex-[2] py-3.5 rounded-2xl bg-foreground text-background font-black text-xs uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-3 shadow-2xl hover:bg-foreground/90 disabled:opacity-50"
-                        >
+ onClick={handleConfirm}
+ disabled={loading}
+ className="flex-[2] py-3.5 rounded-2xl bg-foreground text-background font-black text-xs transition-all active:scale-95 flex items-center justify-center gap-3 shadow-2xl hover:bg-foreground/90 disabled:opacity-50"
+ >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <DollarSign className="w-4 h-4" />}
                             Confirmar Pagamento
                         </button>

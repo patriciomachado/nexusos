@@ -103,7 +103,7 @@ export default function CategoryManager({ onClose }: CategoryManagerProps) {
                         <div className="p-2.5 rounded-2xl bg-primary/10 text-primary border border-primary/20">
                             <Tag className="w-5 h-5" />
                         </div>
-                        <h2 className="text-xs font-black text-foreground uppercase tracking-wider">Gerenciar Categorias</h2>
+                        <h2 className="text-xs font-black text-foreground ">Gerenciar Categorias</h2>
                     </div>
                     <button
                         onClick={onClose}

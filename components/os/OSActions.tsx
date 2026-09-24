@@ -225,13 +225,13 @@ export default function OSActions({ os, variant = 'list' }: Props) {
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                     <button
-                        className={cn(
-                            "flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 outline-none",
-                            variant === 'list'
-                                ? "p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent active:bg-muted"
-                                : "px-5 py-2.5 rounded-2xl border border-border bg-card text-foreground hover:bg-muted font-bold text-xs uppercase tracking-wider"
-                        )}
-                    >
+ className={cn(
+ "flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 outline-none",
+ variant === 'list'
+ ? "p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent active:bg-muted"
+ : "px-5 py-2.5 rounded-2xl border border-border bg-card text-foreground hover:bg-muted font-bold text-xs "
+ )}
+ >
                         {variant === 'list' ? (
                             <LayoutGrid className="w-5 h-5 md:hidden" />
                         ) : (

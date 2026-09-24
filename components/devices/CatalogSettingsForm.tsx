@@ -555,10 +555,10 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                     <div className="pt-2 flex justify-end">
                         <button
-                            type="submit"
-                            disabled={isSaving}
-                            className="px-6 py-3 bg-primary text-black font-black text-xs uppercase tracking-wider rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
-                        >
+ type="submit"
+ disabled={isSaving}
+ className="px-6 py-3 bg-primary text-black font-black text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+ >
                             <Save className="w-4 h-4" />
                             {isSaving ? 'Salvando...' : 'Salvar Alterações'}
                         </button>

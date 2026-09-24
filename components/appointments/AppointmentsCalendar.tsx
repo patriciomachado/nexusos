@@ -256,7 +256,7 @@ export default function AppointmentsCalendar({
                             <button onClick={prev} className="p-1.5 hover:bg-muted/30 rounded-lg transition-colors text-muted-foreground hover:text-primary">
                                 <ChevronLeft className="w-4 h-4" />
                             </button>
-                            <button onClick={goToToday} className="px-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">Hoje</button>
+                            <button onClick={goToToday} className="px-3 text-[13px] font-black text-muted-foreground hover:text-primary transition-colors">Hoje</button>
                             <button onClick={next} className="p-1.5 hover:bg-white/5 rounded-lg transition-colors text-muted-foreground hover:text-primary">
                                 <ChevronRight className="w-4 h-4" />
                             </button>
@@ -269,26 +269,26 @@ export default function AppointmentsCalendar({
                     <div className="hidden sm:flex bg-card/60 backdrop-blur-xl border border-border/20 rounded-2xl p-1 shadow-lg" suppressHydrationWarning>
                         {(['month', 'week', 'day'] as const).map(v => (
                             <button
-                                key={v}
-                                onClick={() => setView(v)}
-                                className={cn(
-                                    "px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                                    view === v ? "bg-primary text-white" : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
+ key={v}
+ onClick={() => setView(v)}
+ className={cn(
+ "px-5 py-2 rounded-xl text-[13px] font-black transition-all",
+ view === v ? "bg-primary text-white" : "text-muted-foreground hover:text-foreground"
+ )}
+ >
                                 {v === 'month' ? 'Mês' : v === 'week' ? 'Semana' : 'Dia'}
                             </button>
                         ))}
                     </div>
                     <button
-                        onClick={() => {
-                            setIsEditing(false)
-                            setSelectedAppointment(null)
-                            setSelectedDateInModal(null)
-                            setIsCreateModalOpen(true)
-                        }}
-                        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all font-black text-[11px] uppercase tracking-widest"
-                    >
+ onClick={() => {
+ setIsEditing(false)
+ setSelectedAppointment(null)
+ setSelectedDateInModal(null)
+ setIsCreateModalOpen(true)
+ }}
+ className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all font-black text-[13px] "
+ >
                         <Plus className="w-4 h-4" />
                         <span>Novo Agendamento</span>
                     </button>
@@ -455,12 +455,12 @@ export default function AppointmentsCalendar({
 
                         <div className="flex gap-3 pt-4" suppressHydrationWarning>
                             <button
-                                onClick={handleEdit}
-                                className="flex-1 py-4 rounded-2xl bg-muted/20 text-[11px] font-black uppercase tracking-widest hover:bg-muted/30 transition-all border border-border/10"
-                            >
+ onClick={handleEdit}
+ className="flex-1 py-4 rounded-2xl bg-muted/20 text-[13px] font-black hover:bg-muted/30 transition-all border border-border/10"
+ >
                                 Editar
                             </button>
-                            <button className="flex-1 py-4 rounded-2xl bg-muted/20 text-[11px] font-black uppercase tracking-widest hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/20 transition-all border border-border/10">
+                            <button className="flex-1 py-4 rounded-2xl bg-muted/20 text-[13px] font-black hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/20 transition-all border border-border/10">
                                 Cancelar
                             </button>
                         </div>

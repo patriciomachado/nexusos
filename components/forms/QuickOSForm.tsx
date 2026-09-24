@@ -96,7 +96,7 @@ export default function QuickOSForm({ customers, technicians, companyId }: Props
                     <Zap className="w-5 h-5 animate-pulse" />
                 </div>
                 <div>
-                    <h2 className="text-sm font-black uppercase tracking-widest text-foreground/80">Abertura Rápida</h2>
+                    <h2 className="text-sm font-black text-foreground/80">Abertura Rápida</h2>
                     <p className="text-[11px] text-muted-foreground font-bold">Preencha os campos essenciais e abra a OS em segundos</p>
                 </div>
             </div>
@@ -164,18 +164,18 @@ export default function QuickOSForm({ customers, technicians, companyId }: Props
             {/* Actions */}
             <div className="flex gap-3 justify-end">
                 <button
-                    type="button"
-                    onClick={() => router.back()}
-                    className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-[11px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2 text-muted-foreground"
-                >
+ type="button"
+ onClick={() => router.back()}
+ className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-[13px] font-black hover:bg-white/10 transition-all flex items-center gap-2 text-muted-foreground"
+ >
                     <XCircle className="w-4 h-4" />
                     Cancelar
                 </button>
                 <button
-                    type="submit"
-                    disabled={isPending}
-                    className="px-8 py-3 rounded-xl bg-indigo-500 text-white text-[11px] font-black uppercase tracking-widest hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-2 disabled:opacity-50"
-                >
+ type="submit"
+ disabled={isPending}
+ className="px-8 py-3 rounded-xl bg-indigo-500 text-white text-[13px] font-black hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-2 disabled:opacity-50"
+ >
                     {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                     Abrir OS
                 </button>

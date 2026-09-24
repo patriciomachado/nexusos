@@ -47,8 +47,19 @@ export function describeRecurrence(rule: Recurrence | null | undefined): string 
     if (rule.freq === 'weekly') {
         const days = (rule.weekdays ?? []).slice().sort()
         const isWorkweek = days.length === 5 && [1, 2, 3, 4, 5].every(d => days.includes(d))
-        const names = isWorkweek ? 'dias úteis' : days.map(d => WEEKDAYS[d].slice(0, 3)).join(', ')
-        if (n === 1) return days.length ? (isWorkweek ? 'Dias úteis' : `Toda ${names}`) : 'Toda semana'
+        const short = (d: number) => WEEKDAYS[d].slice(0, 3)
+        // Consecutive runs read better as a range: "seg a sáb".
+        const consecutive = days.length >= 3 && days.every((d, i) => i === 0 || d === days[i - 1] + 1)
+        const names = isWorkweek ? 'dias úteis'
+            : days.length === 7 ? 'todo dia'
+                : consecutive ? `${short(days[0])} a ${short(days[days.length - 1])}`
+                    : days.map(short).join(', ')
+        if (n === 1) {
+            if (!days.length) return 'Toda semana'
+            if (isWorkweek) return 'Dias úteis'
+            if (days.length === 7) return 'Todo dia'
+            return consecutive ? names.charAt(0).toUpperCase() + names.slice(1) : `Toda ${names}`
+        }
         return `A cada ${n} semanas${days.length ? ` (${names})` : ''}`
     }
     const day = rule.day_of_month ? ` no dia ${rule.day_of_month}` : ''

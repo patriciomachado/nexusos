@@ -133,7 +133,7 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
                                 <User className="w-5 h-5" />
                             </div>
                             <div>
-                                <h2 className="text-sm font-black text-foreground/70 tracking-tight uppercase tracking-widest">Informações Básicas</h2>
+                                <h2 className="text-sm font-black text-foreground/70 tracking-tight ">Informações Básicas</h2>
                             </div>
                         </div>
 
@@ -174,27 +174,27 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
                 )}>
                     {customerId && (
                         <button
-                            type="button"
-                            onClick={() => setShowDeleteConfirm(true)}
-                            className="w-full sm:w-auto px-6 h-14 rounded-xl border border-rose-500/20 bg-rose-500/5 text-rose-500 font-black text-[11px] uppercase tracking-wider hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center gap-2"
-                        >
+ type="button"
+ onClick={() => setShowDeleteConfirm(true)}
+ className="w-full sm:w-auto px-6 h-14 rounded-xl border border-rose-500/20 bg-rose-500/5 text-rose-500 font-black text-[13px] hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center gap-2"
+ >
                             <Trash2 className="w-3.5 h-3.5" />
                             EXCLUIR
                         </button>
                     )}
                     <button
-                        type="submit"
-                        disabled={isPending}
-                        className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-4 h-14 rounded-xl font-black text-[11px] uppercase tracking-wider shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3"
-                    >
+ type="submit"
+ disabled={isPending}
+ className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-4 h-14 rounded-xl font-black text-[13px] shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3"
+ >
                         {isPending ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                         {isPending ? 'PROCESSANDO...' : 'SALVAR ALTERAÇÕES'}
                     </button>
                     <button
-                        type="button"
-                        onClick={() => onSuccess ? onSuccess({ id: '', name: '' }) : router.back()}
-                        className="w-full sm:w-auto px-8 h-14 rounded-xl border border-border bg-card text-foreground/40 font-black text-[11px] uppercase tracking-wider hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2"
-                    >
+ type="button"
+ onClick={() => onSuccess ? onSuccess({ id: '', name: '' }) : router.back()}
+ className="w-full sm:w-auto px-8 h-14 rounded-xl border border-border bg-card text-foreground/40 font-black text-[13px] hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2"
+ >
                         <X className="w-3.5 h-3.5" />
                         ABORTAR
                     </button>

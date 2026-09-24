@@ -32,21 +32,21 @@ export default function OSSecurityView({ type, value }: OSSecurityViewProps) {
                         {type === 'pin' ? <Lock className="w-4 h-4" /> : <Grid3X3 className="w-4 h-4" />}
                     </div>
                     <div>
-                        <h4 className="text-[11px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider">Segurança do Dispositivo</h4>
+                        <h4 className="text-[13px] font-black text-amber-600 dark:text-amber-400 ">Segurança do Dispositivo</h4>
                         <p className="text-[11px] text-muted-foreground">Credenciais de acesso técnico fornecidas pelo cliente</p>
                     </div>
                 </div>
                 
                 <button
-                    type="button"
-                    onClick={() => setVisible(!visible)}
-                    className={cn(
-                        "px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 border",
-                        visible
-                            ? "bg-amber-500/10 border-amber-500/20 text-amber-500 hover:bg-amber-500/20"
-                            : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
-                    )}
-                >
+ type="button"
+ onClick={() => setVisible(!visible)}
+ className={cn(
+ "px-3 py-1.5 rounded-lg text-[13px] font-black transition-all flex items-center gap-1.5 border",
+ visible
+ ? "bg-amber-500/10 border-amber-500/20 text-amber-500 hover:bg-amber-500/20"
+ : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
+ )}
+ >
                     {visible ? (
                         <>
                             <EyeOff className="w-3 h-3" />

@@ -280,20 +280,20 @@ export default function SubscriptionPage() {
                             {/* Action Button */}
                             {isActive ? (
                                 <button
-                                    onClick={handlePortal}
-                                    disabled={processing}
-                                    className="w-full py-4 rounded-2xl bg-white/5 text-sm font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-3 border border-white/10"
-                                >
+ onClick={handlePortal}
+ disabled={processing}
+ className="w-full py-4 rounded-2xl bg-white/5 text-sm font-black hover:bg-white/10 transition-all flex items-center justify-center gap-3 border border-white/10"
+ >
                                     {processing ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                                         <><CreditCard className="w-5 h-5" /> Gerenciar Assinatura Cakto</>
                                     )}
                                 </button>
                             ) : (
                                 <button
-                                    onClick={handleSubscribe}
-                                    disabled={processing}
-                                    className="w-full py-6 rounded-2xl bg-gradient-to-r from-primary via-purple-600 to-blue-600 text-white text-base font-black uppercase tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-[0_20px_50px_rgba(120,119,255,0.4)] relative overflow-hidden group/btn border border-white/20"
-                                >
+ onClick={handleSubscribe}
+ disabled={processing}
+ className="w-full py-6 rounded-2xl bg-gradient-to-r from-primary via-purple-600 to-blue-600 text-white text-base font-black hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-[0_20px_50px_rgba(120,119,255,0.4)] relative overflow-hidden group/btn border border-white/20"
+ >
                                     <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000 skew-x-[20deg]" />
                                     {processing ? <Loader2 className="w-6 h-6 animate-spin" /> : (
                                         <><Zap className="w-6 h-6 fill-current" /> Finalizar Compra - Ativar Pro <ArrowRight className="w-6 h-6" /></>
@@ -325,7 +325,7 @@ export default function SubscriptionPage() {
                             {/* Features */}
                             <div className="md:col-span-3 space-y-6">
                                 <div className="space-y-3">
-                                    <h2 className="text-2xl font-black tracking-tight leading-none uppercase">
+                                    <h2 className="text-2xl font-black tracking-tight leading-none ">
                                         Nexus OS <span className="text-primary">PRO</span>
                                     </h2>
                                     <p className="text-muted-foreground leading-relaxed">
@@ -365,10 +365,10 @@ export default function SubscriptionPage() {
                                         </div>
                                         
                                         <button
-                                            onClick={handleSubscribe}
-                                            disabled={processing}
-                                            className="w-full py-4 mt-2 rounded-xl bg-primary text-white text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
-                                        >
+ onClick={handleSubscribe}
+ disabled={processing}
+ className="w-full py-4 mt-2 rounded-xl bg-primary text-white text-xs font-black hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+ >
                                             {processing ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                                                 <>Assinar Agora <ArrowRight className="w-4 h-4" /></>
                                             )}

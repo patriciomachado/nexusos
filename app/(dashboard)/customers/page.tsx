@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
 import Link from 'next/link'
-import { Plus, Search, User, Phone, Mail, MapPin, ChevronRight, MoreVertical, Star, ShieldCheck } from 'lucide-react'
+import { Plus, User, Phone, Mail, MapPin, ChevronRight, MoreVertical, Star, ShieldCheck } from 'lucide-react'
 import { formatPhone, cn } from '@/lib/utils'
 import SearchInput from '@/components/ui/SearchInput'
 import CustomerActions from '@/components/customers/CustomerActions'
@@ -55,9 +55,9 @@ export default async function CustomersPage({
                         <p className="text-muted-foreground font-medium text-lg leading-relaxed max-w-xl">Centralize informações, histórico e preferências da sua base de clientes.</p>
                     </div>
                     <Link
-                        href="/customers/new"
-                        className="flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-3xl font-black uppercase text-xs tracking-wider shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group"
-                    >
+ href="/customers/new"
+ className="flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-3xl font-black text-xs shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group"
+ >
                         Novo Cliente
                         <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
                     </Link>
@@ -66,7 +66,6 @@ export default async function CustomersPage({
                 {/* Search and Action Bar */}
                 <div className="bg-card/40 backdrop-blur-3xl border border-white/5 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
                     <div className="relative flex-1 w-full md:max-w-md group">
-                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <SearchInput
                             placeholder="Nome, telefone, documento ou email..."
                             className="w-full bg-muted/30 border border-white/5 rounded-2xl pl-12 pr-6 py-4 text-sm font-medium focus:outline-none focus:border-primary/30 transition-all placeholder:opacity-30 h-14"
@@ -167,9 +166,9 @@ export default async function CustomersPage({
                         <h3 className="text-3xl font-black text-foreground tracking-tighter mb-4">Sua base está vazia</h3>
                         <p className="text-muted-foreground text-lg max-w-sm mx-auto mb-12">Comece a construir seu império cadastrando seu primeiro parceiro de negócios hoje.</p>
                         <Link
-                            href="/customers/new"
-                            className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-10 py-5 rounded-3xl font-black uppercase text-xs tracking-widest shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95"
-                        >
+ href="/customers/new"
+ className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-10 py-5 rounded-3xl font-black text-xs shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+ >
                             <Plus className="w-6 h-6" />
                             Cadastrar Primeiro Cliente
                         </Link>

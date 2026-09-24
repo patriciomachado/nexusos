@@ -189,7 +189,7 @@ export default function PostSalesDashboard({ initialRatings }: PostSalesDashboar
                         <HeartHandshake className="w-8 h-8" />
                     </div>
                     <div>
-                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight uppercase">Pós-Venda</h1>
+                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight ">Pós-Venda</h1>
                         <p className="text-sm text-muted-foreground mt-0.5">Satisfação do cliente, NPS e análise de sentimentos.</p>
                     </div>
                 </div>

@@ -10,7 +10,13 @@ export interface TaskSummary {
     alerts: number
     /** Everything that needs attention today (badge value). */
     total: number
+    /** A few items for the dashboard widget. */
+    top?: TaskSummaryItem[]
 }
+
+export type TaskSummaryItem =
+    | { kind: 'task'; id: string; title: string; time: string | null; priority: number; overdue: boolean }
+    | { kind: 'alert'; id: string; title: string; detail: string; href: string; module: import('@/lib/tasks/types').AlertModule }
 
 interface TaskStoreState {
     summary: TaskSummary | null

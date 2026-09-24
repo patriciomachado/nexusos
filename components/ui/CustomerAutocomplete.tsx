@@ -136,15 +136,15 @@ export default function CustomerAutocomplete({
                             {showAddOption && (
                                 <li className="mt-1 border-t border-white/5 pt-1">
                                     <button
-                                        type="button"
-                                        disabled={isAdding}
-                                        onClick={() => {
-                                            onAdd!(query)
-                                            setIsOpen(false)
-                                            setQuery('')
-                                        }}
-                                        className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[11px] font-black transition-all text-primary hover:bg-primary/5 text-left uppercase tracking-widest"
-                                    >
+ type="button"
+ disabled={isAdding}
+ onClick={() => {
+ onAdd!(query)
+ setIsOpen(false)
+ setQuery('')
+ }}
+ className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-black transition-all text-primary hover:bg-primary/5 text-left "
+ >
                                         {isAdding ? (
                                             <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                                         ) : (

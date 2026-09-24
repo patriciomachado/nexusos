@@ -142,19 +142,19 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
 
             <div className="flex items-center gap-4 pt-4 border-t border-border">
                 <button
-                    type="submit"
-                    disabled={isPending}
-                    className="flex-1 bg-primary text-primary-foreground h-14 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                >
+ type="submit"
+ disabled={isPending}
+ className="flex-1 bg-primary text-primary-foreground h-14 rounded-2xl font-black text-xs shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+ >
                     {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     {initial?.id ? 'ATUALIZAR' : 'CONVIDAR MEMBRO'}
                 </button>
                 {onCancel && (
                     <button
-                        type="button"
-                        onClick={onCancel}
-                        className="px-8 h-14 rounded-2xl bg-muted text-muted-foreground font-black text-xs uppercase tracking-widest hover:bg-muted/80 transition-all"
-                    >
+ type="button"
+ onClick={onCancel}
+ className="px-8 h-14 rounded-2xl bg-muted text-muted-foreground font-black text-xs hover:bg-muted/80 transition-all"
+ >
                         CANCELAR
                     </button>
                 )}

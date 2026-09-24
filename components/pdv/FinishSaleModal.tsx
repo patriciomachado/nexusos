@@ -363,10 +363,10 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
 
                     <div className="pt-10">
                         <button
-                            onClick={handleFinish}
-                            disabled={loading || !cashRegister}
-                            className="w-full h-16 md:h-24 rounded-2xl md:rounded-3xl bg-white text-indigo-700 font-black uppercase text-sm md:text-base tracking-wider hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-indigo-900/40 disabled:opacity-50 flex items-center justify-center gap-4 group"
-                        >
+ onClick={handleFinish}
+ disabled={loading || !cashRegister}
+ className="w-full h-16 md:h-24 rounded-2xl md:rounded-3xl bg-white text-indigo-700 font-black text-sm md:text-base hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-indigo-900/40 disabled:opacity-50 flex items-center justify-center gap-4 group"
+ >
                             {loading ? (
                                 <Loader2 className="w-6 h-6 animate-spin" />
                             ) : (

@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
         db.from('task_alert_states').select('alert_key, snoozed_until, dismissed_at').eq('company_id', companyId),
         db.from('tasks').select('source_key').eq('company_id', companyId).eq('status', 'open').not('source_key', 'is', null),
         db.from('task_routines').select('*').eq('company_id', companyId).order('position').order('created_at'),
-        db.from('task_routine_runs').select('*').eq('company_id', companyId).gte('run_date', addDays(today, -1)).lte('run_date', addDays(today, 7)),
+        db.from('task_routine_runs').select('*').eq('company_id', companyId).gte('run_date', addDays(today, -30)).lte('run_date', addDays(today, 7)),
         collectAlerts(db, companyId, today),
     ])
 

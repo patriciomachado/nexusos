@@ -481,10 +481,10 @@ export default function MesaKanbanClient({
                                 Cancelar
                             </button>
                             <button
-                                onClick={handleCheckoutSubmit}
-                                disabled={isCheckoutLoading}
-                                className="flex-1 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-cyan-500/10 flex items-center justify-center gap-2"
-                            >
+ onClick={handleCheckoutSubmit}
+ disabled={isCheckoutLoading}
+ className="flex-1 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-cyan-500/10 flex items-center justify-center gap-2"
+ >
                                 {isCheckoutLoading ? 'Processando...' : (
                                     <>
                                         Faturar OS
@@ -618,18 +618,18 @@ export default function MesaKanbanClient({
                                 Ver OS Completa
                             </Link>
                             <button
-                                onClick={() => {
-                                    const title = (document.getElementById('detail-title') as HTMLInputElement)?.value
-                                    const priority = (document.getElementById('detail-priority') as HTMLSelectElement)?.value
-                                    const technician_id = (document.getElementById('detail-tech') as HTMLSelectElement)?.value || null
-                                    const problem_description = (document.getElementById('detail-problem') as HTMLTextAreaElement)?.value
-                                    const solution_applied = (document.getElementById('detail-solution') as HTMLTextAreaElement)?.value
+ onClick={() => {
+ const title = (document.getElementById('detail-title') as HTMLInputElement)?.value
+ const priority = (document.getElementById('detail-priority') as HTMLSelectElement)?.value
+ const technician_id = (document.getElementById('detail-tech') as HTMLSelectElement)?.value || null
+ const problem_description = (document.getElementById('detail-problem') as HTMLTextAreaElement)?.value
+ const solution_applied = (document.getElementById('detail-solution') as HTMLTextAreaElement)?.value
 
-                                    handleSaveDetails({ title, priority, technician_id, problem_description, solution_applied })
-                                }}
-                                disabled={isSavingDetails}
-                                className="flex-1 py-3.5 rounded-xl bg-primary text-primary-foreground font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                            >
+ handleSaveDetails({ title, priority, technician_id, problem_description, solution_applied })
+ }}
+ disabled={isSavingDetails}
+ className="flex-1 py-3.5 rounded-xl bg-primary text-primary-foreground font-black text-xs hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+ >
                                 {isSavingDetails ? 'Salvando...' : (
                                     <>
                                         <Check className="w-4 h-4" />

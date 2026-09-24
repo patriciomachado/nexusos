@@ -163,10 +163,10 @@ export default function TradeInCalculatorModal({
 
                 {/* Action Button */}
                 <button
-                    onClick={sendWhatsAppProposal}
-                    className="w-full py-3.5 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl hover:scale-[1.02]"
-                    style={{ backgroundColor: themePrimary }}
-                >
+ onClick={sendWhatsAppProposal}
+ className="w-full py-3.5 text-black font-black rounded-2xl text-xs transition-all flex items-center justify-center gap-2 shadow-xl hover:scale-[1.02]"
+ style={{ backgroundColor: themePrimary }}
+ >
                     <MessageSquare className="w-4 h-4 fill-current" />
                     Enviar Proposta de Troca no WhatsApp 📲
                 </button>

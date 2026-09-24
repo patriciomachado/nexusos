@@ -180,10 +180,10 @@ export default function AliceIntegrationSettings({ company, companyId }: Props) 
                                     className="pr-24"
                                 />
                                 <button
-                                    type="button"
-                                    onClick={generateToken}
-                                    className="absolute right-2 px-3 py-1.5 bg-violet-500/10 text-violet-500 hover:bg-violet-500/20 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all"
-                                >
+ type="button"
+ onClick={generateToken}
+ className="absolute right-2 px-3 py-1.5 bg-violet-500/10 text-violet-500 hover:bg-violet-500/20 rounded-xl font-black text-[13px] transition-all"
+ >
                                     Gerar Chave
                                 </button>
                             </div>

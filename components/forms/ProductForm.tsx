@@ -257,7 +257,7 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                                 <Package className="w-5 h-5" />
                             </div>
                             <div>
-                                <h2 className="text-sm font-black text-muted-foreground tracking-tight uppercase tracking-widest">Identificação do Produto</h2>
+                                <h2 className="text-sm font-black text-muted-foreground tracking-tight ">Identificação do Produto</h2>
                             </div>
                         </div>
 
@@ -374,11 +374,11 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                                 <div className="flex gap-2">
                                     {[30, 50, 100].map(p => (
                                         <button
-                                            key={p}
-                                            type="button"
-                                            onClick={() => applyMarkup(p)}
-                                            className="grow py-2 rounded-lg bg-primary/5 border border-primary/10 text-primary text-[11px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all"
-                                        >
+ key={p}
+ type="button"
+ onClick={() => applyMarkup(p)}
+ className="grow py-2 rounded-lg bg-primary/5 border border-primary/10 text-primary text-[13px] font-black hover:bg-primary/20 transition-all"
+ >
                                             +{p}%
                                         </button>
                                     ))}
@@ -437,11 +437,11 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                 />
 
                 <div className="flex flex-col sm:flex-row items-center gap-4">
-                    <button type="submit" disabled={isPending || isUploading} className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-4 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2">
+                    <button type="submit" disabled={isPending || isUploading} className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-4 rounded-xl font-black text-[13px] shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2">
                         {(isPending || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                         {(isPending || isUploading) ? 'PROCESSANDO...' : (productId ? 'SALVAR ALTERAÇÕES' : 'CADASTRAR PRODUTO')}
                     </button>
-                    <button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-10 py-4 rounded-xl border border-border bg-card text-foreground/40 font-black text-[11px] uppercase tracking-widest hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2">
+                    <button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-10 py-4 rounded-xl border border-border bg-card text-foreground/40 font-black text-[13px] hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2">
                         <X className="w-4 h-4" />
                         ABORTAR
                     </button>

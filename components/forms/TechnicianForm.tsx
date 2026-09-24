@@ -62,7 +62,7 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
                                 <Award className="w-6 h-6" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black text-white tracking-tight uppercase">Dados do Técnico</h2>
+                                <h2 className="text-xl font-black text-white tracking-tight ">Dados do Técnico</h2>
                                 <p className="text-xs text-white/30 font-bold uppercase tracking-widest mt-1">Especialidades e Remuneração</p>
                             </div>
                         </div>
@@ -164,18 +164,18 @@ export default function TechnicianForm({ initial }: { initial?: any }) {
 
                 <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
                     <button
-                        type="submit"
-                        disabled={isPending}
-                        className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-5 rounded-2xl font-black text-xs uppercase tracking-wider shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
-                    >
+ type="submit"
+ disabled={isPending}
+ className="w-full sm:flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 disabled:opacity-50 text-white p-5 rounded-2xl font-black text-xs shadow-xl shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
+ >
                         {isPending ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
                         {isPending ? 'PROCESSANDO...' : 'SALVAR CADASTRO'}
                     </button>
                     <button
-                        type="button"
-                        onClick={() => router.back()}
-                        className="w-full sm:w-auto px-10 py-5 rounded-2xl border border-white/5 bg-white/[0.02] text-white/40 font-black text-xs uppercase tracking-wider hover:bg-white/5 hover:text-white transition-all flex items-center justify-center gap-2"
-                    >
+ type="button"
+ onClick={() => router.back()}
+ className="w-full sm:w-auto px-10 py-5 rounded-2xl border border-white/5 bg-white/[0.02] text-white/40 font-black text-xs hover:bg-white/5 hover:text-white transition-all flex items-center justify-center gap-2"
+ >
                         CANCELAR
                     </button>
                 </div>

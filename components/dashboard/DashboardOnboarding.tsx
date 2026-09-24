@@ -243,7 +243,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                 <Sparkles className="w-8 h-8 animate-pulse" />
                             </div>
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-black tracking-tighter text-foreground uppercase">Configure seu Perfil</h2>
+                                <h2 className="text-3xl font-black tracking-tighter text-foreground ">Configure seu Perfil</h2>
                                 <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                                     Vamos configurar sua marca, endereço e link do Google Review. Seus clientes verão essas informações nas OS e orçamentos.
                                 </p>
@@ -254,7 +254,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                     {step === 2 && (
                         <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             <div>
-                                <h3 className="text-xl font-black text-foreground uppercase tracking-tight flex items-center gap-2">
+                                <h3 className="text-xl font-black text-foreground tracking-tight flex items-center gap-2">
                                     <Building2 className="w-5 h-5 text-primary" /> Identificação
                                 </h3>
                                 <p className="text-xs text-muted-foreground">Informações primárias da sua assistência técnica.</p>
@@ -300,7 +300,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                     {step === 3 && (
                         <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             <div>
-                                <h3 className="text-xl font-black text-foreground uppercase tracking-tight flex items-center gap-2">
+                                <h3 className="text-xl font-black text-foreground tracking-tight flex items-center gap-2">
                                     <MapPin className="w-5 h-5 text-primary" /> Endereço Comercial
                                 </h3>
                                 <p className="text-xs text-muted-foreground">O endereço é exibido nos recibos de entrada e saída.</p>
@@ -355,7 +355,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                     {step === 4 && (
                         <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             <div>
-                                <h3 className="text-xl font-black text-foreground uppercase tracking-tight flex items-center gap-2">
+                                <h3 className="text-xl font-black text-foreground tracking-tight flex items-center gap-2">
                                     <Globe className="w-5 h-5 text-primary" /> Identidade Visual & Reviews
                                 </h3>
                                 <p className="text-xs text-muted-foreground">Envie sua logo e ative a coleta automática de avaliações.</p>
@@ -416,7 +416,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                     {step === 5 && (
                         <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             <div>
-                                <h3 className="text-xl font-black text-foreground uppercase tracking-tight flex items-center gap-2">
+                                <h3 className="text-xl font-black text-foreground tracking-tight flex items-center gap-2">
                                     <Smartphone className="w-5 h-5 text-primary" /> Criar Primeira OS de Teste
                                 </h3>
                                 <p className="text-xs text-muted-foreground">Experimente o controle de fluxos, atualizações via WhatsApp e faturamento.</p>
@@ -476,7 +476,7 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                                 <ShieldCheck className="w-8 h-8" />
                             </div>
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-black tracking-tighter text-foreground uppercase">Setup Concluído!</h2>
+                                <h2 className="text-3xl font-black tracking-tighter text-foreground ">Setup Concluído!</h2>
                                 <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                                     Seus dados comerciais, endereço e configurações de avaliação foram salvos. Você está pronto para gerenciar sua assistência técnica com nível profissional.
                                 </p>
@@ -504,27 +504,27 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
                     <div className="flex gap-4">
                     {step > 1 && step < stepsCount && (
                         <button
-                            onClick={() => setStep(prev => prev - 1)}
-                            className="px-6 py-3.5 bg-white/5 text-xs font-black uppercase tracking-widest hover:bg-white/10 rounded-xl text-foreground transition-colors"
-                        >
+ onClick={() => setStep(prev => prev - 1)}
+ className="px-6 py-3.5 bg-white/5 text-xs font-black hover:bg-white/10 rounded-xl text-foreground transition-colors"
+ >
                             Voltar
                         </button>
                     )}
                     {step < stepsCount ? (
                         <button
-                            onClick={() => setStep(prev => prev + 1)}
-                            disabled={step === 2 && !companyDetails.name}
-                            className="flex-1 py-3.5 bg-primary text-white text-xs font-black uppercase tracking-widest hover:bg-primary/95 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+ onClick={() => setStep(prev => prev + 1)}
+ disabled={step === 2 && !companyDetails.name}
+ className="flex-1 py-3.5 bg-primary text-white text-xs font-black hover:bg-primary/95 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+ >
                             Continuar
                             <ArrowRight className="w-4 h-4" />
                         </button>
                     ) : (
                         <button
-                            onClick={handleFinish}
-                            disabled={saving || uploadingLogo}
-                            className="flex-1 py-3.5 bg-primary text-white text-xs font-black uppercase tracking-widest hover:bg-primary/95 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                        >
+ onClick={handleFinish}
+ disabled={saving || uploadingLogo}
+ className="flex-1 py-3.5 bg-primary text-white text-xs font-black hover:bg-primary/95 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+ >
                             {saving ? 'Salvando...' : 'Finalizar Setup'}
                             <Check className="w-4 h-4" />
                         </button>

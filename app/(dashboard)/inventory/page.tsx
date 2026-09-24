@@ -5,7 +5,6 @@ import Header from '@/components/layout/Header'
 import { formatCurrency, cn } from '@/lib/utils'
 import Link from 'next/link'
 import {
-    Search,
     Plus,
     Filter,
     Download,
@@ -75,9 +74,9 @@ export default async function InventoryPage({
                         <p className="text-muted-foreground font-medium text-xs sm:text-base leading-relaxed max-w-xl">Gerencie seu inventário de peças e insumos com precisão.</p>
                     </div>
                     <Link
-                        href="/inventory/new"
-                        className="w-full sm:w-auto flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl sm:rounded-3xl font-black uppercase text-xs tracking-wider shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group shrink-0"
-                    >
+ href="/inventory/new"
+ className="w-full sm:w-auto flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl sm:rounded-3xl font-black text-xs shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group shrink-0"
+ >
                         Novo Produto
                         <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
                     </Link>
@@ -148,7 +147,6 @@ export default async function InventoryPage({
                 {/* Search and Action Bar */}
                 <div className="bg-card/60 backdrop-blur-3xl border border-border/40 rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
                     <div className="relative flex-1 w-full md:max-w-md group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <SearchInput
                             placeholder="Pesquisar nome, SKU ou código..."
                             className="w-full bg-muted/30 border border-border/40 rounded-xl sm:rounded-2xl pl-11 pr-4 py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-primary/30 transition-all placeholder:opacity-40 h-11 sm:h-14"
@@ -157,7 +155,7 @@ export default async function InventoryPage({
 
                     <div className="flex items-center gap-3 w-full md:w-auto justify-between sm:justify-end">
                         <CategoryManagerWrapper />
-                        <button className="h-11 sm:h-14 flex items-center gap-2 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/40 text-[11px] sm:text-[11px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-all">
+                        <button className="h-11 sm:h-14 flex items-center gap-2 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/40 text-[13px] sm:text-[11px] font-black text-muted-foreground hover:text-foreground transition-all">
                             <Filter className="w-4 h-4" />
                             <span>Filtros</span>
                         </button>
@@ -231,9 +229,9 @@ export default async function InventoryPage({
                             <h3 className="text-base font-bold text-foreground">Nenhum produto cadastrado</h3>
                             <p className="text-xs text-muted-foreground mt-1 mb-4">Adicione itens ao estoque.</p>
                             <Link
-                                href="/inventory/new"
-                                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-bold text-xs uppercase"
-                            >
+ href="/inventory/new"
+ className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-bold text-xs "
+ >
                                 <Plus className="w-4 h-4" />
                                 Cadastrar
                             </Link>
@@ -340,9 +338,9 @@ export default async function InventoryPage({
                                             <h3 className="text-2xl font-black tracking-tight text-foreground/60">Estoque Vazio</h3>
                                             <p className="text-muted-foreground text-sm mt-2 mb-10 max-w-xs mx-auto">Sua vitrine de peças e insumos aparecerá aqui após o cadastro.</p>
                                             <Link
-                                                href="/inventory/new"
-                                                className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-3xl font-black uppercase text-xs tracking-widest shadow-2xl shadow-primary/20 transition-all hover:scale-105"
-                                            >
+ href="/inventory/new"
+ className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-3xl font-black text-xs shadow-2xl shadow-primary/20 transition-all hover:scale-105"
+ >
                                                 <Plus className="w-5 h-5" />
                                                 Cadastrar Produto
                                             </Link>

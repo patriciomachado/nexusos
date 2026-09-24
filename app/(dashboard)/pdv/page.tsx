@@ -150,11 +150,11 @@ export default function PDVPage() {
                     <nav className="hidden xl:flex items-center gap-4 border-l border-border/40 pl-4">
                         {navItems.map((item) => (
                             <Link
-                                key={item.path}
-                                href={item.path}
-                                className={`text-[11px] font-black uppercase tracking-widest transition-all hover:text-primary ${pathname === item.path ? 'text-primary' : 'text-muted-foreground'
-                                    }`}
-                            >
+ key={item.path}
+ href={item.path}
+ className={`text-[13px] font-black transition-all hover:text-primary ${pathname === item.path ? 'text-primary' : 'text-muted-foreground'
+ }`}
+ >
                                 {item.label}
                             </Link>
                         ))}

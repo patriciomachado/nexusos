@@ -126,7 +126,7 @@ export default function PaymentMethodsSettings() {
                         <CreditCard className="w-6 h-6" />
                     </div>
                     <div className="space-y-0.5">
-                        <h2 className="text-2xl font-black tracking-tighter text-foreground uppercase">Métodos de Faturamento</h2>
+                        <h2 className="text-2xl font-black tracking-tighter text-foreground ">Métodos de Faturamento</h2>
                         <p className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">Gestão de gateways e recebimentos</p>
                     </div>
                 </div>
@@ -139,7 +139,7 @@ export default function PaymentMethodsSettings() {
 
                     <div className="relative z-10 space-y-6">
                         <div className="space-y-1 pr-12">
-                            <h3 className="text-sm font-black text-foreground/80 uppercase tracking-tight">Expandir Opções</h3>
+                            <h3 className="text-sm font-black text-foreground/80 tracking-tight">Expandir Opções</h3>
                             <p className="text-[11px] font-bold text-muted-foreground leading-relaxed uppercase pr-10">Adicione métodos personalizados como Boleto, Link de Pagamento ou Promissória.</p>
                         </div>
 
@@ -154,10 +154,10 @@ export default function PaymentMethodsSettings() {
                                 />
                             </div>
                             <button
-                                onClick={handleAdd}
-                                disabled={isPending || !newName.trim()}
-                                className="px-8 rounded-2xl bg-indigo-500 hover:bg-indigo-400 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3 group/btn"
-                            >
+ onClick={handleAdd}
+ disabled={isPending || !newName.trim()}
+ className="px-8 rounded-2xl bg-indigo-500 hover:bg-indigo-400 text-white font-black text-xs shadow-xl shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3 group/btn"
+ >
                                 <Plus className="w-5 h-5 group-hover/btn:rotate-90 transition-transform" />
                                 <span className="hidden sm:inline">Adicionar</span>
                             </button>

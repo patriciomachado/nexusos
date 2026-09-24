@@ -24,7 +24,7 @@ export default function SubscriptionSettings({ company }: SubscriptionSettingsPr
                     <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div className="space-y-0.5">
-                    <h2 className="text-2xl font-black tracking-tighter text-foreground uppercase">Plano & Licenciamento</h2>
+                    <h2 className="text-2xl font-black tracking-tighter text-foreground ">Plano & Licenciamento</h2>
                     <p className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">Gestão de cotas e infraestrutura</p>
                 </div>
             </div>
@@ -119,7 +119,7 @@ export default function SubscriptionSettings({ company }: SubscriptionSettingsPr
                         )}
 
                         <div className="pt-2">
-                            <Link href="/settings/subscription" className="w-full h-12 rounded-2xl bg-foreground text-background font-black text-[11px] uppercase tracking-wider hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 group">
+                            <Link href="/settings/subscription" className="w-full h-12 rounded-2xl bg-foreground text-background font-black text-[13px] hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 group">
                                 GERENCIAR
                                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </Link>

@@ -223,7 +223,7 @@ export default function Catalog3DExperience({
                             </div>
                         </div>
 
-                        <h3 className="text-xs font-mono font-black uppercase text-slate-400">Escolha o Aparelho:</h3>
+                        <h3 className="text-xs font-mono font-black text-slate-400">Escolha o Aparelho:</h3>
                         <div className="space-y-2 max-h-48 sm:max-h-60 overflow-y-auto pr-1">
                             {devices
                                 .filter((dev) => {
@@ -384,9 +384,9 @@ export default function Catalog3DExperience({
                             Garanta a reserva do {currentDevice.brand} {currentDevice.model} antes que esgoste no estoque de {companyName}.
                         </p>
                         <button
-                            onClick={openWhatsApp}
-                            className="w-full py-5 bg-emerald-400 hover:bg-emerald-300 text-black font-black rounded-2xl text-sm md:text-base uppercase tracking-wider transition-all shadow-[0_0_30px_rgba(52,211,153,0.8)] hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
-                        >
+ onClick={openWhatsApp}
+ className="w-full py-5 bg-emerald-400 hover:bg-emerald-300 text-black font-black rounded-2xl text-sm md:text-base transition-all shadow-[0_0_30px_rgba(52,211,153,0.8)] hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
+ >
                             <MessageSquare className="w-6 h-6 fill-current" />
                             RESGATAR NO WHATSAPP AGORA ➔
                         </button>

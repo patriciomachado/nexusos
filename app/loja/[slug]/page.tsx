@@ -273,10 +273,10 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
                         {companyPhone && (
                             <button
-                                onClick={() => openWhatsAppInterest('Atendimento Geral', 0)}
-                                className="px-4 py-2 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
-                                style={{ backgroundColor: theme.primary }}
-                            >
+ onClick={() => openWhatsAppInterest('Atendimento Geral', 0)}
+ className="px-4 py-2 text-black font-black rounded-2xl text-xs transition-all flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
+ style={{ backgroundColor: theme.primary }}
+ >
                                 <MessageSquare className="w-4 h-4 fill-current" />
                                 <span className="hidden sm:inline">Falar no</span> WhatsApp
                             </button>
@@ -357,10 +357,10 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                             </h3>
                         </div>
                         <button
-                            onClick={() => setIsQuizOpen(true)}
-                            className="w-full sm:w-auto px-5 py-3 text-black font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg hover:scale-105 active:scale-95 shrink-0 animate-pulse"
-                            style={{ backgroundColor: theme.primary }}
-                        >
+ onClick={() => setIsQuizOpen(true)}
+ className="w-full sm:w-auto px-5 py-3 text-black font-black rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-lg hover:scale-105 active:scale-95 shrink-0 animate-pulse"
+ style={{ backgroundColor: theme.primary }}
+ >
                             <Sparkles className="w-4 h-4 fill-current" />
                             Fazer Quiz de Troca 🎮
                         </button>
@@ -556,10 +556,10 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                         {/* Action Buttons */}
                                         <div className="space-y-2 pt-2">
                                             <button
-                                                onClick={() => openWhatsAppInterest(`${device.brand} ${device.model} ${device.storage || ''}`, device.cash_price, `Bateria ${device.battery_health}%`)}
-                                                className="w-full py-3 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95 hover:opacity-90"
-                                                style={{ backgroundColor: theme.primary }}
-                                            >
+ onClick={() => openWhatsAppInterest(`${device.brand} ${device.model} ${device.storage || ''}`, device.cash_price, `Bateria ${device.battery_health}%`)}
+ className="w-full py-3 text-black font-black rounded-2xl text-xs transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95 hover:opacity-90"
+ style={{ backgroundColor: theme.primary }}
+ >
                                                 <MessageSquare className="w-4 h-4 fill-current" />
                                                 Comprar pelo WhatsApp
                                             </button>
@@ -691,12 +691,12 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 <p className="text-2xl font-black text-emerald-400">{formatCurrency(selectedDeviceModal.cash_price)}</p>
                             </div>
                             <button
-                                onClick={() => {
-                                    openWhatsAppInterest(`${selectedDeviceModal.brand} ${selectedDeviceModal.model}`, selectedDeviceModal.cash_price)
-                                    setSelectedDeviceModal(null)
-                                }}
-                                className="px-5 py-2.5 bg-emerald-500 text-black font-black rounded-xl text-xs uppercase tracking-wider hover:bg-emerald-400 transition-all flex items-center gap-1.5"
-                            >
+ onClick={() => {
+ openWhatsAppInterest(`${selectedDeviceModal.brand} ${selectedDeviceModal.model}`, selectedDeviceModal.cash_price)
+ setSelectedDeviceModal(null)
+ }}
+ className="px-5 py-2.5 bg-emerald-500 text-black font-black rounded-xl text-xs hover:bg-emerald-400 transition-all flex items-center gap-1.5"
+ >
                                 <MessageSquare className="w-4 h-4 fill-current" />
                                 Enviar Mensagem
                             </button>

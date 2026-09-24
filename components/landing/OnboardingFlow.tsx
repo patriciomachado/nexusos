@@ -157,7 +157,7 @@ export default function OnboardingFlow() {
                                 <span className={`font-black uppercase tracking-widest transition-colors ${step === 4 ? 'text-primary' : 'text-white/20'}`}>Onboarding</span>
                             </div>
                             <div className="h-6 w-px bg-white/10 mx-2 hidden sm:block" />
-                            <Link href="/sign-in" className="text-[11px] font-black uppercase tracking-widest text-[#A0A0B5] hover:text-white transition-colors">Entrar</Link>
+                            <Link href="/sign-in" className="text-[13px] font-black text-[#A0A0B5] hover:text-white transition-colors">Entrar</Link>
                         </div>
                     </div>
                 </div>
@@ -202,9 +202,9 @@ function StepLanding({ onStartQuiz }: { onStartQuiz: () => void }) {
 
             <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto pt-4">
                 <button
-                    onClick={onStartQuiz}
-                    className="group flex-1 flex items-center justify-center gap-3 bg-primary hover:bg-primary/95 text-white px-8 py-5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl shadow-primary/30"
-                >
+ onClick={onStartQuiz}
+ className="group flex-1 flex items-center justify-center gap-3 bg-primary hover:bg-primary/95 text-white px-8 py-5 rounded-2xl text-xs font-black transition-all hover:scale-105 shadow-xl shadow-primary/30"
+ >
                     Iniciar Teste de Perda
                     <Play className="w-4 h-4 fill-current group-hover:translate-x-1 transition-transform" />
                 </button>
@@ -216,21 +216,21 @@ function StepLanding({ onStartQuiz }: { onStartQuiz: () => void }) {
                     <div className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center">
                         <Wallet className="w-5 h-5" />
                     </div>
-                    <h3 className="text-sm font-black text-white uppercase tracking-wider">Perda de Faturamento</h3>
+                    <h3 className="text-sm font-black text-white ">Perda de Faturamento</h3>
                     <p className="text-xs text-[#A0A0B5] leading-relaxed">Orçamentos soltos no WhatsApp ou não cobrados geram prejuízos diários silenciosos.</p>
                 </div>
                 <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 text-left space-y-3">
                     <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
                         <Clock className="w-5 h-5" />
                     </div>
-                    <h3 className="text-sm font-black text-white uppercase tracking-wider">Tempo Desperdiçado</h3>
+                    <h3 className="text-sm font-black text-white ">Tempo Desperdiçado</h3>
                     <p className="text-xs text-[#A0A0B5] leading-relaxed">Horas gastas atualizando clientes de forma manual e organizando ordens antigas.</p>
                 </div>
                 <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 text-left space-y-3">
                     <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
                         <Smile className="w-5 h-5" />
                     </div>
-                    <h3 className="text-sm font-black text-white uppercase tracking-wider">Estresse e Cobrança</h3>
+                    <h3 className="text-sm font-black text-white ">Estresse e Cobrança</h3>
                     <p className="text-xs text-[#A0A0B5] leading-relaxed">Cobrança e ligações constantes de clientes insatisfeitos com a falta de retorno.</p>
                 </div>
             </div>
@@ -341,9 +341,9 @@ function StepQuizResult({ totals, onProceed }: { totals: { money: number; time: 
                     Você pode eliminar estes custos operacionais e economizar tempo criando sua conta grátis agora mesmo.
                 </p>
                 <button
-                    onClick={onProceed}
-                    className="group flex items-center justify-center gap-3 bg-primary hover:bg-primary/95 text-white px-12 py-5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl shadow-primary/30 mx-auto"
-                >
+ onClick={onProceed}
+ className="group flex items-center justify-center gap-3 bg-primary hover:bg-primary/95 text-white px-12 py-5 rounded-2xl text-xs font-black transition-all hover:scale-105 shadow-xl shadow-primary/30 mx-auto"
+ >
                     Criar Conta e Parar Perdas
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
@@ -372,10 +372,10 @@ function StepFinal({ onboardingData }: { onboardingData: { money: number; time: 
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 max-w-md mx-auto">
-                <Link href="/sign-up" className="w-full bg-primary hover:bg-primary/90 text-white px-10 py-5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all hover:scale-105 shadow-xl shadow-primary/30 text-center">
+                <Link href="/sign-up" className="w-full bg-primary hover:bg-primary/90 text-white px-10 py-5 rounded-2xl text-xs font-black transition-all hover:scale-105 shadow-xl shadow-primary/30 text-center">
                     Criar Minha Conta Grátis
                 </Link>
-                <Link href="/sign-in" className="w-full bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 text-white px-10 py-5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all text-center">
+                <Link href="/sign-in" className="w-full bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 text-white px-10 py-5 rounded-2xl text-xs font-black transition-all text-center">
                     Já Tenho Conta
                 </Link>
             </div>

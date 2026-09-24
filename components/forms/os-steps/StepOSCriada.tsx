@@ -100,26 +100,26 @@ export default function StepOSCriada({ orderId, orderNumber }: Props) {
             {/* Actions */}
             <div className="space-y-3 pt-4">
                 <button
-                    type="button"
-                    onClick={() => router.push(`/service-orders/${orderId}`)}
-                    className="w-full px-8 py-4 rounded-2xl bg-emerald-500 text-white font-black uppercase tracking-widest hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-3"
-                >
+ type="button"
+ onClick={() => router.push(`/service-orders/${orderId}`)}
+ className="w-full px-8 py-4 rounded-2xl bg-emerald-500 text-white font-black hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-3"
+ >
                     <ExternalLink className="w-4 h-4" />
                     Ver Ordem de Serviço
                 </button>
                 <button
-                    type="button"
-                    onClick={() => router.push('/service-orders/new')}
-                    className="w-full px-8 py-4 rounded-2xl border border-white/10 bg-white/5 text-foreground/60 font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-3"
-                >
+ type="button"
+ onClick={() => router.push('/service-orders/new')}
+ className="w-full px-8 py-4 rounded-2xl border border-white/10 bg-white/5 text-foreground/60 font-black hover:bg-white/10 transition-all flex items-center justify-center gap-3"
+ >
                     <Plus className="w-4 h-4" />
                     Nova OS
                 </button>
                 <button
-                    type="button"
-                    onClick={() => router.push('/service-orders')}
-                    className="w-full text-[11px] text-muted-foreground hover:text-muted-foreground font-black uppercase tracking-widest transition-colors py-2"
-                >
+ type="button"
+ onClick={() => router.push('/service-orders')}
+ className="w-full text-[13px] text-muted-foreground hover:text-muted-foreground font-black transition-colors py-2"
+ >
                     Voltar para lista
                 </button>
             </div>

@@ -110,10 +110,10 @@ export default function StepClienteForm({ form, setForm, customers, setCustomers
             {/* CTA */}
             <div className="flex justify-end">
                 <button
-                    type="button"
-                    onClick={handleNext}
-                    className="px-8 py-4 rounded-2xl bg-indigo-500 text-white text-sm font-black uppercase tracking-widest hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-3"
-                >
+ type="button"
+ onClick={handleNext}
+ className="px-8 py-4 rounded-2xl bg-indigo-500 text-white text-sm font-black hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-3"
+ >
                     Próximo
                     <ChevronRight className="w-4 h-4" />
                 </button>

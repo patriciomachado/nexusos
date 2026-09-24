@@ -255,11 +255,11 @@ export default function CatalogQuizModal({
                         {/* Next Button */}
                         <div className="flex items-center justify-end pt-2 border-t border-slate-800/80">
                             <button
-                                disabled={hasTradeIn === null || (hasTradeIn && !selectedTradeIn)}
-                                onClick={() => setStep(2)}
-                                className="px-6 py-2.5 text-black font-black rounded-xl text-xs uppercase tracking-wider transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
-                                style={{ backgroundColor: themePrimary }}
-                            >
+ disabled={hasTradeIn === null || (hasTradeIn && !selectedTradeIn)}
+ onClick={() => setStep(2)}
+ className="px-6 py-2.5 text-black font-black rounded-xl text-xs transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
+ style={{ backgroundColor: themePrimary }}
+ >
                                 Avançar para Etapa 2
                                 <ArrowRight className="w-4 h-4" />
                             </button>
@@ -325,11 +325,11 @@ export default function CatalogQuizModal({
                             </button>
 
                             <button
-                                disabled={!selectedBudget}
-                                onClick={() => setStep(3)}
-                                className="px-6 py-2.5 text-black font-black rounded-xl text-xs uppercase tracking-wider transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg animate-pulse"
-                                style={{ backgroundColor: themePrimary }}
-                            >
+ disabled={!selectedBudget}
+ onClick={() => setStep(3)}
+ className="px-6 py-2.5 text-black font-black rounded-xl text-xs transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg animate-pulse"
+ style={{ backgroundColor: themePrimary }}
+ >
                                 Desbloquear Match Final
                                 <Trophy className="w-4 h-4 fill-current" />
                             </button>
@@ -417,10 +417,10 @@ export default function CatalogQuizModal({
                         {/* CTA Button */}
                         <div className="space-y-2 pt-1 border-t border-slate-800/80">
                             <button
-                                onClick={sendWhatsAppOffer}
-                                className="w-full py-3.5 text-black font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl hover:scale-[1.01] active:scale-95 animate-pulse"
-                                style={{ backgroundColor: themePrimary }}
-                            >
+ onClick={sendWhatsAppOffer}
+ className="w-full py-3.5 text-black font-black rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-xl hover:scale-[1.01] active:scale-95 animate-pulse"
+ style={{ backgroundColor: themePrimary }}
+ >
                                 <MessageSquare className="w-4 h-4 fill-current" />
                                 RESGATAR MEU CELULAR NO WHATSAPP AGORA 🎮
                             </button>

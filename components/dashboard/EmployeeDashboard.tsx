@@ -69,9 +69,9 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                     </div>
 
                     <Link
-                        href="/service-orders/new"
-                        className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all shrink-0"
-                    >
+ href="/service-orders/new"
+ className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground text-xs font-black shadow-xl shadow-primary/20 hover:scale-105 transition-all shrink-0"
+ >
                         <ClipboardList className="w-4 h-4" />
                         Nova OS
                     </Link>
@@ -104,13 +104,13 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                     {/* OS List */}
                     <div className="lg:col-span-2 space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-sm font-black uppercase tracking-widest">
+                            <h2 className="text-sm font-black ">
                                 Ordens de Serviço
                             </h2>
                             <Link
-                                href="/service-orders"
-                                className="text-[11px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity flex items-center gap-1"
-                            >
+ href="/service-orders"
+ className="text-[13px] font-black text-primary hover:opacity-70 transition-opacity flex items-center gap-1"
+ >
                                 Ver tudo <ChevronRight className="w-3 h-3" />
                             </Link>
                         </div>
@@ -164,9 +164,9 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
                                         <p className="text-xs text-muted-foreground mt-1 opacity-60">Crie a primeira ordem de serviço</p>
                                     </div>
                                     <Link
-                                        href="/service-orders/new"
-                                        className="mt-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest hover:scale-105 transition-all"
-                                    >
+ href="/service-orders/new"
+ className="mt-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-black hover:scale-105 transition-all"
+ >
                                         Nova OS
                                     </Link>
                                 </div>
@@ -176,7 +176,7 @@ export default function EmployeeDashboard({ role, recentOS }: EmployeeDashboardP
 
                     {/* Quick Actions */}
                     <div className="space-y-4">
-                        <h2 className="text-sm font-black uppercase tracking-widest">Ações Rápidas</h2>
+                        <h2 className="text-sm font-black ">Ações Rápidas</h2>
 
                         <div className="space-y-3">
                             <Link

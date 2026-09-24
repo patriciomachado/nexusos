@@ -127,19 +127,19 @@ export default function PremiumAutocomplete({
                         {onAdd && (
                             <li className="mt-1 border-t border-border/50 pt-1 sticky bottom-0 bg-card/95">
                                 <button
-                                    type="button"
-                                    disabled={isAdding}
-                                    onMouseDown={(e) => e.preventDefault()}
-                                    onClick={() => {
-                                        if (value.trim()) {
-                                            onAdd(value)
-                                            setIsOpen(false)
-                                        } else {
-                                            toast.error('Digite um nome para a categoria')
-                                        }
-                                    }}
-                                    className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black transition-all text-primary hover:bg-primary/5 text-left uppercase tracking-widest"
-                                >
+ type="button"
+ disabled={isAdding}
+ onMouseDown={(e) => e.preventDefault()}
+ onClick={() => {
+ if (value.trim()) {
+ onAdd(value)
+ setIsOpen(false)
+ } else {
+ toast.error('Digite um nome para a categoria')
+ }
+ }}
+ className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-black transition-all text-primary hover:bg-primary/5 text-left "
+ >
                                     {isAdding ? (
                                         <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                                     ) : (

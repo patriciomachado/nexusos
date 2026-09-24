@@ -253,10 +253,10 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
                                     Cancelar
                                 </button>
                                 <button 
-                                    type="submit"
-                                    disabled={saving}
-                                    className="flex-[2] py-2.5 px-4 bg-primary text-black rounded-xl text-sm font-black uppercase tracking-widest hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                                >
+ type="submit"
+ disabled={saving}
+ className="flex-[2] py-2.5 px-4 bg-primary text-black rounded-xl text-sm font-black hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+ >
                                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                     Salvar Despesa
                                 </button>
@@ -266,7 +266,7 @@ export default function RecurringExpensesModal({ isOpen, onClose }: RecurringExp
 
                     {/* List */}
                     <div className="space-y-3">
-                        <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground px-1">Contas Cadastradas</h3>
+                        <h3 className="text-xs font-black text-muted-foreground px-1">Contas Cadastradas</h3>
                         
                         {loading ? (
                             <div className="py-12 flex justify-center">

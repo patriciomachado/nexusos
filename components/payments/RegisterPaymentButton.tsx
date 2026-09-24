@@ -58,9 +58,9 @@ export default function RegisterPaymentButton({ customers, orders, companyId }: 
     return (
         <>
             <button
-                onClick={() => setOpen(true)}
-                className="group relative flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-3xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 shadow-[0_20px_40px_rgba(var(--primary),0.3)] hover:shadow-primary/40"
-            >
+ onClick={() => setOpen(true)}
+ className="group relative flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-3xl text-xs font-black transition-all active:scale-95 shadow-[0_20px_40px_rgba(var(--primary),0.3)] hover:shadow-primary/40"
+ >
                 <div className="p-1.5 rounded-lg bg-white/20 group-hover:rotate-90 transition-transform duration-500">
                     <Plus className="w-4 h-4" />
                 </div>
@@ -88,7 +88,7 @@ export default function RegisterPaymentButton({ customers, orders, companyId }: 
                                         <DollarSign className="w-8 h-8" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-black text-foreground tracking-tighter uppercase">Novo Recebimento</h3>
+                                        <h3 className="text-xl font-black text-foreground tracking-tighter ">Novo Recebimento</h3>
                                         <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mt-1">Fluxo Financeiro Nexus</p>
                                     </div>
                                 </div>
@@ -175,16 +175,16 @@ export default function RegisterPaymentButton({ customers, orders, companyId }: 
                                         <div className="flex gap-2">
                                             {['completed', 'pending', 'partial'].map((s) => (
                                                 <button
-                                                    key={s}
-                                                    type="button"
-                                                    onClick={() => setForm(p => ({ ...p, payment_status: s }))}
-                                                    className={cn(
-                                                        "flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all",
-                                                        form.payment_status === s
-                                                            ? "bg-primary/20 border-primary/50 text-white shadow-lg shadow-primary/10"
-                                                            : "bg-muted/10 border-white/5 text-muted-foreground hover:border-white/20"
-                                                    )}
-                                                >
+ key={s}
+ type="button"
+ onClick={() => setForm(p => ({ ...p, payment_status: s }))}
+ className={cn(
+ "flex-1 py-3 rounded-xl text-[13px] font-black border transition-all",
+ form.payment_status === s
+ ? "bg-primary/20 border-primary/50 text-white shadow-lg shadow-primary/10"
+ : "bg-muted/10 border-white/5 text-muted-foreground hover:border-white/20"
+ )}
+ >
                                                     {s === 'completed' ? 'Pago' : s === 'pending' ? 'Pendente' : 'Parcial'}
                                                 </button>
                                             ))}
@@ -209,17 +209,17 @@ export default function RegisterPaymentButton({ customers, orders, companyId }: 
 
                                 <div className="flex gap-4 pt-6">
                                     <button
-                                        type="button"
-                                        onClick={() => setOpen(false)}
-                                        className="h-16 px-10 rounded-3xl border border-white/5 text-[11px] font-black uppercase tracking-widest text-muted-foreground hover:bg-white/5 transition-all"
-                                    >
+ type="button"
+ onClick={() => setOpen(false)}
+ className="h-16 px-10 rounded-3xl border border-white/5 text-[13px] font-black text-muted-foreground hover:bg-white/5 transition-all"
+ >
                                         Cancelar
                                     </button>
                                     <button
-                                        type="submit"
-                                        disabled={isPending}
-                                        className="flex-1 h-16 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white rounded-3xl text-[11px] font-black uppercase tracking-widest shadow-2xl shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-3"
-                                    >
+ type="submit"
+ disabled={isPending}
+ className="flex-1 h-16 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white rounded-3xl text-[13px] font-black shadow-2xl shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-3"
+ >
                                         {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                                             <>
                                                 <DollarSign className="w-4 h-4" />

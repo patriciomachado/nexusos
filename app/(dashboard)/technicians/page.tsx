@@ -41,9 +41,9 @@ export default async function TechniciansPage() {
                         </p>
                     </div>
                     <Link
-                        href="/technicians/new"
-                        className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-foreground px-8 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-[0_10px_25px_-5px_rgba(245,158,11,0.4)] transition-all hover:-translate-y-1 active:scale-95"
-                    >
+ href="/technicians/new"
+ className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-foreground px-8 py-4 rounded-2xl font-black text-[13px] shadow-[0_10px_25px_-5px_rgba(245,158,11,0.4)] transition-all hover:-translate-y-1 active:scale-95"
+ >
                         <Plus className="w-4 h-4" />
                         Novo Técnico
                     </Link>

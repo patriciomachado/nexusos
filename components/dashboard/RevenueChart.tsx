@@ -40,11 +40,11 @@ export default function RevenueChart({ data = defaultData, height = 300 }: Reven
             <div className="flex items-center justify-between mb-4 relative z-10">
                 <div className="flex gap-4 sm:gap-6">
                     <div>
-                        <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-wider opacity-60">Receita ({days} dias)</h3>
+                        <h3 className="text-[13px] font-black text-muted-foreground opacity-60">Receita ({days} dias)</h3>
                         <p className="text-base sm:text-lg font-black text-foreground">{formatBRL(rangeRevenue)}</p>
                     </div>
                     <div>
-                        <h3 className="text-[11px] font-black text-emerald-400 uppercase tracking-wider opacity-80">Lucro Líquido ({days}d)</h3>
+                        <h3 className="text-[13px] font-black text-emerald-400 opacity-80">Lucro Líquido ({days}d)</h3>
                         <p className={`text-base sm:text-lg font-black ${rangeProfit >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                             {formatBRL(rangeProfit)}
                         </p>
@@ -53,10 +53,10 @@ export default function RevenueChart({ data = defaultData, height = 300 }: Reven
                 <div className="flex gap-1.5 sm:gap-2">
                     {[7, 30].map(d => (
                         <button
-                            key={d}
-                            onClick={() => setDays(d)}
-                            className={`px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 ${days === d ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 border border-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10'}`}
-                        >
+ key={d}
+ onClick={() => setDays(d)}
+ className={`px-3 py-1.5 rounded-xl text-[13px] font-black transition-all duration-300 hover:scale-105 active:scale-95 ${days === d ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 border border-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10'}`}
+ >
                             {d} Dias
                         </button>
                     ))}

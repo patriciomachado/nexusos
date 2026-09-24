@@ -102,7 +102,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                     <div className="md:col-span-2 space-y-4 md:space-y-6">
                         {/* Details card */}
                         <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm">
-                            <h2 className="text-[11px] font-black text-muted-foreground mb-4 md:mb-6 uppercase tracking-wider flex items-center gap-2">
+                            <h2 className="text-[13px] font-black text-muted-foreground mb-4 md:mb-6 flex items-center gap-2">
                                 <Info className="w-3 h-3" />
                                 Informações Gerais
                             </h2>
@@ -229,7 +229,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                         {/* Items/Materials */}
                         <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm overflow-x-auto">
                             <div className="flex items-center justify-between mb-4 md:mb-6 gap-2">
-                                <h2 className="text-[11px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                <h2 className="text-[13px] font-black text-muted-foreground flex items-center gap-2">
                                     <DollarSign className="w-3 h-3" />
                                     Itens e Serviços
                                 </h2>
@@ -295,7 +295,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
 
                         {/* History */}
                         <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm">
-                            <h2 className="text-[11px] font-black text-muted-foreground mb-4 md:mb-6 uppercase tracking-wider flex items-center gap-2">
+                            <h2 className="text-[13px] font-black text-muted-foreground mb-4 md:mb-6 flex items-center gap-2">
                                 <Clock className="w-3 h-3" />
                                 Jornada da OS
                             </h2>
@@ -345,7 +345,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                     <div className="p-2 rounded-lg bg-primary/10">
                                         <User className="w-4 h-4 text-primary" />
                                     </div>
-                                    <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">Proprietário</h3>
+                                    <h3 className="text-[13px] font-black text-muted-foreground ">Proprietário</h3>
                                 </div>
                                 <div className="space-y-3">
                                     <div>
@@ -380,7 +380,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                     <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500">
                                         <Wrench className="w-4 h-4" />
                                     </div>
-                                    <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">Especialista</h3>
+                                    <h3 className="text-[13px] font-black text-muted-foreground ">Especialista</h3>
                                 </div>
                                 <p className="text-sm font-bold text-foreground">{(os.technicians as any).name}</p>
                                 {(os.technicians as any).phone && <p className="text-xs text-muted-foreground mt-1">{(os.technicians as any).phone}</p>}
@@ -409,7 +409,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                 <div className="p-2 rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
                                     <DollarSign className="w-4 h-4" />
                                 </div>
-                                <h3 className="text-[11px] font-black text-primary uppercase tracking-wider">Resumo Financeiro</h3>
+                                <h3 className="text-[13px] font-black text-primary ">Resumo Financeiro</h3>
                             </div>
 
                             <div className="space-y-4 text-sm relative z-10">
@@ -466,7 +466,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                         {/* Tracking link */}
                         {os.tracking_token && (
                             <div className="rounded-2xl border border-border/50 bg-muted/20 p-5 group shadow-sm">
-                                <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-wider mb-3">Link de Rastreio</h3>
+                                <h3 className="text-[13px] font-black text-muted-foreground mb-3">Link de Rastreio</h3>
                                 <div className="flex items-center gap-2">
                                     <div className="flex-1 bg-background/50 border border-border/50 rounded-xl px-3 py-2 text-[11px] font-mono text-muted-foreground truncate select-all">
                                         {`${typeof window !== 'undefined' ? window.location.origin : ''}/tracking/${os.tracking_token}`}

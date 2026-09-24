@@ -448,7 +448,7 @@ export default function CashRegisterClient() {
                         <div className="lg:col-span-4 space-y-8">
                             {/* Actions Card */}
                             <div className="glass-premium bg-card/65 border border-white/5 rounded-3xl p-6 space-y-6 shadow-lg">
-                                <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                <h3 className="text-xs font-black text-muted-foreground flex items-center gap-2">
                                     <Zap className="w-4 h-4 text-primary" />
                                     Ações Rápidas
                                 </h3>
@@ -516,9 +516,9 @@ export default function CashRegisterClient() {
                                             Abra o caixa para começar a processar vendas e gerenciar movimentações financeiras.
                                         </p>
                                         <button 
-                                            onClick={() => setIsOpeningModalOpen(true)}
-                                            className="w-full py-2.5 bg-primary text-black font-black text-[11px] uppercase tracking-widest rounded-xl hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/20"
-                                        >
+ onClick={() => setIsOpeningModalOpen(true)}
+ className="w-full py-2.5 bg-primary text-black font-black text-[13px] rounded-xl hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/20"
+ >
                                             Ativar Agora
                                         </button>
                                     </div>
@@ -526,7 +526,7 @@ export default function CashRegisterClient() {
                             
                             {/* Performance Insights */}
                             <div className="glass-premium bg-card/65 border border-white/5 rounded-3xl p-6 space-y-6 shadow-lg">
-                                <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                                <h3 className="text-xs font-black text-muted-foreground flex items-center gap-2">
                                     <Activity className="w-4 h-4 text-primary" />
                                     Métricas de Hoje
                                 </h3>

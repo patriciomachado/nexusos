@@ -158,34 +158,34 @@ export default function ProductCatalog() {
                     className="flex items-center gap-2 glass-premium bg-white/[0.02] p-1.5 rounded-2xl border border-white/5 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none"
                 >
                     <button
-                        onClick={() => setActiveCategory('all')}
-                        className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shrink-0 ${activeCategory === 'all'
-                            ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                            }`}
-                    >
+ onClick={() => setActiveCategory('all')}
+ className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black transition-all shrink-0 ${activeCategory === 'all'
+ ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
+ : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+ }`}
+ >
                         <Grid3X3 className="w-4 h-4" />
                         Todos
                     </button>
                     <button
-                        onClick={() => setActiveCategory('servicos')}
-                        className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shrink-0 ${activeCategory === 'servicos'
-                            ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                            }`}
-                    >
+ onClick={() => setActiveCategory('servicos')}
+ className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black transition-all shrink-0 ${activeCategory === 'servicos'
+ ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
+ : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+ }`}
+ >
                         <Wrench className="w-4 h-4" />
                         Serviços
                     </button>
                     {categories.map((cat) => (
                         <button
-                            key={cat.id}
-                            onClick={() => setActiveCategory(cat.id)}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shrink-0 ${activeCategory === cat.id
-                                ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
-                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                                }`}
-                        >
+ key={cat.id}
+ onClick={() => setActiveCategory(cat.id)}
+ className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black transition-all shrink-0 ${activeCategory === cat.id
+ ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
+ : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+ }`}
+ >
                             <Tag className="w-4 h-4" />
                             {cat.name}
                         </button>
@@ -219,7 +219,7 @@ export default function ProductCatalog() {
                             <Search className="w-16 h-16 text-muted-foreground" />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="font-black text-2xl tracking-tighter uppercase">Nenhum item encontrado</h3>
+                            <h3 className="font-black text-2xl tracking-tighter ">Nenhum item encontrado</h3>
                             <p className="text-sm font-bold opacity-60">Tente ajustar sua busca ou categoria.</p>
                         </div>
                     </div>

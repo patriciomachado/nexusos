@@ -2,6 +2,8 @@ import Sidebar from '@/components/layout/Sidebar'
 import BottomNav from '@/components/layout/BottomNav'
 import ClientAIWrapper from '@/components/ai/client-wrapper'
 import NotificationGenerator from '@/components/dashboard/NotificationGenerator'
+import ReminderWatcher from '@/components/tasks/ReminderWatcher'
+import QuickAddDialog from '@/components/tasks/QuickAddDialog'
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
@@ -119,6 +121,12 @@ export default async function DashboardLayout({
                 </SubscriptionStatusGuard>
             </main>
             <BottomNav userRole={role} />
+            {(role === 'admin' || role === 'owner') && (
+                <>
+                    <ReminderWatcher />
+                    <QuickAddDialog />
+                </>
+            )}
             {/* <ClientAIWrapper /> */}
         </div>
     )

@@ -53,7 +53,7 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
                 <div className="space-y-6">
                     {/* Sintomas */}
                     <div className="bg-card/40 border border-white/5 rounded-3xl p-5 backdrop-blur-xl space-y-4">
-                        <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Relato do Problema</h3>
+                        <h3 className="text-[13px] font-black text-muted-foreground ">Relato do Problema</h3>
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-[13px] font-medium text-muted-foreground mb-2">Sintomas relatados pelo cliente</label>
@@ -80,7 +80,7 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
 
                     {/* Estado físico */}
                     <div className="bg-card/40 border border-white/5 rounded-3xl p-5 backdrop-blur-xl space-y-4">
-                        <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Estado Físico</h3>
+                        <h3 className="text-[13px] font-black text-muted-foreground ">Estado Físico</h3>
                         <PremiumTextarea
                             value={form.device_condition}
                             onChange={e => setForm(p => ({ ...p, device_condition: e.target.value }))}
@@ -124,7 +124,7 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
                     {/* Checklist */}
                     <div className="bg-card/40 border border-white/5 rounded-3xl p-5 backdrop-blur-xl space-y-4">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Checklist do Dispositivo</h3>
+                            <h3 className="text-[13px] font-black text-muted-foreground ">Checklist do Dispositivo</h3>
                             <span className="text-[11px] text-muted-foreground font-bold">
                                 {checklist.filter((i: any) => i.completed).length}/{checklist.length}
                             </span>
@@ -153,7 +153,7 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
 
                     {/* Agendamento e Garantia */}
                     <div className="bg-card/40 border border-white/5 rounded-3xl p-5 backdrop-blur-xl space-y-5">
-                        <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Prazos & Garantia</h3>
+                        <h3 className="text-[13px] font-black text-muted-foreground ">Prazos & Garantia</h3>
                         <PremiumDateTimePicker
                             label="Data de Entrega / Agendamento"
                             value={form.scheduled_date}
@@ -176,18 +176,18 @@ export default function StepDiagnosticoForm({ form, setForm, photos, setPhotos, 
             {/* Navigation */}
             <div className="flex items-center justify-between pt-2">
                 <button
-                    type="button"
-                    onClick={onBack}
-                    className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-[11px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2 text-muted-foreground"
-                >
+ type="button"
+ onClick={onBack}
+ className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-[13px] font-black hover:bg-white/10 transition-all flex items-center gap-2 text-muted-foreground"
+ >
                     <ChevronLeft className="w-4 h-4" />
                     Voltar
                 </button>
                 <button
-                    type="button"
-                    onClick={onNext}
-                    className="px-8 py-4 rounded-2xl bg-violet-500 text-white text-sm font-black uppercase tracking-widest hover:bg-violet-400 transition-all shadow-lg shadow-violet-500/20 flex items-center gap-3"
-                >
+ type="button"
+ onClick={onNext}
+ className="px-8 py-4 rounded-2xl bg-violet-500 text-white text-sm font-black hover:bg-violet-400 transition-all shadow-lg shadow-violet-500/20 flex items-center gap-3"
+ >
                     Próximo
                     <ChevronRight className="w-4 h-4" />
                 </button>

@@ -530,10 +530,10 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                             Cancelar
                         </button>
                         <button
-                            type="submit"
-                            disabled={isSaving}
-                            className="px-6 py-2.5 rounded-xl bg-primary text-black text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 disabled:opacity-50"
-                        >
+ type="submit"
+ disabled={isSaving}
+ className="px-6 py-2.5 rounded-xl bg-primary text-black text-xs font-black hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 disabled:opacity-50"
+ >
                             {isSaving ? 'Salvando...' : deviceToEdit ? 'Atualizar Aparelho' : 'Salvar no Estoque'}
                         </button>
                     </div>

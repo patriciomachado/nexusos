@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
 import Link from 'next/link'
 import { formatDate, cn } from '@/lib/utils'
-import { Plus, Search, Filter, Calendar, User, Wrench, ArrowRight } from 'lucide-react'
+import { Plus, Filter, Calendar, User, Wrench, ArrowRight } from 'lucide-react'
 import OSActions from '@/components/os/OSActions'
 import SearchInput from '@/components/ui/SearchInput'
 
@@ -68,9 +68,9 @@ export default async function ServiceOrdersPage({
                         <p className="text-muted-foreground font-medium text-base leading-relaxed max-w-xl">Acompanhe e gerencie todas as manutenções da sua oficina em tempo real.</p>
                     </div>
                     <Link
-                        href="/service-orders/new"
-                        className="flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-3xl font-black uppercase text-xs tracking-wider shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group"
-                    >
+ href="/service-orders/new"
+ className="flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-3xl font-black text-xs shadow-2xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group"
+ >
                         Nova Ordem (OS)
                         <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
                     </Link>
@@ -81,17 +81,17 @@ export default async function ServiceOrdersPage({
                     {/* Status Tabs */}
                     <div className="flex items-center gap-3 overflow-x-auto w-full xl:w-auto pb-2 xl:pb-0 scrollbar-hide pr-6">
                         <Link
-                            href="/service-orders"
-                            className={`px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${!status ? 'bg-primary text-primary-foreground shadow-xl shadow-primary/20' : 'bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted'}`}
-                        >
+ href="/service-orders"
+ className={`px-6 py-3 rounded-2xl text-xs font-black transition-all whitespace-nowrap ${!status ? 'bg-primary text-primary-foreground shadow-xl shadow-primary/20' : 'bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+ >
                             Todas
                         </Link>
                         {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
                             <Link
-                                key={key}
-                                href={`/service-orders?status=${key}`}
-                                className={`px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${status === key ? 'bg-primary text-primary-foreground shadow-xl shadow-primary/20' : 'bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted'}`}
-                            >
+ key={key}
+ href={`/service-orders?status=${key}`}
+ className={`px-6 py-3 rounded-2xl text-xs font-black transition-all whitespace-nowrap ${status === key ? 'bg-primary text-primary-foreground shadow-xl shadow-primary/20' : 'bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+ >
                                 {cfg.label}
                             </Link>
                         ))}
@@ -100,7 +100,6 @@ export default async function ServiceOrdersPage({
                     {/* Search & Actions */}
                     <div className="flex items-center gap-4 w-full xl:w-auto">
                         <div className="relative flex-1 xl:w-80 group">
-                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                             <SearchInput
                                 placeholder="OS, cliente, placa..."
                                 className="w-full bg-muted/30 border border-white/5 rounded-2xl pl-12 pr-6 py-4 text-sm font-medium focus:outline-none focus:border-primary/30 transition-all placeholder:opacity-30 h-14"
@@ -208,9 +207,9 @@ export default async function ServiceOrdersPage({
                                     <h3 className="text-2xl font-black tracking-tight text-foreground/60">Silêncio na Oficina...</h3>
                                     <p className="text-muted-foreground text-sm mt-2 mb-10 max-w-xs mx-auto">Você ainda não possui ordens de serviço. Clique abaixo para iniciar.</p>
                                     <Link
-                                        href="/service-orders/new"
-                                        className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-3xl font-black uppercase text-xs tracking-widest shadow-2xl shadow-primary/20 transition-all hover:scale-105"
-                                    >
+ href="/service-orders/new"
+ className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-3xl font-black text-xs shadow-2xl shadow-primary/20 transition-all hover:scale-105"
+ >
                                         <Plus className="w-5 h-5" />
                                         Abrir minha 1ª OS
                                     </Link>
@@ -285,9 +284,9 @@ export default async function ServiceOrdersPage({
                                 </div>
                                 <p className="text-sm font-bold text-muted-foreground">Nenhuma ordem de serviço encontrada.</p>
                                 <Link
-                                    href="/service-orders/new"
-                                    className="inline-flex items-center gap-2 mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-xl shadow-primary/20 transition-all hover:scale-105"
-                                >
+ href="/service-orders/new"
+ className="inline-flex items-center gap-2 mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-2xl font-black text-[13px] shadow-xl shadow-primary/20 transition-all hover:scale-105"
+ >
                                     <Plus className="w-4 h-4" />
                                     Nova OS
                                 </Link>

@@ -68,7 +68,7 @@ export default function CloseCashModal({
                                     <Lock className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-black tracking-tight uppercase">{title}</h2>
+                                    <h2 className="text-2xl font-black tracking-tight ">{title}</h2>
                                     <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest">Resumo do Período</p>
                                 </div>
                             </div>
@@ -126,17 +126,17 @@ export default function CloseCashModal({
 
                         <div className="flex gap-4 pt-4">
                             <button
-                                onClick={onClose}
-                                disabled={loading}
-                                className="flex-1 py-4 rounded-2xl font-bold text-sm uppercase tracking-widest text-muted-foreground hover:bg-muted transition-all active:scale-95"
-                            >
+ onClick={onClose}
+ disabled={loading}
+ className="flex-1 py-4 rounded-2xl font-bold text-sm text-muted-foreground hover:bg-muted transition-all active:scale-95"
+ >
                                 Voltar
                             </button>
                             <button
-                                onClick={handleConfirm}
-                                disabled={loading}
-                                className="flex-[2] py-4 rounded-2xl bg-foreground text-background font-black text-sm uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-3 shadow-2xl hover:bg-foreground/90 disabled:opacity-50"
-                            >
+ onClick={handleConfirm}
+ disabled={loading}
+ className="flex-[2] py-4 rounded-2xl bg-foreground text-background font-black text-sm transition-all active:scale-95 flex items-center justify-center gap-3 shadow-2xl hover:bg-foreground/90 disabled:opacity-50"
+ >
                                 {loading && <Loader2 className="w-5 h-5 animate-spin" />}
                                 Confirmar e Fechar
                             </button>
@@ -148,7 +148,7 @@ export default function CloseCashModal({
                             <CheckCircle2 className="w-12 h-12" />
                         </div>
                         <div className="space-y-2">
-                            <h2 className="text-3xl font-black tracking-tight uppercase">Caixa Fechado!</h2>
+                            <h2 className="text-3xl font-black tracking-tight ">Caixa Fechado!</h2>
                             <p className="text-muted-foreground text-sm font-medium">Relatório gerado com sucesso para auditoria.</p>
                         </div>
                         <div className="p-1 px-4 rounded-full bg-muted text-[11px] font-black uppercase tracking-widest animate-pulse">

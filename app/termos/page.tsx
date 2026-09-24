@@ -18,7 +18,7 @@ export default function TermsOfUsePage() {
             {/* Header / Navigation */}
             <header className="relative z-10 h-20 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl sticky top-0 px-4 md:px-8 flex items-center justify-between">
                 <div className="max-w-6xl w-full mx-auto flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2 group text-xs font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">
+                    <Link href="/" className="flex items-center gap-2 group text-xs font-black text-slate-400 hover:text-white transition-colors">
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         Voltar para o Início
                     </Link>
@@ -52,7 +52,7 @@ export default function TermsOfUsePage() {
                     
                     {/* Section 1 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">1</span>
                             Aceitação dos Termos
                         </h2>
@@ -63,7 +63,7 @@ export default function TermsOfUsePage() {
 
                     {/* Section 2 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">2</span>
                             Sobre a Plataforma Nexus OS
                         </h2>
@@ -74,7 +74,7 @@ export default function TermsOfUsePage() {
 
                     {/* Section 3 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">3</span>
                             Definições Principais
                         </h2>
@@ -88,7 +88,7 @@ export default function TermsOfUsePage() {
 
                     {/* Section 4 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">4</span>
                             Cadastro, Contas e Segurança
                         </h2>
@@ -99,7 +99,7 @@ export default function TermsOfUsePage() {
 
                     {/* Section 5 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">5</span>
                             Planos, Assinaturas e Cobranças
                         </h2>
@@ -121,7 +121,7 @@ export default function TermsOfUsePage() {
 
                     {/* Section 6 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">6</span>
                             Responsabilidades de Proteção de Dados (LGPD)
                         </h2>
@@ -137,7 +137,7 @@ export default function TermsOfUsePage() {
 
                     {/* Section 7 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">7</span>
                             Propriedade Intelectual
                         </h2>
@@ -148,7 +148,7 @@ export default function TermsOfUsePage() {
 
                     {/* Section 8 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">8</span>
                             Limitação de Responsabilidade
                         </h2>
@@ -159,7 +159,7 @@ export default function TermsOfUsePage() {
 
                     {/* Section 9 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">9</span>
                             Retenção e Exclusão pós-Cancelamento
                         </h2>
@@ -170,7 +170,7 @@ export default function TermsOfUsePage() {
 
                     {/* Section 10 */}
                     <div className="space-y-4 pt-4 border-t border-white/5">
-                        <h2 className="text-base font-black uppercase tracking-wider text-white">Suporte e Dúvidas</h2>
+                        <h2 className="text-base font-black text-white">Suporte e Dúvidas</h2>
                         <p className="text-sm text-slate-400 leading-relaxed">
                             Caso tenha qualquer dúvida referente aos Termos de Uso ou necessite de assistência, por favor, entre em contato através dos nossos canais de suporte ou e-mail:
                         </p>

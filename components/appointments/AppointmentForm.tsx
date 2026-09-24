@@ -121,7 +121,7 @@ export default function AppointmentForm({
                 <div className="space-y-4" suppressHydrationWarning>
                     <div className="flex items-center gap-2 mb-2" suppressHydrationWarning>
                         <User className="w-4 h-4 text-primary" />
-                        <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Informações do Cliente</h3>
+                        <h3 className="text-xs font-black text-muted-foreground">Informações do Cliente</h3>
                     </div>
 
                     <CustomerAutocomplete
@@ -146,7 +146,7 @@ export default function AppointmentForm({
                 <div className="space-y-4" suppressHydrationWarning>
                     <div className="flex items-center gap-2 mb-2" suppressHydrationWarning>
                         <CalendarIcon className="w-4 h-4 text-primary" />
-                        <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Data e Horário</h3>
+                        <h3 className="text-xs font-black text-muted-foreground">Data e Horário</h3>
                     </div>
                     <div className="grid grid-cols-2 gap-4" suppressHydrationWarning>
                         <PremiumInput
@@ -181,7 +181,7 @@ export default function AppointmentForm({
             <div className="space-y-4" suppressHydrationWarning>
                 <div className="flex items-center gap-2 mb-2" suppressHydrationWarning>
                     <ClipboardList className="w-4 h-4 text-primary" />
-                    <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Detalhes do Serviço</h3>
+                    <h3 className="text-xs font-black text-muted-foreground">Detalhes do Serviço</h3>
                 </div>
 
                 <ServiceOrderAutocomplete
@@ -206,17 +206,17 @@ export default function AppointmentForm({
 
             <div className="flex justify-end gap-3 pt-6 border-t border-white/5" suppressHydrationWarning>
                 <button
-                    type="button"
-                    onClick={onClose}
-                    className="px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
-                >
+ type="button"
+ onClick={onClose}
+ className="px-6 py-3 rounded-2xl text-[13px] font-black text-muted-foreground hover:text-foreground transition-colors"
+ >
                     Cancelar
                 </button>
                 <button
-                    type="submit"
-                    disabled={loading || isCreatingCustomer}
-                    className="px-8 py-3 rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all font-black text-[11px] uppercase tracking-widest disabled:opacity-50"
-                >
+ type="submit"
+ disabled={loading || isCreatingCustomer}
+ className="px-8 py-3 rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all font-black text-[13px] disabled:opacity-50"
+ >
                     {loading ? 'Salvando...' : appointment ? 'Salvar Alterações' : 'Confirmar Agendamento'}
                 </button>
             </div>

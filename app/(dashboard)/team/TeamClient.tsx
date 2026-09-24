@@ -53,9 +53,9 @@ export default function TeamClient() {
                         />
                     </div>
                     <button
-                        onClick={() => { setSelectedUser(undefined); setIsModalOpen(true); }}
-                        className="flex items-center gap-2 bg-primary text-primary-foreground h-9 px-4 rounded-lg font-black uppercase text-[11px] tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 group"
-                    >
+ onClick={() => { setSelectedUser(undefined); setIsModalOpen(true); }}
+ className="flex items-center gap-2 bg-primary text-primary-foreground h-9 px-4 rounded-lg font-black text-[13px] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 group"
+ >
                         <Plus className="w-3.5 h-3.5 group-hover:rotate-90 transition-transform" />
                         Novo Membro
                     </button>
@@ -131,9 +131,9 @@ export default function TeamClient() {
                                 </p>
                             </div>
                             <button
-                                onClick={() => setIsModalOpen(true)}
-                                className="bg-primary hover:bg-primary/90 text-primary-foreground h-16 px-12 rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-primary/20 transition-all hover:scale-105"
-                            >
+ onClick={() => setIsModalOpen(true)}
+ className="bg-primary hover:bg-primary/90 text-primary-foreground h-16 px-12 rounded-3xl font-black text-xs shadow-2xl shadow-primary/20 transition-all hover:scale-105"
+ >
                                 Convidar Primeiro Membro
                             </button>
                         </div>

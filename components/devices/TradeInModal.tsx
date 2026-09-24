@@ -248,10 +248,10 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
                         </div>
 
                         <button
-                            onClick={handleSubmit}
-                            disabled={isSubmitting}
-                            className="w-full md:w-auto px-6 py-3 bg-amber-500 text-black rounded-2xl text-xs font-black uppercase tracking-wider hover:bg-amber-400 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-amber-500/20"
-                        >
+ onClick={handleSubmit}
+ disabled={isSubmitting}
+ className="w-full md:w-auto px-6 py-3 bg-amber-500 text-black rounded-2xl text-xs font-black hover:bg-amber-400 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-amber-500/20"
+ >
                             <CheckCircle2 className="w-4 h-4" />
                             Registrar Avaliação
                         </button>

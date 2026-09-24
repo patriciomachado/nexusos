@@ -17,6 +17,7 @@ import RevenueChart from '@/components/dashboard/RevenueChart'
 import { cn } from '@/lib/utils'
 import EmployeeDashboard from '@/components/dashboard/EmployeeDashboard'
 import DashboardOnboardingWrapper from '@/components/dashboard/DashboardOnboardingWrapper'
+import TasksTodayWidget from '@/components/tasks/TasksTodayWidget'
 
 interface ServiceOrder {
     id: string
@@ -272,14 +273,17 @@ export default async function DashboardPage() {
                         </p>
                     </div>
                     <div className="flex items-center gap-4" suppressHydrationWarning>
-                        <Link href="/reports" className="px-5 py-2.5 rounded-2xl bg-card border border-border/40 text-[11px] font-black uppercase tracking-widest hover:bg-muted transition-all">
+                        <Link href="/reports" className="px-5 py-2.5 rounded-2xl bg-card border border-border/40 text-[13px] font-black hover:bg-muted transition-all">
                             Ver Relatórios
                         </Link>
-                        <Link href="/service-orders/new" className="px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground text-[11px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                        <Link href="/service-orders/new" className="px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground text-[13px] font-black shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
                             Nova OS
                         </Link>
                     </div>
                 </div>
+
+                {/* Seu dia (módulo Tarefas) */}
+                <TasksTodayWidget />
 
                 {/* Metrics Section */}
                 <div className="space-y-6">
@@ -292,7 +296,7 @@ export default async function DashboardPage() {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <div className="w-1.5 h-4 bg-primary rounded-full" />
-                                        <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">Fluxo de Caixa</h3>
+                                        <h3 className="text-[13px] font-black text-muted-foreground ">Fluxo de Caixa</h3>
                                     </div>
                                     <TrendingUp className="w-4 h-4 text-primary opacity-60" />
                                 </div>
@@ -366,7 +370,7 @@ export default async function DashboardPage() {
                                             <kpi.icon className="w-6 h-6" />
                                         </div>
                                         <div suppressHydrationWarning>
-                                            <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-wider leading-none mb-2">{kpi.label}</h3>
+                                            <h3 className="text-[13px] font-black text-muted-foreground leading-none mb-2">{kpi.label}</h3>
                                             <p className="text-2xl lg:text-3xl font-black text-foreground tracking-tighter">{kpi.value}</p>
                                             {kpi.subValue && (
                                                 <p className="text-xs font-semibold text-muted-foreground mt-1.5 opacity-80">
@@ -404,10 +408,10 @@ export default async function DashboardPage() {
                         <div className="glass-premium rounded-3xl sm:rounded-3xl overflow-hidden border border-white/5 shadow-2xl" suppressHydrationWarning>
                             <div className="p-5 sm:p-8 border-b border-white/5 flex flex-col sm:flex-row items-start sm:justify-between gap-3 bg-white/[0.02]">
                                 <div>
-                                    <h2 className="text-xl font-black uppercase tracking-widest leading-none">Ordens de Serviço Recentes</h2>
+                                    <h2 className="text-xl font-black leading-none">Ordens de Serviço Recentes</h2>
                                     <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-2 opacity-50">Últimas movimentações do sistema</p>
                                 </div>
-                                <Link href="/service-orders" className="px-6 py-3 rounded-2xl bg-white/5 text-[11px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5 w-full sm:w-auto text-center">
+                                <Link href="/service-orders" className="px-6 py-3 rounded-2xl bg-white/5 text-[13px] font-black hover:bg-white/10 transition-all border border-white/5 w-full sm:w-auto text-center">
                                     Ver Tudo
                                 </Link>
                             </div>

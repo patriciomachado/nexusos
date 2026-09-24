@@ -57,7 +57,7 @@ export default function ImportPage() {
             {/* Header */}
             <div className="flex flex-col gap-1 relative">
                 <div className="absolute -left-4 top-0 bottom-0 w-1 bg-primary rounded-full shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
-                <h1 className="text-3xl font-black tracking-tighter uppercase flex items-center gap-3">
+                <h1 className="text-3xl font-black tracking-tighter flex items-center gap-3">
                     Importação <span className="text-primary">uMDB Plus</span>
                 </h1>
                 <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider opacity-60">
@@ -77,7 +77,7 @@ export default function ImportPage() {
                                 <FileText className="w-6 h-6" />
                             </div>
                             <div>
-                                <h3 className="font-black uppercase tracking-widest text-xs">Clientes</h3>
+                                <h3 className="font-black text-xs">Clientes</h3>
                                 <p className="text-xs text-muted-foreground font-medium">Upload do arquivo CLIENTES.PDF</p>
                             </div>
                         </div>
@@ -107,7 +107,7 @@ export default function ImportPage() {
                                 <Zap className="w-6 h-6" />
                             </div>
                             <div>
-                                <h3 className="font-black uppercase tracking-widest text-xs">Ordens de Serviço</h3>
+                                <h3 className="font-black text-xs">Ordens de Serviço</h3>
                                 <p className="text-xs text-muted-foreground font-medium">Upload do arquivo ORDEMS.PDF</p>
                             </div>
                         </div>
@@ -145,7 +145,7 @@ export default function ImportPage() {
                                 )}
                             </div>
                             <div>
-                                <h4 className="font-black uppercase tracking-widest text-sm">
+                                <h4 className="font-black text-sm">
                                     {status === 'processing' && 'Processando PDFs...'}
                                     {status === 'uploading' && 'Sincronizando Banco...'}
                                     {status === 'completed' && 'Sucesso!'}
@@ -188,15 +188,15 @@ export default function ImportPage() {
             {/* Action Button */}
             <div className="flex flex-col items-center gap-6 pt-4">
                 <button 
-                    onClick={handleImport}
-                    disabled={isImporting || !customerFile || !orderFile}
-                    className={cn(
-                        "w-full md:w-auto min-w-[280px] h-16 rounded-2xl font-black uppercase tracking-wider text-lg transition-all duration-500 flex items-center justify-center gap-3 shadow-2xl",
-                        isImporting 
-                            ? "bg-muted text-muted-foreground cursor-not-allowed" 
-                            : "bg-primary text-white hover:scale-[1.02] hover:shadow-primary/40 active:scale-95"
-                    )}
-                >
+ onClick={handleImport}
+ disabled={isImporting || !customerFile || !orderFile}
+ className={cn(
+ "w-full md:w-auto min-w-[280px] h-16 rounded-2xl font-black text-lg transition-all duration-500 flex items-center justify-center gap-3 shadow-2xl",
+ isImporting 
+ ? "bg-muted text-muted-foreground cursor-not-allowed" 
+ : "bg-primary text-white hover:scale-[1.02] hover:shadow-primary/40 active:scale-95"
+ )}
+ >
                     {isImporting ? (
                         <>
                             <Loader2 className="w-6 h-6 animate-spin" />

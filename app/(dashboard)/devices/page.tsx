@@ -261,12 +261,12 @@ function DevicesContent() {
                             </button>
 
                             <button
-                                onClick={() => {
-                                    setDeviceToEdit(null)
-                                    setIsDeviceModalOpen(true)
-                                }}
-                                className="px-5 py-2.5 rounded-2xl bg-primary text-black text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-1.5"
-                            >
+ onClick={() => {
+ setDeviceToEdit(null)
+ setIsDeviceModalOpen(true)
+ }}
+ className="px-5 py-2.5 rounded-2xl bg-primary text-black text-xs font-black hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-1.5"
+ >
                                 <Plus className="w-4 h-4" />
                                 Adicionar Aparelho
                             </button>
@@ -513,9 +513,9 @@ function DevicesContent() {
                             </h2>
 
                             <button
-                                onClick={() => setIsTradeInModalOpen(true)}
-                                className="px-4 py-2 bg-amber-500 text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-amber-400 transition-all flex items-center gap-1.5"
-                            >
+ onClick={() => setIsTradeInModalOpen(true)}
+ className="px-4 py-2 bg-amber-500 text-black rounded-xl text-xs font-black hover:bg-amber-400 transition-all flex items-center gap-1.5"
+ >
                                 <Plus className="w-4 h-4" />
                                 Nova Avaliação
                             </button>
@@ -581,10 +581,10 @@ function DevicesContent() {
                                 </button>
 
                                 <Link
-                                    href={`/loja/${myStoreSlug}`}
-                                    target="_blank"
-                                    className="px-5 py-2.5 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
-                                >
+ href={`/loja/${myStoreSlug}`}
+ target="_blank"
+ className="px-5 py-2.5 bg-primary text-black rounded-xl text-xs font-black hover:bg-primary/90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
+ >
                                     Abrir Catálogo Público
                                     <ExternalLink className="w-4 h-4" />
                                 </Link>
@@ -672,10 +672,10 @@ function DevicesContent() {
                             </button>
 
                             <button
-                                disabled={isSubmittingSale}
-                                onClick={handleConfirmSale}
-                                className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20"
-                            >
+ disabled={isSubmittingSale}
+ onClick={handleConfirmSale}
+ className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-black rounded-2xl text-xs transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20"
+ >
                                 {isSubmittingSale ? 'Processando...' : 'Confirmar Venda'}
                             </button>
                         </div>

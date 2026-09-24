@@ -361,25 +361,25 @@ export default function TransactionHistory({
                     <div className="flex items-center gap-1.5 bg-muted/30 p-1 rounded-2xl border border-border/50">
                         {availableMonths.slice(0, 3).map((monthOption) => (
                             <button
-                                key={monthOption.value}
-                                onClick={() => setTimeRange(monthOption.value)}
-                                className={cn(
-                                    "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                                    timeRange === monthOption.value ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
+ key={monthOption.value}
+ onClick={() => setTimeRange(monthOption.value)}
+ className={cn(
+ "px-3 py-1.5 rounded-xl text-[13px] font-black transition-all",
+ timeRange === monthOption.value ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+ )}
+ >
                                 {monthOption.label.split(' de ')[0]}
                             </button>
                         ))}
                         
                         <div className="relative">
                             <button
-                                onClick={() => setShowMonthPicker(!showMonthPicker)}
-                                className={cn(
-                                    "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
-                                    timeRange.includes('-') ? "bg-primary/10 text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
+ onClick={() => setShowMonthPicker(!showMonthPicker)}
+ className={cn(
+ "px-3 py-1.5 rounded-xl text-[13px] font-black transition-all flex items-center gap-2",
+ timeRange.includes('-') ? "bg-primary/10 text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+ )}
+ >
                                 <Calendar className="w-3 h-3" />
                                 {timeRange.includes('-') 
                                     ? availableMonths.find(m => m.value === timeRange)?.label 
@@ -391,30 +391,30 @@ export default function TransactionHistory({
                                     <div className="max-h-60 overflow-y-auto custom-scrollbar">
                                         {availableMonths.map((m) => (
                                             <button
-                                                key={m.value}
-                                                onClick={() => {
-                                                    setTimeRange(m.value)
-                                                    setShowMonthPicker(false)
-                                                }}
-                                                className={cn(
-                                                    "w-full text-left px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-colors",
-                                                    timeRange === m.value ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                                )}
-                                            >
+ key={m.value}
+ onClick={() => {
+ setTimeRange(m.value)
+ setShowMonthPicker(false)
+ }}
+ className={cn(
+ "w-full text-left px-4 py-2 text-[13px] font-black transition-colors",
+ timeRange === m.value ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+ )}
+ >
                                                 {m.label}
                                             </button>
                                         ))}
                                         <div className="border-t border-border/10 my-1" />
                                         <button
-                                            onClick={() => {
-                                                setTimeRange('all')
-                                                setShowMonthPicker(false)
-                                            }}
-                                            className={cn(
-                                                "w-full text-left px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-colors",
-                                                timeRange === 'all' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                            )}
-                                        >
+ onClick={() => {
+ setTimeRange('all')
+ setShowMonthPicker(false)
+ }}
+ className={cn(
+ "w-full text-left px-4 py-2 text-[13px] font-black transition-colors",
+ timeRange === 'all' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+ )}
+ >
                                             Ver Tudo
                                         </button>
                                     </div>
@@ -428,30 +428,30 @@ export default function TransactionHistory({
                     {/* Type Filter */}
                     <div className="flex items-center gap-1.5 bg-muted/30 p-1 rounded-2xl border border-border/50">
                         <button
-                            onClick={() => setFilterType('all')}
-                            className={cn(
-                                "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                                filterType === 'all' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                            )}
-                        >
+ onClick={() => setFilterType('all')}
+ className={cn(
+ "px-3 py-1.5 rounded-xl text-[13px] font-black transition-all",
+ filterType === 'all' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+ )}
+ >
                             Todos
                         </button>
                         <button
-                            onClick={() => setFilterType('entry')}
-                            className={cn(
-                                "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                                filterType === 'entry' ? "bg-emerald-500/10 text-emerald-500 shadow-sm" : "text-muted-foreground hover:text-emerald-500"
-                            )}
-                        >
+ onClick={() => setFilterType('entry')}
+ className={cn(
+ "px-3 py-1.5 rounded-xl text-[13px] font-black transition-all",
+ filterType === 'entry' ? "bg-emerald-500/10 text-emerald-500 shadow-sm" : "text-muted-foreground hover:text-emerald-500"
+ )}
+ >
                             Entradas
                         </button>
                         <button
-                            onClick={() => setFilterType('exit')}
-                            className={cn(
-                                "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
-                                filterType === 'exit' ? "bg-rose-500/10 text-rose-500 shadow-sm" : "text-muted-foreground hover:text-rose-500"
-                            )}
-                        >
+ onClick={() => setFilterType('exit')}
+ className={cn(
+ "px-3 py-1.5 rounded-xl text-[13px] font-black transition-all",
+ filterType === 'exit' ? "bg-rose-500/10 text-rose-500 shadow-sm" : "text-muted-foreground hover:text-rose-500"
+ )}
+ >
                             Saídas
                         </button>
                     </div>
@@ -553,7 +553,7 @@ export default function TransactionHistory({
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-2">
                         <div>
-                            <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                            <h3 className="text-sm font-black text-muted-foreground flex items-center gap-2">
                                 <ShieldCheck className="w-4 h-4 text-primary" />
                                 Histórico de Fechamentos (Expedientes)
                             </h3>

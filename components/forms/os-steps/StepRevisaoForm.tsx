@@ -173,13 +173,13 @@ export default function StepRevisaoForm({
                     </p>
                 </div>
                 <button
-                    type="button"
-                    onClick={() => setForm(p => ({ ...p, terms_accepted: !p.terms_accepted }))}
-                    className={`w-full py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${form.terms_accepted
-                        ? 'bg-indigo-500 text-white'
-                        : 'bg-white/5 text-muted-foreground border border-white/5'
-                        }`}
-                >
+ type="button"
+ onClick={() => setForm(p => ({ ...p, terms_accepted: !p.terms_accepted }))}
+ className={`w-full py-3 rounded-xl text-[13px] font-black transition-all ${form.terms_accepted
+ ? 'bg-indigo-500 text-white'
+ : 'bg-white/5 text-muted-foreground border border-white/5'
+ }`}
+ >
                     {form.terms_accepted ? '✓ Termos Aceitos' : 'Aceitar Termos'}
                 </button>
             </div>
@@ -187,19 +187,19 @@ export default function StepRevisaoForm({
             {/* Navigation */}
             <div className="flex items-center justify-between pb-8">
                 <button
-                    type="button"
-                    onClick={onBack}
-                    className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-[11px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2 text-muted-foreground"
-                >
+ type="button"
+ onClick={onBack}
+ className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-[13px] font-black hover:bg-white/10 transition-all flex items-center gap-2 text-muted-foreground"
+ >
                     <ChevronLeft className="w-4 h-4" />
                     Voltar
                 </button>
                 <button
-                    type="button"
-                    onClick={onSubmit}
-                    disabled={isPending || isUploading}
-                    className="px-10 py-4 rounded-2xl bg-emerald-500 text-white text-sm font-black uppercase tracking-widest hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+ type="button"
+ onClick={onSubmit}
+ disabled={isPending || isUploading}
+ className="px-10 py-4 rounded-2xl bg-emerald-500 text-white text-sm font-black hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+ >
                     {(isPending || isUploading) ? (
                         <><Loader2 className="w-4 h-4 animate-spin" /> Criando OS...</>
                     ) : (

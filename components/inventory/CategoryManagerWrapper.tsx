@@ -11,9 +11,9 @@ export default function CategoryManagerWrapper() {
     return (
         <>
             <button
-                onClick={() => setIsOpen(true)}
-                className="h-14 flex items-center gap-3 px-8 rounded-2xl bg-muted/30 border border-white/5 text-[11px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-all"
-            >
+ onClick={() => setIsOpen(true)}
+ className="h-14 flex items-center gap-3 px-8 rounded-2xl bg-muted/30 border border-white/5 text-[13px] font-black text-muted-foreground hover:text-foreground transition-all"
+ >
                 <Tag className="w-5 h-5" />
                 <span>Categorias</span>
             </button>

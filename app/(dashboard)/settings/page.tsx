@@ -20,12 +20,12 @@ export default async function SettingsPage() {
                     <ShieldCheck className="w-20 h-20 relative z-10" />
                 </div>
                 <div className="space-y-4">
-                    <h1 className="text-4xl font-black text-foreground tracking-tighter uppercase">Barreira de Segurança</h1>
+                    <h1 className="text-4xl font-black text-foreground tracking-tighter ">Barreira de Segurança</h1>
                     <p className="text-muted-foreground text-lg max-w-sm mx-auto font-medium leading-relaxed">
                         Seu nível de acesso atual não permite a modificação de parâmetros estruturais do sistema.
                     </p>
                 </div>
-                <button className="bg-muted px-8 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-muted/80 transition-all">Solicitar Acesso Master</button>
+                <button className="bg-muted px-8 py-4 rounded-2xl font-black text-[13px] hover:bg-muted/80 transition-all">Solicitar Acesso Master</button>
             </div>
         )
     }

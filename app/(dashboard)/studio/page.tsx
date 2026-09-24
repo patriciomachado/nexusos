@@ -445,10 +445,10 @@ function StudioContent() {
                                     </div>
 
                                     <button
-                                        onClick={() => handleGenerate()}
-                                        disabled={isGenerating}
-                                        className="w-full py-4 bg-primary text-black rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50"
-                                    >
+ onClick={() => handleGenerate()}
+ disabled={isGenerating}
+ className="w-full py-4 bg-primary text-black rounded-2xl text-xs font-black hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50"
+ >
                                         {isGenerating ? (
                                             <>
                                                 <RefreshCw className="w-5 h-5 animate-spin" />
@@ -485,18 +485,18 @@ function StudioContent() {
                                             </button>
 
                                             <button
-                                                onClick={() => openTeleprompter(currentOutput)}
-                                                className="px-4 py-2 bg-amber-500 text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-amber-400 transition-all flex items-center gap-1.5 shadow-md"
-                                            >
+ onClick={() => openTeleprompter(currentOutput)}
+ className="px-4 py-2 bg-amber-500 text-black rounded-xl text-xs font-black hover:bg-amber-400 transition-all flex items-center gap-1.5 shadow-md"
+ >
                                                 <Play className="w-4 h-4 fill-current" />
                                                 Teleprompter
                                             </button>
 
                                             <button
-                                                onClick={handleSaveScript}
-                                                disabled={isSaving}
-                                                className="px-4 py-2 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center gap-1.5 disabled:opacity-50"
-                                            >
+ onClick={handleSaveScript}
+ disabled={isSaving}
+ className="px-4 py-2 bg-primary text-black rounded-xl text-xs font-black hover:bg-primary/90 transition-all flex items-center gap-1.5 disabled:opacity-50"
+ >
                                                 <Copy className="w-4 h-4" />
                                                 Salvar
                                             </button>
@@ -523,7 +523,7 @@ function StudioContent() {
 
                                     {/* 4. Mídias de Exportação */}
                                     <div className="space-y-4 pt-4 border-t border-border">
-                                        <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Pronto para Copiar & Postar:</h4>
+                                        <h4 className="text-xs font-black text-muted-foreground">Pronto para Copiar & Postar:</h4>
                                         
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                             {/* Instagram */}
@@ -653,13 +653,13 @@ function StudioContent() {
                                             <p className="text-xs text-muted-foreground mt-1">{idea.desc}</p>
                                         </div>
                                         <button
-                                            onClick={() => {
-                                                setTopic(idea.title)
-                                                setActiveTab('generate')
-                                                handleGenerate(idea.title)
-                                            }}
-                                            className="w-full py-2 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all flex items-center justify-center gap-2 mt-2"
-                                        >
+ onClick={() => {
+ setTopic(idea.title)
+ setActiveTab('generate')
+ handleGenerate(idea.title)
+ }}
+ className="w-full py-2 bg-primary text-black rounded-xl text-xs font-black hover:bg-primary/90 transition-all flex items-center justify-center gap-2 mt-2"
+ >
                                             <Wand2 className="w-3.5 h-3.5" />
                                             Criar com Claude AI
                                         </button>
@@ -692,9 +692,9 @@ function StudioContent() {
 
                                         <div className="pt-3 border-t border-border/50">
                                             <button
-                                                onClick={() => handleSelectSeasonalEvent(event)}
-                                                className="w-full py-2.5 bg-primary text-black rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
-                                            >
+ onClick={() => handleSelectSeasonalEvent(event)}
+ className="w-full py-2.5 bg-primary text-black rounded-xl text-xs font-black hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+ >
                                                 <Wand2 className="w-4 h-4" />
                                                 ✨ Criar Conteúdo com Claude AI
                                             </button>
@@ -936,7 +936,7 @@ function StudioContent() {
                                     </div>
 
                                     <div className="space-y-2 py-4">
-                                        <h2 className="text-xl font-black text-white uppercase tracking-tight drop-shadow-md">
+                                        <h2 className="text-xl font-black text-white tracking-tight drop-shadow-md">
                                             {bannerTitle || 'SEU TÍTULO AQUI'}
                                         </h2>
                                         <p className="text-xs font-bold text-amber-300 bg-black/50 p-2.5 rounded-xl border border-amber-500/30 inline-block">
@@ -952,7 +952,7 @@ function StudioContent() {
 
                                 {/* Prompts Formatados para ChatGPT e Nano Banana */}
                                 <div className="space-y-4 pt-2 border-t border-border">
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Prompts Profissionais em Inglês:</h4>
+                                    <h4 className="text-xs font-black text-muted-foreground">Prompts Profissionais em Inglês:</h4>
 
                                     {/* 1. Prompt ChatGPT (DALL-E 3) */}
                                     <div className="p-4 bg-muted/30 border border-border rounded-2xl space-y-3">

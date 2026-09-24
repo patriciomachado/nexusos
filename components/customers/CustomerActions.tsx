@@ -97,26 +97,26 @@ export default function CustomerActions({
                     />
                     <div className="absolute right-0 mt-2 w-48 bg-card border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         <button
-                            onClick={(e) => {
-                                e.preventDefault()
-                                e.stopPropagation()
-                                router.push(`/customers/${customerId}/edit`)
-                                setShowMenu(false)
-                            }}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-muted-foreground hover:bg-white/5 hover:text-foreground transition-colors border-b border-white/5"
-                        >
+ onClick={(e) => {
+ e.preventDefault()
+ e.stopPropagation()
+ router.push(`/customers/${customerId}/edit`)
+ setShowMenu(false)
+ }}
+ className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black text-muted-foreground hover:bg-white/5 hover:text-foreground transition-colors border-b border-white/5"
+ >
                             <Edit className="w-4 h-4" />
                             Editar Dados
                         </button>
                         <button
-                            onClick={(e) => {
-                                e.preventDefault()
-                                e.stopPropagation()
-                                setShowDeleteConfirm(true)
-                                setShowMenu(false)
-                            }}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500/10 transition-colors"
-                        >
+ onClick={(e) => {
+ e.preventDefault()
+ e.stopPropagation()
+ setShowDeleteConfirm(true)
+ setShowMenu(false)
+ }}
+ className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black text-rose-500 hover:bg-rose-500/10 transition-colors"
+ >
                             <Trash2 className="w-4 h-4" />
                             Excluir Cliente
                         </button>
