@@ -21,7 +21,7 @@ interface WizardProgressProps {
 
 export default function WizardProgress({ currentStep }: WizardProgressProps) {
     return (
-        <div className="sticky top-2 md:top-20 z-[400] mx-4 md:mx-0">
+        <div className="sticky top-16 md:top-20 z-30 mx-4 md:mx-0">
             <div className="bg-background/60 border border-border/60 rounded-2xl px-4 py-3 shadow-black/40">
                 <div className="flex items-center justify-between relative">
                     {/* Connecting line */}

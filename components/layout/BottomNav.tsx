@@ -57,7 +57,7 @@ export default function BottomNav({ userRole = 'attendant' }: { userRole?: UserR
     return (
         <div
             className={cn(
-                'fixed inset-0 z-50 lg:hidden pointer-events-none',
+                'fixed inset-0 z-[600] lg:hidden pointer-events-none',
                 mobileMenuOpen && 'pointer-events-auto'
             )}
             aria-hidden={!mobileMenuOpen}

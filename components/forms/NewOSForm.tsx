@@ -385,7 +385,7 @@ export default function NewOSForm({
     return (
         <form onSubmit={handleSubmit} className="p-4 max-w-[1600px] mx-auto space-y-8 pb-32 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {/* Header Flutuante com Resumo de Custo */}
-            <div className="sticky top-2 md:top-20 z-[400] bg-background/60 backdrop-blur-3xl border border-border/60 p-3 md:p-4 rounded-2xl flex items-center justify-between shadow-2xl shadow-black/40 transition-all gap-4">
+            <div className="sticky top-16 md:top-20 z-30 bg-background/60 backdrop-blur-3xl border border-border/60 p-3 md:p-4 rounded-2xl flex items-center justify-between shadow-2xl shadow-black/40 transition-all gap-4">
                 <div className="flex items-center gap-3 md:gap-4 min-w-0">
                     <div className="p-2.5 md:p-3 rounded-xl bg-indigo-500/20 text-indigo-400 shrink-0">
                         <Zap className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />
@@ -446,7 +446,7 @@ export default function NewOSForm({
                 <div className="lg:col-span-8 space-y-8">
                     
                     {/* CARD 1: IDENTIFICAÇÃO (CHUNKING) */}
-                    <div className="bg-card/40 border border-border/60 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[300] overflow-visible transition-all duration-500">
+                    <div className="bg-card/40 border border-border/60 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[3] overflow-visible transition-all duration-500">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[80px] rounded-full pointer-events-none" />
                         
                         <div className="relative flex items-center justify-between mb-8 border-b border-border/60 pb-4">
@@ -513,7 +513,7 @@ export default function NewOSForm({
                     </div>
 
                     {/* CARD 2: GESTÃO DE ITENS */}
-                    <div className="bg-card/40 border border-border/60 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[200] overflow-visible">
+                    <div className="bg-card/40 border border-border/60 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner relative group z-[2] overflow-visible">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[80px] rounded-full pointer-events-none" />
                         
 
@@ -570,7 +570,7 @@ export default function NewOSForm({
                     </div>
 
                     {/* CARD 3: DIAGNÓSTICO & NOTAS */}
-                    <div className="bg-card/40 border border-border/60 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner relative overflow-visible group z-[30]">
+                    <div className="bg-card/40 border border-border/60 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner relative overflow-visible group z-[1]">
                         <div className="relative flex items-center gap-3 mb-8 border-b border-border/60 pb-4">
                             <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
                                 <FileText className="w-5 h-5" />
