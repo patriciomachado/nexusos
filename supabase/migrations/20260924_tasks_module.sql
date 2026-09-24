@@ -75,6 +75,8 @@ CREATE TABLE IF NOT EXISTS task_routines (
     weekdays SMALLINT[] NOT NULL DEFAULT '{1,2,3,4,5,6}',
     day_period TEXT NOT NULL DEFAULT 'morning' CHECK (day_period IN ('morning', 'afternoon', 'evening')),
     remind_time TIME,
+    -- Último dia em que o lembrete da rotina foi enviado (evita repetir)
+    last_reminded_on DATE,
     -- [{ "id": "...", "title": "..." }]
     steps JSONB NOT NULL DEFAULT '[]'::jsonb,
     is_active BOOLEAN NOT NULL DEFAULT true,
@@ -82,6 +84,8 @@ CREATE TABLE IF NOT EXISTS task_routines (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+ALTER TABLE task_routines ADD COLUMN IF NOT EXISTS last_reminded_on DATE;
 
 CREATE INDEX IF NOT EXISTS idx_task_routines_company ON task_routines(company_id);
 
@@ -174,6 +178,28 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Lembrete diário das rotinas: seleciona e marca numa única instrução, para
+-- que dois chamadores ao mesmo tempo nunca enviem o mesmo lembrete.
+CREATE OR REPLACE FUNCTION claim_due_routine_reminders(p_company_id UUID, p_today DATE, p_from TIME, p_to TIME)
+RETURNS TABLE (routine_id UUID, company_id UUID, name TEXT, step_count INTEGER) AS $$
+BEGIN
+    RETURN QUERY
+    UPDATE task_routines r
+       SET last_reminded_on = p_today
+     WHERE r.is_active
+       AND r.remind_time IS NOT NULL
+       AND r.remind_time BETWEEN p_from AND p_to
+       AND EXTRACT(DOW FROM p_today)::SMALLINT = ANY (r.weekdays)
+       AND (r.last_reminded_on IS NULL OR r.last_reminded_on < p_today)
+       AND (p_company_id IS NULL OR r.company_id = p_company_id)
+       AND NOT EXISTS (
+           SELECT 1 FROM task_routine_runs x
+            WHERE x.routine_id = r.id AND x.run_date = p_today AND x.completed_at IS NOT NULL
+       )
+    RETURNING r.id, r.company_id, r.name, jsonb_array_length(r.steps);
+END;
+$$ LANGUAGE plpgsql;
+
 -- RLS: o app acessa via service role nas rotas de API; as políticas abaixo
 -- seguem o padrão dos outros módulos para acesso direto autenticado pelo Clerk.
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
@@ -203,5 +229,7 @@ END $$;
 -- As funções só devem ser chamadas pelo servidor (service role)
 REVOKE ALL ON FUNCTION tasks_rollover(UUID, DATE) FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION claim_due_task_reminders(UUID, INTEGER) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION claim_due_routine_reminders(UUID, DATE, TIME, TIME) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION tasks_rollover(UUID, DATE) TO service_role;
 GRANT EXECUTE ON FUNCTION claim_due_task_reminders(UUID, INTEGER) TO service_role;
+GRANT EXECUTE ON FUNCTION claim_due_routine_reminders(UUID, DATE, TIME, TIME) TO service_role;

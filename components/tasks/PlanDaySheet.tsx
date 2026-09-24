@@ -65,11 +65,9 @@ export default function PlanDaySheet({ open, onClose, today, tasks, alerts, capa
 
     useEffect(() => {
         if (!open) return
-        /* eslint-disable react-hooks/set-state-in-effect */
         setDest(Object.fromEntries(carried.map(t => [t.id, 'today' as Dest])))
         setBring(new Set())
         setPickedAlerts(new Set(todayAlerts.filter(a => a.severity === 'high').map(a => a.key)))
-        /* eslint-enable react-hooks/set-state-in-effect */
     // Only reset when the sheet opens.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open])

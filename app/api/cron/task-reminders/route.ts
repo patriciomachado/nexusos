@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { timingSafeEqual } from 'crypto'
 import { createAdminClient } from '@/lib/supabase'
-import { deliverDueReminders } from '@/lib/tasks/reminders'
+import { deliverDueReminders, deliverRoutineReminders } from '@/lib/tasks/reminders'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,8 +25,10 @@ export async function GET(req: NextRequest) {
     if (!authorized(req)) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
     try {
-        const delivered = await deliverDueReminders(createAdminClient())
-        return NextResponse.json({ delivered: delivered.length })
+        const db = createAdminClient()
+        const tasks = await deliverDueReminders(db)
+        const routines = await deliverRoutineReminders(db)
+        return NextResponse.json({ delivered: tasks.length + routines.length })
     } catch (error) {
         console.error('[cron/task-reminders] failed:', error)
         return NextResponse.json({ error: 'Falha ao enviar lembretes' }, { status: 500 })

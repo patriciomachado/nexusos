@@ -16,6 +16,7 @@ const ENTITY_META: Record<string, { icon: React.ComponentType<{ className?: stri
     appointments_tomorrow: { icon: Calendar, tint: 'bg-purple-500', href: () => '/appointments' },
     pending_payments: { icon: DollarSign, tint: 'bg-green-500', href: () => '/reports' },
     task: { icon: ListChecks, tint: 'bg-red-500', href: n => `/tarefas?task=${n.related_entity_id}` },
+    routine: { icon: ListChecks, tint: 'bg-orange-500', href: () => '/tarefas' },
 }
 
 // framer-motion's typings don't accept DOM props with React 19 here.

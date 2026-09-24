@@ -1,6 +1,7 @@
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import webpush from 'web-push'
+import { dateStringInZone, timeInZone } from './dates'
 
 export interface DeliveredReminder {
     reminder_id: string
@@ -9,6 +10,8 @@ export interface DeliveredReminder {
     title: string
     body: string
     url: string
+    /** Groups notifications on the device; defaults to the task id. */
+    tag?: string
 }
 
 let vapidConfigured: boolean | null = null
@@ -107,7 +110,7 @@ async function sendPush(db: SupabaseClient, reminders: DeliveredReminder[]) {
             try {
                 await webpush.sendNotification(
                     { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
-                    JSON.stringify({ title: reminder.title, body: reminder.body, url: reminder.url, tag: `task-${reminder.task_id}` }),
+                    JSON.stringify({ title: reminder.title, body: reminder.body, url: reminder.url, tag: reminder.tag ?? `task-${reminder.task_id}` }),
                     { TTL: 60 * 60, urgency: 'high' }
                 )
                 used.push(sub.id)
@@ -132,4 +135,55 @@ export async function sendTestPush(sub: { endpoint: string; p256dh: string; auth
         { TTL: 60 }
     )
     return true
+}
+
+/** How late a routine reminder may still go out (e.g. after a deploy or while offline). */
+const ROUTINE_GRACE_MINUTES = 180
+
+/**
+ * Sends the "Lembrar às" reminder of routines scheduled for today, once per
+ * day, unless the routine is already done. Selection and marking happen in
+ * one SQL statement so concurrent callers never send it twice.
+ */
+export async function deliverRoutineReminders(db: SupabaseClient, companyId?: string): Promise<DeliveredReminder[]> {
+    const today = dateStringInZone()
+    const now = timeInZone()
+    const nowMinutes = +now.slice(0, 2) * 60 + +now.slice(3, 5)
+    const earliest = Math.max(0, nowMinutes - ROUTINE_GRACE_MINUTES)
+    const earliestTime = `${String(Math.floor(earliest / 60)).padStart(2, '0')}:${String(earliest % 60).padStart(2, '0')}`
+
+    const { data: claimed, error } = await db.rpc('claim_due_routine_reminders', {
+        p_company_id: companyId ?? null,
+        p_today: today,
+        p_from: earliestTime,
+        p_to: `${now}:59`,
+    })
+    if (error) throw error
+    const rows = (claimed ?? []) as { routine_id: string; company_id: string; name: string; step_count: number }[]
+
+    const delivered: DeliveredReminder[] = rows.map(r => ({
+        reminder_id: r.routine_id,
+        task_id: r.routine_id,
+        company_id: r.company_id,
+        title: r.name,
+        body: `Hora da rotina · ${r.step_count} ${r.step_count === 1 ? 'passo' : 'passos'}`,
+        url: '/tarefas',
+        tag: `routine-${r.routine_id}`,
+    }))
+
+    if (delivered.length) {
+        const { error: notifyError } = await db.from('notifications').insert(delivered.map(d => ({
+            company_id: d.company_id,
+            type: 'push',
+            title: d.title,
+            message: d.body,
+            status: 'pending',
+            related_entity_type: 'routine',
+            related_entity_id: d.task_id,
+            sent_at: new Date().toISOString(),
+        })))
+        if (notifyError) console.error('[tasks/reminders] could not add routine reminder to notifications:', notifyError)
+        await sendPush(db, delivered)
+    }
+    return delivered
 }

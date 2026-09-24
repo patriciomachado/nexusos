@@ -31,6 +31,11 @@ export function dateStringInZone(timeZone = DEFAULT_TIMEZONE, date: Date = new D
     return `${get('year')}-${get('month')}-${get('day')}`
 }
 
+/** HH:MM for "now" in a given IANA time zone. */
+export function timeInZone(timeZone = DEFAULT_TIMEZONE, date: Date = new Date()): string {
+    return new Intl.DateTimeFormat('en-GB', { timeZone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(date)
+}
+
 /** Adds whole days to a YYYY-MM-DD string. */
 export function addDays(day: string, amount: number): string {
     const d = new Date(`${day}T12:00:00Z`)

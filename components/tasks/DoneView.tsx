@@ -24,6 +24,7 @@ export default function DoneView() {
         }
     }, [])
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { load() }, [load])
 
     const reopen = async (task: Task) => {

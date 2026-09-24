@@ -54,7 +54,6 @@ export default function QuickAddDialog() {
 
     useEffect(() => {
         if (open) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setValue('')
             setTimeout(() => inputRef.current?.focus(), 30)
         }

@@ -34,7 +34,8 @@ const taskFields = {
 export const createTaskSchema = z.object({
     ...taskFields,
     source_key: z.string().max(200).nullable().optional(),
-    source_href: z.string().max(500).regex(/^\//, 'Link interno inválido').nullable().optional(),
+    // Internal paths only ("/x", never "//host" or a full URL).
+    source_href: z.string().max(500).regex(/^\/(?![/\\])/, 'Link interno inválido').nullable().optional(),
 })
 
 export const updateTaskSchema = z.object({
@@ -73,8 +74,27 @@ export const routineRunSchema = z.object({
     done: z.boolean(),
 })
 
+/** Browser push services; the server only ever sends to these hosts. */
+const PUSH_HOSTS = [
+    /^fcm\.googleapis\.com$/,
+    /^android\.googleapis\.com$/,
+    /^updates\.push\.services\.mozilla\.com$/,
+    /^web\.push\.apple\.com$/,
+    /\.push\.apple\.com$/,
+    /\.notify\.windows\.com$/,
+]
+
+export function isAllowedPushEndpoint(endpoint: string) {
+    try {
+        const url = new URL(endpoint)
+        return url.protocol === 'https:' && PUSH_HOSTS.some(re => re.test(url.hostname))
+    } catch {
+        return false
+    }
+}
+
 export const pushSubscriptionSchema = z.object({
-    endpoint: z.string().url().max(1000),
+    endpoint: z.string().url().max(1000).refine(isAllowedPushEndpoint, 'Serviço de notificação não suportado'),
     keys: z.object({
         p256dh: z.string().min(1).max(500),
         auth: z.string().min(1).max(200),

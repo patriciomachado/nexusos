@@ -41,11 +41,11 @@ function toLocalInput(iso: string) {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
-function reminderLabel(iso: string, today: string) {
+function reminderLabel(iso: string, today: string, now: number) {
     const d = new Date(iso)
     const day = toLocalInput(iso).slice(0, 10)
     const time = toLocalInput(iso).slice(11, 16)
-    return `${relativeDayLabel(day, today)}, ${time}${d.getTime() < Date.now() ? ' · já passou' : ''}`
+    return `${relativeDayLabel(day, today)}, ${time}${d.getTime() < now ? ' · já passou' : ''}`
 }
 
 function localDateTime(day: string, time: string) {
@@ -72,11 +72,15 @@ export default function TaskEditor({ open, task, draft, today, onClose, onSave, 
     const [saving, setSaving] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
     const [error, setError] = useState('')
+    // Captured when the sheet opens; render must not read the clock.
+    const [nowTs, setNowTs] = useState(0)
 
     useEffect(() => {
         if (!open) return
         const src: Partial<Task & TaskInput> = task ?? draft ?? {}
-        /* eslint-disable react-hooks/set-state-in-effect */
+        // Reset the form each time the sheet opens.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setNowTs(Date.now())
         setTitle(src.title ?? '')
         setNotes(src.notes ?? '')
         setPriority((src.priority as TaskPriority) ?? 3)
@@ -92,7 +96,6 @@ export default function TaskEditor({ open, task, draft, today, onClose, onSave, 
         setNewSubtask('')
         setCustomReminder('')
         setError('')
-        /* eslint-enable react-hooks/set-state-in-effect */
     }, [open, task, draft, today])
 
     const baseDay = doDate ?? today
@@ -121,7 +124,7 @@ export default function TaskEditor({ open, task, draft, today, onClose, onSave, 
             presets.push({ label: 'No dia, 9h', at: localDateTime(doDate, '09:00') })
             presets.push({ label: 'Na véspera, 18h', at: localDateTime(addDays(doDate, -1), '18:00') })
         }
-        return presets.filter(p => p.at.getTime() > Date.now() - 60_000)
+        return presets.filter(p => p.at.getTime() > nowTs - 60_000)
     })()
 
     const addReminder = (at: Date) => {
@@ -374,7 +377,7 @@ export default function TaskEditor({ open, task, draft, today, onClose, onSave, 
                                 {reminders.map(r => (
                                     <li key={r} className="flex items-center gap-3 px-3 h-11">
                                         <Bell className="w-4 h-4 text-orange-500" />
-                                        <span className={cn('flex-1 text-[15px]', new Date(r).getTime() < Date.now() && 'text-muted-foreground')}>{reminderLabel(r, today)}</span>
+                                        <span className={cn('flex-1 text-[15px]', new Date(r).getTime() < nowTs && 'text-muted-foreground')}>{reminderLabel(r, today, nowTs)}</span>
                                         <ClearButton label="Remover lembrete" onClick={() => setReminders(list => list.filter(x => x !== r))} />
                                     </li>
                                 ))}
