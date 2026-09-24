@@ -168,9 +168,6 @@ export const companyUpdateSchema = z.object({
   auto_close_cash: z.boolean().optional(),
   settings: z.record(z.string(), z.any()).optional(),
   google_review_url: z.string().optional().nullable().or(z.literal('')),
-  alice_active: z.boolean().optional(),
-  alice_token: z.string().optional().nullable(),
-  alice_sync_url: z.string().optional().nullable(),
 })
 
 // Service Type Schema

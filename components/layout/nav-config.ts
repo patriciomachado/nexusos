@@ -1,7 +1,7 @@
 import {
     LayoutDashboard, ClipboardList, Calendar, Users,
     Package, BarChart3, Settings, Zap,
-    Wallet, HeartHandshake, Users2, Wrench, Smartphone, ListChecks,
+    Wallet, HeartHandshake, Users2, Wrench, Smartphone, ListChecks, Sparkles,
 } from 'lucide-react'
 import type { UserRole } from '@/types'
 
@@ -45,6 +45,7 @@ export const navGroups: NavGroup[] = [
     {
         title: 'Administrativo',
         items: [
+            { href: '/alice', label: 'Alice (IA)', icon: Sparkles, roles: ['admin', 'owner'], tint: 'bg-violet-500' },
             { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager', 'cashier'], tint: 'bg-green-500' },
             { href: '/team', label: 'Equipe', icon: Users2, roles: ['admin', 'manager'], tint: 'bg-purple-500' },
             { href: '/reports', label: 'Relatórios', icon: BarChart3, roles: ['admin', 'manager'], tint: 'bg-indigo-500' },

@@ -121,7 +121,7 @@ export default function StepRevisaoForm({
             </div>
 
             {/* Items Manager */}
-            <div className="bg-card/40 border border-border/60 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner relative overflow-visible z-[200]">
+            <div className="bg-card/40 border border-border/60 rounded-3xl p-4 md:p-8 backdrop-blur-xl shadow-inner relative overflow-visible z-[2]">
                 <ItemsManager
                     inventoryItems={inventoryItems}
                     onChange={setItems}
