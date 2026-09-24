@@ -14,24 +14,40 @@ export interface DeliveredReminder {
     tag?: string
 }
 
-let vapidConfigured: boolean | null = null
+let vapidState: { ok: boolean; reason?: string } | null = null
 
-export function pushConfigured(): boolean {
-    if (vapidConfigured !== null) return vapidConfigured
-    const pub = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
-    const priv = process.env.VAPID_PRIVATE_KEY
+/** Env values pasted into dashboards often carry quotes, spaces or line breaks. */
+function cleanEnv(value: string | undefined) {
+    return value?.trim().replace(/^["']|["']$/g, '').trim() || ''
+}
+
+export function vapidPublicKey() {
+    return cleanEnv(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY)
+}
+
+/** Why push is (not) available, in words the admin can act on. */
+export function pushStatus(): { ok: boolean; reason?: string } {
+    if (vapidState) return vapidState
+    const pub = vapidPublicKey()
+    const priv = cleanEnv(process.env.VAPID_PRIVATE_KEY)
+    let subject = cleanEnv(process.env.VAPID_SUBJECT) || 'mailto:contato@nexusos.app'
+    if (!/^(mailto:|https:\/\/)/.test(subject)) subject = `mailto:${subject}`
     if (!pub || !priv) {
-        vapidConfigured = false
-        return false
+        vapidState = { ok: false, reason: `Faltando na Vercel: ${[!pub && 'NEXT_PUBLIC_VAPID_PUBLIC_KEY', !priv && 'VAPID_PRIVATE_KEY'].filter(Boolean).join(' e ')}` }
+        return vapidState
     }
     try {
-        webpush.setVapidDetails(process.env.VAPID_SUBJECT || 'mailto:contato@nexusos.app', pub, priv)
-        vapidConfigured = true
+        webpush.setVapidDetails(subject, pub, priv)
+        vapidState = { ok: true }
     } catch (error) {
-        console.error('[push] invalid VAPID keys:', error)
-        vapidConfigured = false
+        console.error('[push] invalid VAPID configuration:', error)
+        vapidState = { ok: false, reason: `Chaves VAPID inválidas: ${(error as Error).message}` }
     }
-    return vapidConfigured
+    return vapidState
+}
+
+export function pushConfigured(): boolean {
+    return pushStatus().ok
 }
 
 function timeLabel(time: string | null) {
@@ -126,15 +142,24 @@ async function sendPush(db: SupabaseClient, reminders: DeliveredReminder[]) {
     if (used.length) await db.from('push_subscriptions').update({ last_used_at: new Date().toISOString() }).in('id', [...new Set(used)])
 }
 
-/** Sends a test notification to one subscription (used right after enabling). */
-export async function sendTestPush(sub: { endpoint: string; p256dh: string; auth: string }) {
-    if (!pushConfigured()) return false
-    await webpush.sendNotification(
-        { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
-        JSON.stringify({ title: 'Lembretes ativados', body: 'Você vai receber os lembretes das suas tarefas aqui.', url: '/tarefas', tag: 'push-test' }),
-        { TTL: 60 }
-    )
-    return true
+/** Sends a test notification to one subscription. Returns an error message, or null on success. */
+export async function sendTestPush(sub: { endpoint: string; p256dh: string; auth: string }, title = 'Lembretes ativados'): Promise<string | null> {
+    const status = pushStatus()
+    if (!status.ok) return status.reason ?? 'Notificações não configuradas'
+    try {
+        await webpush.sendNotification(
+            { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+            JSON.stringify({ title, body: 'Você vai receber os lembretes das suas tarefas aqui.', url: '/tarefas', tag: 'push-test' }),
+            { TTL: 120, urgency: 'high' }
+        )
+        return null
+    } catch (err) {
+        const e = err as { statusCode?: number; body?: string; message?: string }
+        console.error('[push] test failed:', e.statusCode, e.body || e.message)
+        if (e.statusCode === 403) return 'O serviço de push recusou a chave (403). A chave pública do aparelho não bate com a do servidor: desative e ative os lembretes de novo.'
+        if (e.statusCode === 404 || e.statusCode === 410) return 'Esta inscrição expirou. Desative e ative os lembretes de novo.'
+        return `Falha ao enviar (${e.statusCode ?? 'sem resposta'}): ${(e.body || e.message || '').slice(0, 140)}`
+    }
 }
 
 /** How late a routine reminder may still go out (e.g. after a deploy or while offline). */

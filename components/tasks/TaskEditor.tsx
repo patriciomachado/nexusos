@@ -8,6 +8,7 @@ import Sheet from './Sheet'
 import Segmented from '@/components/ui/Segmented'
 import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 import { newId, type TaskInput } from './api'
+import { atTimeReminder } from './QuickAdd'
 import { PRIORITY_META, type Task, type TaskPriority, type DayPeriod, type Recurrence, type Subtask } from '@/lib/tasks/types'
 import { addDays, weekdayOf, relativeDayLabel, WEEKDAYS } from '@/lib/tasks/dates'
 import { describeRecurrence } from '@/lib/tasks/recurrence'
@@ -161,7 +162,8 @@ export default function TaskEditor({ open, task, draft, today, onClose, onSave, 
             deadline: deadline || null,
             recurrence: doDate ? buildRecurrence() : null,
             subtasks: pendingSubtask ? [...subtasks, { id: newId(), title: pendingSubtask, done: false }] : subtasks,
-            reminders,
+            // New task with a time and no reminder chosen: remind at that time.
+            reminders: !task && reminders.length === 0 ? atTimeReminder(doDate, time || null) : reminders,
         }, task)
         setSaving(false)
     }
