@@ -141,6 +141,16 @@ export default function TasksClient() {
         onDismiss: (a: TaskAlert) => ctl.alertAction(a, 'dismiss'),
     }
 
+    // Until the viewer's local day is known (first client render), nothing
+    // that does date math can render: show the loading state instead.
+    if (!today) {
+        return (
+            <div className="max-w-[1200px] mx-auto pt-24 sm:px-6 lg:px-8">
+                <SkeletonList />
+            </div>
+        )
+    }
+
     const counts = {
         today: todayTasks.length + overdue.length + todayAlerts.length,
         upcoming: tasks.filter(t => t.do_date && t.do_date > today).length,

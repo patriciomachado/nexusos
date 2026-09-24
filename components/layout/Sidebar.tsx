@@ -65,7 +65,7 @@ export default function Sidebar({ userRole = 'attendant' }: { userRole?: UserRol
             onMouseLeave={() => setIsHovered(false)}
             aria-label="Navegação principal"
             className={cn(
-                'h-screen z-30 flex-col border-r border-border/60 transition-[width] duration-300 ease-out',
+                'h-full z-30 flex-col border-r border-border/60 transition-[width] duration-300 ease-out',
                 'material-bar',
                 expanded ? 'w-64' : 'w-[72px]',
                 'hidden lg:flex relative shrink-0'

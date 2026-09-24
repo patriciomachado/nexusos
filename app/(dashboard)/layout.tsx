@@ -108,7 +108,7 @@ export default async function DashboardLayout({
     }
 
     return (
-        <div className="flex h-screen bg-background overflow-hidden max-w-full w-full transition-colors duration-300" suppressHydrationWarning>
+        <div className="flex h-[calc(100dvh-env(safe-area-inset-top))] bg-background overflow-hidden max-w-full w-full transition-colors duration-300" suppressHydrationWarning>
             <Sidebar userRole={role} />
             <main className="flex-1 overflow-y-auto overflow-x-hidden relative pb-0 w-full max-w-full" suppressHydrationWarning>
                 <NotificationGenerator />
