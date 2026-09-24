@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Bell, Inbox, ClipboardList, Package, Calendar, DollarSign, ListChecks } from 'lucide-react'
+import { MessageCircle, Bell, Inbox, ClipboardList, Package, Calendar, DollarSign, ListChecks } from 'lucide-react'
 import { useNotificationStore } from '@/store/notificationStore'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -17,6 +17,7 @@ const ENTITY_META: Record<string, { icon: React.ComponentType<{ className?: stri
     pending_payments: { icon: DollarSign, tint: 'bg-green-500', href: () => '/reports' },
     task: { icon: ListChecks, tint: 'bg-red-500', href: n => `/tarefas?task=${n.related_entity_id}` },
     routine: { icon: ListChecks, tint: 'bg-orange-500', href: () => '/tarefas' },
+    alice_conversation: { icon: MessageCircle, tint: 'bg-green-500', href: n => `/alice?conversa=${n.related_entity_id}` },
 }
 
 // framer-motion's typings don't accept DOM props with React 19 here.

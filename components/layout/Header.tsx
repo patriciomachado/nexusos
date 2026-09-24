@@ -4,6 +4,7 @@ import { Menu } from 'lucide-react'
 import { useAppStore } from '@/store/appStore'
 import ThemeToggle from './ThemeToggle'
 import NotificationsDropdown from './NotificationsDropdown'
+import AliceButton from '@/components/alice/AliceButton'
 import { UserButton } from '@clerk/nextjs'
 import { useState, useEffect } from 'react'
 
@@ -54,6 +55,7 @@ export default function Header({ title, subtitle, children }: HeaderProps) {
 
             {/* Trailing: actions */}
             <div className="flex items-center gap-1 sm:gap-2 shrink-0" suppressHydrationWarning>
+                <AliceButton />
                 <NotificationsDropdown />
                 {/* On phones the appearance switch lives in the menu drawer. */}
                 <div className="hidden sm:block">

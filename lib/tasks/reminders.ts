@@ -110,6 +110,11 @@ export async function deliverDueReminders(db: SupabaseClient, companyId?: string
     return delivered
 }
 
+/** Push to every subscribed device of a company (e.g. a WhatsApp customer asking for a person). */
+export async function pushToCompany(db: SupabaseClient, companyId: string, message: { title: string; body: string; url: string; tag: string }) {
+    await sendPush(db, [{ reminder_id: '', task_id: '', company_id: companyId, ...message }])
+}
+
 async function sendPush(db: SupabaseClient, reminders: DeliveredReminder[]) {
     if (!pushConfigured()) return
     const companyIds = [...new Set(reminders.map(r => r.company_id))]

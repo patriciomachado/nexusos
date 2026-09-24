@@ -1,6 +1,6 @@
 import Sidebar from '@/components/layout/Sidebar'
 import BottomNav from '@/components/layout/BottomNav'
-import ClientAIWrapper from '@/components/ai/client-wrapper'
+import AlicePanel from '@/components/alice/AlicePanel'
 import NotificationGenerator from '@/components/dashboard/NotificationGenerator'
 import ReminderWatcher from '@/components/tasks/ReminderWatcher'
 import QuickAddDialog from '@/components/tasks/QuickAddDialog'
@@ -131,7 +131,7 @@ export default async function DashboardLayout({
                     <QuickAddDialog />
                 </>
             )}
-            {/* <ClientAIWrapper /> */}
+            <AlicePanel />
         </div>
         </>
     )

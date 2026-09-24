@@ -10,11 +10,12 @@ const isPublicRoute = createRouteMatcher([
     '/api/catalog/(.*)',
     '/track(.*)',
     '/api/track(.*)',
-    '/api/os(.*)',
     '/privacidade(.*)',
     '/termos(.*)',
     // Scheduler calls; the route checks CRON_SECRET itself.
     '/api/cron/(.*)',
+    // Meta's servers; the route checks the webhook signature itself.
+    '/api/whatsapp/webhook',
 ])
 
 export default clerkMiddleware(async (auth, request) => {
