@@ -145,7 +145,7 @@ export default function PecasClient({
                 <div className="space-y-2">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-1 bg-primary rounded-full" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">Inteligência de Consumo</span>
+                        <span className="text-[11px] font-black uppercase tracking-wider text-primary/60">Inteligência de Consumo</span>
                     </div>
                     <h2 className="text-4xl lg:text-5xl font-black text-foreground tracking-tighter">Peças & Componentes</h2>
                     <p className="text-muted-foreground font-medium text-base leading-relaxed max-w-xl">
@@ -154,7 +154,7 @@ export default function PecasClient({
                 </div>
                 <Link
                     href="/inventory/new"
-                    className="flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3.5 rounded-2xl font-black uppercase text-xs tracking-[0.1em] shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group"
+                    className="flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3.5 rounded-2xl font-black uppercase text-xs tracking-wider shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group"
                 >
                     <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
                     Adicionar ao Estoque
@@ -180,8 +180,8 @@ export default function PecasClient({
                             </div>
                             <div>
                                 <p className="text-xl font-black text-foreground leading-none">{card.value}</p>
-                                <p className="text-[10px] text-muted-foreground/70 mt-1.5 font-bold uppercase tracking-wider">{card.label}</p>
-                                <p className="text-[9px] text-muted-foreground/50 mt-1">{card.sub}</p>
+                                <p className="text-[11px] text-muted-foreground mt-1.5 font-bold uppercase tracking-wider">{card.label}</p>
+                                <p className="text-[11px] text-muted-foreground mt-1">{card.sub}</p>
                             </div>
                         </div>
                     )
@@ -191,26 +191,26 @@ export default function PecasClient({
             {/* Top / Bottom 5 Cards */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 {/* Most Used */}
-                <div className="rounded-[1.5rem] bg-card/30 border border-white/[0.04] p-6 space-y-4">
+                <div className="rounded-2xl bg-card/30 border border-white/[0.04] p-6 space-y-4">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                             <TrendingUp className="w-4 h-4 text-emerald-400" />
                         </div>
                         <div>
                             <h3 className="text-sm font-black text-foreground">Mais Usadas</h3>
-                            <p className="text-[10px] text-muted-foreground/60">Últimos 30 dias</p>
+                            <p className="text-[11px] text-muted-foreground">Últimos 30 dias</p>
                         </div>
                     </div>
                     <div className="space-y-3">
                         {top5.length === 0 ? (
-                            <div className="h-28 flex flex-col items-center justify-center text-muted-foreground/30">
+                            <div className="h-28 flex flex-col items-center justify-center text-muted-foreground">
                                 <PackageOpen className="w-6 h-6 mb-2" />
                                 <span className="text-xs font-bold">Nenhum dado no período</span>
                             </div>
                         ) : top5.map((part, i) => (
                             <div key={i} className="flex items-center gap-3 group">
                                 <span className={cn(
-                                    'w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0',
+                                    'w-6 h-6 rounded-lg flex items-center justify-center text-[11px] font-black shrink-0',
                                     i === 0 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
                                     i === 1 ? 'bg-zinc-400/15 text-zinc-400 border border-zinc-500/25' :
                                     i === 2 ? 'bg-orange-700/20 text-orange-500 border border-orange-700/30' :
@@ -219,7 +219,7 @@ export default function PecasClient({
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between mb-1">
                                         <span className="text-xs font-bold text-foreground truncate pr-2">{part.name}</span>
-                                        <span className="text-[10px] font-black text-emerald-400 shrink-0">{part.totalQty}x</span>
+                                        <span className="text-[11px] font-black text-emerald-400 shrink-0">{part.totalQty}x</span>
                                     </div>
                                     <div className="h-1.5 bg-white/[0.03] rounded-full overflow-hidden">
                                         <div
@@ -228,11 +228,11 @@ export default function PecasClient({
                                         />
                                     </div>
                                     <div className="flex items-center justify-between mt-1">
-                                        <span className="text-[9px] text-muted-foreground/50">{formatCurrency(part.totalRevenue)} gerado</span>
+                                        <span className="text-[11px] text-muted-foreground">{formatCurrency(part.totalRevenue)} gerado</span>
                                         {part.inventoryItemId ? (
-                                            <span className="text-[8px] text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-full">Em Estoque</span>
+                                            <span className="text-[11px] text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-full">Em Estoque</span>
                                         ) : (
-                                            <span className="text-[8px] text-amber-400 font-bold bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full">Sem Cadastro</span>
+                                            <span className="text-[11px] text-amber-400 font-bold bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full">Sem Cadastro</span>
                                         )}
                                     </div>
                                 </div>
@@ -242,31 +242,31 @@ export default function PecasClient({
                 </div>
 
                 {/* Least Used */}
-                <div className="rounded-[1.5rem] bg-card/30 border border-white/[0.04] p-6 space-y-4">
+                <div className="rounded-2xl bg-card/30 border border-white/[0.04] p-6 space-y-4">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
                             <TrendingDown className="w-4 h-4 text-rose-400" />
                         </div>
                         <div>
                             <h3 className="text-sm font-black text-foreground">Menos Usadas</h3>
-                            <p className="text-[10px] text-muted-foreground/60">Últimos 30 dias</p>
+                            <p className="text-[11px] text-muted-foreground">Últimos 30 dias</p>
                         </div>
                     </div>
                     <div className="space-y-3">
                         {bottom5.length === 0 ? (
-                            <div className="h-28 flex flex-col items-center justify-center text-muted-foreground/30">
+                            <div className="h-28 flex flex-col items-center justify-center text-muted-foreground">
                                 <PackageOpen className="w-6 h-6 mb-2" />
                                 <span className="text-xs font-bold">Dados insuficientes</span>
                             </div>
                         ) : bottom5.map((part, i) => (
                             <div key={i} className="flex items-center gap-3 group">
-                                <span className="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 bg-muted/40 text-muted-foreground border border-white/5">
+                                <span className="w-6 h-6 rounded-lg flex items-center justify-center text-[11px] font-black shrink-0 bg-muted/40 text-muted-foreground border border-white/5">
                                     {i + 1}
                                 </span>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between mb-1">
                                         <span className="text-xs font-bold text-foreground truncate pr-2">{part.name}</span>
-                                        <span className="text-[10px] font-black text-rose-400 shrink-0">{part.totalQty}x</span>
+                                        <span className="text-[11px] font-black text-rose-400 shrink-0">{part.totalQty}x</span>
                                     </div>
                                     <div className="h-1.5 bg-white/[0.03] rounded-full overflow-hidden">
                                         <div
@@ -275,7 +275,7 @@ export default function PecasClient({
                                         />
                                     </div>
                                     <div className="mt-1">
-                                        <span className="text-[9px] text-muted-foreground/50">{formatCurrency(part.totalRevenue)} gerado</span>
+                                        <span className="text-[11px] text-muted-foreground">{formatCurrency(part.totalRevenue)} gerado</span>
                                     </div>
                                 </div>
                             </div>
@@ -286,7 +286,7 @@ export default function PecasClient({
 
             {/* Device Ranking */}
             {deviceRanking.length > 0 && (
-                <div className="rounded-[1.5rem] bg-card/30 border border-white/[0.04] p-6 space-y-4">
+                <div className="rounded-2xl bg-card/30 border border-white/[0.04] p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
@@ -294,10 +294,10 @@ export default function PecasClient({
                             </div>
                             <div>
                                 <h3 className="text-sm font-black text-foreground">Aparelhos Mais Reparados</h3>
-                                <p className="text-[10px] text-muted-foreground/60">Baseado no campo &quot;Equipamento&quot; das OS — últimos 30 dias</p>
+                                <p className="text-[11px] text-muted-foreground">Baseado no campo &quot;Equipamento&quot; das OS — últimos 30 dias</p>
                             </div>
                         </div>
-                        <span className="text-[9px] font-black px-2.5 py-1 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">
+                        <span className="text-[11px] font-black px-2.5 py-1 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">
                             {deviceRanking.length} modelo{deviceRanking.length !== 1 ? 's' : ''}
                         </span>
                     </div>
@@ -310,7 +310,7 @@ export default function PecasClient({
                                     <div className="flex items-center justify-between gap-2">
                                         <div className="flex items-center gap-2 min-w-0">
                                             <span className={cn(
-                                                'w-5 h-5 rounded-lg flex items-center justify-center text-[9px] font-black shrink-0',
+                                                'w-5 h-5 rounded-lg flex items-center justify-center text-[11px] font-black shrink-0',
                                                 i === 0 ? 'bg-amber-500/20 text-amber-400' :
                                                 i === 1 ? 'bg-zinc-400/15 text-zinc-300' :
                                                 i === 2 ? 'bg-orange-700/20 text-orange-500' :
@@ -318,7 +318,7 @@ export default function PecasClient({
                                             )}>#{i + 1}</span>
                                             <p className="text-xs font-bold text-foreground truncate">{device.model}</p>
                                         </div>
-                                        <span className="text-[10px] font-black text-violet-400 shrink-0">{device.count}x</span>
+                                        <span className="text-[11px] font-black text-violet-400 shrink-0">{device.count}x</span>
                                     </div>
                                     <div className="h-1.5 bg-white/[0.03] rounded-full overflow-hidden">
                                         <div
@@ -331,10 +331,10 @@ export default function PecasClient({
                         })}
                     </div>
                     {deviceRanking.length === 0 && (
-                        <div className="h-24 flex flex-col items-center justify-center text-muted-foreground/30">
+                        <div className="h-24 flex flex-col items-center justify-center text-muted-foreground">
                             <Smartphone className="w-6 h-6 mb-2" />
                             <p className="text-xs font-bold">Nenhum aparelho registrado nas OS do período</p>
-                            <p className="text-[10px] mt-1">Preencha o campo &quot;Equipamento&quot; ao criar uma OS</p>
+                            <p className="text-[11px] mt-1">Preencha o campo &quot;Equipamento&quot; ao criar uma OS</p>
                         </div>
                     )}
                 </div>
@@ -342,14 +342,14 @@ export default function PecasClient({
 
             {/* Alerts — Unregistered Parts */}
             {unregisteredParts.length > 0 && (
-                <div className="rounded-[1.5rem] bg-amber-500/5 border border-amber-500/20 p-6 space-y-4">
+                <div className="rounded-2xl bg-amber-500/5 border border-amber-500/20 p-6 space-y-4">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/25 flex items-center justify-center">
                             <Info className="w-4 h-4 text-amber-400" />
                         </div>
                         <div className="flex-1">
                             <h3 className="text-sm font-black text-amber-300">Peças usadas em OS sem estoque cadastrado</h3>
-                            <p className="text-[10px] text-amber-400/60">Estas peças foram registradas manualmente nas OS. Considere adicioná-las ao estoque.</p>
+                            <p className="text-[11px] text-amber-400/60">Estas peças foram registradas manualmente nas OS. Considere adicioná-las ao estoque.</p>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -357,11 +357,11 @@ export default function PecasClient({
                             <div key={i} className="flex items-center justify-between bg-amber-500/5 border border-amber-500/15 rounded-xl px-4 py-3">
                                 <div className="min-w-0">
                                     <p className="text-xs font-bold text-foreground truncate">{part.name}</p>
-                                    <p className="text-[9px] text-muted-foreground/60 mt-0.5">{part.totalQty} uso{part.totalQty !== 1 ? 's' : ''} · {formatCurrency(part.totalRevenue)}</p>
+                                    <p className="text-[11px] text-muted-foreground mt-0.5">{part.totalQty} uso{part.totalQty !== 1 ? 's' : ''} · {formatCurrency(part.totalRevenue)}</p>
                                 </div>
                                 <Link
                                     href="/inventory/new"
-                                    className="shrink-0 ml-3 text-[9px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/25 px-2.5 py-1.5 rounded-lg hover:bg-amber-500/20 transition-colors"
+                                    className="shrink-0 ml-3 text-[11px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/25 px-2.5 py-1.5 rounded-lg hover:bg-amber-500/20 transition-colors"
                                 >
                                     Cadastrar
                                 </Link>
@@ -373,14 +373,14 @@ export default function PecasClient({
 
             {/* Low Stock Alert */}
             {lowStockItems.length > 0 && (
-                <div className="rounded-[1.5rem] bg-rose-500/5 border border-rose-500/20 p-6 space-y-4">
+                <div className="rounded-2xl bg-rose-500/5 border border-rose-500/20 p-6 space-y-4">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/25 flex items-center justify-center">
                             <AlertTriangle className="w-4 h-4 text-rose-400" />
                         </div>
                         <div>
                             <h3 className="text-sm font-black text-rose-300">Estoque Crítico</h3>
-                            <p className="text-[10px] text-rose-400/60">{lowStockItems.length} item{lowStockItems.length !== 1 ? 'ns' : ''} abaixo do estoque mínimo</p>
+                            <p className="text-[11px] text-rose-400/60">{lowStockItems.length} item{lowStockItems.length !== 1 ? 'ns' : ''} abaixo do estoque mínimo</p>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -388,13 +388,13 @@ export default function PecasClient({
                             <div key={item.id} className="flex items-center justify-between bg-rose-500/5 border border-rose-500/15 rounded-xl px-4 py-3">
                                 <div className="min-w-0">
                                     <p className="text-xs font-bold text-foreground truncate">{item.name}</p>
-                                    <p className="text-[9px] text-rose-400 font-bold mt-0.5">
+                                    <p className="text-[11px] text-rose-400 font-bold mt-0.5">
                                         {item.quantity_in_stock} / {item.minimum_quantity} mín
                                     </p>
                                 </div>
                                 <Link
                                     href={`/inventory/${item.id}/edit`}
-                                    className="shrink-0 ml-3 text-[9px] font-black uppercase tracking-wider text-rose-400 bg-rose-500/10 border border-rose-500/25 px-2.5 py-1.5 rounded-lg hover:bg-rose-500/20 transition-colors"
+                                    className="shrink-0 ml-3 text-[11px] font-black uppercase tracking-wider text-rose-400 bg-rose-500/10 border border-rose-500/25 px-2.5 py-1.5 rounded-lg hover:bg-rose-500/20 transition-colors"
                                 >
                                     Ajustar
                                 </Link>
@@ -405,20 +405,20 @@ export default function PecasClient({
             )}
 
             {/* Main Table — Full Ranking */}
-            <div className="rounded-[1.5rem] bg-card/20 border border-white/[0.04] overflow-hidden">
+            <div className="rounded-2xl bg-card/20 border border-white/[0.04] overflow-hidden">
                 {/* Table Header */}
                 <div className="p-5 border-b border-white/[0.04] flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <div className="flex items-center gap-3 flex-1">
                         <BarChart3 className="w-5 h-5 text-primary/60" />
                         <h3 className="text-sm font-black text-foreground">Ranking Completo de Peças</h3>
-                        <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                        <span className="text-[11px] font-black px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                             {ranking.length} peças
                         </span>
                     </div>
                     <div className="flex items-center gap-3 w-full sm:w-auto">
                         {/* Search */}
                         <div className="relative flex-1 sm:w-56">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/40" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                             <input
                                 type="text"
                                 placeholder="Buscar peça..."
@@ -445,18 +445,18 @@ export default function PecasClient({
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-white/[0.03]">
-                                <th className="text-left px-6 py-3 text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 w-12">#</th>
-                                <th className="text-left px-4 py-3 text-[9px] font-black uppercase tracking-widest text-muted-foreground/40">Peça</th>
-                                <th className="text-right px-4 py-3 text-[9px] font-black uppercase tracking-widest text-muted-foreground/40">Qtd Usada</th>
-                                <th className="text-right px-4 py-3 text-[9px] font-black uppercase tracking-widest text-muted-foreground/40">Receita</th>
-                                <th className="text-right px-4 py-3 text-[9px] font-black uppercase tracking-widest text-muted-foreground/40">Em Estoque</th>
-                                <th className="text-right px-4 py-3 text-[9px] font-black uppercase tracking-widest text-muted-foreground/40">Status</th>
+                                <th className="text-left px-6 py-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground w-12">#</th>
+                                <th className="text-left px-4 py-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground">Peça</th>
+                                <th className="text-right px-4 py-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground">Qtd Usada</th>
+                                <th className="text-right px-4 py-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground">Receita</th>
+                                <th className="text-right px-4 py-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground">Em Estoque</th>
+                                <th className="text-right px-4 py-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground">Status</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/[0.02]">
                             {filteredRanking.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="text-center py-16 text-muted-foreground/30">
+                                    <td colSpan={6} className="text-center py-16 text-muted-foreground">
                                         <PackageOpen className="w-8 h-8 mx-auto mb-3" />
                                         <p className="text-sm font-bold">Nenhuma peça encontrada</p>
                                         <p className="text-xs mt-1">Tente ajustar a busca ou o período</p>
@@ -470,11 +470,11 @@ export default function PecasClient({
                                     <tr key={i} className="hover:bg-white/[0.015] transition-colors group">
                                         <td className="px-6 py-4">
                                             <span className={cn(
-                                                'w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-black',
+                                                'w-6 h-6 rounded-lg flex items-center justify-center text-[11px] font-black',
                                                 originalRank === 1 ? 'bg-amber-500/20 text-amber-400' :
                                                 originalRank === 2 ? 'bg-zinc-400/15 text-zinc-300' :
                                                 originalRank === 3 ? 'bg-orange-700/20 text-orange-500' :
-                                                'text-muted-foreground/40'
+                                                'text-muted-foreground'
                                             )}>
                                                 {originalRank <= 3 ? ['🥇','🥈','🥉'][originalRank - 1] : originalRank}
                                             </span>
@@ -486,13 +486,13 @@ export default function PecasClient({
                                                 </div>
                                                 <div>
                                                     <p className="text-xs font-bold text-foreground">{part.name}</p>
-                                                    <p className="text-[9px] text-muted-foreground/50">{part.osCount} OS utilizada{part.osCount !== 1 ? 's' : ''}</p>
+                                                    <p className="text-[11px] text-muted-foreground">{part.osCount} OS utilizada{part.osCount !== 1 ? 's' : ''}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-4 py-4 text-right">
                                             <span className="text-sm font-black text-foreground">{part.totalQty}</span>
-                                            <span className="text-[9px] text-muted-foreground/40 ml-1">un</span>
+                                            <span className="text-[11px] text-muted-foreground ml-1">un</span>
                                         </td>
                                         <td className="px-4 py-4 text-right">
                                             <span className="text-xs font-bold text-emerald-400">{formatCurrency(part.totalRevenue)}</span>
@@ -504,27 +504,27 @@ export default function PecasClient({
                                                     isLow ? 'text-rose-400' : 'text-foreground'
                                                 )}>
                                                     {part.inventoryStock}
-                                                    <span className="text-[9px] text-muted-foreground/40 ml-1">un</span>
+                                                    <span className="text-[11px] text-muted-foreground ml-1">un</span>
                                                 </span>
                                             ) : (
-                                                <span className="text-[10px] text-muted-foreground/30 font-bold">—</span>
+                                                <span className="text-[11px] text-muted-foreground font-bold">—</span>
                                             )}
                                         </td>
                                         <td className="px-4 py-4 text-right">
                                             {part.inventoryItemId ? (
                                                 isLow ? (
-                                                    <span className="text-[8px] font-black uppercase tracking-wider text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-1 rounded-full">
+                                                    <span className="text-[11px] font-black uppercase tracking-wider text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-1 rounded-full">
                                                         Crítico
                                                     </span>
                                                 ) : (
-                                                    <span className="text-[8px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-full">
+                                                    <span className="text-[11px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-full">
                                                         Em Estoque
                                                     </span>
                                                 )
                                             ) : (
                                                 <Link
                                                     href="/inventory/new"
-                                                    className="text-[8px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-full hover:bg-amber-500/20 transition-colors"
+                                                    className="text-[11px] font-black uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-full hover:bg-amber-500/20 transition-colors"
                                                 >
                                                     + Cadastrar
                                                 </Link>
@@ -539,10 +539,10 @@ export default function PecasClient({
 
                 {filteredRanking.length > 0 && (
                     <div className="px-6 py-4 border-t border-white/[0.03] flex items-center justify-between">
-                        <p className="text-[10px] text-muted-foreground/40 font-bold">
+                        <p className="text-[11px] text-muted-foreground font-bold">
                             Mostrando {filteredRanking.length} de {ranking.length} peças · Últimos 30 dias
                         </p>
-                        <Link href="/inventory" className="text-[10px] text-primary font-black hover:underline">
+                        <Link href="/inventory" className="text-[11px] text-primary font-black hover:underline">
                             Gerenciar Produtos →
                         </Link>
                     </div>

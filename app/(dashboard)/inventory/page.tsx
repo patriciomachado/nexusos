@@ -69,14 +69,14 @@ export default async function InventoryPage({
                     <div className="space-y-1 sm:space-y-2">
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-1 bg-primary rounded-full" />
-                            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">Controle de Ativos</span>
+                            <span className="text-[11px] sm:text-[11px] font-black uppercase tracking-wider text-primary/60">Controle de Ativos</span>
                         </div>
                         <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tighter">Estoque Central</h2>
                         <p className="text-muted-foreground font-medium text-xs sm:text-base leading-relaxed max-w-xl">Gerencie seu inventário de peças e insumos com precisão.</p>
                     </div>
                     <Link
                         href="/inventory/new"
-                        className="w-full sm:w-auto flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl sm:rounded-[2rem] font-black uppercase text-xs tracking-[0.1em] shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group shrink-0"
+                        className="w-full sm:w-auto flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl sm:rounded-3xl font-black uppercase text-xs tracking-wider shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 group shrink-0"
                     >
                         Novo Produto
                         <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
@@ -85,7 +85,7 @@ export default async function InventoryPage({
 
                 {/* KPI Section - Premium Style */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                    <div className="relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-[2.5rem] glass-premium bg-card/65 backdrop-blur-3xl border border-border/40 shadow-xl transition-all duration-300">
+                    <div className="relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-3xl glass-premium bg-card/65 backdrop-blur-3xl border border-border/40 shadow-xl transition-all duration-300">
                         <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
                             <Package className="w-16 h-16 sm:w-20 sm:h-20 text-primary" />
                         </div>
@@ -94,7 +94,7 @@ export default async function InventoryPage({
                                 <Package className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                             </div>
                             <div className="space-y-0.5">
-                                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Total de SKUs</p>
+                                <p className="text-[11px] sm:text-[11px] font-black uppercase tracking-wider text-muted-foreground">Total de SKUs</p>
                                 <h3 className="text-2xl sm:text-4xl font-black text-foreground tracking-tighter">{items?.length || 0}</h3>
                             </div>
                             <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold">
@@ -104,7 +104,7 @@ export default async function InventoryPage({
                         </div>
                     </div>
 
-                    <div className="relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-[2.5rem] glass-premium bg-card/65 backdrop-blur-3xl border border-border/40 shadow-xl transition-all duration-300">
+                    <div className="relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-3xl glass-premium bg-card/65 backdrop-blur-3xl border border-border/40 shadow-xl transition-all duration-300">
                         <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
                             <Boxes className="w-16 h-16 sm:w-20 sm:h-20 text-indigo-400" />
                         </div>
@@ -113,32 +113,32 @@ export default async function InventoryPage({
                                 <Boxes className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400" />
                             </div>
                             <div className="space-y-0.5">
-                                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Patrimônio em Estoque</p>
+                                <p className="text-[11px] sm:text-[11px] font-black uppercase tracking-wider text-muted-foreground">Patrimônio em Estoque</p>
                                 <h3 className="text-2xl sm:text-4xl font-black text-foreground tracking-tighter">{formatCurrency(totalValue)}</h3>
                             </div>
-                            <p className="text-muted-foreground/40 text-[9px] font-bold uppercase tracking-widest">Preço de Custo</p>
+                            <p className="text-muted-foreground text-[11px] font-bold uppercase tracking-widest">Preço de Custo</p>
                         </div>
                     </div>
 
                     <div className={cn(
-                        "relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-[2.5rem] backdrop-blur-3xl border shadow-xl transition-all duration-300",
+                        "relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-3xl backdrop-blur-3xl border shadow-xl transition-all duration-300",
                         lowStockItems.length > 0 ? "bg-rose-500/10 border-rose-500/20" : "glass-premium bg-card/65 border-border/40"
                     )}>
                         <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <AlertTriangle className={cn("w-16 h-16 sm:w-20 sm:h-20", lowStockItems.length > 0 ? "text-rose-500" : "text-muted-foreground/20")} />
+                            <AlertTriangle className={cn("w-16 h-16 sm:w-20 sm:h-20", lowStockItems.length > 0 ? "text-rose-500" : "text-muted-foreground")} />
                         </div>
                         <div className="relative space-y-3 sm:space-y-4">
                             <div className={cn(
                                 "w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center border",
                                 lowStockItems.length > 0 ? "bg-rose-500/10 border-rose-500/20" : "bg-muted/10 border-white/5"
                             )}>
-                                <AlertTriangle className={cn("w-5 h-5 sm:w-6 sm:h-6", lowStockItems.length > 0 ? "text-rose-500" : "text-muted-foreground/20")} />
+                                <AlertTriangle className={cn("w-5 h-5 sm:w-6 sm:h-6", lowStockItems.length > 0 ? "text-rose-500" : "text-muted-foreground")} />
                             </div>
                             <div className="space-y-0.5">
-                                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Reposição Urgente</p>
+                                <p className="text-[11px] sm:text-[11px] font-black uppercase tracking-wider text-muted-foreground">Reposição Urgente</p>
                                 <h3 className={cn("text-2xl sm:text-4xl font-black tracking-tighter", lowStockItems.length > 0 ? "text-rose-500" : "text-foreground")}>{lowStockItems.length}</h3>
                             </div>
-                            <p className={cn("text-[9px] font-bold uppercase tracking-widest", lowStockItems.length > 0 ? "text-rose-400" : "text-muted-foreground/40")}>
+                            <p className={cn("text-[11px] font-bold uppercase tracking-widest", lowStockItems.length > 0 ? "text-rose-400" : "text-muted-foreground")}>
                                 {lowStockItems.length > 0 ? "Ação necessária" : "Estoque saudável"}
                             </p>
                         </div>
@@ -146,18 +146,18 @@ export default async function InventoryPage({
                 </div>
 
                 {/* Search and Action Bar */}
-                <div className="bg-card/60 backdrop-blur-3xl border border-border/40 rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+                <div className="bg-card/60 backdrop-blur-3xl border border-border/40 rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
                     <div className="relative flex-1 w-full md:max-w-md group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <SearchInput
                             placeholder="Pesquisar nome, SKU ou código..."
-                            className="w-full bg-muted/30 border border-border/40 rounded-xl sm:rounded-[1.5rem] pl-11 pr-4 py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-primary/30 transition-all placeholder:opacity-40 h-11 sm:h-14"
+                            className="w-full bg-muted/30 border border-border/40 rounded-xl sm:rounded-2xl pl-11 pr-4 py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-primary/30 transition-all placeholder:opacity-40 h-11 sm:h-14"
                         />
                     </div>
 
                     <div className="flex items-center gap-3 w-full md:w-auto justify-between sm:justify-end">
                         <CategoryManagerWrapper />
-                        <button className="h-11 sm:h-14 flex items-center gap-2 px-4 sm:px-6 rounded-xl sm:rounded-[1.5rem] bg-muted/30 border border-border/40 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 hover:text-foreground transition-all">
+                        <button className="h-11 sm:h-14 flex items-center gap-2 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/40 text-[11px] sm:text-[11px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-all">
                             <Filter className="w-4 h-4" />
                             <span>Filtros</span>
                         </button>
@@ -182,8 +182,8 @@ export default async function InventoryPage({
                                         </div>
                                         <div className="space-y-0.5 min-w-0 flex-1">
                                             <h4 className="text-sm font-black text-foreground line-clamp-2 break-words leading-tight">{item.name}</h4>
-                                            <div className="flex items-center gap-1.5 flex-wrap text-[10px]">
-                                                {item.sku && <span className="font-mono text-muted-foreground/60 uppercase truncate max-w-[120px]">{item.sku}</span>}
+                                            <div className="flex items-center gap-1.5 flex-wrap text-[11px]">
+                                                {item.sku && <span className="font-mono text-muted-foreground uppercase truncate max-w-[120px]">{item.sku}</span>}
                                                 {item.barcode && <span className="font-mono text-primary/70 bg-primary/10 px-1.5 py-0.5 rounded truncate max-w-[140px]">EAN: {item.barcode}</span>}
                                             </div>
                                         </div>
@@ -200,24 +200,24 @@ export default async function InventoryPage({
 
                                 <div className="flex items-center justify-between pt-2 border-t border-border/30 text-xs">
                                     <div>
-                                        <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60 block">Preço</span>
+                                        <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">Preço</span>
                                         <span className="font-black text-foreground text-sm">{formatCurrency(item.selling_price)}</span>
                                     </div>
 
                                     <div className="text-right">
-                                        <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/60 block">Estoque</span>
+                                        <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block">Estoque</span>
                                         <span className={cn("font-black text-sm", isLow ? 'text-rose-500' : 'text-foreground/90')}>
-                                            {item.quantity_in_stock} <span className="text-[10px] uppercase opacity-60">{UNIT_LABELS[item.unit] || item.unit}</span>
+                                            {item.quantity_in_stock} <span className="text-[11px] uppercase opacity-60">{UNIT_LABELS[item.unit] || item.unit}</span>
                                         </span>
                                     </div>
 
                                     <div>
                                         {isLow ? (
-                                            <span className="px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                                            <span className="px-2.5 py-1 rounded-lg text-[11px] font-black uppercase tracking-wider bg-rose-500/10 text-rose-500 border border-rose-500/20">
                                                 Reposição
                                             </span>
                                         ) : (
-                                            <span className="px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                            <span className="px-2.5 py-1 rounded-lg text-[11px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                                                 OK
                                             </span>
                                         )}
@@ -227,7 +227,7 @@ export default async function InventoryPage({
                         )
                     }) : (
                         <div className="p-10 text-center bg-card/40 border border-border/40 rounded-2xl">
-                            <Package className="w-10 h-10 mx-auto text-muted-foreground/30 mb-3" />
+                            <Package className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
                             <h3 className="text-base font-bold text-foreground">Nenhum produto cadastrado</h3>
                             <p className="text-xs text-muted-foreground mt-1 mb-4">Adicione itens ao estoque.</p>
                             <Link
@@ -242,16 +242,16 @@ export default async function InventoryPage({
                 </div>
 
                 {/* Desktop View: Full Table (hidden md:block) */}
-                <div className="hidden md:block bg-card/40 backdrop-blur-3xl border border-border/40 rounded-[2.5rem] shadow-2xl overflow-hidden">
+                <div className="hidden md:block bg-card/40 backdrop-blur-3xl border border-border/40 rounded-3xl shadow-2xl overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
                             <thead>
                                 <tr className="bg-muted/20 border-b border-border/40">
-                                    <th className="text-left p-6 text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">Produto / SKU</th>
-                                    <th className="text-left p-6 text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">Categoria</th>
-                                    <th className="text-right p-6 text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">Preço de Venda</th>
-                                    <th className="text-right p-6 text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">Estoque Actual</th>
-                                    <th className="p-6 text-center text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em]">Status</th>
+                                    <th className="text-left p-6 text-[11px] font-black text-muted-foreground uppercase tracking-wider">Produto / SKU</th>
+                                    <th className="text-left p-6 text-[11px] font-black text-muted-foreground uppercase tracking-wider">Categoria</th>
+                                    <th className="text-right p-6 text-[11px] font-black text-muted-foreground uppercase tracking-wider">Preço de Venda</th>
+                                    <th className="text-right p-6 text-[11px] font-black text-muted-foreground uppercase tracking-wider">Estoque Actual</th>
+                                    <th className="p-6 text-center text-[11px] font-black text-muted-foreground uppercase tracking-wider">Status</th>
                                     <th className="p-6"></th>
                                 </tr>
                             </thead>
@@ -275,21 +275,21 @@ export default async function InventoryPage({
                                                     <div className="flex flex-col space-y-1">
                                                         <p className="text-base font-black text-foreground group-hover:text-primary transition-colors tracking-tight">{item.name}</p>
                                                         <div className="flex items-center gap-3">
-                                                            {item.sku && <span className="text-[10px] text-muted-foreground/50 font-mono uppercase tracking-widest">{item.sku}</span>}
-                                                            {item.barcode && <span className="text-[9px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded-md font-mono">EAN: {item.barcode}</span>}
+                                                            {item.sku && <span className="text-[11px] text-muted-foreground font-mono uppercase tracking-widest">{item.sku}</span>}
+                                                            {item.barcode && <span className="text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded-md font-mono">EAN: {item.barcode}</span>}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="p-6">
-                                                <span className="px-3 py-1.5 rounded-xl bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/10">
+                                                <span className="px-3 py-1.5 rounded-xl bg-primary/5 text-primary text-[11px] font-black uppercase tracking-widest border border-primary/10">
                                                     {item.category || 'Geral'}
                                                 </span>
                                             </td>
                                             <td className="p-6 text-right">
                                                 <div className="flex flex-col items-end">
                                                     <span className="text-lg font-black text-foreground tracking-tighter">{formatCurrency(item.selling_price)}</span>
-                                                    <span className="text-[10px] text-muted-foreground/40 font-bold">Custo: {formatCurrency(item.cost_price)}</span>
+                                                    <span className="text-[11px] text-muted-foreground font-bold">Custo: {formatCurrency(item.cost_price)}</span>
                                                 </div>
                                             </td>
                                             <td className="p-6 text-right">
@@ -300,18 +300,18 @@ export default async function InventoryPage({
                                                     )}>
                                                         {item.quantity_in_stock} <span className="text-xs uppercase opacity-40 ml-1">{UNIT_LABELS[item.unit] || item.unit}</span>
                                                     </span>
-                                                    <span className="text-[10px] text-muted-foreground/40 font-bold uppercase tracking-widest">Ativo</span>
+                                                    <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest">Ativo</span>
                                                 </div>
                                             </td>
                                             <td className="p-6 text-center">
                                                 <div className="flex justify-center">
                                                     {isLow ? (
-                                                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-[9px] font-black uppercase tracking-widest bg-rose-500/10 text-rose-500 border border-rose-500/20 shadow-[0_0_20px_rgba(244,63,94,0.1)]">
+                                                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-[11px] font-black uppercase tracking-widest bg-rose-500/10 text-rose-500 border border-rose-500/20 shadow-[0_0_20px_rgba(244,63,94,0.1)]">
                                                             <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
                                                             Reposição
                                                         </span>
                                                     ) : (
-                                                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-[11px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                                                             Saudável
                                                         </span>
                                                     )}
@@ -324,7 +324,7 @@ export default async function InventoryPage({
                                                         className="p-3 rounded-xl bg-muted/40 hover:bg-primary hover:text-primary-foreground transition-all group/edit relative"
                                                     >
                                                         <Edit className="w-4 h-4" />
-                                                        <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-popover text-[8px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover/edit:opacity-100 transition-all pointer-events-none border border-border">Editar</span>
+                                                        <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-popover text-[11px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover/edit:opacity-100 transition-all pointer-events-none border border-border">Editar</span>
                                                     </Link>
                                                     <InventoryActions itemId={item.id} companyId={user?.company_id} />
                                                 </div>
@@ -334,14 +334,14 @@ export default async function InventoryPage({
                                 }) : (
                                     <tr>
                                         <td colSpan={6} className="p-32 text-center">
-                                            <div className="w-24 h-24 rounded-[2rem] bg-muted/20 border border-border/40 flex items-center justify-center mx-auto mb-6">
-                                                <Package className="w-10 h-10 text-muted-foreground/20" />
+                                            <div className="w-24 h-24 rounded-3xl bg-muted/20 border border-border/40 flex items-center justify-center mx-auto mb-6">
+                                                <Package className="w-10 h-10 text-muted-foreground" />
                                             </div>
                                             <h3 className="text-2xl font-black tracking-tight text-foreground/60">Estoque Vazio</h3>
-                                            <p className="text-muted-foreground/40 text-sm mt-2 mb-10 max-w-xs mx-auto">Sua vitrine de peças e insumos aparecerá aqui após o cadastro.</p>
+                                            <p className="text-muted-foreground text-sm mt-2 mb-10 max-w-xs mx-auto">Sua vitrine de peças e insumos aparecerá aqui após o cadastro.</p>
                                             <Link
                                                 href="/inventory/new"
-                                                className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-[2rem] font-black uppercase text-xs tracking-widest shadow-2xl shadow-primary/20 transition-all hover:scale-105"
+                                                className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-3xl font-black uppercase text-xs tracking-widest shadow-2xl shadow-primary/20 transition-all hover:scale-105"
                                             >
                                                 <Plus className="w-5 h-5" />
                                                 Cadastrar Produto

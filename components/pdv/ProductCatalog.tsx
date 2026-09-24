@@ -194,7 +194,7 @@ export default function ProductCatalog() {
 
                 <div className="flex items-center gap-4 text-muted-foreground whitespace-nowrap">
                     <Package className="w-5 h-5 opacity-40" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
+                    <span className="text-[11px] font-bold uppercase tracking-wider">
                         {loading ? 'Carregando...' : `${products.length} itens no catálogo`}
                     </span>
                 </div>
@@ -205,7 +205,7 @@ export default function ProductCatalog() {
                 {loading ? (
                     <div className="flex flex-col items-center justify-center h-64 space-y-4">
                         <Loader2 className="w-12 h-12 animate-spin text-primary opacity-20" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Sincronizando Catálogo...</p>
+                        <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Sincronizando Catálogo...</p>
                     </div>
                 ) : products.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
@@ -214,7 +214,7 @@ export default function ProductCatalog() {
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center p-24 text-center space-y-6 border-2 border-dashed border-border rounded-[40px] opacity-40">
+                    <div className="flex flex-col items-center justify-center p-24 text-center space-y-6 border-2 border-dashed border-border rounded-3xl opacity-40">
                         <div className="p-8 rounded-full bg-muted">
                             <Search className="w-16 h-16 text-muted-foreground" />
                         </div>

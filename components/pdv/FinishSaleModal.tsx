@@ -215,14 +215,14 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-0 md:p-4 bg-background/40 backdrop-blur-xl animate-in fade-in duration-300">
-            <div className="bg-card/80 backdrop-blur-3xl border border-white/10 w-full max-w-[1000px] md:rounded-[3rem] shadow-[0_32px_128px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-500 flex flex-col md:flex-row h-full md:h-auto">
+            <div className="bg-card/80 backdrop-blur-3xl border border-white/10 w-full max-w-[1000px] md:rounded-3xl shadow-[0_32px_128px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-500 flex flex-col md:flex-row h-full md:h-auto">
 
                 {/* Left Panel: Sale Summary & Form */}
                 <div className="flex-1 p-6 md:p-12 space-y-6 md:space-y-8 overflow-y-auto">
                     <div className="flex justify-between items-start relative">
                         <div className="space-y-1">
                             <h2 className="text-2xl md:text-3xl font-black tracking-tighter">Finalizar Venda</h2>
-                            <p className="text-[9px] md:text-[10px] text-primary font-black uppercase tracking-[0.3em]">Ambiente Seguro Nexus</p>
+                            <p className="text-[11px] md:text-[11px] text-primary font-black uppercase tracking-wider">Ambiente Seguro Nexus</p>
                         </div>
                         <button 
                             onClick={() => setIsOpen(false)} 
@@ -241,7 +241,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                     ) : (
                         <>
                             {!cashRegister && (
-                                <div className="p-6 rounded-[2rem] bg-rose-500/10 border border-rose-500/20 flex items-start gap-4 animate-in slide-in-from-top-4">
+                                <div className="p-6 rounded-3xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-4 animate-in slide-in-from-top-4">
                                     <Info className="w-6 h-6 text-rose-500 mt-1" />
                                     <div className="space-y-1">
                                         <p className="text-sm font-black text-rose-500 uppercase tracking-tight">Caixa Fechado!</p>
@@ -252,7 +252,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
 
                             {/* Customer */}
                             <div className="space-y-4">
-                                <label className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-2">
+                                <label className="flex items-center gap-3 text-[13px] font-medium text-muted-foreground ml-2">
                                     <Users className="w-4 h-4" /> Cliente
                                 </label>
                                 <CustomerAutocomplete
@@ -265,7 +265,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
 
                             {/* Payment Methods */}
                             <div className="space-y-4">
-                                <label className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-2">
+                                <label className="flex items-center gap-3 text-[13px] font-medium text-muted-foreground ml-2">
                                     <Wallet className="w-4 h-4" /> Forma de Pagamento
                                 </label>
                                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
@@ -274,7 +274,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                                             key={pm.id}
                                             onClick={() => setSelectedPaymentMethod(pm.id)}
                                             className={cn(
-                                                "p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-2 transition-all flex flex-col gap-3 md:gap-4 text-left group relative overflow-hidden",
+                                                "p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all flex flex-col gap-3 md:gap-4 text-left group relative overflow-hidden",
                                                 selectedPaymentMethod === pm.id
                                                     ? 'bg-primary border-primary text-primary-foreground shadow-2xl shadow-primary/20 scale-[1.02]'
                                                     : 'bg-muted/40 border-transparent hover:border-white/10'
@@ -295,11 +295,11 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
 
                             {/* Notes */}
                             <div className="space-y-4">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-2">Observações Internas</label>
+                                <label className="text-[13px] font-medium text-muted-foreground ml-2">Observações Internas</label>
                                 <textarea
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
-                                    className="w-full p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] bg-muted/40 border-none text-xs md:text-sm font-medium outline-none focus:ring-4 focus:ring-primary/10 min-h-[100px] md:min-h-[120px] resize-none transition-all placeholder:opacity-30"
+                                    className="w-full p-4 md:p-6 rounded-2xl md:rounded-3xl bg-muted/40 border-none text-xs md:text-sm font-medium outline-none focus:ring-4 focus:ring-primary/10 min-h-[100px] md:min-h-[120px] resize-none transition-all placeholder:opacity-30"
                                     placeholder="Notas sobre a venda..."
                                 />
                             </div>
@@ -320,21 +320,21 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                     <div className="space-y-10">
                         <div className="space-y-6">
                             <div className="space-y-1">
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">Total da Venda</p>
+                                <p className="text-[11px] font-black uppercase tracking-wider opacity-60">Total da Venda</p>
                                 <h3 className="text-4xl font-black tracking-tighter">{formatCurrency(finalAmount)}</h3>
                             </div>
 
                             {isCashPayment() && (
-                                <div className="bg-white/10 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 space-y-3 md:space-y-4 border border-white/5 animate-in fade-in zoom-in-95 duration-300">
+                                <div className="bg-white/10 rounded-2xl md:rounded-3xl p-4 md:p-6 space-y-3 md:space-y-4 border border-white/5 animate-in fade-in zoom-in-95 duration-300">
                                     <div className="space-y-1">
-                                        <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Valor Recebido</p>
+                                        <p className="text-[11px] md:text-[11px] font-black uppercase tracking-wider opacity-60">Valor Recebido</p>
                                         <div className="text-3xl md:text-4xl font-black tracking-tighter flex items-baseline gap-2">
                                             {formatCurrency(parseFloat(amountReceived) || 0)}
                                         </div>
                                     </div>
                                     {calculateChange() > 0 && (
                                         <div className="pt-3 md:pt-4 border-t border-white/10 flex justify-between items-center animate-in slide-in-from-top-2">
-                                            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Troco</p>
+                                            <p className="text-[11px] md:text-[11px] font-black uppercase tracking-wider opacity-60">Troco</p>
                                             <p className="text-xl md:text-2xl font-black text-emerald-300 tracking-tighter">{formatCurrency(calculateChange())}</p>
                                         </div>
                                     )}
@@ -365,7 +365,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                         <button
                             onClick={handleFinish}
                             disabled={loading || !cashRegister}
-                            className="w-full h-16 md:h-24 rounded-[1.5rem] md:rounded-[2.5rem] bg-white text-indigo-700 font-black uppercase text-sm md:text-base tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-indigo-900/40 disabled:opacity-50 flex items-center justify-center gap-4 group"
+                            className="w-full h-16 md:h-24 rounded-2xl md:rounded-3xl bg-white text-indigo-700 font-black uppercase text-sm md:text-base tracking-wider hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-indigo-900/40 disabled:opacity-50 flex items-center justify-center gap-4 group"
                         >
                             {loading ? (
                                 <Loader2 className="w-6 h-6 animate-spin" />
@@ -376,7 +376,7 @@ export default function FinishSaleModal({ isOpen, setIsOpen, total, discount, fi
                                 </>
                             )}
                         </button>
-                        <p className="text-[9px] font-bold text-center mt-6 uppercase tracking-[0.2em] opacity-40">Processado por Nexus OS v2.0</p>
+                        <p className="text-[11px] font-bold text-center mt-6 uppercase tracking-wider opacity-40">Processado por Nexus OS v2.0</p>
                     </div>
                 </div>
             </div>

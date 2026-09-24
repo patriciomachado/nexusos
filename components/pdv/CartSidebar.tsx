@@ -16,7 +16,7 @@ export default function CartSidebar() {
                 </div>
 
                 <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 opacity-40">
-                    <div className="p-10 rounded-[40px] bg-muted shadow-inner">
+                    <div className="p-10 rounded-3xl bg-muted shadow-inner">
                         <ShoppingCart className="w-20 h-20 text-muted-foreground" />
                     </div>
                     <div className="space-y-2">
@@ -34,7 +34,7 @@ export default function CartSidebar() {
             <div className="p-4 lg:p-8 pb-2 lg:pb-4 flex items-center justify-between shrink-0">
                 <div className="flex flex-col">
                     <h2 className="font-black text-xl lg:text-2xl tracking-tighter uppercase whitespace-nowrap">Carrinho</h2>
-                    <span className="text-[9px] lg:text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Consumidor Final</span>
+                    <span className="text-[11px] lg:text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Consumidor Final</span>
                 </div>
                 <button
                     onClick={clearCart}
@@ -83,7 +83,7 @@ export default function CartSidebar() {
                             </div>
                             <button
                                 onClick={() => removeItem(item.id)}
-                                className="text-[9px] font-black uppercase text-destructive/60 hover:text-destructive transition-colors tracking-widest"
+                                className="text-[11px] font-black uppercase text-destructive/60 hover:text-destructive transition-colors tracking-widest"
                             >
                                 <Trash2 className="w-3 h-3" />
                             </button>
@@ -129,7 +129,7 @@ export default function CartSidebar() {
                                 }`}
                         >
                             <method.icon className="w-5 h-5" />
-                            <span className="text-[9px] font-black uppercase tracking-widest">{method.label}</span>
+                            <span className="text-[11px] font-black uppercase tracking-widest">{method.label}</span>
                         </button>
                     )))}
                 </div>
@@ -137,7 +137,7 @@ export default function CartSidebar() {
                 {/* Final Button */}
                 <button
                     onClick={() => setIsFinishModalOpen(true)}
-                    className="w-full bg-primary text-primary-foreground py-4 lg:py-6 rounded-2xl lg:rounded-3xl font-black uppercase tracking-[0.2em] lg:tracking-[0.3em] text-xs lg:text-sm shadow-2xl shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-1 transition-all active:translate-y-0 active:scale-98 flex items-center justify-center gap-3 lg:gap-4"
+                    className="w-full bg-primary text-primary-foreground py-4 lg:py-6 rounded-2xl lg:rounded-3xl font-black uppercase tracking-wider lg:tracking-wider text-xs lg:text-sm shadow-2xl shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-1 transition-all active:translate-y-0 active:scale-98 flex items-center justify-center gap-3 lg:gap-4"
                 >
                     <ShoppingCart className="w-5 h-5" />
                     Finalizar Venda

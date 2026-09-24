@@ -58,7 +58,7 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                     </div>
                     <div>
                         <h2 className="text-base font-bold text-white truncate max-w-xs md:max-w-md">{script.title}</h2>
-                        <p className="text-[10px] text-primary uppercase font-black tracking-widest">Modo Teleprompter • Olhe para a Câmera</p>
+                        <p className="text-[11px] text-primary uppercase font-black tracking-widest">Modo Teleprompter • Olhe para a Câmera</p>
                     </div>
                 </div>
 

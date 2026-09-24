@@ -122,7 +122,7 @@ export default function AppointmentsCalendar({
                         >
                             <span className={cn(
                                 "text-sm font-black mb-2 block transition-colors",
-                                isToday ? "text-primary flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 -ml-1.5 -mt-1.5" : "text-muted-foreground/20 group-hover:text-muted-foreground/60"
+                                isToday ? "text-primary flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 -ml-1.5 -mt-1.5" : "text-muted-foreground group-hover:text-muted-foreground"
                             )}>{day}</span>
                             <div className="space-y-1.5 overflow-y-auto max-h-[100px] scrollbar-hide">
                                 {appts.map((a: any) => (
@@ -133,7 +133,7 @@ export default function AppointmentsCalendar({
                                             openAppointment(a)
                                         }}
                                         className={cn(
-                                            "px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-tighter truncate border transition-all duration-300 hover:scale-[1.03] cursor-pointer",
+                                            "px-2 py-1 rounded-lg text-[11px] font-black uppercase tracking-tighter truncate border transition-all duration-300 hover:scale-[1.03] cursor-pointer",
                                             a.status === 'scheduled' ? "bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500/20" :
                                                 a.status === 'confirmed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20" :
                                                     a.status === 'completed' ? "bg-purple-500/10 border-purple-500/20 text-purple-400 hover:bg-purple-500/20" :
@@ -175,7 +175,7 @@ export default function AppointmentsCalendar({
 
                     return (
                         <div key={i} className={cn("border-r border-b border-border/10 p-4", isToday && "bg-primary/[0.03]")}>
-                            <div className="text-[10px] font-black uppercase text-muted-foreground/40 mb-1">
+                            <div className="text-[11px] font-black uppercase text-muted-foreground mb-1">
                                 {dayDate.toLocaleDateString('pt-BR', { weekday: 'short' })}
                             </div>
                             <div className={cn("text-lg font-black mb-4", isToday ? "text-primary" : "text-foreground")}>
@@ -188,10 +188,10 @@ export default function AppointmentsCalendar({
                                         onClick={() => openAppointment(a)}
                                         className="p-3 rounded-xl border border-white/5 bg-white/[0.02] cursor-pointer hover:bg-white/[0.05] hover:scale-[1.02] transition-all duration-300"
                                     >
-                                        <div className="text-[9px] font-black text-primary mb-1">
+                                        <div className="text-[11px] font-black text-primary mb-1">
                                             {new Date(a.scheduled_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                         </div>
-                                        <div className="text-[10px] font-bold truncate">{a.service_orders?.title || 'Compromisso'}</div>
+                                        <div className="text-[11px] font-bold truncate">{a.service_orders?.title || 'Compromisso'}</div>
                                     </div>
                                 ))}
                             </div>
@@ -225,7 +225,7 @@ export default function AppointmentsCalendar({
                                 </div>
                             </div>
                             <div className={cn(
-                                "px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border",
+                                "px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest border",
                                 a.status === 'scheduled' ? "bg-blue-500/10 border-blue-500/20 text-blue-400" :
                                     a.status === 'confirmed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
                                         "bg-orange-500/10 border-orange-500/20 text-orange-400"
@@ -236,7 +236,7 @@ export default function AppointmentsCalendar({
                     )) : (
                         <div className="text-center py-20 opacity-20">
                             <Clock className="w-16 h-16 mx-auto mb-4" />
-                            <p className="text-sm font-black uppercase tracking-[0.2em]">Sem compromissos para hoje</p>
+                            <p className="text-sm font-black uppercase tracking-wider">Sem compromissos para hoje</p>
                         </div>
                     )}
                 </div>
@@ -256,13 +256,13 @@ export default function AppointmentsCalendar({
                             <button onClick={prev} className="p-1.5 hover:bg-muted/30 rounded-lg transition-colors text-muted-foreground hover:text-primary">
                                 <ChevronLeft className="w-4 h-4" />
                             </button>
-                            <button onClick={goToToday} className="px-3 text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">Hoje</button>
+                            <button onClick={goToToday} className="px-3 text-[11px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">Hoje</button>
                             <button onClick={next} className="p-1.5 hover:bg-white/5 rounded-lg transition-colors text-muted-foreground hover:text-primary">
                                 <ChevronRight className="w-4 h-4" />
                             </button>
                         </div>
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">Central de Agendamentos Nexus OS</p>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-muted-foreground">Central de Agendamentos Nexus OS</p>
                 </div>
 
                 <div className="flex items-center gap-4" suppressHydrationWarning>
@@ -272,8 +272,8 @@ export default function AppointmentsCalendar({
                                 key={v}
                                 onClick={() => setView(v)}
                                 className={cn(
-                                    "px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                                    view === v ? "bg-primary text-white" : "text-muted-foreground/40 hover:text-foreground"
+                                    "px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
+                                    view === v ? "bg-primary text-white" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 {v === 'month' ? 'Mês' : v === 'week' ? 'Semana' : 'Dia'}
@@ -287,7 +287,7 @@ export default function AppointmentsCalendar({
                             setSelectedDateInModal(null)
                             setIsCreateModalOpen(true)
                         }}
-                        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all font-black text-[10px] uppercase tracking-widest"
+                        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all font-black text-[11px] uppercase tracking-widest"
                     >
                         <Plus className="w-4 h-4" />
                         <span>Novo Agendamento</span>
@@ -297,11 +297,11 @@ export default function AppointmentsCalendar({
 
             <div className="flex-1 flex flex-col lg:flex-row gap-8 overflow-hidden" suppressHydrationWarning>
                 {/* Calendar View Area */}
-                <div className="flex-1 flex flex-col glass-premium rounded-[2.5rem] overflow-hidden border border-border/20" suppressHydrationWarning>
+                <div className="flex-1 flex flex-col glass-premium rounded-3xl overflow-hidden border border-border/20" suppressHydrationWarning>
                     {view === 'month' && (
                         <div className="grid grid-cols-7 border-b border-border/10 bg-muted/10" suppressHydrationWarning>
                             {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].map(day => (
-                                <div key={day} className="py-4 text-center text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">{day}</div>
+                                <div key={day} className="py-4 text-center text-[11px] font-black uppercase tracking-widest text-muted-foreground">{day}</div>
                             ))}
                         </div>
                     )}
@@ -313,7 +313,7 @@ export default function AppointmentsCalendar({
                 <div className="hidden xl:flex w-80 flex-col animate-in slide-in-from-right duration-700" suppressHydrationWarning>
                     <div className="mb-8" suppressHydrationWarning>
                         <h2 className="text-xl font-black tracking-tight mb-2">Resumo do Dia</h2>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{today.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</p>
+                        <p className="text-[11px] font-black uppercase tracking-wider text-primary">{today.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</p>
                     </div>
 
                     <div className="flex-1 space-y-6 overflow-y-auto scrollbar-hide pr-2" suppressHydrationWarning>
@@ -325,19 +325,19 @@ export default function AppointmentsCalendar({
                                 suppressHydrationWarning
                             >
                                 <div className="absolute left-[-5px] top-4 w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(99,102,241,0.5)] group-hover:scale-125 transition-transform" suppressHydrationWarning />
-                                <div className="text-[10px] font-black text-muted-foreground/40 mb-1" suppressHydrationWarning>{new Date(a.scheduled_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</div>
+                                <div className="text-[11px] font-black text-muted-foreground mb-1" suppressHydrationWarning>{new Date(a.scheduled_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</div>
                                 <h3 className="text-sm font-black text-foreground group-hover:text-primary transition-colors leading-tight">{a.service_orders?.title || 'Compromisso'}</h3>
                                 <div className="flex items-center gap-2 mt-2" suppressHydrationWarning>
                                     <div className="w-6 h-6 rounded-lg bg-muted/20 flex items-center justify-center" suppressHydrationWarning>
-                                        <User className="w-3 h-3 text-muted-foreground/40" suppressHydrationWarning />
+                                        <User className="w-3 h-3 text-muted-foreground" suppressHydrationWarning />
                                     </div>
-                                    <span className="text-[9px] font-bold text-muted-foreground/60 transition-colors" suppressHydrationWarning>{a.customers?.name || 'Cliente Direto'}</span>
+                                    <span className="text-[11px] font-bold text-muted-foreground transition-colors" suppressHydrationWarning>{a.customers?.name || 'Cliente Direto'}</span>
                                 </div>
                             </div>
                         )) : (
                             <div className="text-center py-12 opacity-20" suppressHydrationWarning>
                                 <Clock className="w-12 h-12 mx-auto mb-4" suppressHydrationWarning />
-                                <p className="text-[10px] font-black uppercase tracking-widest" suppressHydrationWarning>Sem compromissos</p>
+                                <p className="text-[11px] font-black uppercase tracking-widest" suppressHydrationWarning>Sem compromissos</p>
                             </div>
                         )}
                     </div>
@@ -348,7 +348,7 @@ export default function AppointmentsCalendar({
                                 <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center group-hover:rotate-6 transition-transform" suppressHydrationWarning>
                                     <TrendingUp className="w-5 h-5 text-white" suppressHydrationWarning />
                                 </div>
-                                <span className="text-[10px] font-black text-primary uppercase tracking-widest" suppressHydrationWarning>Nexus Insight</span>
+                                <span className="text-[11px] font-black text-primary uppercase tracking-widest" suppressHydrationWarning>Nexus Insight</span>
                             </div>
                             <p className="text-[11px] font-medium text-muted-foreground leading-relaxed" suppressHydrationWarning>Monitore o <span className="text-white font-bold">fluxo de agendamentos</span> para otimizar sua equipe.</p>
                         </div>
@@ -406,20 +406,20 @@ export default function AppointmentsCalendar({
                         <div className="space-y-4" suppressHydrationWarning>
                             <div className="flex items-center gap-3" suppressHydrationWarning>
                                 <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center" suppressHydrationWarning>
-                                    <User className="w-4 h-4 text-muted-foreground/40" suppressHydrationWarning />
+                                    <User className="w-4 h-4 text-muted-foreground" suppressHydrationWarning />
                                 </div>
                                 <div suppressHydrationWarning>
-                                    <div className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest" suppressHydrationWarning>Cliente</div>
+                                    <div className="text-[11px] font-black text-muted-foreground uppercase tracking-widest" suppressHydrationWarning>Cliente</div>
                                     <div className="text-sm font-bold text-foreground" suppressHydrationWarning>{selectedAppointment.customers?.name || 'Cliente Direto'}</div>
                                 </div>
                             </div>
 
                             <div className="flex items-center gap-3" suppressHydrationWarning>
                                 <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center" suppressHydrationWarning>
-                                    <PenTool className="w-4 h-4 text-muted-foreground/40" suppressHydrationWarning />
+                                    <PenTool className="w-4 h-4 text-muted-foreground" suppressHydrationWarning />
                                 </div>
                                 <div suppressHydrationWarning>
-                                    <div className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest" suppressHydrationWarning>Técnico</div>
+                                    <div className="text-[11px] font-black text-muted-foreground uppercase tracking-widest" suppressHydrationWarning>Técnico</div>
                                     <div className="text-sm font-bold text-foreground" suppressHydrationWarning>{selectedAppointment.technicians?.name || 'Não atribuído'}</div>
                                 </div>
                             </div>
@@ -430,20 +430,20 @@ export default function AppointmentsCalendar({
                                             className="flex items-center gap-3 group/os hover:bg-white/5 p-2 rounded-2xl transition-colors"
                                         >
                                             <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center group-hover/os:bg-primary/10 transition-colors" suppressHydrationWarning>
-                                                <ClipboardList className="w-4 h-4 text-muted-foreground/40 group-hover/os:text-primary transition-colors" suppressHydrationWarning />
+                                                <ClipboardList className="w-4 h-4 text-muted-foreground group-hover/os:text-primary transition-colors" suppressHydrationWarning />
                                             </div>
                                             <div suppressHydrationWarning>
-                                                <div className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest" suppressHydrationWarning>Ordem de Serviço</div>
+                                                <div className="text-[11px] font-black text-muted-foreground uppercase tracking-widest" suppressHydrationWarning>Ordem de Serviço</div>
                                                 <div className="text-sm font-bold text-foreground group-hover/os:text-primary transition-colors" suppressHydrationWarning>#{selectedAppointment.service_orders.order_number} - {selectedAppointment.service_orders.title}</div>
                                             </div>
                                         </Link>
                                     )}
                         </div>
 
-                        <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5" suppressHydrationWarning>
-                            <div className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest mb-2" suppressHydrationWarning>Status</div>
+                        <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5" suppressHydrationWarning>
+                            <div className="text-[11px] font-black text-muted-foreground uppercase tracking-widest mb-2" suppressHydrationWarning>Status</div>
                             <div className={cn(
-                                "inline-flex px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
+                                "inline-flex px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest border",
                                 selectedAppointment.status === 'scheduled' ? "bg-blue-500/10 border-blue-500/20 text-blue-400" :
                                     selectedAppointment.status === 'confirmed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
                                         selectedAppointment.status === 'in_progress' ? "bg-orange-500/10 border-orange-500/20 text-orange-400" :
@@ -456,11 +456,11 @@ export default function AppointmentsCalendar({
                         <div className="flex gap-3 pt-4" suppressHydrationWarning>
                             <button
                                 onClick={handleEdit}
-                                className="flex-1 py-4 rounded-2xl bg-muted/20 text-[10px] font-black uppercase tracking-widest hover:bg-muted/30 transition-all border border-border/10"
+                                className="flex-1 py-4 rounded-2xl bg-muted/20 text-[11px] font-black uppercase tracking-widest hover:bg-muted/30 transition-all border border-border/10"
                             >
                                 Editar
                             </button>
-                            <button className="flex-1 py-4 rounded-2xl bg-muted/20 text-[10px] font-black uppercase tracking-widest hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/20 transition-all border border-border/10">
+                            <button className="flex-1 py-4 rounded-2xl bg-muted/20 text-[11px] font-black uppercase tracking-widest hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/20 transition-all border border-border/10">
                                 Cancelar
                             </button>
                         </div>

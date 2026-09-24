@@ -118,7 +118,7 @@ export default function StepOSCriada({ orderId, orderNumber }: Props) {
                 <button
                     type="button"
                     onClick={() => router.push('/service-orders')}
-                    className="w-full text-[10px] text-muted-foreground/40 hover:text-muted-foreground font-black uppercase tracking-widest transition-colors py-2"
+                    className="w-full text-[11px] text-muted-foreground hover:text-muted-foreground font-black uppercase tracking-widest transition-colors py-2"
                 >
                     Voltar para lista
                 </button>

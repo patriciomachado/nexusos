@@ -256,7 +256,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                     {/* Linha 1: Marca, Modelo e Armazenamento */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Marca *</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Marca *</label>
                             <select
                                 value={brand}
                                 onChange={e => setBrand(e.target.value)}
@@ -271,7 +271,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Modelo *</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Modelo *</label>
                             <input
                                 type="text"
                                 value={model}
@@ -283,7 +283,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Capacidade</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Capacidade</label>
                             <select
                                 value={storage}
                                 onChange={e => setStorage(e.target.value)}
@@ -301,7 +301,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                     {/* Linha 2: Condição, Cor e Bateria */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Condição</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Condição</label>
                             <select
                                 value={condition}
                                 onChange={e => setCondition(e.target.value as any)}
@@ -315,7 +315,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Cor</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Cor</label>
                             <input
                                 type="text"
                                 value={color}
@@ -326,7 +326,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Bateria (%)</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Bateria (%)</label>
                             <input
                                 type="number"
                                 min="1"
@@ -341,7 +341,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                     {/* SEÇÃO MULTI-MODO DE UPLOAD DE FOTOS */}
                     <div className="p-4 bg-muted/20 border border-border rounded-2xl space-y-3">
                         <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
+                            <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest flex items-center gap-1.5">
                                 <ImageIcon className="w-4 h-4 text-purple-400" />
                                 Fotos do Aparelho (Adicione do Arquivo, Tire Foto ou Cole com Ctrl+V)
                             </span>
@@ -382,7 +382,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                             </div>
                         </div>
 
-                        <p className="text-[10px] text-muted-foreground font-medium">💡 Dica: Você também pode copiar qualquer imagem e dar <strong>Ctrl+V</strong> nesta tela para colar instantaneamente!</p>
+                        <p className="text-[11px] text-muted-foreground font-medium">💡 Dica: Você também pode copiar qualquer imagem e dar <strong>Ctrl+V</strong> nesta tela para colar instantaneamente!</p>
 
                         {/* Display Thumbnails */}
                         {images.length > 0 && (
@@ -406,7 +406,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                     {/* Identificadores (IMEI 1, IMEI 2 / Serial) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 bg-muted/20 border border-border rounded-2xl">
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">IMEI 1 (Segurança & Garantia)</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">IMEI 1 (Segurança & Garantia)</label>
                             <input
                                 type="text"
                                 value={imei1}
@@ -417,7 +417,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">IMEI 2 / Serial Number</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">IMEI 2 / Serial Number</label>
                             <input
                                 type="text"
                                 value={serialNumber}
@@ -431,7 +431,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                     {/* Preços (Custo, À Vista e 12x) */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Custo de Compra (R$)</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Custo de Compra (R$)</label>
                             <input
                                 type="number"
                                 step="0.01"
@@ -443,7 +443,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-emerald-400 tracking-widest ml-1">Preço à Vista (PIX) *</label>
+                            <label className="text-[13px] font-medium text-emerald-400 ml-1">Preço à Vista (PIX) *</label>
                             <input
                                 type="number"
                                 step="0.01"
@@ -456,7 +456,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-amber-400 tracking-widest ml-1">Preço Parcelado (12x)</label>
+                            <label className="text-[13px] font-medium text-amber-400 ml-1">Preço Parcelado (12x)</label>
                             <input
                                 type="number"
                                 step="0.01"
@@ -470,14 +470,14 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
 
                     {/* Passaporte Técnico & Garantia */}
                     <div className="p-4 bg-primary/10 border border-primary/20 rounded-2xl space-y-3">
-                        <span className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
+                        <span className="text-[11px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
                             <ShieldCheck className="w-4 h-4" />
                             Passaporte Técnico & Garantia Nexus
                         </span>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                             <div className="space-y-1">
-                                <label className="text-[10px] font-bold text-muted-foreground">Meses de Garantia da Loja</label>
+                                <label className="text-[11px] font-bold text-muted-foreground">Meses de Garantia da Loja</label>
                                 <select
                                     value={warrantyMonths}
                                     onChange={e => setWarrantyMonths(Number(e.target.value))}
@@ -490,7 +490,7 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[10px] font-bold text-muted-foreground">Peças Trocadas (se houver)</label>
+                                <label className="text-[11px] font-bold text-muted-foreground">Peças Trocadas (se houver)</label>
                                 <input
                                     type="text"
                                     value={replacedParts}

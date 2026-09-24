@@ -58,7 +58,7 @@ export default function CloseCashModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300">
-            <div className="bg-card border border-border w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 relative">
+            <div className="bg-card border border-border w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 relative">
 
                 {step === 'review' ? (
                     <div className="p-10 space-y-8">
@@ -69,7 +69,7 @@ export default function CloseCashModal({
                                 </div>
                                 <div>
                                     <h2 className="text-2xl font-black tracking-tight uppercase">{title}</h2>
-                                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Resumo do Período</p>
+                                    <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest">Resumo do Período</p>
                                 </div>
                             </div>
                             {!loading && (
@@ -81,18 +81,18 @@ export default function CloseCashModal({
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-6 bg-muted/30 border border-border rounded-3xl space-y-1">
-                                <span className="text-[10px] text-muted-foreground/60 font-black uppercase tracking-widest">Saldo Inicial</span>
+                                <span className="text-[11px] text-muted-foreground font-black uppercase tracking-widest">Saldo Inicial</span>
                                 <p className="text-xl font-bold text-foreground">{formatCurrency(cashRegister.opening_balance)}</p>
                             </div>
                             <div className="p-6 bg-muted/60 border border-border rounded-3xl space-y-1 ring-1 ring-primary/20">
-                                <span className="text-[10px] text-primary font-black uppercase tracking-widest">Saldo Esperado</span>
+                                <span className="text-[11px] text-primary font-black uppercase tracking-widest">Saldo Esperado</span>
                                 <p className="text-xl font-black text-primary">{formatCurrency(balance)}</p>
                             </div>
                         </div>
 
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Saldo Físico em Maos (Opcional)</label>
+                                <label className="text-[13px] font-medium text-muted-foreground ml-1">Saldo Físico em Maos (Opcional)</label>
                                 <input
                                     type="number"
                                     step="0.01"
@@ -119,7 +119,7 @@ export default function CloseCashModal({
                         </div>
 
                         <div className="p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl">
-                            <p className="text-[10px] text-amber-500/80 font-bold leading-relaxed text-center italic">
+                            <p className="text-[11px] text-amber-500/80 font-bold leading-relaxed text-center italic">
                                 Ao fechar o caixa, você não poderá registrar novas movimentações para este período. O sistema salvará o saldo atual como base de auditoria.
                             </p>
                         </div>
@@ -151,7 +151,7 @@ export default function CloseCashModal({
                             <h2 className="text-3xl font-black tracking-tight uppercase">Caixa Fechado!</h2>
                             <p className="text-muted-foreground text-sm font-medium">Relatório gerado com sucesso para auditoria.</p>
                         </div>
-                        <div className="p-1 px-4 rounded-full bg-muted text-[10px] font-black uppercase tracking-widest animate-pulse">
+                        <div className="p-1 px-4 rounded-full bg-muted text-[11px] font-black uppercase tracking-widest animate-pulse">
                             Redirecionando...
                         </div>
                     </div>

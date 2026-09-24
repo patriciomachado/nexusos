@@ -57,7 +57,7 @@ export default function CustomerActions({
                     disabled={isPending}
                     className="w-full p-1 rounded-3xl bg-rose-500/10 border border-rose-500/20 group/del hover:bg-rose-500/20 transition-all cursor-pointer"
                 >
-                    <div className="w-full py-4 rounded-2xl bg-card/40 text-rose-500 font-black text-xs uppercase tracking-[0.2em] group-hover/del:text-rose-400 transition-all text-center flex items-center justify-center gap-2">
+                    <div className="w-full py-4 rounded-2xl bg-card/40 text-rose-500 font-black text-xs uppercase tracking-wider group-hover/del:text-rose-400 transition-all text-center flex items-center justify-center gap-2">
                         {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                         Excluir Cliente
                     </div>
@@ -84,7 +84,7 @@ export default function CustomerActions({
                     e.stopPropagation()
                     setShowMenu(!showMenu)
                 }}
-                className="p-2 rounded-xl bg-muted/20 text-muted-foreground/20 hover:text-foreground transition-colors hover:bg-muted/40"
+                className="p-2 rounded-xl bg-muted/20 text-muted-foreground hover:text-foreground transition-colors hover:bg-muted/40"
             >
                 <MoreVertical className="w-5 h-5" />
             </button>

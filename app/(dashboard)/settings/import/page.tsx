@@ -57,10 +57,10 @@ export default function ImportPage() {
             {/* Header */}
             <div className="flex flex-col gap-1 relative">
                 <div className="absolute -left-4 top-0 bottom-0 w-1 bg-primary rounded-full shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
-                <h1 className="text-3xl font-black tracking-tighter uppercase italic flex items-center gap-3">
+                <h1 className="text-3xl font-black tracking-tighter uppercase flex items-center gap-3">
                     Importação <span className="text-primary">uMDB Plus</span>
                 </h1>
-                <p className="text-muted-foreground text-xs font-bold uppercase tracking-[0.2em] opacity-60">
+                <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider opacity-60">
                     Migre seus dados históricos com tecnologia Nexus
                 </p>
             </div>
@@ -82,14 +82,14 @@ export default function ImportPage() {
                             </div>
                         </div>
                         <div className="space-y-2 pt-2">
-                            <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] px-1 block italic">
+                            <label className="text-[13px] font-medium text-muted-foreground px-1 block">
                                 Selecionar Arquivo
                             </label>
                             <input 
                                 type="file" 
                                 accept=".pdf" 
                                 onChange={(e) => setCustomerFile(e.target.files?.[0] || null)}
-                                className="w-full text-xs font-bold bg-muted/40 border border-border rounded-xl p-3 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-primary file:text-white hover:bg-muted/60 transition-colors"
+                                className="w-full text-xs font-bold bg-muted/40 border border-border rounded-xl p-3 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-black file:uppercase file:bg-primary file:text-white hover:bg-muted/60 transition-colors"
                                 disabled={isImporting}
                             />
                         </div>
@@ -112,14 +112,14 @@ export default function ImportPage() {
                             </div>
                         </div>
                         <div className="space-y-2 pt-2">
-                            <label className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] px-1 block italic">
+                            <label className="text-[13px] font-medium text-muted-foreground px-1 block">
                                 Selecionar Arquivo
                             </label>
                             <input 
                                 type="file" 
                                 accept=".pdf" 
                                 onChange={(e) => setOrderFile(e.target.files?.[0] || null)}
-                                className="w-full text-xs font-bold bg-muted/40 border border-border rounded-xl p-3 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-primary file:text-white hover:bg-muted/60 transition-colors"
+                                className="w-full text-xs font-bold bg-muted/40 border border-border rounded-xl p-3 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-black file:uppercase file:bg-primary file:text-white hover:bg-muted/60 transition-colors"
                                 disabled={isImporting}
                             />
                         </div>
@@ -159,7 +159,7 @@ export default function ImportPage() {
                             </div>
                         </div>
                         <div className="text-right">
-                            <span className="text-3xl font-black italic text-primary">{progress}%</span>
+                            <span className="text-3xl font-black text-primary">{progress}%</span>
                         </div>
                     </div>
 
@@ -173,12 +173,12 @@ export default function ImportPage() {
                     {status === 'completed' && result && (
                         <div className="grid grid-cols-2 gap-4 pt-4 animate-in slide-in-from-bottom-4 duration-500">
                             <div className="p-6 bg-background rounded-2xl border border-border shadow-sm flex flex-col items-center justify-center text-center">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">Clientes</span>
-                                <span className="text-4xl font-black text-primary italic">{result.customers}</span>
+                                <span className="text-[11px] font-black uppercase tracking-wider text-muted-foreground mb-1">Clientes</span>
+                                <span className="text-4xl font-black text-primary">{result.customers}</span>
                             </div>
                             <div className="p-6 bg-background rounded-2xl border border-border shadow-sm flex flex-col items-center justify-center text-center">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">Ordens</span>
-                                <span className="text-4xl font-black text-indigo-500 italic">{result.orders}</span>
+                                <span className="text-[11px] font-black uppercase tracking-wider text-muted-foreground mb-1">Ordens</span>
+                                <span className="text-4xl font-black text-indigo-500">{result.orders}</span>
                             </div>
                         </div>
                     )}
@@ -191,7 +191,7 @@ export default function ImportPage() {
                     onClick={handleImport}
                     disabled={isImporting || !customerFile || !orderFile}
                     className={cn(
-                        "w-full md:w-auto min-w-[280px] h-16 rounded-2xl font-black uppercase tracking-[0.3em] italic text-lg transition-all duration-500 flex items-center justify-center gap-3 shadow-2xl",
+                        "w-full md:w-auto min-w-[280px] h-16 rounded-2xl font-black uppercase tracking-wider text-lg transition-all duration-500 flex items-center justify-center gap-3 shadow-2xl",
                         isImporting 
                             ? "bg-muted text-muted-foreground cursor-not-allowed" 
                             : "bg-primary text-white hover:scale-[1.02] hover:shadow-primary/40 active:scale-95"
@@ -212,7 +212,7 @@ export default function ImportPage() {
 
                 <div className="flex items-center gap-2 p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10 max-w-2xl text-center">
                     <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
-                    <p className="text-[10px] font-black text-amber-500/80 uppercase tracking-widest leading-relaxed italic">
+                    <p className="text-[11px] font-black text-amber-500/80 uppercase tracking-widest leading-relaxed">
                         Aviso: Este processo é irreversível e processa dados em larga escala. Certifique-se de que os PDFs são originais do uMDB Plus.
                     </p>
                 </div>

@@ -90,7 +90,7 @@ export default function TradeInCalculatorModal({
                         />
                     </div>
                     <div>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md">
+                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md">
                             Aparelho Desejado
                         </span>
                         <h4 className="font-black text-sm text-white mt-1">{targetDevice.brand} {targetDevice.model} ({targetDevice.storage || 'Estoque'})</h4>
@@ -100,7 +100,7 @@ export default function TradeInCalculatorModal({
 
                 {/* Trade-In Selection Grid */}
                 <div className="space-y-3">
-                    <label className="text-xs font-black uppercase tracking-wider text-slate-300 block">
+                    <label className="text-[13px] font-medium text-slate-300 block">
                         Selecione o seu celular atual para dar como entrada:
                     </label>
 
@@ -122,8 +122,8 @@ export default function TradeInCalculatorModal({
                                     </div>
                                     <div className="min-w-0">
                                         <p className="font-bold text-xs text-white truncate">{item.model}</p>
-                                        <span className="text-[10px] text-slate-400">{item.storage}</span>
-                                        <p className="text-[10px] font-black text-emerald-400">Abate: {formatCurrency(item.estimated_value)}</p>
+                                        <span className="text-[11px] text-slate-400">{item.storage}</span>
+                                        <p className="text-[11px] font-black text-emerald-400">Abate: {formatCurrency(item.estimated_value)}</p>
                                     </div>
                                 </button>
                             )
@@ -144,18 +144,18 @@ export default function TradeInCalculatorModal({
 
                         <div className="pt-2 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                             <div>
-                                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">VOCÊ SÓ PAGA A DIFERENÇA (PIX):</span>
+                                <span className="text-[11px] font-black uppercase text-slate-400 tracking-widest">VOCÊ SÓ PAGA A DIFERENÇA (PIX):</span>
                                 <p className="text-2xl font-black text-emerald-400">{formatCurrency(remainingCash)}</p>
                             </div>
 
                             <div className="text-left sm:text-right space-y-0.5">
-                                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest block">PARCELADO NO CARTÃO:</span>
+                                <span className="text-[11px] font-black uppercase text-slate-400 tracking-widest block">PARCELADO NO CARTÃO:</span>
                                 <p className="text-xs font-bold text-slate-200">12x de {formatCurrency(remainingMonthly12x)}</p>
                                 <p className="text-xs font-bold text-amber-300">24x de {formatCurrency(remainingMonthly24x)}</p>
                             </div>
                         </div>
 
-                        <p className="text-[10px] text-slate-400 text-center font-medium pt-1 border-t border-slate-800/80">
+                        <p className="text-[11px] text-slate-400 text-center font-medium pt-1 border-t border-slate-800/80">
                             *Aviso: O valor do seu celular de entrada é uma estimativa aproximada sujeita à avaliação física presencial em nossa loja.
                         </p>
                     </div>

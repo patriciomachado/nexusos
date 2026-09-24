@@ -39,7 +39,7 @@ export function Drawer({ isOpen, onClose, children, title }: DrawerProps) {
       {/* Backdrop */}
       <div 
         className={cn(
-          "fixed inset-0 bg-background/40 backdrop-blur-sm z-[100] transition-opacity duration-300",
+          "fixed inset-0 bg-black/35 z-[100] transition-opacity duration-300",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={onClose}
@@ -53,13 +53,14 @@ export function Drawer({ isOpen, onClose, children, title }: DrawerProps) {
         )}
       >
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between p-6 border-b border-border">
-            <h2 className="text-xl font-black tracking-tighter uppercase">{title || 'Menu'}</h2>
-            <button 
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border/70">
+            <h2 className="type-title3">{title || 'Menu'}</h2>
+            <button
               onClick={onClose}
-              className="p-2 rounded-xl bg-muted/50 hover:bg-muted transition-all"
+              aria-label="Fechar"
+              className="w-8 h-8 rounded-full bg-foreground/[0.07] hover:bg-foreground/[0.12] flex items-center justify-center text-muted-foreground transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" strokeWidth={2.5} />
             </button>
           </div>
           <div className="flex-1 overflow-y-auto">

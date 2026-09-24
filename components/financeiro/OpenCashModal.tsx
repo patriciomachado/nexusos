@@ -51,7 +51,7 @@ export default function OpenCashModal({ isOpen, onClose, onSuccess, title = "Abe
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-card border border-border w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="bg-card border border-border w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
                 <div className="p-8 space-y-8">
                     <div className="flex justify-between items-start">
                         <div className="space-y-1">
@@ -66,9 +66,9 @@ export default function OpenCashModal({ isOpen, onClose, onSuccess, title = "Abe
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-4">
                             <div className="relative group">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-primary mb-2 block ml-1">Saldo Inicial (R$)</label>
+                                <label className="text-[13px] font-medium text-primary mb-2 block ml-1">Saldo Inicial (R$)</label>
                                 <div className="relative">
-                                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-muted-foreground/30 font-mono tracking-tighter">R$</span>
+                                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-muted-foreground font-mono tracking-tighter">R$</span>
                                     <input
                                         type="number"
                                         step="0.01"
@@ -76,7 +76,7 @@ export default function OpenCashModal({ isOpen, onClose, onSuccess, title = "Abe
                                         onChange={(e) => setBalance(e.target.value)}
                                         placeholder="0,00"
                                         autoFocus
-                                        className="w-full bg-muted/30 border-2 border-border focus:border-primary rounded-3xl py-6 pl-16 pr-6 text-3xl font-black tracking-tighter transition-all focus:shadow-[0_0_20px_rgba(59,130,246,0.1)] outline-none placeholder:text-muted-foreground/20"
+                                        className="w-full bg-muted/30 border-2 border-border focus:border-primary rounded-3xl py-6 pl-16 pr-6 text-3xl font-black tracking-tighter transition-all focus:shadow-[0_0_20px_rgba(59,130,246,0.1)] outline-none placeholder:text-muted-foreground"
                                         required
                                     />
                                 </div>

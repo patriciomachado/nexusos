@@ -97,16 +97,16 @@ export default function QuickOSForm({ customers, technicians, companyId }: Props
                 </div>
                 <div>
                     <h2 className="text-sm font-black uppercase tracking-widest text-foreground/80">Abertura Rápida</h2>
-                    <p className="text-[10px] text-muted-foreground font-bold">Preencha os campos essenciais e abra a OS em segundos</p>
+                    <p className="text-[11px] text-muted-foreground font-bold">Preencha os campos essenciais e abra a OS em segundos</p>
                 </div>
             </div>
 
             {/* Card */}
-            <div className="bg-card/40 border border-white/5 rounded-[2rem] p-6 md:p-8 backdrop-blur-xl shadow-inner space-y-6">
+            <div className="bg-card/40 border border-white/5 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-inner space-y-6">
 
                 {/* Cliente */}
                 <div className="relative z-[100]">
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-[0.2em] italic uppercase">
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2">
                         Cliente proprietário *
                     </label>
                     <CustomerAutocomplete
@@ -122,7 +122,7 @@ export default function QuickOSForm({ customers, technicians, companyId }: Props
 
                 {/* Tipo de dispositivo */}
                 <div className="relative z-[90]">
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-[0.2em] italic uppercase">
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2">
                         Tipo de dispositivo *
                     </label>
                     <PremiumAutocomplete
@@ -135,7 +135,7 @@ export default function QuickOSForm({ customers, technicians, companyId }: Props
 
                 {/* Modelo */}
                 <div className="relative z-[80]">
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-[0.2em] italic uppercase">
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2">
                         Modelo / Especificação
                     </label>
                     <PremiumAutocomplete
@@ -148,7 +148,7 @@ export default function QuickOSForm({ customers, technicians, companyId }: Props
 
                 {/* Problema */}
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-[0.2em] italic uppercase">
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2">
                         Problema relatado
                     </label>
                     <PremiumTextarea
@@ -166,7 +166,7 @@ export default function QuickOSForm({ customers, technicians, companyId }: Props
                 <button
                     type="button"
                     onClick={() => router.back()}
-                    className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2 text-muted-foreground"
+                    className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-[11px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2 text-muted-foreground"
                 >
                     <XCircle className="w-4 h-4" />
                     Cancelar
@@ -174,7 +174,7 @@ export default function QuickOSForm({ customers, technicians, companyId }: Props
                 <button
                     type="submit"
                     disabled={isPending}
-                    className="px-8 py-3 rounded-xl bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-2 disabled:opacity-50"
+                    className="px-8 py-3 rounded-xl bg-indigo-500 text-white text-[11px] font-black uppercase tracking-widest hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-2 disabled:opacity-50"
                 >
                     {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                     Abrir OS

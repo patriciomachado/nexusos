@@ -58,7 +58,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
         <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid sm:grid-cols-2 gap-6">
                 <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest ml-2">Nome Completo</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2 ml-2">Nome Completo</label>
                     <PremiumInput
                         required
                         value={form.full_name}
@@ -69,7 +69,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                 </div>
 
                 <div className="sm:col-span-2">
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest ml-2">E-mail de Acesso</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2 ml-2">E-mail de Acesso</label>
                     <PremiumInput
                         required
                         type="email"
@@ -82,7 +82,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest ml-2">Cargo / Permissões</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2 ml-2">Cargo / Permissões</label>
                     <div className="relative group">
                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
                             <ShieldCheck className="w-4 h-4" />
@@ -103,7 +103,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest ml-2">Telefone</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2 ml-2">Telefone</label>
                     <PremiumInput
                         type="tel"
                         value={form.phone}
@@ -114,7 +114,7 @@ export default function UserForm({ initial, onSuccess, onCancel }: UserFormProps
                 </div>
 
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 uppercase tracking-widest ml-2">Status da Conta</label>
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2 ml-2">Status da Conta</label>
                     <div 
                         onClick={() => setForm(p => ({ ...p, is_active: !p.is_active }))}
                         className={cn(

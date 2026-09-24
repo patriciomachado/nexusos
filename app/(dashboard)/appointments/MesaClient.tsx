@@ -90,7 +90,7 @@ export default function MesaClient({
                             customers={customers}
                         />
                     ) : (
-                        <div className="glass-premium bg-card/40 border border-white/5 rounded-[2.5rem] p-2 flex-1 flex flex-col min-h-0 overflow-hidden shadow-2xl">
+                        <div className="glass-premium bg-card/40 border border-white/5 rounded-3xl p-2 flex-1 flex flex-col min-h-0 overflow-hidden shadow-2xl">
                             <AppointmentsCalendar
                                 initialAppointments={initialAppointments}
                                 customers={customers}

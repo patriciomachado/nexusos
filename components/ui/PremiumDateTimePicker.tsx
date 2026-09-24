@@ -54,7 +54,7 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
     return (
         <div className="space-y-3">
             {label && (
-                <label className="block text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-2">
+                <label className="block text-[13px] font-medium text-muted-foreground mb-2">
                     {label}
                 </label>
             )}
@@ -72,14 +72,14 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
                             "group relative p-2.5 rounded-2xl border transition-all hover:scale-[1.02] active:scale-95 text-center overflow-hidden",
                             value.startsWith(preset.getValue().slice(0, 10)) && !showCustom
                                 ? preset.color + " ring-1 ring-border/50"
-                                : "bg-muted/30 border-border/50 text-muted-foreground/50 hover:bg-muted/50 hover:border-border"
+                                : "bg-muted/30 border-border/50 text-muted-foreground hover:bg-muted/50 hover:border-border"
                         )}
                     >
                         <span className="flex flex-col gap-0.5 relative z-10 w-full">
-                            <span className="text-[8px] font-black uppercase tracking-tighter opacity-50">
+                            <span className="text-[11px] font-black uppercase tracking-tighter opacity-50">
                                 {preset.label.split(' ')[0]}
                             </span>
-                            <span className="text-[10px] font-bold white-text transition-colors group-hover:text-white truncate">
+                            <span className="text-[11px] font-bold white-text transition-colors group-hover:text-white truncate">
                                 {preset.label.split(' ').slice(1).join(' ')}
                             </span>
                         </span>
@@ -95,12 +95,12 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
                         "w-full flex items-center justify-between px-3 py-2 rounded-2xl border transition-all",
                         showCustom
                             ? "bg-primary/10 border-primary/30 text-primary"
-                            : "bg-muted/30 border-border/50 text-muted-foreground/50 hover:bg-muted/50 hover:border-border"
+                            : "bg-muted/30 border-border/50 text-muted-foreground hover:bg-muted/50 hover:border-border"
                     )}
                 >
                     <span className="flex items-center gap-2">
                         <CalendarIcon className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest">
+                        <span className="text-[11px] font-bold uppercase tracking-widest">
                             {showCustom ? 'Customizado' : 'Outra Data'}
                         </span>
                     </span>
@@ -122,7 +122,7 @@ export default function PremiumDateTimePicker({ value, onChange, label }: Props)
             {value && (
                 <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-muted/20 border border-border/50 animate-in fade-in duration-500">
                     <Clock className="w-3 h-3 text-primary/60" />
-                    <p className="text-[10px] font-medium text-muted-foreground/60 first-letter:uppercase truncate">
+                    <p className="text-[11px] font-medium text-muted-foreground first-letter:uppercase truncate">
                         {formatPreview(value)}
                     </p>
                 </div>

@@ -1,201 +1,154 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Bell, Check, Trash2, ExternalLink, Inbox, Clock, ClipboardList, Package, Calendar, DollarSign, AlertTriangle } from 'lucide-react'
+import { Bell, Inbox, ClipboardList, Package, Calendar, DollarSign, ListChecks } from 'lucide-react'
 import { useNotificationStore } from '@/store/notificationStore'
-import { useAppStore } from '@/store/appStore'
-import { useUser } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useRouter } from 'next/navigation'
+import type { Notification } from '@/types'
+
+const ENTITY_META: Record<string, { icon: React.ComponentType<{ className?: string }>; tint: string; href: (n: Notification) => string }> = {
+    service_order: { icon: ClipboardList, tint: 'bg-blue-500', href: n => `/service-orders/${n.related_entity_id}` },
+    low_stock: { icon: Package, tint: 'bg-orange-500', href: () => '/inventory?filter=low_stock' },
+    appointments_tomorrow: { icon: Calendar, tint: 'bg-purple-500', href: () => '/appointments' },
+    pending_payments: { icon: DollarSign, tint: 'bg-green-500', href: () => '/reports' },
+    task: { icon: ListChecks, tint: 'bg-red-500', href: n => `/tarefas?task=${n.related_entity_id}` },
+}
+
+// framer-motion's typings don't accept DOM props with React 19 here.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const MotionDiv = motion.div as any
 
 export default function NotificationsDropdown() {
-    const MotionDiv = motion.div as any
     const [isOpen, setIsOpen] = useState(false)
-    const { user: clerkUser } = useUser()
-    const { user: appUser } = useAppStore()
-    const { notifications, unreadCount, fetchNotifications, markAsRead, isLoading } = useNotificationStore()
+    const { notifications, unreadCount, fetchNotifications, markAsRead, markAllAsRead, isLoading } = useNotificationStore()
     const dropdownRef = useRef<HTMLDivElement>(null)
-    const [mounted, setMounted] = useState(false)
     const router = useRouter()
 
     useEffect(() => {
-        setMounted(true)
-    }, [])
-
-    const handleNotificationClick = async (notification: any) => {
-        if (!mounted) return
-        await markAsRead(notification.id)
-        
-        if (notification.related_entity_type === 'service_order' && notification.related_entity_id) {
-            router.push(`/service-orders/${notification.related_entity_id}`)
-        } else if (notification.related_entity_type === 'low_stock') {
-            router.push('/inventory?filter=low_stock')
-        } else if (notification.related_entity_type === 'appointments_tomorrow') {
-            router.push('/appointments')
-        } else if (notification.related_entity_type === 'pending_payments') {
-            router.push('/reports')
-        }
-    }
-
-    const getNotificationIcon = (notification: any) => {
-        if (notification.related_entity_type === 'service_order') {
-            return <ClipboardList className="w-4 h-4" />
-        } else if (notification.related_entity_type === 'low_stock') {
-            return <Package className="w-4 h-4" />
-        } else if (notification.related_entity_type === 'appointments_tomorrow') {
-            return <Calendar className="w-4 h-4" />
-        } else if (notification.related_entity_type === 'pending_payments') {
-            return <DollarSign className="w-4 h-4" />
-        }
-        return <Bell className="w-4 h-4" />
-    }
-
-    useEffect(() => {
-        const idToUse = appUser?.id || clerkUser?.id
-        if (idToUse) {
-            fetchNotifications(idToUse)
-        }
-    }, [clerkUser?.id, appUser?.id, fetchNotifications])
+        fetchNotifications()
+        const id = setInterval(() => {
+            if (document.visibilityState === 'visible') fetchNotifications()
+        }, 60_000)
+        return () => clearInterval(id)
+    }, [fetchNotifications])
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsOpen(false)
-            }
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) setIsOpen(false)
         }
+        const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsOpen(false) }
         document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
+        document.addEventListener('keydown', handleKey)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+            document.removeEventListener('keydown', handleKey)
+        }
     }, [])
 
-    const toggleDropdown = () => setIsOpen(!isOpen)
+    const handleNotificationClick = async (notification: Notification) => {
+        setIsOpen(false)
+        await markAsRead(notification.id)
+        const meta = notification.related_entity_type ? ENTITY_META[notification.related_entity_type] : undefined
+        if (meta) router.push(meta.href(notification))
+    }
 
     return (
         <div className="relative" ref={dropdownRef} suppressHydrationWarning>
-            {/* Bell Trigger */}
             <button
-                onClick={toggleDropdown}
+                onClick={() => setIsOpen(!isOpen)}
+                aria-label={unreadCount > 0 ? `Notificações, ${unreadCount} não lidas` : 'Notificações'}
+                aria-expanded={isOpen}
                 className={cn(
-                    "w-10 h-10 flex items-center justify-center rounded-xl transition-all relative border border-white/5",
-                    isOpen
-                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                        : "bg-muted/40 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                    'w-11 h-11 flex items-center justify-center rounded-full transition-colors relative',
+                    isOpen ? 'bg-primary/12 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-foreground/[0.05]'
                 )}
             >
-                <Bell className="w-4 h-4" />
+                <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
-                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-background animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+                    <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[11px] font-semibold flex items-center justify-center ring-2 ring-background tabular-nums">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
                 )}
             </button>
 
-            {/* Dropdown Menu */}
             <AnimatePresence>
                 {isOpen && (
                     <MotionDiv
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        initial={{ opacity: 0, y: -4, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute right-0 mt-4 w-80 sm:w-96 rounded-2xl bg-background/80 backdrop-blur-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 overflow-hidden"
+                        exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                        transition={{ duration: 0.16 }}
+                        className="fixed sm:absolute left-2 right-2 sm:left-auto sm:right-0 top-16 sm:top-auto sm:mt-2 sm:w-96 rounded-2xl material-thick border border-border/70 shadow-2xl z-50 overflow-hidden"
+                        role="dialog"
+                        aria-label="Notificações"
                     >
-                        {/* Header */}
-                        <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/5">
-                            <div className="flex items-center gap-2">
-                                <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Notificações</h3>
-                                {unreadCount > 0 && (
-                                    <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-black uppercase tracking-tighter">
-                                        {unreadCount} Novas
-                                    </span>
-                                )}
-                            </div>
-                            <button className="text-[10px] font-black text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
-                                Marcar tudo como lido
-                            </button>
-                        </div>
-
-                        {/* List */}
-                        <div className="max-h-[400px] overflow-y-auto scrollbar-hide py-2">
-                            {isLoading || !mounted ? (
-                                <div className="p-8 flex flex-col items-center justify-center gap-3">
-                                    <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                                    <span className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">Carregando...</span>
-                                </div>
-                            ) : notifications.length === 0 ? (
-                                <div className="p-12 flex flex-col items-center justify-center gap-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-muted/20 flex items-center justify-center">
-                                        <Inbox className="w-6 h-6 text-muted-foreground/40" />
-                                    </div>
-                                    <span className="text-xs font-bold text-muted-foreground/40 uppercase tracking-widest text-center">Nenhuma notificação por aqui</span>
-                                </div>
-                            ) : (
-                                notifications.map((notification) => (
-                                    <div
-                                        key={notification.id}
-                                        onClick={() => handleNotificationClick(notification)}
-                                        className={cn(
-                                            "p-4 hover:bg-white/5 transition-all cursor-pointer relative group",
-                                            notification.status !== 'read' && "bg-primary/5"
-                                        )}
-                                    >
-                                        <div className="flex gap-4">
-                                            <div className={cn(
-                                                "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-white/5",
-                                                notification.status !== 'read' ? "bg-primary/20 text-primary" : "bg-muted/40 text-muted-foreground"
-                                            )}>
-                                                {getNotificationIcon(notification)}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center justify-between gap-2">
-                                                    <p className="text-xs font-black text-foreground uppercase tracking-tight truncate">
-                                                        {notification.title || 'Alerta do Sistema'}
-                                                     </p>
-                                                    <span className="text-[10px] font-bold text-muted-foreground/40 whitespace-nowrap">
-                                                        {notification.created_at ? formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: ptBR }) : 'agora'}
-                                                    </span>
-                                                </div>
-                                                <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
-                                                    {notification.message}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        {notification.status !== 'read' && (
-                                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
-                                        )}
-                                    </div>
-                                ))
+                        <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+                            <h3 className="type-headline text-foreground">Notificações</h3>
+                            {unreadCount > 0 && (
+                                <button
+                                    onClick={markAllAsRead}
+                                    className="text-[15px] text-primary hover:opacity-80 transition-opacity"
+                                >
+                                    Marcar todas como lidas
+                                </button>
                             )}
                         </div>
 
-                        {/* Footer */}
-                        <div className="p-3 border-t border-white/5 bg-white/5">
-                            <button className="w-full py-2 rounded-xl bg-muted/40 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all flex items-center justify-center gap-2">
-                                Ver todas as atividades <ChevronRight className="w-3 h-3" />
-                            </button>
+                        <div className="max-h-[420px] overflow-y-auto pb-2">
+                            {isLoading ? (
+                                <div className="p-8 flex justify-center">
+                                    <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" aria-label="Carregando" />
+                                </div>
+                            ) : notifications.length === 0 ? (
+                                <div className="px-6 py-10 flex flex-col items-center text-center gap-2">
+                                    <Inbox className="w-8 h-8 text-muted-foreground" />
+                                    <p className="type-headline text-foreground">Tudo em dia</p>
+                                    <p className="text-sm text-muted-foreground">Você não tem notificações.</p>
+                                </div>
+                            ) : (
+                                <ul>
+                                    {notifications.map((notification, idx) => {
+                                        const meta = notification.related_entity_type ? ENTITY_META[notification.related_entity_type] : undefined
+                                        const Icon = meta?.icon ?? Bell
+                                        const unread = notification.status !== 'read'
+                                        return (
+                                            <li key={notification.id} className="relative">
+                                                {idx > 0 && <div className="absolute left-[60px] right-0 top-0 h-px bg-border/70" aria-hidden />}
+                                                <button
+                                                    onClick={() => handleNotificationClick(notification)}
+                                                    className="w-full text-left flex gap-3 px-4 py-3 hover:bg-foreground/[0.04] active:bg-foreground/[0.07] transition-colors"
+                                                >
+                                                    <span className={cn('w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 mt-0.5', meta?.tint ?? 'bg-zinc-500')}>
+                                                        <Icon className="w-4 h-4" />
+                                                    </span>
+                                                    <span className="flex-1 min-w-0">
+                                                        <span className="flex items-baseline justify-between gap-2">
+                                                            <span className={cn('text-[15px] truncate', unread ? 'font-semibold text-foreground' : 'text-foreground/90')}>
+                                                                {notification.title || 'Aviso'}
+                                                            </span>
+                                                            <span className="text-xs text-muted-foreground whitespace-nowrap">
+                                                                {notification.created_at ? formatDistanceToNow(new Date(notification.created_at), { addSuffix: false, locale: ptBR }) : 'agora'}
+                                                            </span>
+                                                        </span>
+                                                        <span className="block text-sm text-muted-foreground mt-0.5 line-clamp-2">
+                                                            {notification.message}
+                                                        </span>
+                                                    </span>
+                                                    {unread && <span className="w-2.5 h-2.5 rounded-full bg-primary shrink-0 mt-2" aria-label="Não lida" />}
+                                                </button>
+                                            </li>
+                                        )
+                                    })}
+                                </ul>
+                            )}
                         </div>
                     </MotionDiv>
                 )}
             </AnimatePresence>
         </div>
-    )
-}
-
-function ChevronRight(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="m9 18 6-6-6-6" />
-        </svg>
     )
 }

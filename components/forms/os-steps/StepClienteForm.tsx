@@ -59,10 +59,10 @@ export default function StepClienteForm({ form, setForm, customers, setCustomers
             </div>
 
             {/* Card */}
-            <div className="bg-card/40 border border-white/5 rounded-[2rem] p-6 md:p-8 backdrop-blur-xl shadow-inner space-y-6">
+            <div className="bg-card/40 border border-white/5 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-inner space-y-6">
                 {/* Cliente */}
                 <div className="space-y-2 relative z-[100]">
-                    <label className="block text-[10px] font-black text-muted-foreground tracking-[0.2em] italic uppercase">
+                    <label className="block text-[13px] font-medium text-muted-foreground">
                         Cliente proprietário *
                     </label>
                     <CustomerAutocomplete
@@ -77,7 +77,7 @@ export default function StepClienteForm({ form, setForm, customers, setCustomers
                 </div>
 
                 <div className="border-t border-white/5 pt-6 space-y-4">
-                    <label className="block text-[10px] font-black text-muted-foreground tracking-[0.2em] italic uppercase">
+                    <label className="block text-[13px] font-medium text-muted-foreground">
                         Detalhes da OS
                     </label>
                     {/* Técnico */}

@@ -42,10 +42,10 @@ export default function StepDispositivoForm({ form, setForm, onNext, onBack }: P
             </div>
 
             {/* Card */}
-            <div className="bg-card/40 border border-white/5 rounded-[2rem] p-6 md:p-8 backdrop-blur-xl shadow-inner space-y-6">
+            <div className="bg-card/40 border border-white/5 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-inner space-y-6">
                 {/* Tipo */}
                 <div className="relative z-[100]">
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-[0.2em] italic uppercase">
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2">
                         Tipo de dispositivo *
                     </label>
                     <PremiumAutocomplete
@@ -58,7 +58,7 @@ export default function StepDispositivoForm({ form, setForm, onNext, onBack }: P
 
                 {/* Modelo */}
                 <div className="relative z-[90]">
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-[0.2em] italic uppercase">
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2">
                         Modelo / Especificação
                     </label>
                     <PremiumAutocomplete
@@ -71,7 +71,7 @@ export default function StepDispositivoForm({ form, setForm, onNext, onBack }: P
 
                 {/* Serial */}
                 <div>
-                    <label className="block text-[10px] font-black text-muted-foreground mb-2 tracking-[0.2em] italic uppercase">
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2">
                         Serial / IMEI
                     </label>
                     <PremiumInput
@@ -86,15 +86,15 @@ export default function StepDispositivoForm({ form, setForm, onNext, onBack }: P
                     <div className="flex items-center justify-between">
                         <div>
                             <span className="text-sm font-black text-foreground/80">Aparelho liga?</span>
-                            <p className="text-[10px] text-muted-foreground mt-0.5">Estado de funcionamento do dispositivo</p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">Estado de funcionamento do dispositivo</p>
                         </div>
                         <div className="flex gap-2">
                             <button
                                 type="button"
                                 onClick={() => setForm(p => ({ ...p, turns_on: true }))}
-                                className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${form.turns_on
+                                className={`px-4 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${form.turns_on
                                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.2)]'
-                                    : 'bg-white/5 text-muted-foreground/40 border border-white/5'
+                                    : 'bg-white/5 text-muted-foreground border border-white/5'
                                     }`}
                             >
                                 <CheckCircle2 className="w-3.5 h-3.5" />
@@ -103,9 +103,9 @@ export default function StepDispositivoForm({ form, setForm, onNext, onBack }: P
                             <button
                                 type="button"
                                 onClick={() => setForm(p => ({ ...p, turns_on: false }))}
-                                className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${!form.turns_on
+                                className={`px-4 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${!form.turns_on
                                     ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30 shadow-[0_0_12px_rgba(244,63,94,0.2)]'
-                                    : 'bg-white/5 text-muted-foreground/40 border border-white/5'
+                                    : 'bg-white/5 text-muted-foreground border border-white/5'
                                     }`}
                             >
                                 <XCircle className="w-3.5 h-3.5" />
@@ -121,7 +121,7 @@ export default function StepDispositivoForm({ form, setForm, onNext, onBack }: P
                 <button
                     type="button"
                     onClick={onBack}
-                    className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2 text-muted-foreground"
+                    className="px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-[11px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2 text-muted-foreground"
                 >
                     <ChevronLeft className="w-4 h-4" />
                     Voltar

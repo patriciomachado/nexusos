@@ -197,7 +197,7 @@ export default function BarcodeScannerModal({
                         </div>
                         <div>
                             <h3 className="font-black text-foreground text-base tracking-tight">{title}</h3>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Aproxime o código da câmera</p>
+                            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Aproxime o código da câmera</p>
                         </div>
                     </div>
 

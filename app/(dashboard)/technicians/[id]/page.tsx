@@ -45,11 +45,11 @@ export default async function TechnicianDetailPage({ params }: { params: Promise
 
                 {/* Technician Profile Card */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 p-8 rounded-[3rem] bg-card/60 backdrop-blur-3xl border border-border shadow-2xl relative overflow-hidden group">
+                    <div className="lg:col-span-2 p-8 rounded-3xl bg-card/60 backdrop-blur-3xl border border-border shadow-2xl relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-80 h-80 bg-orange-500/5 blur-[120px] rounded-full" />
 
                         <div className="relative z-10 flex flex-col md:flex-row gap-10 items-start">
-                            <div className="w-32 h-32 rounded-[2.5rem] bg-muted/20 border border-border flex items-center justify-center text-5xl font-black text-orange-400 shadow-2xl relative">
+                            <div className="w-32 h-32 rounded-3xl bg-muted/20 border border-border flex items-center justify-center text-5xl font-black text-orange-400 shadow-2xl relative">
                                 <Award className="absolute -top-2 -right-2 w-8 h-8 text-yellow-500 drop-shadow-lg" />
                                 {technician.name.charAt(0).toUpperCase()}
                             </div>
@@ -58,7 +58,7 @@ export default async function TechnicianDetailPage({ params }: { params: Promise
                                 <div>
                                     <div className="flex items-center gap-4 mb-2">
                                         <h1 className="text-4xl font-black text-foreground tracking-tight">{technician.name}</h1>
-                                        <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] border border-emerald-500/20">Ativo</span>
+                                        <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[11px] font-black uppercase tracking-wider border border-emerald-500/20">Ativo</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <div className="flex items-center text-yellow-500">
@@ -72,18 +72,18 @@ export default async function TechnicianDetailPage({ params }: { params: Promise
 
                                 <div className="flex flex-wrap gap-2">
                                     {technician.specialties?.map((s: string) => (
-                                        <span key={s} className="px-4 py-2 rounded-xl bg-muted/5 border border-border text-xs font-bold text-muted-foreground/50 uppercase tracking-widest">
+                                        <span key={s} className="px-4 py-2 rounded-xl bg-muted/5 border border-border text-xs font-bold text-muted-foreground uppercase tracking-widest">
                                             {s}
                                         </span>
                                     ))}
                                 </div>
 
                                 <div className="flex items-center gap-6 pt-4 border-t border-border/10">
-                                    <div className="flex items-center gap-3 text-muted-foreground/60">
+                                    <div className="flex items-center gap-3 text-muted-foreground">
                                         <Phone className="w-5 h-5 text-orange-400" />
                                         <span className="text-sm font-mono">{technician.phone || 'Sem contato'}</span>
                                     </div>
-                                    <div className="flex items-center gap-3 text-muted-foreground/60">
+                                    <div className="flex items-center gap-3 text-muted-foreground">
                                         <Calendar className="w-5 h-5 text-orange-400" />
                                         <span className="text-sm">Membro desde {new Date(technician.created_at).getFullYear()}</span>
                                     </div>
@@ -99,7 +99,7 @@ export default async function TechnicianDetailPage({ params }: { params: Promise
                                 <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-400">
                                     <TrendingUp className="w-5 h-5" />
                                 </div>
-                                <span className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.2em]">Visão Geral</span>
+                                <span className="text-[11px] font-black text-foreground/20 uppercase tracking-wider">Visão Geral</span>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-3xl font-black text-foreground tracking-tighter">{completedOS + inProgressOS}</p>
@@ -110,11 +110,11 @@ export default async function TechnicianDetailPage({ params }: { params: Promise
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-5 rounded-3xl bg-muted/[0.02] border border-border backdrop-blur-xl">
                                 <p className="text-2xl font-black text-emerald-400 tracking-tighter">{completedOS}</p>
-                                <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-widest">Concluídas</p>
+                                <p className="text-[11px] font-bold text-foreground/20 uppercase tracking-widest">Concluídas</p>
                             </div>
                             <div className="p-5 rounded-3xl bg-muted/[0.02] border border-border backdrop-blur-xl">
                                 <p className="text-2xl font-black text-orange-400 tracking-tighter">{inProgressOS}</p>
-                                <p className="text-[10px] font-bold text-foreground/20 uppercase tracking-widest">Em Aberto</p>
+                                <p className="text-[11px] font-bold text-foreground/20 uppercase tracking-widest">Em Aberto</p>
                             </div>
                         </div>
                     </div>
@@ -136,20 +136,20 @@ export default async function TechnicianDetailPage({ params }: { params: Promise
                                 <Link
                                     key={os.id}
                                     href={`/service-orders/${os.id}`}
-                                    className="p-6 rounded-[2.5rem] bg-card/40 border border-border hover:border-orange-500/30 transition-all group relative overflow-hidden"
+                                    className="p-6 rounded-3xl bg-card/40 border border-border hover:border-orange-500/30 transition-all group relative overflow-hidden"
                                 >
                                     <div className="relative z-10 flex items-center justify-between">
                                         <div className="space-y-3">
                                             <div className="flex items-center gap-3">
-                                                <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${statusClasses}`}>
+                                                <span className={`px-2.5 py-1 rounded-lg text-[11px] font-black uppercase tracking-widest border ${statusClasses}`}>
                                                     {OS_STATUS_LABELS[os.status]}
                                                 </span>
-                                                <span className="text-[10px] font-mono text-foreground/20 uppercase tracking-widest">#{os.order_number}</span>
+                                                <span className="text-[11px] font-mono text-foreground/20 uppercase tracking-widest">#{os.order_number}</span>
                                             </div>
                                             <h3 className="text-lg font-bold text-foreground group-hover:text-orange-400 transition-colors truncate max-w-[250px]">
                                                 {os.title}
                                             </h3>
-                                            <div className="flex items-center gap-4 text-[10px] text-muted-foreground/30 font-bold uppercase tracking-widest">
+                                            <div className="flex items-center gap-4 text-[11px] text-muted-foreground font-bold uppercase tracking-widest">
                                                 <div className="flex items-center gap-1.5">
                                                     <Clock className="w-3 h-3" />
                                                     {formatDateTime(os.created_at)}
@@ -163,9 +163,9 @@ export default async function TechnicianDetailPage({ params }: { params: Promise
                                 </Link>
                             )
                         }) : (
-                            <div className="md:col-span-2 p-20 text-center border-2 border-dashed border-border/5 rounded-[3rem]">
+                            <div className="md:col-span-2 p-20 text-center border-2 border-dashed border-border/5 rounded-3xl">
                                 <Wrench className="w-12 h-12 text-foreground/5 mx-auto mb-4" />
-                                <p className="text-muted-foreground/30 font-bold uppercase tracking-widest">Nenhuma atividade registrada</p>
+                                <p className="text-muted-foreground font-bold uppercase tracking-widest">Nenhuma atividade registrada</p>
                             </div>
                         )}
                     </div>

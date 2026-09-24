@@ -12,22 +12,22 @@ const PremiumInput = React.forwardRef<HTMLInputElement, InputProps>(
         return (
             <div className="relative group w-full">
                 {label && (
-                    <label className="block text-[10px] font-black text-muted-foreground/60 mb-2 uppercase tracking-[0.2em] px-1">
+                    <label className="block text-[13px] font-medium text-muted-foreground mb-2 px-1">
                         {label}
                     </label>
                 )}
                 <div className="relative group/input">
                     {icon && (
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within/input:text-primary transition-colors">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within/input:text-primary transition-colors">
                             {icon}
                         </div>
                     )}
                     <input
                         type={type}
                         className={cn(
-                            "flex h-12 w-full bg-muted/40 border border-border rounded-2xl py-3 px-4 md:text-sm text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 transition-all backdrop-blur-2xl disabled:cursor-not-allowed disabled:opacity-50",
+                            "flex h-11 w-full bg-foreground/[0.04] border border-transparent rounded-xl py-2.5 px-3.5 md:text-[15px] text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:bg-card focus:border-primary focus:ring-4 focus:ring-primary/15 transition-colors disabled:cursor-not-allowed disabled:opacity-50",
                             icon && "pl-11",
-                            "hover:bg-muted/60 hover:border-border/80",
+                            "hover:bg-foreground/[0.06]",
                             className
                         )}
                         ref={ref}

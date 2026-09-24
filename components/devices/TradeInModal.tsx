@@ -114,7 +114,7 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
                     {/* Dados do Cliente e Aparelho */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Nome do Cliente *</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Nome do Cliente *</label>
                             <input
                                 type="text"
                                 value={customerName}
@@ -125,7 +125,7 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Telefone / WhatsApp</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Telefone / WhatsApp</label>
                             <input
                                 type="text"
                                 value={customerPhone}
@@ -136,7 +136,7 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Modelo do Usado *</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Modelo do Usado *</label>
                             <input
                                 type="text"
                                 value={deviceModel}
@@ -147,7 +147,7 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">IMEI do Aparelho</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">IMEI do Aparelho</label>
                             <input
                                 type="text"
                                 value={imei}
@@ -160,7 +160,7 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
 
                     {/* Checklist de Testes Físicos */}
                     <div className="p-4 bg-muted/30 border border-border rounded-2xl space-y-3">
-                        <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Checklist Técnico de Inspeção</span>
+                        <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">Checklist Técnico de Inspeção</span>
                         
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
                             <label className="flex items-center gap-2 cursor-pointer font-bold bg-background p-2.5 rounded-xl border border-border">
@@ -184,7 +184,7 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
                             </label>
 
                             <div className="bg-background p-2 rounded-xl border border-border flex items-center justify-between">
-                                <span className="text-[10px] font-bold">Bateria:</span>
+                                <span className="text-[11px] font-bold">Bateria:</span>
                                 <input
                                     type="number"
                                     min="1"
@@ -193,15 +193,15 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
                                     onChange={e => setBatteryPercent(Number(e.target.value))}
                                     className="w-14 bg-muted border border-border rounded px-1 text-center font-bold"
                                 />
-                                <span className="text-[10px] font-bold">%</span>
+                                <span className="text-[11px] font-bold">%</span>
                             </div>
 
                             <div className="bg-background p-2 rounded-xl border border-border flex items-center justify-between">
-                                <span className="text-[10px] font-bold">Carcaça:</span>
+                                <span className="text-[11px] font-bold">Carcaça:</span>
                                 <select
                                     value={housingCondition}
                                     onChange={e => setHousingCondition(e.target.value as any)}
-                                    className="bg-muted border border-border rounded text-[10px] font-bold"
+                                    className="bg-muted border border-border rounded text-[11px] font-bold"
                                 >
                                     <option value="impecavel">Impecável</option>
                                     <option value="bom">Bom Estado</option>
@@ -215,7 +215,7 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
                     {/* Valores de Mercado e Custo de Reforma */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Preço de Mercado Usado (R$)</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Preço de Mercado Usado (R$)</label>
                             <input
                                 type="number"
                                 value={marketValue}
@@ -226,7 +226,7 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Custo Estimado de Peças (R$)</label>
+                            <label className="text-[13px] font-medium text-muted-foreground ml-1">Custo Estimado de Peças (R$)</label>
                             <input
                                 type="number"
                                 value={estimatedRepairCost}
@@ -240,7 +240,7 @@ export default function TradeInModal({ isOpen, onClose, onSaveSuccess }: TradeIn
                     {/* Resultado da Sugestão da Avaliação */}
                     <div className="p-5 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                         <div className="space-y-1">
-                            <span className="text-[10px] font-black uppercase text-amber-400 tracking-widest">Valor Sugerido para Pagamento/Abate</span>
+                            <span className="text-[11px] font-black uppercase text-amber-400 tracking-widest">Valor Sugerido para Pagamento/Abate</span>
                             <h3 className="text-2xl font-black text-amber-300 tracking-tight">
                                 {formatCurrency(suggestedOffer)}
                             </h3>

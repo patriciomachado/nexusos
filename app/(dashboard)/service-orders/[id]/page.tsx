@@ -73,7 +73,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                 {/* Back + Header */}
                 <div className="flex items-start justify-between mb-6 gap-4">
                     <div className="min-w-0 flex-1">
-                        <Link href="/service-orders" className="flex items-center gap-1.5 text-sm text-foreground/40 hover:text-muted-foreground/70 transition-colors mb-3">
+                        <Link href="/service-orders" className="flex items-center gap-1.5 text-sm text-foreground/40 hover:text-muted-foreground transition-colors mb-3">
                             <ArrowLeft className="w-4 h-4" />
                             Voltar para OS
                         </Link>
@@ -102,14 +102,14 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                     <div className="md:col-span-2 space-y-4 md:space-y-6">
                         {/* Details card */}
                         <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm">
-                            <h2 className="text-[10px] font-black text-muted-foreground/60 mb-4 md:mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <h2 className="text-[11px] font-black text-muted-foreground mb-4 md:mb-6 uppercase tracking-wider flex items-center gap-2">
                                 <Info className="w-3 h-3" />
                                 Informações Gerais
                             </h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 text-sm">
                                 <div className="sm:col-span-2 flex flex-wrap items-center gap-3 mb-2">
                                     <span className={cn(
-                                        "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl transition-all duration-300",
+                                        "px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-xl transition-all duration-300",
                                         os.status === 'concluida' || os.status === 'faturada'
                                             ? "bg-emerald-500 text-white shadow-emerald-500/20"
                                             : "bg-indigo-500 text-white shadow-indigo-500/20"
@@ -117,7 +117,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                         {OS_STATUS_LABELS[os.status]}
                                     </span>
                                     {os.terms_accepted && (
-                                        <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest">
+                                        <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[11px] font-black uppercase tracking-widest">
                                             <Info className="w-3 h-3" />
                                             Termos Aceitos
                                         </span>
@@ -126,21 +126,21 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                 
                                 {os.problem_description && (
                                     <div className="sm:col-span-2 bg-muted/20 p-4 rounded-xl border border-border/30">
-                                        <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block mb-2">Problema Relatado</span>
+                                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider block mb-2">Problema Relatado</span>
                                         <p className="text-foreground/90 leading-relaxed italic">"{os.problem_description}"</p>
                                     </div>
                                 )}
 
                                 {os.description && (
                                     <div className="sm:col-span-2">
-                                        <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block mb-1">Diagnóstico Técnico / Descrição</span>
+                                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider block mb-1">Diagnóstico Técnico / Descrição</span>
                                         <p className="text-foreground/80 leading-relaxed">{os.description}</p>
                                     </div>
                                 )}
                                 
                                 {os.solution_applied && (
                                     <div className="sm:col-span-2 bg-emerald-500/5 p-4 rounded-xl border border-emerald-500/10">
-                                        <span className="text-[10px] font-black text-emerald-600/60 dark:text-emerald-400/60 uppercase tracking-[0.2em] block mb-1">Solução Aplicada</span>
+                                        <span className="text-[11px] font-black text-emerald-600/60 dark:text-emerald-400/60 uppercase tracking-wider block mb-1">Solução Aplicada</span>
                                         <p className="text-emerald-700 dark:text-emerald-300 font-medium">{os.solution_applied}</p>
                                     </div>
                                 )}
@@ -148,7 +148,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                 <div className="space-y-4">
                                     {os.equipment_description && (
                                         <div>
-                                            <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block mb-1">Equipamento</span>
+                                            <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider block mb-1">Equipamento</span>
                                             <div className="flex items-center gap-2 text-foreground/80">
                                                 <Wrench className="w-4 h-4 text-primary/40" />
                                                 <p className="font-semibold">{os.equipment_description}</p>
@@ -157,7 +157,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                     )}
                                     {os.equipment_serial && (
                                         <div>
-                                            <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block mb-1">Número de Série</span>
+                                            <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider block mb-1">Número de Série</span>
                                             <p className="text-foreground/80 font-mono text-xs bg-muted/30 px-2 py-1 rounded inline-block">{os.equipment_serial}</p>
                                         </div>
                                     )}
@@ -166,7 +166,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                 <div className="space-y-4">
                                     {os.scheduled_date && (
                                         <div>
-                                            <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block mb-1">Agendada para</span>
+                                            <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider block mb-1">Agendada para</span>
                                             <div className="flex items-center gap-2 text-foreground/80">
                                                 <Calendar className="w-4 h-4 text-primary/40" />
                                                 <p>{formatDateTime(os.scheduled_date)}</p>
@@ -175,7 +175,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                     )}
                                     {os.warranty_months > 0 && (
                                         <div>
-                                            <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block mb-1">Garantia</span>
+                                            <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider block mb-1">Garantia</span>
                                             <p className="text-foreground/80 font-bold">{os.warranty_months} meses</p>
                                         </div>
                                     )}
@@ -183,7 +183,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
 
                                 {os.checklist_progress && os.checklist_progress.length > 0 && (
                                     <div className="sm:col-span-2 pt-4 border-t border-border/30">
-                                        <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block mb-3">Checklist do Dispositivo</span>
+                                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider block mb-3">Checklist do Dispositivo</span>
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                             {os.checklist_progress.map((item: any) => (
                                                 <div
@@ -191,14 +191,14 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                                     className={`px-3 py-2 rounded-xl text-xs flex items-center justify-between border ${
                                                         item.completed
                                                             ? 'bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border-emerald-500/10 font-bold'
-                                                            : 'bg-muted/10 text-muted-foreground/50 border-border/20 line-through decoration-1'
+                                                            : 'bg-muted/10 text-muted-foreground border-border/20 line-through decoration-1'
                                                     }`}
                                                 >
                                                     <span className="truncate">{item.text}</span>
                                                     {item.completed ? (
                                                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                                                     ) : (
-                                                        <XCircle className="w-3.5 h-3.5 text-muted-foreground/30 shrink-0" />
+                                                        <XCircle className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                                                     )}
                                                 </div>
                                             ))}
@@ -208,7 +208,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
 
                                 {cleanNotes && (
                                     <div className="sm:col-span-2">
-                                        <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block mb-1">Notas Internas</span>
+                                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-wider block mb-1">Notas Internas</span>
                                         <p className="text-amber-700 dark:text-amber-400 text-xs bg-amber-500/5 rounded-xl border border-amber-500/10 p-3 italic">
                                             {cleanNotes}
                                         </p>
@@ -229,11 +229,11 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                         {/* Items/Materials */}
                         <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm overflow-x-auto">
                             <div className="flex items-center justify-between mb-4 md:mb-6 gap-2">
-                                <h2 className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] flex items-center gap-2">
+                                <h2 className="text-[11px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                                     <DollarSign className="w-3 h-3" />
                                     Itens e Serviços
                                 </h2>
-                                <span className="text-[10px] font-black px-2 py-1 bg-primary/10 text-primary rounded-md uppercase tracking-tighter shrink-0">
+                                <span className="text-[11px] font-black px-2 py-1 bg-primary/10 text-primary rounded-md uppercase tracking-tighter shrink-0">
                                     {os.service_order_items?.length || 0} ITENS
                                 </span>
                             </div>
@@ -241,7 +241,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                             <div className="overflow-x-auto -mx-4 md:-mx-6">
                                 <table className="w-full text-sm min-w-[500px]">
                                     <thead>
-                                        <tr className="border-b border-border/50 text-[10px] font-black text-muted-foreground/30 uppercase tracking-widest">
+                                        <tr className="border-b border-border/50 text-[11px] font-black text-muted-foreground uppercase tracking-widest">
                                             <th className="text-left px-6 pb-3">Descrição do Item/Serviço</th>
                                             <th className="text-right px-4 pb-3">Qtd</th>
                                             <th className="text-right px-4 pb-3">Unitário</th>
@@ -257,13 +257,13 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                                             {item.item_name}
                                                         </div>
                                                         {item.inventory_item_id && (
-                                                            <span className="text-[9px] font-bold text-muted-foreground/40 bg-muted/40 px-1.5 py-0.5 rounded">PEÇA DO ESTOQUE</span>
+                                                            <span className="text-[11px] font-bold text-muted-foreground bg-muted/40 px-1.5 py-0.5 rounded">PEÇA DO ESTOQUE</span>
                                                         )}
                                                     </td>
-                                                    <td className="px-4 py-4 text-right text-muted-foreground/60 font-mono">
+                                                    <td className="px-4 py-4 text-right text-muted-foreground font-mono">
                                                         {item.quantity}
                                                     </td>
-                                                    <td className="px-4 py-4 text-right text-muted-foreground/60 font-mono">
+                                                    <td className="px-4 py-4 text-right text-muted-foreground font-mono">
                                                         {formatCurrency(item.unit_price)}
                                                     </td>
                                                     <td className="px-6 py-4 text-right font-bold text-foreground/90">
@@ -273,7 +273,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground/40 italic">
+                                                <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground italic">
                                                     Nenhum item adicionado a esta OS.
                                                 </td>
                                             </tr>
@@ -282,7 +282,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                     {os.service_order_items && os.service_order_items.length > 0 && (
                                         <tfoot>
                                             <tr className="bg-muted/5">
-                                                <td colSpan={3} className="px-6 py-4 text-right text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest">Soma dos Itens:</td>
+                                                <td colSpan={3} className="px-6 py-4 text-right text-[11px] font-black text-muted-foreground uppercase tracking-widest">Soma dos Itens:</td>
                                                 <td className="px-6 py-4 text-right font-black text-foreground text-lg tracking-tighter">
                                                     {formatCurrency((os.service_order_items as any[]).reduce((s, i) => s + (Number(i.total_price) || 0), 0))}
                                                 </td>
@@ -295,7 +295,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
 
                         {/* History */}
                         <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm">
-                            <h2 className="text-[10px] font-black text-muted-foreground/60 mb-4 md:mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <h2 className="text-[11px] font-black text-muted-foreground mb-4 md:mb-6 uppercase tracking-wider flex items-center gap-2">
                                 <Clock className="w-3 h-3" />
                                 Jornada da OS
                             </h2>
@@ -306,8 +306,8 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                             <div className="absolute left-0 top-1.5 w-5 h-5 rounded-full border-4 border-background bg-primary group-hover:scale-110 transition-transform shadow-sm" />
                                             <div className="space-y-1">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-[10px] font-bold text-primary uppercase">{h.changed_by_name || 'Sistema'}</span>
-                                                    <span className="text-[9px] text-muted-foreground/40 font-mono tracking-tighter bg-muted/30 px-1.5 py-0.5 rounded">
+                                                    <span className="text-[11px] font-bold text-primary uppercase">{h.changed_by_name || 'Sistema'}</span>
+                                                    <span className="text-[11px] text-muted-foreground font-mono tracking-tighter bg-muted/30 px-1.5 py-0.5 rounded">
                                                         {formatDateTime(h.created_at)}
                                                     </span>
                                                 </div>
@@ -316,7 +316,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                                         <>
                                                             Alterou <span className="font-bold text-foreground/90">{h.field_name}</span>
                                                             {h.old_value && h.new_value && (
-                                                                <span className="text-muted-foreground/60"> de <span className="text-destructive/70 line-through decoration-1">{h.old_value}</span> para <span className="text-emerald-600 dark:text-emerald-400 font-bold">{h.new_value}</span></span>
+                                                                <span className="text-muted-foreground"> de <span className="text-destructive/70 line-through decoration-1">{h.old_value}</span> para <span className="text-emerald-600 dark:text-emerald-400 font-bold">{h.new_value}</span></span>
                                                             )}
                                                         </>
                                                     )}
@@ -330,7 +330,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-muted-foreground/40 italic ml-8">Nenhum histórico registrado.</p>
+                                    <p className="text-xs text-muted-foreground italic ml-8">Nenhum histórico registrado.</p>
                                 )}
                             </div>
                         </div>
@@ -345,7 +345,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                     <div className="p-2 rounded-lg bg-primary/10">
                                         <User className="w-4 h-4 text-primary" />
                                     </div>
-                                    <h3 className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Proprietário</h3>
+                                    <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">Proprietário</h3>
                                 </div>
                                 <div className="space-y-3">
                                     <div>
@@ -358,7 +358,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                         )}
                                     </div>
                                     {(os.customers as any).email && (
-                                        <p className="text-xs text-muted-foreground/60 flex items-center gap-1.5">
+                                        <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                                             <Info className="w-3 h-3" />
                                             {(os.customers as any).email}
                                         </p>
@@ -366,7 +366,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                     {(os.customers as any).address && (
                                         <div className="pt-3 border-t border-border/30 flex items-start gap-2">
                                             <MapPin className="w-3.5 h-3.5 text-primary/40 shrink-0 mt-0.5" />
-                                            <p className="text-[11px] text-muted-foreground/50 leading-tight">{(os.customers as any).address}, {(os.customers as any).city}</p>
+                                            <p className="text-[11px] text-muted-foreground leading-tight">{(os.customers as any).address}, {(os.customers as any).city}</p>
                                         </div>
                                     )}
                                 </div>
@@ -380,14 +380,14 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                     <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500">
                                         <Wrench className="w-4 h-4" />
                                     </div>
-                                    <h3 className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">Especialista</h3>
+                                    <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-wider">Especialista</h3>
                                 </div>
                                 <p className="text-sm font-bold text-foreground">{(os.technicians as any).name}</p>
-                                {(os.technicians as any).phone && <p className="text-xs text-muted-foreground/50 mt-1">{(os.technicians as any).phone}</p>}
+                                {(os.technicians as any).phone && <p className="text-xs text-muted-foreground mt-1">{(os.technicians as any).phone}</p>}
                                 {(os.technicians as any).specialties && (
                                     <div className="flex flex-wrap gap-1 mt-3">
                                         {(os.technicians as any).specialties.slice(0, 3).map((s: string) => (
-                                            <span key={s} className="text-[8px] font-black bg-amber-500/5 text-amber-600 dark:text-amber-400 border border-amber-500/10 px-1.5 py-0.5 rounded uppercase tracking-tighter">
+                                            <span key={s} className="text-[11px] font-black bg-amber-500/5 text-amber-600 dark:text-amber-400 border border-amber-500/10 px-1.5 py-0.5 rounded uppercase tracking-tighter">
                                                 {s}
                                             </span>
                                         ))}
@@ -409,13 +409,13 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                 <div className="p-2 rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
                                     <DollarSign className="w-4 h-4" />
                                 </div>
-                                <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Resumo Financeiro</h3>
+                                <h3 className="text-[11px] font-black text-primary uppercase tracking-wider">Resumo Financeiro</h3>
                             </div>
 
                             <div className="space-y-4 text-sm relative z-10">
                                 {os.estimated_cost > 0 && (
                                     <div className="flex justify-between items-center group/item">
-                                        <span className="text-muted-foreground/60 text-xs uppercase tracking-tighter font-bold">Orçamento Inicial</span>
+                                        <span className="text-muted-foreground text-xs uppercase tracking-tighter font-bold">Orçamento Inicial</span>
                                         <span className="text-foreground/70 font-mono font-medium">{formatCurrency(os.estimated_cost)}</span>
                                     </div>
                                 )}
@@ -429,7 +429,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                     return (
                                         <>
                                             <div className="flex justify-between items-center group/item">
-                                                <span className="text-muted-foreground/60 text-xs uppercase tracking-tighter font-bold">Subtotal</span>
+                                                <span className="text-muted-foreground text-xs uppercase tracking-tighter font-bold">Subtotal</span>
                                                 <span className="text-foreground/70 font-mono font-medium">{formatCurrency(subtotal)}</span>
                                             </div>
 
@@ -442,7 +442,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
 
                                             <div className="pt-4 mt-2 border-t border-primary/10">
                                                 <div className="flex flex-col">
-                                                    <span className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] mb-1 text-center">Valor Total a Pagar</span>
+                                                    <span className="text-[11px] font-black text-primary/60 uppercase tracking-wider mb-1 text-center">Valor Total a Pagar</span>
                                                     <div className="text-3xl font-black text-primary text-center tracking-tighter tabular-nums drop-shadow-sm">
                                                         {formatCurrency(finalValue)}
                                                     </div>
@@ -454,7 +454,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                                 
                                 {os.status === 'faturada' && (
                                     <div className="mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-center">
-                                        <p className="text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                                        <p className="text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-2">
                                             <Info className="w-3 h-3" />
                                             OS Finalizada e Paga
                                         </p>
@@ -466,13 +466,13 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                         {/* Tracking link */}
                         {os.tracking_token && (
                             <div className="rounded-2xl border border-border/50 bg-muted/20 p-5 group shadow-sm">
-                                <h3 className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] mb-3">Link de Rastreio</h3>
+                                <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-wider mb-3">Link de Rastreio</h3>
                                 <div className="flex items-center gap-2">
-                                    <div className="flex-1 bg-background/50 border border-border/50 rounded-xl px-3 py-2 text-[10px] font-mono text-muted-foreground/70 truncate select-all">
+                                    <div className="flex-1 bg-background/50 border border-border/50 rounded-xl px-3 py-2 text-[11px] font-mono text-muted-foreground truncate select-all">
                                         {`${typeof window !== 'undefined' ? window.location.origin : ''}/tracking/${os.tracking_token}`}
                                     </div>
                                 </div>
-                                <p className="text-[9px] text-muted-foreground/40 mt-3 text-center leading-tight">
+                                <p className="text-[11px] text-muted-foreground mt-3 text-center leading-tight">
                                     O cliente pode usar este link para ver o status da OS sem precisar de login.
                                 </p>
                             </div>

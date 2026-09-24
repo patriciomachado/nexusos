@@ -81,22 +81,22 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
 
     return (
         <div className="relative w-full">
-            {label && <label className="block text-[10px] font-black text-muted-foreground/60 mb-2 uppercase tracking-[0.2em]">{label}</label>}
+            {label && <label className="block text-[13px] font-medium text-muted-foreground mb-2">{label}</label>}
             <button
                 ref={buttonRef}
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "relative h-12 w-full bg-muted/40 border rounded-2xl py-3 pl-4 pr-10 text-left md:text-sm text-base transition-all backdrop-blur-2xl",
-                    error ? "border-destructive/50" : "border-border group-focus-within:border-primary/40",
-                    isOpen ? "ring-2 ring-primary/30 border-primary/50" : "hover:bg-muted/60 hover:border-border/80"
+                    "relative h-11 w-full bg-foreground/[0.04] border rounded-xl py-2.5 pl-3.5 pr-10 text-left md:text-[15px] text-base transition-colors",
+                    error ? "border-destructive/60" : "border-transparent",
+                    isOpen ? "bg-card border-primary ring-4 ring-primary/15" : "hover:bg-foreground/[0.06]"
                 )}
             >
-                <span className={cn("block truncate", !selectedOption && "text-muted-foreground/50")}>
+                <span className={cn("block truncate", !selectedOption && "text-muted-foreground")}>
                     {selectedOption ? selectedOption.name : placeholder}
                 </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-                    <ChevronsUpDown className="h-4 w-4 text-muted-foreground/30" aria-hidden="true" />
+                    <ChevronsUpDown className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 </span>
             </button>
 
@@ -104,7 +104,7 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
                 <div
                     ref={dropdownRef}
                     style={dropdownStyle}
-                    className="overflow-hidden rounded-2xl bg-card border border-border shadow-2xl backdrop-blur-2xl animate-in fade-in duration-200"
+                    className="overflow-hidden rounded-xl material-thick border border-border/70 shadow-xl animate-in fade-in duration-150"
                 >
                     <ul className="max-h-60 overflow-y-auto p-1 py-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
                         {options.length > 0 ? (
@@ -117,22 +117,22 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
                                             setIsOpen(false)
                                         }}
                                         className={cn(
-                                            "relative w-full flex items-center gap-3 px-4 py-3 rounded-2xl md:text-sm text-base transition-all group",
+                                            "relative w-full flex items-center gap-3 px-3 py-2.5 rounded-lg md:text-[15px] text-base transition-colors group",
                                             o.id === selectedId
-                                                ? "bg-primary/10 text-primary font-bold"
-                                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                                ? "text-primary font-semibold"
+                                                : "text-foreground hover:bg-foreground/[0.05]"
                                         )}
                                     >
                                         <span className="flex-1 text-left truncate">{o.name}</span>
                                         {o.id === selectedId && (
-                                            <Check className="w-4 h-4 text-indigo-400" />
+                                            <Check className="w-4 h-4 text-primary" />
                                         )}
                                     </button>
                                 </li>
                             ))
                         ) : (
                             <li className="px-4 py-8 text-center">
-                                <p className="text-xs text-muted-foreground/30 uppercase tracking-widest font-black">Nenhuma opção</p>
+                                <p className="text-sm text-muted-foreground">Nenhuma opção</p>
                             </li>
                         )}
                     </ul>

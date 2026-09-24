@@ -193,7 +193,7 @@ export default function AppointmentForm({
                 />
 
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-2" suppressHydrationWarning>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40" suppressHydrationWarning>Observações</label>
+                    <label className="text-[13px] font-medium text-muted-foreground" suppressHydrationWarning>Observações</label>
                     <textarea
                         className="w-full bg-transparent border-none outline-none text-sm min-h-[100px] resize-none text-foreground placeholder-white/10"
                         placeholder="Instruções adicionais para o técnico..."
@@ -208,14 +208,14 @@ export default function AppointmentForm({
                 <button
                     type="button"
                     onClick={onClose}
-                    className="px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
+                    className="px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
                 >
                     Cancelar
                 </button>
                 <button
                     type="submit"
                     disabled={loading || isCreatingCustomer}
-                    className="px-8 py-3 rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all font-black text-[10px] uppercase tracking-widest disabled:opacity-50"
+                    className="px-8 py-3 rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all font-black text-[11px] uppercase tracking-widest disabled:opacity-50"
                 >
                     {loading ? 'Salvando...' : appointment ? 'Salvar Alterações' : 'Confirmar Agendamento'}
                 </button>

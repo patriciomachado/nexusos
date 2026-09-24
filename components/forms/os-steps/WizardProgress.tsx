@@ -44,7 +44,7 @@ export default function WizardProgress({ currentStep }: WizardProgressProps) {
                                         'w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-all duration-500 relative z-10',
                                         isCompleted && 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[0_0_16px_rgba(16,185,129,0.2)]',
                                         isActive && 'bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 shadow-[0_0_20px_rgba(99,102,241,0.3)] scale-110',
-                                        isPending && 'bg-white/5 text-muted-foreground/40 border border-white/5'
+                                        isPending && 'bg-white/5 text-muted-foreground border border-white/5'
                                     )}
                                 >
                                     {isCompleted ? (
@@ -57,10 +57,10 @@ export default function WizardProgress({ currentStep }: WizardProgressProps) {
                                 {/* Label */}
                                 <span
                                     className={cn(
-                                        'text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-all duration-300 hidden sm:block',
+                                        'text-[11px] md:text-[11px] font-black uppercase tracking-widest transition-all duration-300 hidden sm:block',
                                         isCompleted && 'text-emerald-400/70',
                                         isActive && 'text-indigo-300',
-                                        isPending && 'text-muted-foreground/30'
+                                        isPending && 'text-muted-foreground'
                                     )}
                                 >
                                     {step.label}
@@ -68,7 +68,7 @@ export default function WizardProgress({ currentStep }: WizardProgressProps) {
 
                                 {/* Active step number for mobile */}
                                 {isActive && (
-                                    <span className="sm:hidden text-[8px] font-black text-indigo-300 uppercase tracking-widest">
+                                    <span className="sm:hidden text-[11px] font-black text-indigo-300 uppercase tracking-widest">
                                         {step.label}
                                     </span>
                                 )}

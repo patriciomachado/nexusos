@@ -276,17 +276,17 @@ function DevicesContent() {
                     {/* KPI Cards */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                         <div className="p-4 bg-background border border-border rounded-2xl space-y-1">
-                            <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Aparelhos Disponíveis</span>
+                            <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">Aparelhos Disponíveis</span>
                             <p className="text-2xl font-black text-foreground">{totalAvailable} unidades</p>
                         </div>
 
                         <div className="p-4 bg-background border border-border rounded-2xl space-y-1">
-                            <span className="text-[10px] font-black uppercase text-emerald-400 tracking-widest">Valor em Estoque (À Vista)</span>
+                            <span className="text-[11px] font-black uppercase text-emerald-400 tracking-widest">Valor em Estoque (À Vista)</span>
                             <p className="text-2xl font-black text-emerald-400">{formatCurrency(totalInventoryValue)}</p>
                         </div>
 
                         <div className="p-4 bg-background border border-border rounded-2xl space-y-1">
-                            <span className="text-[10px] font-black uppercase text-primary tracking-widest">Seminovos Com Passaporte Técnico</span>
+                            <span className="text-[11px] font-black uppercase text-primary tracking-widest">Seminovos Com Passaporte Técnico</span>
                             <p className="text-2xl font-black text-primary">{totalRevised} revisados</p>
                         </div>
                     </div>
@@ -395,12 +395,12 @@ function DevicesContent() {
                                     <div key={device.id} className="bg-card border border-border rounded-3xl p-6 space-y-4 shadow-xl flex flex-col justify-between hover:border-primary/50 transition-all group">
                                         <div className="space-y-3">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-lg">
+                                                <span className="text-[11px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-lg">
                                                     {device.brand} • {device.storage || 'Estoque'}
                                                 </span>
 
                                                 <span className={cn(
-                                                    "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md",
+                                                    "text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md",
                                                     device.status === 'disponivel' ? "bg-emerald-500/10 text-emerald-400" : "bg-muted text-muted-foreground"
                                                 )}>
                                                     {device.status}
@@ -428,13 +428,13 @@ function DevicesContent() {
                                             {/* Preços */}
                                             <div className="p-3 bg-muted/30 border border-border rounded-2xl flex items-center justify-between">
                                                 <div>
-                                                    <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">À VISTA (PIX)</span>
+                                                    <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">À VISTA (PIX)</span>
                                                     <p className="text-lg font-black text-emerald-400">{formatCurrency(device.cash_price)}</p>
                                                 </div>
 
                                                 {device.installment_price && (
                                                     <div className="text-right">
-                                                        <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">PARCELADO 12X</span>
+                                                        <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">PARCELADO 12X</span>
                                                         <p className="text-xs font-bold text-amber-300">12x de {formatCurrency(device.installment_price / 12)}</p>
                                                     </div>
                                                 )}
@@ -442,7 +442,7 @@ function DevicesContent() {
 
                                             {/* IMEI Display */}
                                             {device.imei_1 && (
-                                                <div className="text-[10px] font-mono text-muted-foreground bg-background px-3 py-1.5 rounded-xl border border-border flex items-center justify-between">
+                                                <div className="text-[11px] font-mono text-muted-foreground bg-background px-3 py-1.5 rounded-xl border border-border flex items-center justify-between">
                                                     <span>IMEI: {device.imei_1}</span>
                                                 </div>
                                             )}
@@ -531,7 +531,7 @@ function DevicesContent() {
                                 {tradeIns.map(item => (
                                     <div key={item.id} className="bg-card border border-border rounded-2xl p-5 space-y-3 shadow-md">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-black uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                                            <span className="text-[11px] font-black uppercase text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
                                                 {item.status}
                                             </span>
                                             <span className="text-xs text-muted-foreground font-mono">
@@ -642,7 +642,7 @@ function DevicesContent() {
                         </div>
 
                         <div className="p-4 bg-muted/30 border border-border rounded-2xl space-y-1">
-                            <span className="text-[10px] font-black uppercase text-primary tracking-widest">{deviceToSell.brand}</span>
+                            <span className="text-[11px] font-black uppercase text-primary tracking-widest">{deviceToSell.brand}</span>
                             <h4 className="font-black text-base">{deviceToSell.model} ({deviceToSell.storage || 'Estoque'})</h4>
                             <p className="text-xs text-muted-foreground">{deviceToSell.color ? `Cor: ${deviceToSell.color}` : ''}</p>
                         </div>

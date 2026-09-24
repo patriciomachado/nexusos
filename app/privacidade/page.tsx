@@ -34,21 +34,21 @@ export default function PrivacyPolicyPage() {
             {/* Content Section */}
             <main className="relative z-10 max-w-4xl mx-auto px-4 py-12 md:py-20 space-y-12">
                 <div className="space-y-4 text-center">
-                    <div className="w-16 h-16 bg-indigo-500/10 rounded-[1.5rem] flex items-center justify-center mx-auto text-indigo-400 border border-indigo-500/20 shadow-[0_0_45px_rgba(99,102,241,0.15)]">
+                    <div className="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center mx-auto text-indigo-400 border border-indigo-500/20 shadow-[0_0_45px_rgba(99,102,241,0.15)]">
                         <Shield className="w-8 h-8" />
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white">Política de Privacidade</h1>
                     <p className="text-slate-400 font-medium max-w-xl mx-auto text-sm md:text-base">
                         Saiba como coletamos, utilizamos, armazenamos e protegemos seus dados pessoais em conformidade com a LGPD.
                     </p>
-                    <div className="inline-flex gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 pt-2">
+                    <div className="inline-flex gap-4 text-[11px] font-bold uppercase tracking-widest text-slate-500 pt-2">
                         <span>Última atualização: 16 de julho de 2026</span>
                         <span>&bull;</span>
                         <span>Versão: 1.1</span>
                     </div>
                 </div>
 
-                <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 md:p-10 shadow-2xl space-y-8 backdrop-blur-xl">
+                <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 md:p-10 shadow-2xl space-y-8 backdrop-blur-xl">
                     
                     {/* Section 1 */}
                     <div className="space-y-4">
@@ -225,7 +225,7 @@ export default function PrivacyPolicyPage() {
             </main>
 
             {/* Footer */}
-            <footer className="relative z-10 border-t border-white/5 bg-[#0a0a0f]/50 py-8 text-center text-[10px] font-bold uppercase tracking-widest text-[#505060]">
+            <footer className="relative z-10 border-t border-white/5 bg-[#0a0a0f]/50 py-8 text-center text-[11px] font-bold uppercase tracking-widest text-[#505060]">
                 © 2026 Nexus OS. Todos os direitos reservados.
             </footer>
         </div>

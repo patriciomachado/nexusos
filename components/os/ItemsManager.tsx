@@ -140,7 +140,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                     </div>
                     <div>
                         <h2 className="text-sm font-black text-muted-foreground tracking-tight uppercase tracking-widest">Peças e Serviços</h2>
-                        <p className="text-[10px] text-muted-foreground/50 font-medium">Gerencie os itens vinculados a esta ordem de serviço</p>
+                        <p className="text-[11px] text-muted-foreground font-medium">Gerencie os itens vinculados a esta ordem de serviço</p>
                     </div>
                 </div>
             </div>
@@ -150,9 +150,9 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                 <div className="lg:col-span-5 space-y-4">
                     {!isQuickAdd ? (
                         <div ref={containerRef} className="relative">
-                            <label className="block text-[9px] font-black text-muted-foreground/50 mb-2 uppercase tracking-widest italic px-1">Buscar no Estoque ou Serviço</label>
+                            <label className="block text-[13px] font-medium text-muted-foreground mb-2 px-1">Buscar no Estoque ou Serviço</label>
                             <div className="relative group">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/30 group-focus-within:text-indigo-500 transition-colors" />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-indigo-500 transition-colors" />
                                 <input
                                     type="text"
                                     value={query}
@@ -162,7 +162,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                     }}
                                     onFocus={() => setIsOpen(true)}
                                     placeholder="Nome da peça ou serviço..."
-                                    className="w-full h-14 bg-card/40 border border-border rounded-2xl pl-12 pr-14 md:text-sm text-base font-bold placeholder:text-muted-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/40 transition-all"
+                                    className="w-full h-14 bg-card/40 border border-border rounded-2xl pl-12 pr-14 md:text-sm text-base font-bold placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/40 transition-all"
                                 />
                                 <button
                                     type="button"
@@ -178,7 +178,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                             </div>
 
                             {isOpen && (query || filteredItems.length > 0) && (
-                                <div className="absolute z-[100] mt-2 w-full overflow-hidden rounded-[2rem] bg-card border border-border shadow-2xl backdrop-blur-3xl animate-in fade-in slide-in-from-top-2 duration-200">
+                                <div className="absolute z-[100] mt-2 w-full overflow-hidden rounded-3xl bg-card border border-border shadow-2xl backdrop-blur-3xl animate-in fade-in slide-in-from-top-2 duration-200">
                                     <div className="max-h-64 overflow-y-auto p-2 scrollbar-hide">
                                         {filteredItems.map((item) => (
                                             <button
@@ -187,12 +187,12 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                 onClick={() => addItem(item)}
                                                 className="w-full flex items-center gap-4 p-3 rounded-2xl hover:bg-indigo-500/5 group transition-all text-left border border-transparent hover:border-indigo-500/10"
                                             >
-                                                <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground/40 group-hover:bg-indigo-500/10 group-hover:text-indigo-500 transition-all">
+                                                <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground group-hover:bg-indigo-500/10 group-hover:text-indigo-500 transition-all">
                                                     {item.category?.toLowerCase().includes('serviço') ? <Wrench className="w-4 h-4" /> : <Package className="w-4 h-4" />}
                                                 </div>
                                                 <div className="flex-1">
                                                     <p className="text-xs font-bold text-foreground truncate">{item.name}</p>
-                                                    <p className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">{item.category || 'Peça'}</p>
+                                                    <p className="text-[11px] text-muted-foreground uppercase font-black tracking-tighter">{item.category || 'Peça'}</p>
                                                 </div>
                                                 <div className="text-right">
                                                     <p className="text-xs font-black text-indigo-500">R$ {item.selling_price.toFixed(2)}</p>
@@ -213,7 +213,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                 </div>
                                                 <div className="flex-1">
                                                     <p className="text-xs font-bold text-amber-700">Adição Rápida</p>
-                                                    <p className="text-[10px] text-amber-600/60 font-black uppercase tracking-widest">Configurar item fora do estoque</p>
+                                                    <p className="text-[11px] text-amber-600/60 font-black uppercase tracking-widest">Configurar item fora do estoque</p>
                                                 </div>
                                                 <Plus className="w-4 h-4 text-amber-500" />
                                             </button>
@@ -223,7 +223,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                             )}
                         </div>
                     ) : (
-                        <div className="p-6 rounded-[2rem] bg-amber-500/5 border-2 border-amber-500/20 space-y-4 animate-in duration-200 shadow-xl shadow-amber-500/5 relative overflow-hidden">
+                        <div className="p-6 rounded-3xl bg-amber-500/5 border-2 border-amber-500/20 space-y-4 animate-in duration-200 shadow-xl shadow-amber-500/5 relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-4 opacity-5">
                                 <Zap className="w-24 h-24 fill-current text-amber-500" />
                             </div>
@@ -237,7 +237,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                 </div>
                                 <button 
                                     onClick={() => setIsQuickAdd(false)}
-                                    className="px-3 py-1.5 rounded-lg hover:bg-white/10 text-[9px] font-black uppercase text-muted-foreground hover:text-foreground transition-all"
+                                    className="px-3 py-1.5 rounded-lg hover:bg-white/10 text-[11px] font-black uppercase text-muted-foreground hover:text-foreground transition-all"
                                 >
                                     Fechar
                                 </button>
@@ -245,7 +245,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                             
                             <div className="space-y-4 relative z-10">
                                 <div className="space-y-1.5">
-                                    <label className="text-[9px] font-black text-amber-700/60 uppercase tracking-widest px-1 italic">Descrição do Serviço / Peça</label>
+                                    <label className="text-[13px] font-medium text-amber-700/60 px-1">Descrição do Serviço / Peça</label>
                                     <input
                                         autoFocus
                                         type="text"
@@ -258,9 +258,9 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1.5">
-                                        <label className="text-[9px] font-black text-amber-700/60 uppercase tracking-widest px-1 italic">Custo (Opcional)</label>
+                                        <label className="text-[13px] font-medium text-amber-700/60 px-1">Custo (Opcional)</label>
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-700/40">R$</span>
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-black text-amber-700/40">R$</span>
                                             <input
                                                 type="number"
                                                 value={quickCost}
@@ -270,9 +270,9 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                         </div>
                                     </div>
                                     <div className="space-y-1.5">
-                                        <label className="text-[9px] font-black text-amber-700/60 uppercase tracking-widest px-1 italic">Preço de Venda *</label>
+                                        <label className="text-[13px] font-medium text-amber-700/60 px-1">Preço de Venda *</label>
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-700/40">R$</span>
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-black text-amber-700/40">R$</span>
                                             <input
                                                 type="number"
                                                 value={quickPrice}
@@ -295,10 +295,10 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                         </div>
                     )}
 
-                    <div className="p-5 rounded-[2rem] bg-indigo-500/5 border border-indigo-500/10 space-y-3">
+                    <div className="p-5 rounded-3xl bg-indigo-500/5 border border-indigo-500/10 space-y-3">
                         <div className="flex items-center gap-2 text-indigo-500">
                             <Info className="w-4 h-4" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Informação</span>
+                            <span className="text-[11px] font-black uppercase tracking-widest">Informação</span>
                         </div>
                         <p className="text-[11px] text-indigo-900/60 leading-relaxed font-medium">
                             Itens adicionados via <span className="font-bold text-amber-600">Zap (Raio)</span> são exclusivos desta OS e não gerenciam estoque. Use para serviços rápidos ou peças esporádicas.
@@ -310,15 +310,15 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                 <div className="lg:col-span-7">
                     <div className="space-y-4">
                         {/* Desktop Table */}
-                        <div className="hidden md:block bg-card/20 border border-border/50 rounded-[2.5rem] overflow-hidden">
+                        <div className="hidden md:block bg-card/20 border border-border/50 rounded-3xl overflow-hidden">
                             <table className="w-full border-collapse">
                                 <thead>
                                     <tr className="border-b border-border/50">
-                                        <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-left">Item</th>
-                                        <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-center w-20">Qtd</th>
-                                        <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-28">Custo Unit.</th>
-                                        <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-28">Preço Venda</th>
-                                        <th className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest p-4 text-right w-28">Total</th>
+                                        <th className="text-[11px] font-black text-muted-foreground uppercase tracking-widest p-4 text-left">Item</th>
+                                        <th className="text-[11px] font-black text-muted-foreground uppercase tracking-widest p-4 text-center w-20">Qtd</th>
+                                        <th className="text-[11px] font-black text-muted-foreground uppercase tracking-widest p-4 text-right w-28">Custo Unit.</th>
+                                        <th className="text-[11px] font-black text-muted-foreground uppercase tracking-widest p-4 text-right w-28">Preço Venda</th>
+                                        <th className="text-[11px] font-black text-muted-foreground uppercase tracking-widest p-4 text-right w-28">Total</th>
                                         <th className="w-24 p-4"></th>
                                     </tr>
                                 </thead>
@@ -328,7 +328,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                             <td colSpan={6} className="p-12 text-center">
                                                 <div className="flex flex-col items-center gap-3 opacity-20">
                                                     <ShoppingBag className="w-8 h-8" />
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.3em]">Nenhum item adicionado</p>
+                                                    <p className="text-[11px] font-black uppercase tracking-wider">Nenhum item adicionado</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -369,7 +369,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                         <button
                                                             type="button"
                                                             onClick={() => removeItem(index)}
-                                                            className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground/40 hover:text-rose-500 hover:bg-rose-500/10 transition-all"
+                                                            className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-all"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
                                                         </button>
@@ -382,7 +382,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                 {items.length > 0 && (
                                     <tfoot className="bg-muted/5 border-t border-border/50">
                                         <tr>
-                                            <td colSpan={4} className="p-6 text-right text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Subtotal Geral</td>
+                                            <td colSpan={4} className="p-6 text-right text-[11px] font-black text-muted-foreground uppercase tracking-widest">Subtotal Geral</td>
                                             <td className="p-6 text-right whitespace-nowrap">
                                                 <span className="text-lg font-black text-indigo-500 tracking-tighter">R$ {total.toFixed(2)}</span>
                                             </td>
@@ -396,16 +396,16 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                         {/* Mobile List Card View */}
                         <div className="md:hidden space-y-4">
                             {items.length === 0 ? (
-                                <div className="p-12 text-center bg-card/20 border border-border/50 rounded-[2.5rem]">
+                                <div className="p-12 text-center bg-card/20 border border-border/50 rounded-3xl">
                                     <div className="flex flex-col items-center gap-3 opacity-20">
                                         <ShoppingBag className="w-8 h-8" />
-                                        <p className="text-[10px] font-black uppercase tracking-[0.3em]">Nenhum item adicionado</p>
+                                        <p className="text-[11px] font-black uppercase tracking-wider">Nenhum item adicionado</p>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="space-y-4">
                                     {items.map((item, index) => (
-                                        <div key={item.client_key || item.id || `item-${index}`} className="p-5 rounded-[2rem] bg-card/40 border border-border/50 relative overflow-hidden space-y-4">
+                                        <div key={item.client_key || item.id || `item-${index}`} className="p-5 rounded-3xl bg-card/40 border border-border/50 relative overflow-hidden space-y-4">
                                             <div className="flex items-start justify-between">
                                                 <div className="flex items-center gap-2">
                                                     {item.inventory_item_id ? (
@@ -415,7 +415,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                                     )}
                                                     <div>
                                                         <p className="text-xs font-bold text-foreground">{item.item_name}</p>
-                                                        <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-wider">
+                                                        <p className="text-[11px] font-black uppercase text-muted-foreground tracking-wider">
                                                             {item.inventory_item_id ? 'Estoque' : 'Serviço Rápido'}
                                                         </p>
                                                     </div>
@@ -440,21 +440,21 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                             
                                             <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/5 text-center">
                                                 <div>
-                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Custo</span>
+                                                    <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Custo</span>
                                                     <span className="text-xs font-black text-amber-600">R$ {item.unit_cost.toFixed(2)}</span>
                                                 </div>
                                                 <div>
-                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Venda</span>
+                                                    <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Venda</span>
                                                     <span className="text-xs font-black text-indigo-500">R$ {item.unit_price.toFixed(2)}</span>
                                                 </div>
                                                 <div>
-                                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Total</span>
+                                                    <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Total</span>
                                                     <span className="text-xs font-black text-foreground">R$ {item.total_price.toFixed(2)}</span>
                                                 </div>
                                             </div>
                                             
                                             <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                                                <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Quantidade</span>
+                                                <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Quantidade</span>
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         type="button"
@@ -477,8 +477,8 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                         </div>
                                     ))}
                                     
-                                    <div className="p-5 rounded-[2rem] bg-muted/5 border border-border/50 flex justify-between items-center">
-                                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Subtotal Geral</span>
+                                    <div className="p-5 rounded-3xl bg-muted/5 border border-border/50 flex justify-between items-center">
+                                        <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Subtotal Geral</span>
                                         <span className="text-lg font-black text-indigo-500 tracking-tighter">R$ {total.toFixed(2)}</span>
                                     </div>
                                 </div>
@@ -501,7 +501,7 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                 {editingItem && (
                     <div className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block">Nome / Descrição</label>
+                            <label className="text-[13px] font-medium text-muted-foreground block">Nome / Descrição</label>
                             <input
                                 type="text"
                                 disabled={!!editingItem.inventory_item_id}
@@ -513,9 +513,9 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                         
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block font-black text-amber-600">Custo Unitário</label>
+                                <label className="text-[13px] font-medium text-muted-foreground block font-medium text-amber-600">Custo Unitário</label>
                                 <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-600/40">R$</span>
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-black text-amber-600/40">R$</span>
                                     <input
                                         type="number"
                                         value={editingItem.unit_cost ?? ''}
@@ -525,9 +525,9 @@ export default function ItemsManager({ inventoryItems, items, onChange }: Props)
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block font-black text-indigo-500">Preço de Venda</label>
+                                <label className="text-[13px] font-medium text-muted-foreground block font-medium text-indigo-500">Preço de Venda</label>
                                 <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-indigo-500/40">R$</span>
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-black text-indigo-500/40">R$</span>
                                     <input
                                         type="number"
                                         value={editingItem.unit_price ?? ''}
