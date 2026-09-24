@@ -45,15 +45,20 @@ export default function Header({ title, subtitle, children }: HeaderProps) {
                 </div>
             </div>
 
-            {/* Center: search or page controls */}
-            <div className="flex-1 max-w-xl mx-1 sm:mx-4 min-w-0">
+            {/* Center: search or page controls. Never narrower than its
+                content, so page buttons can't slide under the bell; the
+                title truncates instead. */}
+            <div className="flex-1 max-w-xl mx-1 sm:mx-4 min-w-fit">
                 {children}
             </div>
 
             {/* Trailing: actions */}
             <div className="flex items-center gap-1 sm:gap-2 shrink-0" suppressHydrationWarning>
                 <NotificationsDropdown />
-                <ThemeToggle />
+                {/* On phones the appearance switch lives in the menu drawer. */}
+                <div className="hidden sm:block">
+                    <ThemeToggle />
+                </div>
                 <div className="hidden sm:flex w-11 h-11 items-center justify-center" suppressHydrationWarning>
                     {mounted && (
                         <UserButton appearance={{ elements: { avatarBox: 'w-8 h-8' } }} />

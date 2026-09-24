@@ -51,6 +51,7 @@ export function Drawer({ isOpen, onClose, children, title }: DrawerProps) {
           "fixed inset-y-0 right-0 w-full sm:max-w-md bg-card border-l border-border z-[101] shadow-2xl transition-transform duration-500 ease-in-out transform",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
+        style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between px-5 py-4 border-b border-border/70">

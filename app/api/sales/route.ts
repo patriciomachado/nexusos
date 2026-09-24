@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: validation.error.format() }, { status: 400 })
     }
 
-    const { items, ...saleData } = validation.data
+    const { items, payments: splitPayments, ...saleData } = validation.data
 
     // 2. Ensure cash register is open and belongs to the company
     let registerId = saleData.cash_register_id
@@ -78,11 +78,68 @@ export async function POST(req: NextRequest) {
 
         const calculatedFinalAmount = Math.max(0, calculatedTotalAmount - (saleData.discount_amount || 0))
 
+        // 2.1 Resolve payments (single method, or split across several).
+        // Only cash can exceed what it covers; the excess is the change.
+        const round2 = (n: number) => Math.round(n * 100) / 100
+        const splits = splitPayments?.length
+            ? splitPayments
+            : saleData.payment_method_id
+                ? [{ payment_method_id: saleData.payment_method_id, amount: calculatedFinalAmount }]
+                : []
+        if (splits.length === 0) {
+            return NextResponse.json({ error: 'Selecione a forma de pagamento.' }, { status: 400 })
+        }
+
+        const methodIds = [...new Set(splits.map(p => p.payment_method_id))]
+        const { data: methods } = await db
+            .from('payment_methods')
+            .select('id, code, name')
+            .in('id', methodIds)
+        if (!methods || methods.length !== methodIds.length) {
+            return NextResponse.json({ error: 'Forma de pagamento inválida.' }, { status: 400 })
+        }
+        const methodById = new Map(methods.map(m => [m.id, m]))
+        const isCash = (id: string) => (methodById.get(id)?.code || '').toUpperCase() === 'CASH'
+
+        const nonCashTotal = round2(splits.filter(p => !isCash(p.payment_method_id)).reduce((sum, p) => sum + p.amount, 0))
+        const cashTotal = round2(splits.filter(p => isCash(p.payment_method_id)).reduce((sum, p) => sum + p.amount, 0))
+
+        if (nonCashTotal > calculatedFinalAmount + 0.009) {
+            return NextResponse.json({ error: 'O valor em cartão/PIX é maior que o total da venda.' }, { status: 400 })
+        }
+        const balance = round2(nonCashTotal + cashTotal - calculatedFinalAmount)
+        if (splitPayments?.length && balance < -0.009) {
+            return NextResponse.json({ error: `Faltam R$ ${(-balance).toFixed(2).replace('.', ',')} para completar o pagamento.` }, { status: 400 })
+        }
+        const change = Math.max(0, balance)
+
+        // Net amount per method (same method merged; change taken out of cash).
+        const netByMethod = new Map<string, number>()
+        for (const p of splits) netByMethod.set(p.payment_method_id, round2((netByMethod.get(p.payment_method_id) || 0) + p.amount))
+        let changeLeft = change
+        for (const [id, amount] of netByMethod) {
+            if (!isCash(id) || changeLeft <= 0) continue
+            const take = Math.min(amount, changeLeft)
+            netByMethod.set(id, round2(amount - take))
+            changeLeft = round2(changeLeft - take)
+        }
+        let paymentEntries = [...netByMethod].filter(([, amount]) => amount > 0.009)
+        if (paymentEntries.length === 0) paymentEntries = [[splits[0].payment_method_id, calculatedFinalAmount]]
+        paymentEntries.sort((a, b) => b[1] - a[1])
+        const primaryMethodId = paymentEntries[0][0]
+
+        const fmt = (n: number) => `R$ ${n.toFixed(2).replace('.', ',')}`
+        const paymentSummary = paymentEntries.length > 1 || change > 0
+            ? `Pagamento: ${paymentEntries.map(([id, amount]) => `${methodById.get(id)?.name} ${fmt(amount)}`).join(' + ')}${change > 0 ? ` · Recebido em dinheiro ${fmt(cashTotal)}, troco ${fmt(change)}` : ''}`
+            : null
+
         // 3. Create Sale
         const { data: sale, error: saleError } = await db
             .from('sales')
             .insert({
                 ...saleData,
+                payment_method_id: primaryMethodId,
+                notes: [saleData.notes, paymentSummary].filter(Boolean).join('\n') || null,
                 total_amount: calculatedTotalAmount,
                 final_amount: calculatedFinalAmount,
                 company_id: companyId,
@@ -137,20 +194,23 @@ export async function POST(req: NextRequest) {
             .eq('code', 'PRODUCT_SALE')
             .single()
 
+        // One entry per payment method, so the register closes correctly by method.
         const { error: cashError } = await db
             .from('cash_transactions')
-            .insert({
+            .insert(paymentEntries.map(([methodId, amount]) => ({
                 cash_register_id: registerId,
                 company_id: companyId,
                 type: 'entry',
-                amount: calculatedFinalAmount,
-                payment_method_id: saleData.payment_method_id,
+                amount,
+                payment_method_id: methodId,
                 transaction_type_id: transType?.id,
-                description: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
+                description: paymentEntries.length > 1
+                    ? `Venda PDV - ID: ${sale.id.substring(0, 8)} (${methodById.get(methodId)?.name})`
+                    : `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
                 source_type: 'product_sale',
                 source_id: sale.id,
                 user_id: dbUser.id
-            })
+            })))
 
         if (cashError) throw cashError
 
@@ -164,7 +224,7 @@ export async function POST(req: NextRequest) {
                     company_id: companyId,
                     type: 'exit',
                     amount: costValue,
-                    payment_method_id: saleData.payment_method_id,
+                    payment_method_id: primaryMethodId,
                     description: `Custo Produtos - Venda ID: ${sale.id.substring(0, 8)}`,
                     source_type: 'product_sale',
                     source_id: sale.id,
@@ -174,12 +234,7 @@ export async function POST(req: NextRequest) {
             if (costError) console.error('Error creating cost transaction:', costError)
         }
 
-        // 6. Register Payment (Financial History)
-        const { data: pm } = await db
-            .from('payment_methods')
-            .select('code')
-            .eq('id', saleData.payment_method_id)
-            .single()
+        // 6. Register Payment (Financial History), one row per method
 
         const methodMap: Record<string, string> = {
             'CASH': 'dinheiro',
@@ -192,18 +247,18 @@ export async function POST(req: NextRequest) {
 
         const { error: paymentError } = await db
             .from('payments')
-            .insert({
+            .insert(paymentEntries.map(([methodId, amount]) => ({
                 company_id: companyId,
                 customer_id: saleData.customer_id || null,
-                amount: calculatedFinalAmount,
-                payment_method: methodMap[pm?.code || ''] || 'dinheiro',
+                amount,
+                payment_method: methodMap[methodById.get(methodId)?.code || ''] || 'dinheiro',
                 payment_status: 'completed',
                 payment_date: new Date().toISOString(),
                 reference_id: sale.id,
                 sale_id: sale.id,
                 notes: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
                 created_by: dbUser.id
-            })
+            })))
 
         if (paymentError) console.error('Error creating payment record:', paymentError)
 
