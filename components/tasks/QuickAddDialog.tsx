@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { ListChecks } from 'lucide-react'
 import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 import { tasksApi, emitTasksChanged, ApiError } from './api'
 import { ParsedChips, parsedToInput } from './QuickAdd'
 import { useTaskStore } from '@/store/taskStore'
@@ -26,6 +27,7 @@ function isTyping(target: EventTarget | null) {
  */
 export default function QuickAddDialog() {
     const [open, setOpen] = useState(false)
+    const [mounted, setMounted] = useState(false)
     const [value, setValue] = useState('')
     const [busy, setBusy] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -37,13 +39,20 @@ export default function QuickAddDialog() {
         const onKey = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault()
+                inputRef.current?.focus({ preventScroll: true })
                 setOpen(o => !o)
-            } else if (e.key.toLowerCase() === 'n' && !e.metaKey && !e.ctrlKey && !e.altKey && !isTyping(e.target) && !document.querySelector('[role="dialog"]')) {
+            } else if (e.key.toLowerCase() === 'n' && !e.metaKey && !e.ctrlKey && !e.altKey && !isTyping(e.target) && !document.querySelector('[role="dialog"]:not([data-quickadd])')) {
                 e.preventDefault()
+                inputRef.current?.focus({ preventScroll: true })
                 setOpen(true)
             }
         }
-        const onOpen = () => setOpen(true)
+        // Focus inside the same tap that opened the box: iOS only shows the
+        // keyboard for focus() calls made synchronously within a user gesture.
+        const onOpen = () => {
+            inputRef.current?.focus({ preventScroll: true })
+            setOpen(true)
+        }
         window.addEventListener('keydown', onKey)
         window.addEventListener('tasks:quick-add', onOpen)
         return () => {
@@ -53,9 +62,18 @@ export default function QuickAddDialog() {
     }, [])
 
     useEffect(() => {
+         
+        setMounted(true)
+    }, [])
+
+    useEffect(() => {
         if (open) {
+            // Desktop fallback when opened without a gesture.
+            if (document.activeElement !== inputRef.current) inputRef.current?.focus({ preventScroll: true })
+        } else {
+             
             setValue('')
-            setTimeout(() => inputRef.current?.focus(), 30)
+            inputRef.current?.blur()
         }
     }, [open])
 
@@ -78,18 +96,30 @@ export default function QuickAddDialog() {
         }
     }
 
-    if (!open) return null
+    if (!mounted) return null
 
+    // Always mounted (just invisible when closed) so the input can take focus
+    // in the same tap that opens it.
     return createPortal(
         <div
-            className="fixed inset-0 z-[1100] flex items-start justify-center pt-[12vh] px-3 bg-black/30 animate-in fade-in duration-150"
+            className={cn(
+                'fixed inset-0 z-[1100] flex items-start justify-center px-3 bg-black/30 transition-opacity duration-150',
+                open ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            )}
+            style={{ paddingTop: 'max(12vh, calc(env(safe-area-inset-top) + 1rem))' }}
+            aria-hidden={!open}
             onMouseDown={e => { if (e.target === e.currentTarget) setOpen(false) }}
         >
-            <div role="dialog" aria-modal="true" aria-label="Adicionar tarefa" className="w-full max-w-xl rounded-2xl material-thick border border-border/70 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150">
-                <div className="flex items-center gap-3 px-4">
+            <div role="dialog" data-quickadd aria-modal="true" aria-label="Adicionar tarefa" className={cn('w-full max-w-xl rounded-2xl bg-card border border-border/70 shadow-2xl overflow-hidden transition-transform duration-150', open ? 'scale-100' : 'scale-95')}>
+                <div className="px-4 pt-4 pb-1 flex items-center justify-between">
+                    <h2 className="type-headline text-foreground">Nova tarefa</h2>
+                    <button type="button" onClick={() => setOpen(false)} tabIndex={open ? 0 : -1} className="text-[15px] text-primary">Cancelar</button>
+                </div>
+                <div className="mx-4 my-2 flex items-center gap-3 px-3 rounded-xl bg-foreground/[0.05] focus-within:ring-2 focus-within:ring-primary/50">
                     <ListChecks className="w-5 h-5 text-primary shrink-0" />
                     <input
                         ref={inputRef}
+                        tabIndex={open ? 0 : -1}
                         value={value}
                         onChange={e => setValue(e.target.value)}
                         onKeyDown={e => {
@@ -99,10 +129,10 @@ export default function QuickAddDialog() {
                         placeholder="O que você precisa fazer?"
                         aria-label="Nova tarefa"
                         enterKeyHint="done"
-                        className="flex-1 h-14 bg-transparent text-[17px] text-foreground placeholder:text-muted-foreground focus:outline-none"
+                        className="flex-1 h-12 bg-transparent text-[17px] text-foreground placeholder:text-muted-foreground focus:outline-none"
                     />
                 </div>
-                <div className="px-4 pb-3 border-t border-border/60 pt-2.5 space-y-2">
+                <div className="px-4 pb-4 pt-1 space-y-3">
                     {value ? <ParsedChips parsed={parsed} /> : (
                         <p className="text-[13px] text-muted-foreground">
                             Escreva naturalmente: “pagar fornecedor sexta 10h !alta”, “conferir estoque toda segunda”, “ligar cliente amanhã por 15min”.
@@ -113,8 +143,9 @@ export default function QuickAddDialog() {
                         <button
                             type="button"
                             onClick={submit}
+                            tabIndex={open ? 0 : -1}
                             disabled={!parsed.title || busy}
-                            className="ml-auto h-9 px-4 rounded-full bg-primary text-primary-foreground text-[14px] font-semibold disabled:opacity-40"
+                            className="ml-auto h-10 px-5 rounded-full bg-primary text-primary-foreground text-[14px] font-semibold disabled:opacity-40"
                         >
                             Adicionar
                         </button>

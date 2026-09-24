@@ -92,7 +92,7 @@ export default function PDVPage() {
     ]
 
     return (
-        <div className="flex flex-col h-[100dvh] max-h-[100dvh] bg-background text-foreground overflow-hidden">
+        <div className="flex flex-col h-full bg-background text-foreground overflow-hidden">
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar {
                     width: 6px;

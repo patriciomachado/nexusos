@@ -9,6 +9,7 @@ import { UserRole } from '@/types'
 import { useAppStore } from '@/store/appStore'
 import { useTaskStore } from '@/store/taskStore'
 import { UserButton, useUser } from '@clerk/nextjs'
+import ThemeToggle from './ThemeToggle'
 import { visibleGroups, safeRoleOf, isActivePath, ROLE_LABELS } from './nav-config'
 
 /**
@@ -148,12 +149,13 @@ export default function BottomNav({ userRole = 'attendant' }: { userRole?: UserR
                 {/* Account */}
                 <div className="px-4 py-3 border-t border-border/70 shrink-0 flex items-center gap-3">
                     <UserButton appearance={{ elements: { avatarBox: 'w-9 h-9' } }} />
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                         <p className="text-[15px] font-medium text-foreground truncate">
                             {clerkUser?.fullName || 'Minha conta'}
                         </p>
                         <p className="text-[13px] text-muted-foreground truncate">{ROLE_LABELS[role] ?? role}</p>
                     </div>
+                    <ThemeToggle />
                 </div>
             </nav>
         </div>

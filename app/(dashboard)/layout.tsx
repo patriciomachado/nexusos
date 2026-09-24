@@ -108,6 +108,10 @@ export default async function DashboardLayout({
     }
 
     return (
+        <>
+        {/* Status bar backdrop (iPhone): same material as the header, so the
+            clock sits on a continuous bar and content never shows behind it. */}
+        <div className="fixed top-0 inset-x-0 z-50 h-[env(safe-area-inset-top)] material-bar pointer-events-none" aria-hidden />
         <div className="flex h-[calc(100dvh-env(safe-area-inset-top))] bg-background overflow-hidden max-w-full w-full transition-colors duration-300" suppressHydrationWarning>
             <Sidebar userRole={role} />
             <main className="flex-1 overflow-y-auto overflow-x-hidden relative pb-0 w-full max-w-full" suppressHydrationWarning>
@@ -129,5 +133,6 @@ export default async function DashboardLayout({
             )}
             {/* <ClientAIWrapper /> */}
         </div>
+        </>
     )
 }

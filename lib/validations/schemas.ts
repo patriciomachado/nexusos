@@ -104,6 +104,11 @@ export const saleSchema = z.object({
   final_amount: z.number().min(0).optional(),
   payment_method_id: z.string().uuid('Método de pagamento inválido').optional().nullable(),
   notes: z.string().optional().nullable(),
+  /** Split payment: one entry per method. Cash may exceed what it covers (change). */
+  payments: z.array(z.object({
+    payment_method_id: z.string().uuid('Método de pagamento inválido'),
+    amount: z.number().positive('Valor do pagamento deve ser positivo').max(10_000_000),
+  })).min(1).max(5).optional(),
   items: z.array(z.object({
     inventory_item_id: z.string().uuid('Item de estoque inválido'),
     item_name: z.string(),
