@@ -83,7 +83,7 @@ export default function NotificationsDropdown() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -4, scale: 0.98 }}
                         transition={{ duration: 0.16 }}
-                        className="fixed sm:absolute left-2 right-2 sm:left-auto sm:right-0 top-16 sm:top-auto sm:mt-2 sm:w-96 rounded-2xl material-thick border border-border/70 shadow-2xl z-50 overflow-hidden"
+                        className="fixed sm:absolute left-2 right-2 sm:left-auto sm:right-0 top-[calc(4rem+env(safe-area-inset-top))] sm:top-auto sm:mt-2 sm:w-96 rounded-2xl material-thick border border-border/70 shadow-2xl z-50 overflow-hidden"
                         role="dialog"
                         aria-label="Notificações"
                     >
