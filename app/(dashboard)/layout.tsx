@@ -112,9 +112,12 @@ export default async function DashboardLayout({
         {/* Status bar backdrop (iPhone): same material as the header, so the
             clock sits on a continuous bar and content never shows behind it. */}
         <div className="fixed top-0 inset-x-0 z-50 h-[env(safe-area-inset-top)] material-bar pointer-events-none" aria-hidden />
-        <div className="flex h-[calc(100dvh-env(safe-area-inset-top))] bg-background overflow-hidden max-w-full w-full transition-colors duration-300" suppressHydrationWarning>
+        {/* Pinned to the screen edges instead of 100dvh: in the installed iPhone app
+            the dynamic viewport height can get stuck short (e.g. after the keyboard
+            closes), which left a blank strip at the bottom. */}
+        <div className="fixed inset-x-0 bottom-0 top-[env(safe-area-inset-top)] flex bg-background overflow-hidden max-w-full w-full transition-colors duration-300" suppressHydrationWarning>
             <Sidebar userRole={role} />
-            <main className="flex-1 overflow-y-auto overflow-x-hidden relative pb-0 w-full max-w-full" suppressHydrationWarning>
+            <main className="flex-1 overflow-y-auto overflow-x-hidden relative pb-[env(safe-area-inset-bottom)] w-full max-w-full" suppressHydrationWarning>
                 <NotificationGenerator />
                 <SubscriptionStatusGuard 
                     isValid={subscription.isValid} 

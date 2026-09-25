@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ArrowDownRight, ArrowUpRight, Check, Loader2, MessageCircle, Pencil, Target } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import Segmented from '@/components/ui/Segmented'
 import { addDays, localDateString } from '@/lib/tasks/dates'
@@ -29,7 +30,19 @@ function presetRange(p: Preset, today: string): { from: string; to: string } | n
     }
 }
 
+/**
+ * Chart colors (validated palette, light and dark steps) set inline on the
+ * page root, so they never depend on a stylesheet an installed app may still
+ * have cached from before a deploy.
+ */
+const VIZ = {
+    light: { '--viz-s1': '#2a78d6', '--viz-s2': '#eb6834', '--viz-grid': '#e1e0d9', '--viz-axis': '#898781', '--viz-good': '#006300', '--viz-bad': '#d03b3b' },
+    dark: { '--viz-s1': '#3987e5', '--viz-s2': '#d95926', '--viz-grid': '#2c2c2a', '--viz-axis': '#898781', '--viz-good': '#0ca30c', '--viz-bad': '#e66767' },
+}
+
 export default function ReportsClient({ canEditGoal }: { canEditGoal: boolean }) {
+    const { resolvedTheme } = useTheme()
+    const vizStyle = (resolvedTheme === 'dark' ? VIZ.dark : VIZ.light) as React.CSSProperties
     const today = useMemo(() => localDateString(), [])
     const [preset, setPreset] = useState<Preset>('mes')
     const [range, setRange] = useState(() => presetRange('mes', localDateString())!)
@@ -66,7 +79,7 @@ export default function ReportsClient({ canEditGoal }: { canEditGoal: boolean })
     }
 
     return (
-        <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-12 max-w-7xl mx-auto space-y-5">
+        <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-12 max-w-7xl mx-auto space-y-5" style={vizStyle}>
             {/* Filters: one row above everything they scope */}
             <div className="flex flex-wrap items-center gap-3">
                 <Segmented<Preset>
@@ -129,7 +142,7 @@ function Delta({ cur, prev, upIsGood = true }: { cur: number | null; prev: numbe
     const good = up === upIsGood
     const Icon = up ? ArrowUpRight : ArrowDownRight
     return (
-        <span className="viz text-[13px] inline-flex items-center gap-0.5 whitespace-nowrap" style={{ color: good ? 'var(--viz-good)' : 'var(--viz-bad)' }}>
+        <span className="text-[13px] inline-flex items-center gap-0.5 whitespace-nowrap" style={{ color: good ? 'var(--viz-good)' : 'var(--viz-bad)' }}>
             <Icon className="w-3.5 h-3.5" />
             <span className="font-semibold">{pct(Math.abs(c))}</span>
             <span className="text-muted-foreground ml-1">vs anterior</span>
@@ -209,7 +222,7 @@ function Goal({ report, canEdit, onSaved }: { report: Report; canEdit: boolean; 
     const { goal, progress, projection } = report.goal
     const onTrack = projection >= goal
     return (
-        <section className="viz rounded-2xl bg-card border border-border/60 p-4 sm:p-5 space-y-3">
+        <section className="rounded-2xl bg-card border border-border/60 p-4 sm:p-5 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="type-headline flex items-center gap-2"><Target className="w-4 h-4 text-primary" /> Meta do mês</h2>
                 {editing ? editor : canEdit && <button type="button" onClick={() => setEditing(true)} className="text-[13px] text-primary inline-flex items-center gap-1"><Pencil className="w-3.5 h-3.5" /> Alterar</button>}
@@ -266,7 +279,7 @@ function Dre({ report }: { report: Report }) {
                     {d.expenses.map(e => <DreLine revenue={revenue} key={e.label} label={e.label} value={e.amount} sub />)}
                     <tr className="border-t-2 border-foreground/20 font-semibold text-[15px]">
                         <td className="py-2.5">Lucro líquido</td>
-                        <td className="text-right tabular-nums viz" style={{ color: net < 0 ? 'var(--viz-bad)' : undefined }}>{brl(net)}</td>
+                        <td className="text-right tabular-nums" style={{ color: net < 0 ? 'var(--viz-bad)' : undefined }}>{brl(net)}</td>
                         <td className="text-right tabular-nums text-muted-foreground text-[12px]">{share(net)}</td>
                     </tr>
                 </tbody>
@@ -288,7 +301,7 @@ function Funnel({ report }: { report: Report }) {
     ] as const
     const max = Math.max(1, ...stages.map(s => f.counts[s.key]))
     return (
-        <section className="viz rounded-2xl bg-card border border-border/60 p-4 sm:p-5">
+        <section className="rounded-2xl bg-card border border-border/60 p-4 sm:p-5">
             <h2 className="type-headline">Ordens de serviço abertas no período</h2>
             <p className="text-[13px] text-muted-foreground mb-3">{f.total} OS · onde estão agora{f.counts.cancelled ? ` · ${f.counts.cancelled} canceladas` : ''}</p>
             <ul className="space-y-2.5">
