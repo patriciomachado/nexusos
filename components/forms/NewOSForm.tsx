@@ -30,6 +30,7 @@ import StepDiagnosticoForm from '@/components/forms/os-steps/StepDiagnosticoForm
 import StepSegurancaForm from '@/components/forms/os-steps/StepSegurancaForm'
 import StepRevisaoForm from '@/components/forms/os-steps/StepRevisaoForm'
 import StepOSCriada from '@/components/forms/os-steps/StepOSCriada'
+import { compressImage, extensionOf } from '@/lib/images/compress'
 
 // No auto-fill suggestions - free text input
 // Common device suggestions for the autocomplete
@@ -228,11 +229,11 @@ export default function NewOSForm({
                 setIsUploading(true)
                 try {
                     if (photos.front) {
-                        const fileExt = photos.front.name.split('.').pop()
-                        const fileName = `${companyId}/${Date.now()}-front.${fileExt}`
+                        const file = await compressImage(photos.front, 'photo')
+                        const fileName = `${companyId}/${Date.now()}-front.${extensionOf(file)}`
                         const { data, error } = await supabase.storage
                             .from('os-photos')
-                            .upload(fileName, photos.front)
+                            .upload(fileName, file, { contentType: file.type })
 
                         if (error) throw error
                         const { data: { publicUrl } } = supabase.storage.from('os-photos').getPublicUrl(data.path)
@@ -240,11 +241,11 @@ export default function NewOSForm({
                     }
 
                     if (photos.back) {
-                        const fileExt = photos.back.name.split('.').pop()
-                        const fileName = `${companyId}/${Date.now()}-back.${fileExt}`
+                        const file = await compressImage(photos.back, 'photo')
+                        const fileName = `${companyId}/${Date.now()}-back.${extensionOf(file)}`
                         const { data, error } = await supabase.storage
                             .from('os-photos')
-                            .upload(fileName, photos.back)
+                            .upload(fileName, file, { contentType: file.type })
 
                         if (error) throw error
                         const { data: { publicUrl } } = supabase.storage.from('os-photos').getPublicUrl(data.path)

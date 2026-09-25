@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase'
 
 import PremiumAutocomplete from '@/components/ui/PremiumAutocomplete'
 import BarcodeScannerModal from '@/components/ui/BarcodeScannerModal'
+import { compressImage, extensionOf } from '@/lib/images/compress'
 
 const PRODUCT_SUGGESTIONS = [
     // Películas
@@ -152,13 +153,13 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
             if (photo) {
                 setIsUploading(true)
                 try {
-                    const fileExt = photo.name.split('.').pop()
-                    const fileName = `${Date.now()}.${fileExt}`
+                    const file = await compressImage(photo, 'photo')
+                    const fileName = `${Date.now()}.${extensionOf(file)}`
                     const filePath = `products/${fileName}`
 
                     const { data, error } = await supabase.storage
                         .from('product-images')
-                        .upload(filePath, photo)
+                        .upload(filePath, file, { contentType: file.type })
 
                     if (error) throw error
 

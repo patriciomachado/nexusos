@@ -7,6 +7,7 @@ import { Save, Building2, MapPin, Mail, Phone, Hash, ShieldCheck, Sparkles, Load
 import { PremiumInput } from '@/components/ui/PremiumInput'
 import { PremiumTextarea } from '@/components/ui/PremiumTextarea'
 import { supabase } from '@/lib/supabase'
+import { compressImage, extensionOf } from '@/lib/images/compress'
 
 interface Props {
     company: any
@@ -55,13 +56,13 @@ export default function CompanySettingsForm({ company, companyId }: Props) {
             if (logo) {
                 setIsUploading(true)
                 try {
-                    const fileExt = logo.name.split('.').pop()
-                    const fileName = `company-${companyId}-logo.${fileExt}`
+                    const file = await compressImage(logo, 'logo')
+                    const fileName = `company-${companyId}-logo.${extensionOf(file)}`
                     const filePath = `company-logos/${fileName}`
 
                     const { data, error } = await supabase.storage
                         .from('product-images')
-                        .upload(filePath, logo, { upsert: true })
+                        .upload(filePath, file, { upsert: true, contentType: file.type })
 
                     if (error) throw error
 

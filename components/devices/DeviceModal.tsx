@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { X, Smartphone, DollarSign, ShieldCheck, Check, Sparkles, AlertCircle, Image as ImageIcon, Plus, Trash2, Upload, Camera } from 'lucide-react'
 import { Device } from '@/types/devices'
 import { toast } from 'sonner'
+import { compressToDataUrl } from '@/lib/images/compress'
 
 interface DeviceModalProps {
     isOpen: boolean
@@ -95,15 +96,12 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
                 toast.error('Selecione um arquivo de imagem válido.')
                 return
             }
-            const reader = new FileReader()
-            reader.onload = (event) => {
-                const result = event.target?.result as string
-                if (result) {
+            compressToDataUrl(file, 'photo')
+                .then(result => {
                     setImages(prev => [...prev, result])
                     toast.success('Foto adicionada ao aparelho!')
-                }
-            }
-            reader.readAsDataURL(file)
+                })
+                .catch(() => toast.error('Não foi possível ler a imagem.'))
         })
     }
 
@@ -115,15 +113,12 @@ export default function DeviceModal({ isOpen, onClose, onSave, deviceToEdit }: D
             if (items[i].type.indexOf('image') !== -1) {
                 const file = items[i].getAsFile()
                 if (file) {
-                    const reader = new FileReader()
-                    reader.onload = (event) => {
-                        const result = event.target?.result as string
-                        if (result) {
+                    compressToDataUrl(file, 'photo')
+                        .then(result => {
                             setImages(prev => [...prev, result])
                             toast.success('Imagem colada com sucesso!')
-                        }
-                    }
-                    reader.readAsDataURL(file)
+                        })
+                        .catch(() => toast.error('Não foi possível ler a imagem.'))
                 }
             }
         }
