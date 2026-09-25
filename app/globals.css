@@ -508,6 +508,10 @@ body {
   textarea {
     font-size: 16px !important;
   }
+  /* Big money fields (caixa): already above 16px, so no zoom. */
+  input.money-input {
+    font-size: 34px !important;
+  }
 }
 
 /* Accessibility: Reduce Motion (motion.md) */

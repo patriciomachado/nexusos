@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
         .from('cash_transactions')
         .select(`
             *,
-            payment_methods(name),
+            payment_methods(name, code),
             transaction_types(name)
         `)
         .eq('company_id', ctx.companyId)

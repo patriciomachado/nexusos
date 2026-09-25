@@ -8,12 +8,16 @@ export async function GET(req: NextRequest) {
 
     const { db, companyId } = ctx
     
-    const { data, error, count } = await db
+    const list = (select: string) => db
         .from('payments')
-        .select('*, customers(name), service_orders(order_number, title, parts_cost), sales(total_cost)', { count: 'exact' })
+        .select(select, { count: 'exact' })
         .eq('company_id', companyId)
         .order('payment_date', { ascending: false })
         .limit(100)
+
+    let { data, error, count } = await list('*, customers(name), service_orders(order_number, title, parts_cost), sales(total_cost)')
+    // Databases without a payments → sales foreign key can't embed sales.
+    if (error?.code === 'PGRST200') ({ data, error, count } = await list('*, customers(name), service_orders(order_number, title, parts_cost)'))
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ data, count })
