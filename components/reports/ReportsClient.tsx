@@ -10,6 +10,7 @@ import { addDays, localDateString } from '@/lib/tasks/dates'
 import type { Report } from '@/lib/reports/compute'
 import DailyRevenueChart from './DailyRevenueChart'
 import { brl, change, dayLabel, duration, pct } from './format'
+import Money from './Money'
 
 type Preset = 'hoje' | '7d' | 'mes' | 'mes-anterior' | 'ano' | 'custom'
 
@@ -128,7 +129,7 @@ function Delta({ cur, prev, upIsGood = true }: { cur: number | null; prev: numbe
     const good = up === upIsGood
     const Icon = up ? ArrowUpRight : ArrowDownRight
     return (
-        <span className="viz text-[13px] inline-flex items-center gap-0.5" style={{ color: good ? 'var(--viz-good)' : 'var(--viz-bad)' }}>
+        <span className="viz text-[13px] inline-flex items-center gap-0.5 whitespace-nowrap" style={{ color: good ? 'var(--viz-good)' : 'var(--viz-bad)' }}>
             <Icon className="w-3.5 h-3.5" />
             <span className="font-semibold">{pct(Math.abs(c))}</span>
             <span className="text-muted-foreground ml-1">vs anterior</span>
@@ -136,11 +137,11 @@ function Delta({ cur, prev, upIsGood = true }: { cur: number | null; prev: numbe
     )
 }
 
-function Tile({ label, value, hint, children }: { label: string; value: string; hint?: string; children?: React.ReactNode }) {
+function Tile({ label, value, hint, children }: { label: string; value: React.ReactNode; hint?: string; children?: React.ReactNode }) {
     return (
         <div className="rounded-2xl bg-card border border-border/60 p-4 space-y-1 min-w-0">
             <p className="text-[13px] text-muted-foreground">{label}</p>
-            <p className="text-[26px] leading-tight font-semibold tracking-tight truncate">{value}</p>
+            <p className="text-[26px] sm:text-[28px] leading-tight font-semibold tracking-tight">{value}</p>
             {hint && <p className="text-[13px] text-muted-foreground truncate">{hint}</p>}
             {children}
         </div>
@@ -151,9 +152,9 @@ function Kpis({ report }: { report: Report }) {
     const { current: c, previous: p } = report.kpis
     return (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <Tile label="Faturamento" value={brl(c.revenue)}><Delta cur={c.revenue} prev={p.revenue} /></Tile>
-            <Tile label="Lucro líquido" value={brl(c.net)} hint={c.margin == null ? undefined : `Margem de ${pct(c.margin, 1)}`}><Delta cur={c.net} prev={p.net} /></Tile>
-            <Tile label="Ticket médio" value={c.ticketAvg == null ? '—' : brl(c.ticketAvg)}><Delta cur={c.ticketAvg} prev={p.ticketAvg} /></Tile>
+            <Tile label="Faturamento" value={<Money value={c.revenue} />}><Delta cur={c.revenue} prev={p.revenue} /></Tile>
+            <Tile label="Lucro líquido" value={<Money value={c.net} />} hint={c.margin == null ? undefined : `Margem de ${pct(c.margin, 1)}`}><Delta cur={c.net} prev={p.net} /></Tile>
+            <Tile label="Ticket médio" value={<Money value={c.ticketAvg} />}><Delta cur={c.ticketAvg} prev={p.ticketAvg} /></Tile>
             <Tile label="Atendimentos pagos" value={String(c.tickets)} hint={`${c.osPaid} OS · ${c.sales} vendas`}><Delta cur={c.tickets} prev={p.tickets} /></Tile>
         </div>
     )
