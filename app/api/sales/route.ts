@@ -1,7 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { saleSchema } from '@/lib/validations/schemas'
-import { findOpenRegister } from '@/lib/cash/server'
+import { findOpenRegister, isManager, isOwner, loadCashSettings, verifyPin } from '@/lib/cash/server'
+import { rateLimit } from '@/lib/security-rate-limit'
+
+/** Recent sales (for returns and receipts). ?days=7 (max 90), ?q= customer or #code. */
+export async function GET(req: NextRequest) {
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+    const params = new URL(req.url).searchParams
+    const days = Math.min(Math.max(Number(params.get('days')) || 7, 1), 90)
+    const since = new Date(Date.now() - days * 86_400_000).toISOString()
+    let query = ctx.db
+        .from('sales')
+        .select('id, created_at, total_amount, discount_amount, final_amount, status, notes, customer_id, customers(name, phone), users(full_name), sale_items(*)')
+        .eq('company_id', ctx.companyId)
+        .gte('created_at', since)
+        .order('created_at', { ascending: false })
+        .limit(200)
+    if (!isManager(ctx.role)) query = query.eq('user_id', ctx.dbUser.id)
+    const { data, error } = await query
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ data })
+}
 
 export async function POST(req: NextRequest) {
     const ctx = await getContext()
@@ -16,7 +37,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: validation.error.format() }, { status: 400 })
     }
 
-    const { items, payments: splitPayments, ...saleData } = validation.data
+    const { items, payments: splitPayments, owner_pin: ownerPin, ...saleData } = validation.data
 
     // 2. Ensure cash register is open and belongs to the company
     let registerId = saleData.cash_register_id
@@ -73,6 +94,18 @@ export async function POST(req: NextRequest) {
 
         const calculatedFinalAmount = Math.max(0, calculatedTotalAmount - (saleData.discount_amount || 0))
 
+        // Discounts above the store's limit need the owner's PIN (owners don't).
+        const discount = saleData.discount_amount || 0
+        if (discount > 0 && calculatedTotalAmount > 0 && !isOwner(ctx.role)) {
+            const { cash } = await loadCashSettings(db, companyId)
+            const pct = (discount / calculatedTotalAmount) * 100
+            if (cash.max_discount_pct > 0 && pct > cash.max_discount_pct + 0.001) {
+                if (!cash.pin_hash) return NextResponse.json({ error: `Desconto acima de ${cash.max_discount_pct}% só pelo dono.`, code: 'NEEDS_OWNER' }, { status: 403 })
+                if (ownerPin && !rateLimit('owner-pin', 5, 10 * 60_000, dbUser.id)) return NextResponse.json({ error: 'Muitas tentativas de senha. Espere alguns minutos.', code: 'NEEDS_PIN' }, { status: 429 })
+                if (!verifyPin(ownerPin ?? '', cash.pin_hash)) return NextResponse.json({ error: ownerPin ? 'Senha do dono incorreta.' : `Desconto acima de ${cash.max_discount_pct}% precisa da senha do dono.`, code: 'NEEDS_PIN' }, { status: 403 })
+            }
+        }
+
         // 2.1 Resolve payments (single method, or split across several).
         // Only cash can exceed what it covers; the excess is the change.
         const round2 = (n: number) => Math.round(n * 100) / 100
@@ -109,6 +142,8 @@ export async function POST(req: NextRequest) {
         const change = Math.max(0, balance)
 
         // Net amount per method (same method merged; change taken out of cash).
+        const installmentsByMethod = new Map<string, number>()
+        for (const p of splits) if ('installments' in p && p.installments && p.installments > 1) installmentsByMethod.set(p.payment_method_id, p.installments)
         const netByMethod = new Map<string, number>()
         for (const p of splits) netByMethod.set(p.payment_method_id, round2((netByMethod.get(p.payment_method_id) || 0) + p.amount))
         let changeLeft = change
@@ -260,6 +295,7 @@ export async function POST(req: NextRequest) {
                 due_date: isCredit(methodId) ? new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10) : null,
                 reference_id: sale.id,
                 sale_id: sale.id,
+                installments: installmentsByMethod.get(methodId) ?? 1,
                 notes: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
                 created_by: dbUser.id
             })))

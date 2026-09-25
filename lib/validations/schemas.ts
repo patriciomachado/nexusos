@@ -108,7 +108,10 @@ export const saleSchema = z.object({
   payments: z.array(z.object({
     payment_method_id: z.string().uuid('Método de pagamento inválido'),
     amount: z.number().positive('Valor do pagamento deve ser positivo').max(10_000_000),
+    installments: z.number().int().min(1).max(24).optional(),
   })).min(1).max(5).optional(),
+  /** Owner's PIN, when the discount is above the store's limit. */
+  owner_pin: z.string().max(12).optional(),
   items: z.array(z.object({
     inventory_item_id: z.string().uuid('Item de estoque inválido'),
     item_name: z.string(),

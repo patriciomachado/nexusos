@@ -41,6 +41,8 @@ export interface CashSettings {
     sangria_limit: number
     /** Send the closing report on WhatsApp to this number. */
     report_phone: string | null
+    /** Discounts above this % of the sale need the owner's PIN (0 = no limit). */
+    max_discount_pct: number
     pin_hash: string | null
 }
 
@@ -53,6 +55,7 @@ export const DEFAULT_CASH_SETTINGS: CashSettings = {
     },
     sangria_limit: 0,
     report_phone: null,
+    max_discount_pct: 0,
     pin_hash: null,
 }
 
@@ -74,6 +77,7 @@ export function normalizeCashSettings(raw: unknown): CashSettings {
         },
         sangria_limit: Math.max(Number(r.sangria_limit) || 0, 0),
         report_phone: typeof r.report_phone === 'string' && r.report_phone.replace(/\D/g, '').length >= 10 ? r.report_phone : null,
+        max_discount_pct: Math.min(Math.max(Number(r.max_discount_pct) || 0, 0), 100),
         pin_hash: typeof r.pin_hash === 'string' ? r.pin_hash : null,
     }
 }
@@ -92,7 +96,7 @@ export async function saveCashSettings(db: SupabaseClient, companyId: string, ca
 
 /** What any user of the store may see (never the PIN hash). */
 export function publicCashSettings(s: CashSettings, withPhone: boolean) {
-    return { fees: s.fees, sangria_limit: s.sangria_limit, has_pin: !!s.pin_hash, report_phone: withPhone ? s.report_phone : null }
+    return { fees: s.fees, sangria_limit: s.sangria_limit, max_discount_pct: s.max_discount_pct, has_pin: !!s.pin_hash, report_phone: withPhone ? s.report_phone : null }
 }
 
 export function hashPin(pin: string) {
@@ -135,7 +139,7 @@ export function feeOf(group: string, amount: number, s: CashSettings) {
 }
 
 export function closingNumbers(opening: number, txs: Tx[], s: CashSettings) {
-    let entries = 0, exits = 0, withdrawals = 0, supplies = 0, expenses = 0, cash = opening, fees = 0
+    let entries = 0, exits = 0, withdrawals = 0, supplies = 0, expenses = 0, refunds = 0, cash = opening, fees = 0
     const byMethod: Record<string, number> = { cash: 0, pix: 0, debit: 0, credit: 0, other: 0 }
     let sales = 0
     for (const tx of txs) {
@@ -150,11 +154,12 @@ export function closingNumbers(opening: number, txs: Tx[], s: CashSettings) {
             exits += a
             if (g === 'cash' && !isCost(tx)) cash -= a
             if (tx.source_type === 'manual_sangria') withdrawals += a
+            else if (tx.source_type === 'refund') refunds += a
             else if (!isCost(tx)) expenses += a
         }
     }
     const received = Object.values(byMethod).reduce((x, y) => x + y, 0)
-    return { opening, entries, exits, balance: opening + entries - exits, expectedCash: cash, byMethod, received, sales, withdrawals, supplies, expenses, fees }
+    return { opening, entries, exits, balance: opening + entries - exits, expectedCash: cash, byMethod, received, sales, withdrawals, supplies, expenses, refunds, fees }
 }
 
 export const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })

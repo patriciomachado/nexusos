@@ -26,6 +26,7 @@ const txt = (n: number) => (n ? String(n).replace('.', ',') : '')
 export default function CashSettingsSheet({ open, onClose, settings, onSaved }: { open: boolean; onClose: () => void; settings: CashSettingsView | null; onSaved: () => void }) {
     const [fees, setFees] = useState<Record<FeeKey, { rate: string; days: string }>>({ debit: { rate: '', days: '1' }, credit: { rate: '', days: '30' }, pix: { rate: '', days: '0' } })
     const [limit, setLimit] = useState('')
+    const [maxDiscount, setMaxDiscount] = useState('')
     const [pin, setPin] = useState('')
     const [removePin, setRemovePin] = useState(false)
     const [phone, setPhone] = useState('')
@@ -36,6 +37,7 @@ export default function CashSettingsSheet({ open, onClose, settings, onSaved }: 
         const f = (r: FeeRule) => ({ rate: txt(r.rate), days: String(r.days) })
         setFees({ debit: f(settings.fees.debit), credit: f(settings.fees.credit), pix: f(settings.fees.pix) })
         setLimit(settings.sangria_limit ? String(settings.sangria_limit).replace('.', ',') : '')
+        setMaxDiscount(settings.max_discount_pct ? String(settings.max_discount_pct).replace('.', ',') : '')
         setPin('')
         setRemovePin(false)
         setPhone(settings.report_phone ?? '')
@@ -44,13 +46,14 @@ export default function CashSettingsSheet({ open, onClose, settings, onSaved }: 
     const save = async () => {
         if (pin && !/^\d{4,6}$/.test(pin)) return toast.error('A senha deve ter de 4 a 6 números.')
         const limitValue = parseMoney(limit)
-        if (limitValue > 0 && !settings?.has_pin && !pin) return toast.error('Crie a senha do dono para autorizar as sangrias acima do limite.')
+        if ((limitValue > 0 || pct(maxDiscount) > 0) && !settings?.has_pin && !pin) return toast.error('Crie a senha do dono para autorizar o que passar do limite.')
         setSaving(true)
         try {
             const rule = (k: FeeKey) => ({ rate: pct(fees[k].rate), days: Math.max(0, Math.round(Number(fees[k].days) || 0)) })
             await send('/api/cash-settings', 'PUT', {
                 fees: { debit: rule('debit'), credit: rule('credit'), credit_installments: rule('credit'), pix: rule('pix') },
                 sangria_limit: limitValue,
+                max_discount_pct: pct(maxDiscount) || 0,
                 report_phone: phone.trim() || null,
                 ...(pin ? { pin } : removePin ? { pin: null } : {}),
             })
@@ -107,9 +110,12 @@ export default function CashSettingsSheet({ open, onClose, settings, onSaved }: 
                     ))}
                 </Group>
 
-                <Group title="Sangria" footer={parseMoney(limit) > 0 ? `Funcionários precisam da senha do dono para tirar mais de ${brl(parseMoney(limit))} do caixa.` : 'Sem limite: qualquer um que abre o caixa pode fazer sangria.'}>
+                <Group title="Sangria e desconto" footer={parseMoney(limit) > 0 ? `Funcionários precisam da senha do dono para tirar mais de ${brl(parseMoney(limit))} do caixa.` : 'Sem limite: qualquer um que abre o caixa pode fazer sangria.'}>
                     <Field label="Limite sem autorização (R$)" htmlFor="cs-limit">
                         <TextInput id="cs-limit" inputMode="decimal" value={limit} onChange={e => setLimit(e.target.value.replace(/[^\d.,]/g, ''))} placeholder="Sem limite" />
+                    </Field>
+                    <Field label="Desconto máximo no PDV sem autorização (%)" htmlFor="cs-disc">
+                        <TextInput id="cs-disc" inputMode="decimal" value={maxDiscount} onChange={e => setMaxDiscount(e.target.value.replace(/[^\d.,]/g, ''))} placeholder="Sem limite" />
                     </Field>
                     <Field label={settings?.has_pin ? 'Nova senha do dono (deixe em branco para manter)' : 'Senha do dono (4 a 6 números)'} htmlFor="cs-pin">
                         <TextInput id="cs-pin" type="password" inputMode="numeric" autoComplete="new-password" maxLength={6} value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, ''))} placeholder="••••" />

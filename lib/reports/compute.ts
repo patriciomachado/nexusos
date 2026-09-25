@@ -68,7 +68,8 @@ export function totals(payments: Row[], osById: Map<string, Row>, sales: Row[], 
 export function isExpense(tx: Row) {
     if (tx.type !== 'exit') return false
     const source = tx.source_type as string | null
-    if (source === 'service_order' || source === 'product_sale' || source === 'manual_sangria') return false
+    // Refunds already lower revenue (negative payment); sangria only moves cash.
+    if (source === 'service_order' || source === 'product_sale' || source === 'manual_sangria' || source === 'refund') return false
     const code = (Array.isArray(tx.transaction_types) ? tx.transaction_types[0] : tx.transaction_types as Row | null)?.code
     return code !== 'SANGRIA'
 }
