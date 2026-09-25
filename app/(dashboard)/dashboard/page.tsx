@@ -1,43 +1,24 @@
 import { auth } from '@clerk/nextjs/server'
+import Link from 'next/link'
+import { AlertTriangle, ChevronRight } from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
-import { formatCurrency, getStartOfDay, getLocalDateString, getStartOfMonth, getStartOfDaysAgo } from '@/lib/utils'
-import {
-    ClipboardList,
-    DollarSign,
-    Users,
-    TrendingUp,
-    CheckCircle,
-    ArrowUpRight,
-    ArrowDownRight,
-    Settings
-} from 'lucide-react'
-import Link from 'next/link'
-import RevenueChart from '@/components/dashboard/RevenueChart'
 import { cn } from '@/lib/utils'
 import EmployeeDashboard from '@/components/dashboard/EmployeeDashboard'
 import SetupAssistant, { type SetupCompany } from '@/components/onboarding/SetupAssistant'
 import { needsOnboarding } from '@/lib/onboarding/status'
 import TasksTodayWidget from '@/components/tasks/TasksTodayWidget'
+import QuickActions from '@/components/dashboard/QuickActions'
+import { Amount, PrivacyProvider, PrivacyToggle, PrivateBlock } from '@/components/dashboard/Privacy'
+import DailyRevenueChart from '@/components/reports/DailyRevenueChart'
+import VizScope from '@/components/reports/VizScope'
+import OSStatusBadge from '@/components/os/OSStatusBadge'
+import { computeOverview } from '@/lib/reports/overview'
+import { dateStringInZone, DEFAULT_TIMEZONE } from '@/lib/tasks/dates'
 
-interface ServiceOrder {
-    id: string
-    created_at: string
-    title: string
-    status: string
-    equipment_description: string
-    estimated_cost: number | null
-    final_cost: number | null
-    customers?: { name: string } | null
-    technicians?: { name: string } | null
-}
+type Row = Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
-interface InventoryItem {
-    id: string
-    name: string
-    quantity_in_stock: number
-    minimum_quantity: number
-}
+const OPEN = ['aberta', 'agendada', 'em_andamento', 'aguardando_pecas']
 
 async function getEmployeeData(companyId: string) {
     const db = createAdminClient()
@@ -52,169 +33,59 @@ async function getEmployeeData(companyId: string) {
 
 async function getDashboardData(companyId: string) {
     const db = createAdminClient()
-    const now = new Date()
-
-    // Date ranges
-    const startOfToday = getStartOfDay(now)
-    const startOfMonth = getStartOfMonth(now).toISOString()
-    const startOfPrevMonthDate = new Date(startOfToday.getFullYear(), startOfToday.getMonth() - 1, 1)
-    const startOfPrevMonth = getStartOfMonth(startOfPrevMonthDate).toISOString()
-    const endOfPrevMonth = new Date(getStartOfMonth(now).getTime() - 1).toISOString()
-
-    // Get company users for expense filtering
-    const { data: companyUsers } = await db.from('users').select('id').eq('company_id', companyId)
-    const userIds = companyUsers?.map(u => u.id) || []
-
-    // Date range for 30 days
-    const thirtyDaysAgo = getStartOfDaysAgo(30, now).toISOString()
-
-    const [
-        { count: totalOS },
-        { data: openOSData },
-        { count: todayOS },
-        { data: recentOS },
-        { data: currentPayments },
-        { data: prevPayments },
-        { data: chartPayments },
-        { data: todayPayments },
-        { count: totalCustomers },
-        { count: prevCustomersCount },
-        { count: activeTechnicians },
-        { data: inventoryAlerts },
-        // Profit queries
-        { data: salesMonth },
-        { data: osMonthData },
-        // Consolidated exits for chart and month
-        { data: allExits }
-    ] = await Promise.all([
-        db.from('service_orders').select('*', { count: 'exact', head: true }).eq('company_id', companyId),
-        db.from('service_orders').select('estimated_cost, final_cost, status').eq('company_id', companyId).in('status', ['aberta', 'agendada', 'em_andamento', 'aguardando_pecas']),
-        db.from('service_orders').select('*', { count: 'exact', head: true }).eq('company_id', companyId).gte('created_at', startOfToday.toISOString()),
-        db.from('service_orders').select('*, customers(name), technicians(name)').eq('company_id', companyId).order('created_at', { ascending: false }).limit(6),
-        db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfMonth),
-        db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfPrevMonth).lte('payment_date', endOfPrevMonth),
-        db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', thirtyDaysAgo),
-        db.from('payments').select('amount, payment_date').eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', startOfToday.toISOString()),
-        db.from('customers').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true),
-        db.from('customers').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true).lt('created_at', startOfMonth),
-        db.from('technicians').select('*', { count: 'exact', head: true }).eq('company_id', companyId).eq('is_active', true),
-        db.from('inventory_items').select('id, name, quantity_in_stock, minimum_quantity').eq('company_id', companyId).limit(100),
-        // Profit queries
-        db.from('sales').select('final_amount, total_cost, created_at').eq('company_id', companyId).eq('status', 'completed').gte('created_at', startOfMonth),
-        db.from('service_orders').select('final_cost, estimated_cost, parts_cost, completed_at').eq('company_id', companyId).in('status', ['concluida', 'faturada']).gte('completed_at', startOfMonth),
-        // Daily exits for chart (covers current month too)
-        userIds.length > 0
-            ? db.from('cash_transactions').select('amount, created_at').eq('type', 'exit').in('user_id', userIds).gte('created_at', thirtyDaysAgo)
-            : Promise.resolve({ data: [] })
+    const today = dateStringInZone(DEFAULT_TIMEZONE)
+    const startToday = new Date(`${today}T00:00:00-03:00`).toISOString()
+    const [overview, openRes, readyRes, openedTodayRes, recentRes, stockRes] = await Promise.all([
+        computeOverview(db, companyId),
+        db.from('service_orders').select('id', { count: 'exact', head: true }).eq('company_id', companyId).in('status', OPEN),
+        db.from('service_orders').select('id', { count: 'exact', head: true }).eq('company_id', companyId).eq('status', 'concluida'),
+        db.from('service_orders').select('id', { count: 'exact', head: true }).eq('company_id', companyId).gte('created_at', startToday),
+        db.from('service_orders').select('id, order_number, title, equipment_description, status, created_at, customers(name)').eq('company_id', companyId).order('created_at', { ascending: false }).limit(5),
+        db.from('inventory_items').select('id, name, quantity_in_stock, minimum_quantity').eq('company_id', companyId).eq('is_active', true).limit(500),
     ])
-
-    const monthRevenue = currentPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
-    const prevMonthRevenue = prevPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
-
-    // Today's earnings
-    const todayRevenue = todayPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
-
-    // Filter exits, parts cost and products cost for today
-    const startOfTodayISO = startOfToday.toISOString()
-    const todayExits = allExits?.filter(e => e.created_at >= startOfTodayISO) || []
-    const todayExpenses = todayExits.reduce((sum, exp) => sum + (exp.amount || 0), 0) || 0
-
-    const todayOSCompleted = osMonthData?.filter(os => os.completed_at && os.completed_at >= startOfTodayISO) || []
-    const todayPartsCost = todayOSCompleted.reduce((sum, os) => sum + (os.parts_cost || 0), 0) || 0
-
-    const todaySales = salesMonth?.filter(sale => sale.created_at && sale.created_at >= startOfTodayISO) || []
-    const todayProductsCost = todaySales.reduce((sum, sale) => sum + (sale.total_cost || 0), 0) || 0
-
-    // Today's Net Profit: Today's Revenue - Today's Expenses - Today's Parts Cost - Today's Products Cost
-    const todayNetProfit = todayRevenue - todayExpenses - todayPartsCost - todayProductsCost
-
-    // Filter exits for current month
-    const monthExits = allExits?.filter(e => e.created_at >= startOfMonth) || []
-    const totalExpenses = monthExits.reduce((sum, exp) => sum + (exp.amount || 0), 0) || 0
-
-    // Profit Calculation
-    // Parts cost of completed OS this month
-    const totalPartsCost = osMonthData?.reduce((sum, os) => sum + (os.parts_cost || 0), 0) || 0
-    const salesGrossProfit = salesMonth?.reduce((sum, sale) => sum + (sale.final_amount - (sale.total_cost || 0)), 0) || 0
-    
-    // Gross Profit = Revenue (payments) - Parts Cost of completed OS - Product Cost of sales
-    const monthGrossProfit = monthRevenue - totalPartsCost + salesGrossProfit
-    
-    // Net Profit: Gross Profit - Operational Expenses
-    const monthNetProfit = monthGrossProfit - totalExpenses
-
-    // Average Ticket (Current Month)
-    const concludedOS = recentOS?.filter(os => os.status === 'concluida' || os.status === 'faturada') || []
-    const avgTicket = concludedOS.length > 0 ? (concludedOS.reduce((sum, os) => sum + (os.final_cost || os.estimated_cost || 0), 0) / concludedOS.length) : 0
-
-    // Trends
-    const calculateTrend = (curr: number, prev: number) => {
-        if (!prev || prev === 0) return { change: curr > 0 ? '+100%' : '0%', trend: 'up' as const }
-        const diff = ((curr - prev) / prev) * 100
-        return {
-            change: `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`,
-            trend: (diff >= 0 ? 'up' : 'down') as 'up' | 'down'
-        }
-    }
-
-    const revenueTrend = calculateTrend(monthRevenue, prevMonthRevenue)
-    const custTrend = calculateTrend(totalCustomers || 0, prevCustomersCount || 0)
-
-    // Chart Data (Last 30 Days)
-    const chartData = Array.from({ length: 30 }, (_, i) => {
-        const d = new Date()
-        d.setDate(d.getDate() - (29 - i))
-        const dateStr = getLocalDateString(d) // Localized YYYY-MM-DD
-        
-        const dayRevenue = chartPayments?.filter(p => {
-            const pDate = new Date(p.payment_date)
-            return getLocalDateString(pDate) === dateStr
-        }).reduce((sum, p) => sum + (p.amount || 0), 0) || 0
-
-        const dayExits = (allExits as { amount: number; created_at: string }[])?.filter(e => {
-            const eDate = new Date(e.created_at)
-            return getLocalDateString(eDate) === dateStr
-        }).reduce((sum, e) => sum + (e.amount || 0), 0) || 0
-
-        return {
-            name: d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit' }),
-            revenue: dayRevenue,
-            profit: dayRevenue - dayExits 
-        }
-    })
-
+    const lowStock = ((stockRes.data ?? []) as Row[])
+        .filter(i => Number(i.minimum_quantity) > 0 && Number(i.quantity_in_stock) <= Number(i.minimum_quantity))
+        .sort((a, b) => Number(a.quantity_in_stock) - Number(b.quantity_in_stock))
     return {
-        stats: {
-            totalOS,
-            openOS: openOSData?.length || 0,
-            todayOS,
-            todayRevenue,
-            todayNetProfit,
-            monthRevenue,
-            monthGrossProfit,
-            monthNetProfit,
-            avgTicket,
-            totalCustomers,
-            activeTechnicians,
-            revenueTrend,
-            custTrend
-        },
-        recentOS: recentOS as ServiceOrder[] | null,
-        chartData,
-        inventoryAlerts: (inventoryAlerts || [])
-            .filter(item => Number(item.quantity_in_stock) <= Number(item.minimum_quantity))
-            .slice(0, 4) as InventoryItem[]
+        overview,
+        os: { open: openRes.count ?? 0, ready: readyRes.count ?? 0, openedToday: openedTodayRes.count ?? 0 },
+        recent: (recentRes.data ?? []) as Row[],
+        lowStock,
     }
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-    aberta: { label: 'Aberta', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
-    agendada: { label: 'Agendada', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
-    em_andamento: { label: 'Execução', color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/20' },
-    aguardando_pecas: { label: 'Peças', color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/20' },
-    concluida: { label: 'Concluída', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
-    faturada: { label: 'Faturada', color: 'text-green-400', bg: 'bg-green-500/10 border-green-500/20' },
-    cancelada: { label: 'Cancelada', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20' },
+/** "+12%" against the comparison period; null when there is no base. */
+function change(cur: number, prev: number) {
+    if (!prev) return null
+    return (cur - prev) / Math.abs(prev)
+}
+
+function Delta({ value, label }: { value: number | null; label: string }) {
+    if (value == null) return <span className="text-[13px] text-muted-foreground">{label}</span>
+    const up = value >= 0
+    return (
+        <span className={cn('text-[13px] font-medium', up ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400')}>
+            {up ? '▲' : '▼'} {Math.abs(value * 100).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}% <span className="font-normal text-muted-foreground">{label}</span>
+        </span>
+    )
+}
+
+function Tile({ label, children, footer }: { label: string; children: React.ReactNode; footer?: React.ReactNode }) {
+    return (
+        <div className="rounded-2xl bg-card border border-border/60 p-4 min-w-0">
+            <p className="text-[13px] text-muted-foreground">{label}</p>
+            <p className="mt-0.5 text-[24px] leading-tight font-semibold tracking-tight truncate">{children}</p>
+            {footer && <div className="mt-1">{footer}</div>}
+        </div>
+    )
+}
+
+function shortWhen(iso: string) {
+    const d = new Date(iso)
+    const same = dateStringInZone(DEFAULT_TIMEZONE, d) === dateStringInZone(DEFAULT_TIMEZONE)
+    return same
+        ? d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: DEFAULT_TIMEZONE })
+        : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: DEFAULT_TIMEZONE })
 }
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ configurar?: string }> }) {
@@ -241,263 +112,135 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     // ?configurar=1 reopens the setup assistant on purpose (link in Ajustes).
     const showSetup = company ? (configurar === '1' || await needsOnboarding(db, company)) : false
 
-    const hour = new Date().getHours()
+    const firstName = (user.full_name ?? '').split(' ')[0] || ''
+    const hour = Number(new Date().toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: DEFAULT_TIMEZONE }))
     const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite'
-
-    const grossMargin = data.stats.monthRevenue > 0 ? (data.stats.monthGrossProfit / data.stats.monthRevenue * 100).toFixed(1) : '0'
-    const netMargin = data.stats.monthRevenue > 0 ? (data.stats.monthNetProfit / data.stats.monthRevenue * 100).toFixed(1) : '0'
-
-    const kpis = [
-        { 
-            label: 'Ganhos do Dia', 
-            value: formatCurrency(data.stats.todayRevenue), 
-            subValue: `Líquido: ${formatCurrency(data.stats.todayNetProfit)}`, 
-            icon: DollarSign, 
-            color: 'emerald', 
-            change: data.stats.revenueTrend.change, 
-            trend: data.stats.revenueTrend.trend 
-        },
-        { label: 'Lucro Bruto', value: formatCurrency(data.stats.monthGrossProfit), icon: TrendingUp, color: 'indigo', change: `${grossMargin}% margem`, trend: 'up' },
-        { label: 'Lucro Líquido', value: formatCurrency(data.stats.monthNetProfit), icon: CheckCircle, color: 'emerald', change: `${netMargin}% líquido`, trend: 'up' },
-        { label: 'Ordens Ativas', value: data.stats.openOS.toString(), icon: ClipboardList, color: 'purple', change: `+${data.stats.todayOS} hoje`, trend: 'up' },
-        { label: 'Novos Clientes', value: (data.stats.totalCustomers || 0).toString(), icon: Users, color: 'emerald', change: data.stats.custTrend.change, trend: data.stats.custTrend.trend },
-    ]
+    const dateLabel = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: DEFAULT_TIMEZONE })
+    const { overview: ov, os } = data
+    const t = ov.today
+    const m = ov.month
 
     return (
-        <div className="bg-background min-h-screen text-foreground pb-20 lg:pb-8 transition-colors duration-500 overflow-x-hidden" suppressHydrationWarning>
-            <Header title="Nexus Dashboard" />
-
-            <div className="p-3 sm:p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700" suppressHydrationWarning>
-                {/* Stitch Greeting Section */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-6" suppressHydrationWarning>
-                    <div className="text-center sm:text-left" suppressHydrationWarning>
-                        <h2 className="text-3xl font-black tracking-tight text-foreground">
-                            Bem-vindo de volta, <span className="text-primary">{user.full_name?.split(' ')[0] || 'Operador'}</span>
-                        </h2>
-                        <p className="text-sm text-muted-foreground font-medium opacity-60">
-                            Aqui está o resumo financeiro e operacional do seu negócio.
-                        </p>
-                    </div>
-                    <div className="flex items-center gap-4" suppressHydrationWarning>
-                        <Link href="/reports" className="px-5 py-2.5 rounded-2xl bg-card border border-border/40 text-[13px] font-black hover:bg-muted transition-all">
-                            Ver Relatórios
-                        </Link>
-                        <Link href="/service-orders/new" className="px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground text-[13px] font-black shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
-                            Nova OS
-                        </Link>
-                    </div>
-                </div>
-
-                {/* Seu dia (módulo Tarefas) */}
-                <TasksTodayWidget />
-
-                {/* Metrics Section */}
-                <div className="space-y-6">
-                    {/* Mobile: Financial Hub & Quick Actions */}
-                    <div className="flex flex-col gap-6 md:hidden">
-                        {/* Financial Hub Card */}
-                        <div className="glass-premium rounded-3xl sm:rounded-3xl p-5 sm:p-8 border border-white/10 relative overflow-hidden bg-card/60 shadow-2xl">
-                            
-                            <div className="relative z-10 space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-1.5 h-4 bg-primary rounded-full" />
-                                        <h3 className="text-[13px] font-black text-muted-foreground ">Fluxo de Caixa</h3>
-                                    </div>
-                                    <TrendingUp className="w-4 h-4 text-primary opacity-60" />
-                                </div>
-                                
-                                {/* Main Metric: Revenue */}
-                                <div className="space-y-1">
-                                    <p className="text-[11px] font-black text-emerald-400 uppercase tracking-widest opacity-80 mb-1">Ganhos do Dia (Bruto)</p>
-                                    <div className="flex flex-col gap-1">
-                                        <p className="text-3xl sm:text-4xl font-black text-foreground tracking-tighter leading-none">
-                                            {formatCurrency(data.stats.todayRevenue)}
-                                        </p>
-                                        <p className="text-xs font-semibold text-emerald-400/85">
-                                            Líquido: <span className="font-black text-foreground">{formatCurrency(data.stats.todayNetProfit)}</span>
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Secondary Financial Metrics - Líquido grande e Bruto abaixo */}
-                                <div className="grid grid-cols-2 gap-4 sm:gap-6 pt-3 border-t border-white/5">
-                                    <div className="space-y-1">
-                                        <p className="text-[11px] font-black text-emerald-400 uppercase tracking-widest opacity-80">Líquido</p>
-                                        <p className="text-xl font-black text-foreground tracking-tight">{formatCurrency(data.stats.monthNetProfit)}</p>
-                                        <p className="text-[11px] font-bold text-muted-foreground uppercase opacity-50">{netMargin}% margem</p>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <p className="text-[11px] font-black text-indigo-400 uppercase tracking-widest opacity-80">Bruto</p>
-                                        <p className="text-xl font-black text-foreground tracking-tight">{formatCurrency(data.stats.monthGrossProfit)}</p>
-                                        <p className="text-[11px] font-bold text-muted-foreground uppercase opacity-50">{grossMargin}% margem</p>
-                                    </div>
-                                </div>
+        <div className="min-h-full bg-background text-foreground">
+            <Header title="Início" />
+            <PrivacyProvider>
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-10 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-6 lg:items-start">
+                    {/* ── Above the fold on a phone: today, shortcuts, tasks ── */}
+                    <div className="space-y-4 min-w-0">
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                                <h1 className="text-[22px] leading-tight font-semibold tracking-tight truncate">{greeting}{firstName ? `, ${firstName}` : ''}</h1>
+                                <p className="text-[13px] text-muted-foreground first-letter:uppercase">{dateLabel}</p>
                             </div>
+                            <PrivacyToggle />
                         </div>
 
-
-                        {/* Operational Stats - Ultra Compact Row */}
-                        <div className="flex gap-3 sm:gap-4">
-                            <div className="flex-1 glass-premium rounded-3xl p-3 sm:p-4 border border-white/5 flex items-center justify-between shadow-lg">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
-                                        <ClipboardList className="w-4 h-4" />
-                                    </div>
-                                    <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">OS Ativas</p>
+                        {/* Hoje */}
+                        <section aria-labelledby="today-title" className="rounded-2xl bg-card border border-border/60 overflow-hidden">
+                            <div className="p-4 pb-3">
+                                <div className="flex items-center justify-between gap-2">
+                                    <h2 id="today-title" className="text-[15px] font-medium text-muted-foreground">Ganhos de hoje</h2>
+                                    <Link href="/cash-register" className="text-[15px] text-primary inline-flex items-center">Caixa <ChevronRight className="w-4 h-4" /></Link>
                                 </div>
-                                <p className="text-lg font-black text-foreground tracking-tighter">{data.stats.openOS}</p>
+                                <p className="mt-0.5 text-[36px] leading-tight font-semibold tracking-tight"><Amount value={t.revenue} /></p>
+                                <p className="text-[15px] text-muted-foreground">
+                                    Líquido <Amount value={t.net} plain className="text-foreground font-medium" />
+                                    <span> · {t.tickets} {t.tickets === 1 ? 'atendimento pago' : 'atendimentos pagos'}</span>
+                                </p>
                             </div>
-                            <div className="flex-1 glass-premium rounded-3xl p-3 sm:p-4 border border-white/5 flex items-center justify-between shadow-lg">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20">
-                                        <Users className="w-4 h-4" />
-                                    </div>
-                                    <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">Clientes</p>
-                                </div>
-                                <p className="text-lg font-black text-foreground tracking-tighter">{data.stats.totalCustomers}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Desktop: Original Grid Layout */}
-                    <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-6">
-                        {kpis.map((kpi) => (
-                            <div key={kpi.label} className="glass-premium rounded-3xl p-6 lg:p-8 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] hover:shadow-primary/5 group relative overflow-hidden h-full border border-white/5" suppressHydrationWarning>
-                                <div className="flex flex-col justify-between h-full relative z-10" suppressHydrationWarning>
-                                    <div className="space-y-4">
-                                        <div className={cn(
-                                            "w-12 h-12 rounded-2xl flex items-center justify-center border transition-all group-hover:scale-110",
-                                            kpi.color === 'blue' ? "bg-blue-500/10 border-blue-500/20 text-blue-400" :
-                                                kpi.color === 'emerald' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
-                                                    kpi.color === 'indigo' ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" :
-                                                        "bg-purple-500/10 border-purple-500/20 text-purple-400"
-                                        )} suppressHydrationWarning>
-                                            <kpi.icon className="w-6 h-6" />
-                                        </div>
-                                        <div suppressHydrationWarning>
-                                            <h3 className="text-[13px] font-black text-muted-foreground leading-none mb-2">{kpi.label}</h3>
-                                            <p className="text-2xl lg:text-3xl font-black text-foreground tracking-tighter">{kpi.value}</p>
-                                            {kpi.subValue && (
-                                                <p className="text-xs font-semibold text-muted-foreground mt-1.5 opacity-80">
-                                                    {kpi.subValue}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className={cn(
-                                        "mt-4 px-3 py-1.5 rounded-xl text-[11px] font-black flex items-center gap-1.5 border backdrop-blur-md self-start",
-                                        kpi.trend === 'up' ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-red-500/10 text-red-400 border-red-500/20"
-                                    )} suppressHydrationWarning>
-                                        {kpi.change}
-                                        {kpi.trend === 'up' ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-
-                {/* Primary Visualization Area - Optimization */}
-                <div className="space-y-6" suppressHydrationWarning>
-                    {/* Main Row: Chart */}
-                    <div className="space-y-6" suppressHydrationWarning>
-                        <div className="glass-premium rounded-3xl overflow-hidden shadow-lg transition-all duration-300 h-[350px] border border-white/5" suppressHydrationWarning>
-                            <RevenueChart 
-                                data={data.chartData} 
-                                height={280} 
-                            />
-                        </div>
-
-                        {/* Recent Service Orders Table for Admin */}
-                        <div className="glass-premium rounded-3xl sm:rounded-3xl overflow-hidden border border-white/5 shadow-2xl" suppressHydrationWarning>
-                            <div className="p-5 sm:p-8 border-b border-white/5 flex flex-col sm:flex-row items-start sm:justify-between gap-3 bg-white/[0.02]">
-                                <div>
-                                    <h2 className="text-xl font-black leading-none">Ordens de Serviço Recentes</h2>
-                                    <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-2 opacity-50">Últimas movimentações do sistema</p>
-                                </div>
-                                <Link href="/service-orders" className="px-6 py-3 rounded-2xl bg-white/5 text-[13px] font-black hover:bg-white/10 transition-all border border-white/5 w-full sm:w-auto text-center">
-                                    Ver Tudo
-                                </Link>
-                            </div>
-                            {/* Desktop/Tablet Grid-based Table */}
-                            <div className="hidden md:block">
-                                {/* Table Header */}
-                                <div className="grid grid-cols-12 gap-4 border-b border-white/5 bg-white/[0.01] p-4 sm:p-6 text-[11px] font-black uppercase tracking-wider text-muted-foreground items-center">
-                                    <div className="col-span-2">ID</div>
-                                    <div className="col-span-5">Título</div>
-                                    <div className="col-span-3">Cliente</div>
-                                    <div className="col-span-2 text-right">Status</div>
-                                </div>
-                                {/* Table Body */}
-                                <div className="divide-y divide-white/5">
-                                    {data.recentOS && data.recentOS.length > 0 ? data.recentOS.map((os) => (
-                                        <div
-                                            key={os.id}
-                                            className="relative block w-full hover:bg-white/[0.02] transition-colors group cursor-pointer select-none"
-                                        >
-                                            <div className="grid grid-cols-12 gap-4 p-4 sm:p-6 items-center">
-                                                <div className="col-span-2 font-mono text-[11px] opacity-30">
-                                                    #{os.id.slice(0, 8)}
-                                                </div>
-                                                <div className="col-span-5">
-                                                    <Link 
-                                                        href={`/service-orders/${os.id}`} 
-                                                        className="font-bold text-foreground group-hover:text-primary transition-colors block before:absolute before:inset-0 before:z-0 truncate"
-                                                    >
-                                                        {os.title}
-                                                    </Link>
-                                                </div>
-                                                <div className="col-span-3 text-sm font-medium text-foreground/70 truncate">
-                                                    {os.customers?.name || 'Cliente Direto'}
-                                                </div>
-                                                <div className="col-span-2 text-right relative z-10">
-                                                    <span className={cn(
-                                                        "px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-[11px] font-black uppercase tracking-widest border",
-                                                        STATUS_CONFIG[os.status]?.bg || "bg-muted border-white/5 text-muted-foreground"
-                                                    )}>
-                                                        {STATUS_CONFIG[os.status]?.label || os.status}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )) : (
-                                        <div className="p-12 text-center text-muted-foreground text-xs italic">
-                                            Nenhuma ordem de serviço recente.
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            
-                            {/* Mobile Cards View */}
-                            <div className="md:hidden p-4 space-y-3">
-                                {data.recentOS && data.recentOS.length > 0 ? data.recentOS.map((os) => (
-                                    <Link 
-                                        key={os.id}
-                                        href={`/service-orders/${os.id}`}
-                                        className="block p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-colors"
-                                    >
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="font-mono text-[11px] opacity-30">#{os.id.slice(0, 8)}</span>
-                                            <span className={cn(
-                                                "px-2 py-1 rounded-lg text-[11px] font-black uppercase tracking-widest border",
-                                                STATUS_CONFIG[os.status]?.bg || "bg-muted border-white/5 text-muted-foreground"
-                                            )}>
-                                                {STATUS_CONFIG[os.status]?.label || os.status}
-                                            </span>
-                                        </div>
-                                        <p className="font-bold text-foreground truncate">{os.title}</p>
-                                        <p className="text-xs text-muted-foreground mt-1">{os.customers?.name || 'Cliente Direto'}</p>
+                            <div className="grid grid-cols-3 border-t border-border/60 divide-x divide-border/60">
+                                {[
+                                    { label: 'Em aberto', value: os.open, href: '/service-orders' },
+                                    { label: 'Prontas', value: os.ready, href: '/service-orders?status=concluida' },
+                                    { label: 'Novas hoje', value: os.openedToday, href: '/service-orders?status=todas' },
+                                ].map(s => (
+                                    <Link key={s.label} href={s.href} className="px-3 py-2.5 text-center hover:bg-foreground/[0.02]">
+                                        <span className="block text-[20px] font-semibold tabular-nums leading-tight">{s.value}</span>
+                                        <span className="block text-[12px] text-muted-foreground">OS {s.label.toLowerCase()}</span>
                                     </Link>
-                                )) : (
-                                    <p className="p-8 text-center text-muted-foreground text-xs italic">Nenhuma ordem de serviço recente.</p>
-                                )}
+                                ))}
                             </div>
+                        </section>
+
+                        <QuickActions />
+
+                        <div className="lg:hidden">
+                            <TasksTodayWidget limit={4} />
                         </div>
+
+                        {/* ── Below the fold ── */}
+                        <section aria-labelledby="month-title" className="space-y-2 pt-2">
+                            <div className="flex items-end justify-between px-1">
+                                <h2 id="month-title" className="text-[20px] font-semibold tracking-tight">Este mês</h2>
+                                <Link href="/reports" className="text-[15px] text-primary inline-flex items-center">Relatórios <ChevronRight className="w-4 h-4" /></Link>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <Tile label="Faturamento" footer={<Delta value={change(m.revenue, ov.monthPrev.revenue)} label="vs anterior" />}><Amount value={m.revenue} /></Tile>
+                                <Tile label="Lucro líquido" footer={<span className="text-[13px] text-muted-foreground">{m.margin == null ? 'sem faturamento' : `margem de ${(m.margin * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`}</span>}><Amount value={m.net} /></Tile>
+                                <Tile label="Ticket médio" footer={<Delta value={m.ticketAvg != null && ov.monthPrev.ticketAvg ? change(m.ticketAvg, ov.monthPrev.ticketAvg) : null} label="vs anterior" />}>{m.ticketAvg == null ? '—' : <Amount value={m.ticketAvg} />}</Tile>
+                                <Tile label="Atendimentos pagos" footer={<span className="text-[13px] text-muted-foreground">{m.osPaid} OS · {m.sales} vendas</span>}>{m.tickets}</Tile>
+                            </div>
+                        </section>
+
+                        <VizScope>
+                            <PrivateBlock label="Faturamento oculto">
+                                <DailyRevenueChart data={ov.daily} granularity="day" />
+                            </PrivateBlock>
+                        </VizScope>
+                    </div>
+
+                    {/* ── Side column (desktop) / continues below on phones ── */}
+                    <div className="space-y-4 mt-4 lg:mt-0 min-w-0">
+                        <div className="hidden lg:block">
+                            <TasksTodayWidget limit={6} />
+                        </div>
+
+                        <section aria-labelledby="recent-title" className="space-y-2">
+                            <div className="flex items-end justify-between px-1">
+                                <h2 id="recent-title" className="text-[20px] font-semibold tracking-tight">OS recentes</h2>
+                                <Link href="/service-orders" className="text-[15px] text-primary inline-flex items-center">Ver todas <ChevronRight className="w-4 h-4" /></Link>
+                            </div>
+                            <ul className="rounded-2xl bg-card border border-border/60 divide-y divide-border/60 overflow-hidden">
+                                {data.recent.length ? data.recent.map(o => (
+                                    <li key={o.id}>
+                                        <Link href={`/service-orders/${o.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-foreground/[0.02]">
+                                            <span className="flex-1 min-w-0">
+                                                <span className="block text-[15px] font-medium truncate">{[o.title, o.equipment_description].filter(Boolean).join(' · ')}</span>
+                                                <span className="block text-[13px] text-muted-foreground truncate">{o.customers?.name ?? 'Sem cliente'} · {o.order_number}</span>
+                                            </span>
+                                            <span className="flex flex-col items-end gap-1 shrink-0">
+                                                <OSStatusBadge status={o.status} />
+                                                <span className="text-[12px] text-muted-foreground tabular-nums">{shortWhen(o.created_at)}</span>
+                                            </span>
+                                        </Link>
+                                    </li>
+                                )) : (
+                                    <li className="px-4 py-6 text-center text-[15px] text-muted-foreground">Nenhuma OS ainda. <Link href="/service-orders/new" className="text-primary">Abrir a primeira</Link></li>
+                                )}
+                            </ul>
+                        </section>
+
+                        {data.lowStock.length > 0 && (
+                            <section aria-labelledby="stock-title" className="space-y-2">
+                                <div className="flex items-end justify-between px-1">
+                                    <h2 id="stock-title" className="text-[20px] font-semibold tracking-tight">Estoque baixo</h2>
+                                    <Link href="/inventory" className="text-[15px] text-primary inline-flex items-center">Estoque <ChevronRight className="w-4 h-4" /></Link>
+                                </div>
+                                <ul className="rounded-2xl bg-card border border-border/60 divide-y divide-border/60 overflow-hidden">
+                                    {data.lowStock.slice(0, 5).map(i => (
+                                        <li key={i.id} className="flex items-center gap-3 px-4 py-3">
+                                            <AlertTriangle className={cn('w-[18px] h-[18px] shrink-0', Number(i.quantity_in_stock) <= 0 ? 'text-red-500' : 'text-orange-500')} />
+                                            <span className="flex-1 min-w-0 text-[15px] truncate">{i.name}</span>
+                                            <span className="text-[13px] text-muted-foreground tabular-nums shrink-0">{Number(i.quantity_in_stock)} de mín. {Number(i.minimum_quantity)}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                {data.lowStock.length > 5 && <p className="px-4 text-[13px] text-muted-foreground">e mais {data.lowStock.length - 5} itens</p>}
+                            </section>
+                        )}
                     </div>
                 </div>
-            </div>
+            </PrivacyProvider>
             {showSetup && company && <SetupAssistant company={company as SetupCompany} />}
         </div>
     )
