@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Check, Plus, Search, UserRound } from 'lucide-react'
 import Sheet from '@/components/tasks/Sheet'
 import PremiumModal from '@/components/ui/PremiumModal'
@@ -27,13 +27,37 @@ export default function CustomerPicker({ customers, onCustomersChange, value, on
     const [creating, setCreating] = useState<string | null>(null)
     const selected = customers.find(c => c.id === value)
 
+    // The page loads at most ~1000 customers; search the server too, so
+    // larger stores still find everyone (also by phone).
+    const [found, setFound] = useState<{ q: string; list: Option[] }>({ q: '', list: [] })
+    useEffect(() => {
+        const q = query.trim()
+        if (q.length < 2) return
+        const h = setTimeout(() => {
+            fetch(`/api/customers?search=${encodeURIComponent(q)}`)
+                .then(r => r.json())
+                .then(d => setFound({ q, list: Array.isArray(d.data) ? d.data.map((c: { id: string; name: string }) => ({ id: c.id, name: c.name })) : [] }))
+                .catch(() => {})
+        }, 250)
+        return () => clearTimeout(h)
+    }, [query])
+    const remote = useMemo(() => (found.q && found.q === query.trim() ? found.list : []), [found, query])
+
     const results = useMemo(() => {
         const q = normalize(query.trim())
-        const list = q ? customers.filter(c => normalize(c.name ?? '').includes(q)) : customers
-        return list.slice(0, 60)
-    }, [customers, query])
+        const local = q ? customers.filter(c => normalize(c.name ?? '').includes(q)) : customers
+        const seen = new Set(local.map(c => c.id))
+        return [...local, ...remote.filter(c => !seen.has(c.id))].slice(0, 60)
+    }, [customers, remote, query])
 
-    const exact = customers.some(c => normalize(c.name ?? '') === normalize(query.trim()))
+    const pick = (c: Option) => {
+        if (!customers.some(x => x.id === c.id)) onCustomersChange([...customers, c])
+        onChange(c.id)
+        setOpen(false)
+        setQuery('')
+    }
+
+    const exact = [...customers, ...remote].some(c => normalize(c.name ?? '') === normalize(query.trim()))
 
     return (
         <>
@@ -54,7 +78,7 @@ export default function CustomerPicker({ customers, onCustomersChange, value, on
                 <span className="text-[15px] text-primary font-medium shrink-0">{selected ? 'Trocar' : 'Escolher'}</span>
             </button>
 
-            <Sheet open={open} onClose={() => { setOpen(false); setQuery('') }} title="Cliente" size="md">
+            <Sheet open={open} onClose={() => { setOpen(false); setQuery('') }} title="Cliente" size="md" full>
                 <div className="sticky top-0 bg-card pb-3 z-10">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -68,6 +92,19 @@ export default function CustomerPicker({ customers, onCustomersChange, value, on
                     </div>
                 </div>
                 <ul className="rounded-xl bg-foreground/[0.03] divide-y divide-border/60 overflow-hidden">
+                    {results.map(c => (
+                        <li key={c.id}>
+                            <button
+                                type="button"
+                                onClick={() => pick(c)}
+                                className="w-full flex items-center gap-3 px-4 min-h-[52px] text-left hover:bg-foreground/[0.03]"
+                            >
+                                <span className="w-8 h-8 rounded-full bg-foreground/[0.06] text-[14px] font-semibold flex items-center justify-center shrink-0">{c.name?.charAt(0).toUpperCase() || '?'}</span>
+                                <span className="flex-1 text-[17px] truncate">{c.name || 'Sem nome'}</span>
+                                {c.id === value && <Check className="w-5 h-5 text-primary shrink-0" />}
+                            </button>
+                        </li>
+                    ))}
                     {query.trim() && !exact && (
                         <li>
                             <button
@@ -80,19 +117,6 @@ export default function CustomerPicker({ customers, onCustomersChange, value, on
                             </button>
                         </li>
                     )}
-                    {results.map(c => (
-                        <li key={c.id}>
-                            <button
-                                type="button"
-                                onClick={() => { onChange(c.id); setOpen(false); setQuery('') }}
-                                className="w-full flex items-center gap-3 px-4 min-h-[52px] text-left hover:bg-foreground/[0.03]"
-                            >
-                                <span className="w-8 h-8 rounded-full bg-foreground/[0.06] text-[14px] font-semibold flex items-center justify-center shrink-0">{c.name?.charAt(0).toUpperCase() || '?'}</span>
-                                <span className="flex-1 text-[17px] truncate">{c.name || 'Sem nome'}</span>
-                                {c.id === value && <Check className="w-5 h-5 text-primary shrink-0" />}
-                            </button>
-                        </li>
-                    ))}
                     {!results.length && !query.trim() && (
                         <li className="px-4 py-6 text-center text-[15px] text-muted-foreground">Nenhum cliente cadastrado ainda.</li>
                     )}
@@ -108,7 +132,7 @@ export default function CustomerPicker({ customers, onCustomersChange, value, on
                 )}
             </Sheet>
 
-            <PremiumModal isOpen={creating !== null} onClose={() => setCreating(null)} title="Novo cliente" maxWidth="lg">
+            <PremiumModal isOpen={creating !== null} onClose={() => setCreating(null)} title="Novo cliente" maxWidth="lg" full>
                 <div className="p-2">
                     <CustomerForm
                         companyId={companyId}

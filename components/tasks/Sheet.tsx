@@ -12,15 +12,20 @@ interface SheetProps {
     subtitle?: string
     children: React.ReactNode
     footer?: React.ReactNode
-    /** Leading toolbar action (e.g. "Cancelar"), trailing is the close button. */
     size?: 'md' | 'lg'
+    /**
+     * Phones: take the whole screen from the top (search pickers). The search
+     * field and the first results stay near the top, visible above the
+     * keyboard, instead of hanging from the bottom edge.
+     */
+    full?: boolean
 }
 
 /**
  * Bottom sheet on phones, centered panel on larger screens (sheets.md).
  * Dismisses with Esc, the close button, or tapping the dimmed background.
  */
-export default function Sheet({ open, onClose, title, subtitle, children, footer, size = 'md' }: SheetProps) {
+export default function Sheet({ open, onClose, title, subtitle, children, footer, size = 'md', full = false }: SheetProps) {
     const [mounted, setMounted] = useState(false)
     const panelRef = useRef<HTMLDivElement>(null)
 
@@ -59,7 +64,10 @@ export default function Sheet({ open, onClose, title, subtitle, children, footer
 
     return createPortal(
         <div
-            className="fixed inset-0 ios-fill z-[1000] flex items-end sm:items-center justify-center sm:p-6 bg-black/35 animate-in fade-in duration-200"
+            className={cn(
+                'fixed inset-0 ios-fill z-[1000] flex sm:items-center justify-center sm:p-6 bg-black/35 animate-in fade-in duration-200',
+                full ? 'items-stretch pt-[calc(env(safe-area-inset-top)+10px)]' : 'items-end'
+            )}
             onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
         >
             <div
@@ -68,7 +76,8 @@ export default function Sheet({ open, onClose, title, subtitle, children, footer
                 aria-modal="true"
                 aria-label={title}
                 className={cn(
-                    'w-full bg-card rounded-t-[22px] sm:rounded-[22px] shadow-2xl flex flex-col max-h-[92dvh] animate-sheet-up border border-border/50',
+                    'w-full bg-card rounded-t-[22px] sm:rounded-[22px] shadow-2xl flex flex-col animate-sheet-up border border-border/50',
+                    full ? 'h-full sm:h-auto sm:max-h-[85dvh]' : 'max-h-[92dvh]',
                     size === 'lg' ? 'sm:max-w-2xl' : 'sm:max-w-lg'
                 )}
             >
