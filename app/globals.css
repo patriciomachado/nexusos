@@ -559,6 +559,32 @@ body {
   @page {
     margin: 0;
   }
+
+  /* Cash closing report: print only the report, full length. */
+  body:has(.print-report) * {
+    visibility: hidden;
+  }
+  body:has(.print-report) .print-report,
+  body:has(.print-report) .print-report * {
+    visibility: visible;
+  }
+  body:has(.print-report) .app-frame,
+  body:has(.print-report) main {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  .print-report {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    padding: 12mm !important;
+    color: black !important;
+    background: white !important;
+  }
+  .print-report .no-print {
+    display: none !important;
+  }
 }
 
 /* Data-viz tokens (validated palette: slots 1–2, light and dark steps). */

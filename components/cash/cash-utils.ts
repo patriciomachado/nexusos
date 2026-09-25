@@ -17,12 +17,13 @@ export interface CashTx {
     [key: string]: unknown
 }
 
-export type MethodGroup = 'cash' | 'pix' | 'card' | 'other'
+export type MethodGroup = 'cash' | 'pix' | 'debit' | 'credit' | 'other'
 
 export const METHOD_GROUPS: { key: MethodGroup; label: string }[] = [
     { key: 'cash', label: 'Dinheiro' },
     { key: 'pix', label: 'Pix' },
-    { key: 'card', label: 'Cartão' },
+    { key: 'debit', label: 'Débito' },
+    { key: 'credit', label: 'Crédito' },
     { key: 'other', label: 'Outros' },
 ]
 
@@ -31,8 +32,25 @@ export function methodGroup(tx: CashTx): MethodGroup {
     const name = (tx.payment_methods?.name || '').toLowerCase()
     if (code === 'CASH' || name.includes('dinheiro')) return 'cash'
     if (code === 'PIX' || name.includes('pix')) return 'pix'
-    if (code.includes('CARD') || name.includes('cart')) return 'card'
+    if (code === 'DEBIT_CARD' || name.includes('débito') || name.includes('debito')) return 'debit'
+    if (code === 'CREDIT_CARD' || name.includes('crédito') || name.includes('credito')) return 'credit'
     return 'other'
+}
+
+/** Store's cash settings as the app sees them. */
+export interface FeeRule { rate: number; days: number }
+export interface CashSettingsView {
+    fees: { debit: FeeRule; credit: FeeRule; credit_installments: FeeRule; pix: FeeRule }
+    sangria_limit: number
+    has_pin: boolean
+    report_phone: string | null
+    can_edit: boolean
+    whatsapp_ready: boolean
+}
+
+export function feeRule(group: MethodGroup, s: CashSettingsView | null): FeeRule | null {
+    if (!s) return null
+    return group === 'debit' ? s.fees.debit : group === 'credit' ? s.fees.credit : group === 'pix' ? s.fees.pix : null
 }
 
 export function methodName(tx: CashTx) {
@@ -52,6 +70,8 @@ export function sourceLabel(tx: CashTx) {
         case 'manual_sangria': return 'Sangria'
         case 'recurring_expense': return 'Conta fixa'
         case 'payment': return 'Pagamento'
+        case 'bill': return 'Conta paga'
+        case 'receivable': return 'Recebimento'
         default: return tx.type === 'entry' ? 'Entrada' : 'Saída'
     }
 }
@@ -66,6 +86,7 @@ export function cleanDescription(tx: CashTx) {
     if ((m = raw.match(/^Custo de Peças OS #?(.+)$/i))) return `Custo das peças · OS ${m[1]}`
     if ((m = raw.match(/^Pagamento OS #?(.+)$/i))) return `OS ${m[1]}`
     if ((m = raw.match(/^\[Fixa\]\s*(.+)$/))) return m[1]
+    if ((m = raw.match(/^Conta paga:\s*(.+)$/))) return m[1]
     const d = raw.replace(/^(Suprimento|Sangria|Recebimento):\s*/i, '').trim()
     if (!d || d === 'Manual') return sourceLabel(tx)
     return d

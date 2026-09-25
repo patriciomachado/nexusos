@@ -1,6 +1,7 @@
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { addDays, dateStringInZone, DEFAULT_TIMEZONE } from '@/lib/tasks/dates'
+import { extraExpenses } from './extra'
 import { isExpense, localDay, num, previousPeriod, startOf, summarize, totals, type Row } from './compute'
 
 /**
@@ -21,7 +22,7 @@ export async function computeOverview(db: SupabaseClient, companyId: string) {
     const registerIds = (registers ?? []).map(r => r.id as string)
 
     const [paymentsRes, salesRes, exitsRes] = await Promise.all([
-        db.from('payments').select('amount, payment_date, service_order_id, sale_id')
+        db.from('payments').select('amount, payment_date, payment_method, service_order_id, sale_id')
             .eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', fromIso).lt('payment_date', toIso).limit(20000),
         db.from('sales').select('id, total_cost, created_at, status')
             .eq('company_id', companyId).gte('created_at', fromIso).lt('created_at', toIso).limit(20000),
@@ -39,7 +40,7 @@ export async function computeOverview(db: SupabaseClient, companyId: string) {
         for (const o of data ?? []) osById.set(o.id as string, o)
     }
     const sales = ((salesRes.data ?? []) as Row[]).filter(s => !['cancelled', 'cancelada', 'canceled'].includes(String(s.status)))
-    const exits = ((exitsRes.data ?? []) as Row[]).filter(isExpense)
+    const exits = [...((exitsRes.data ?? []) as Row[]).filter(isExpense), ...await extraExpenses(db, companyId, fromIso, toIso, payments)]
 
     const range = (a: string, b: string) => {
         const lo = startOf(a), hi = startOf(addDays(b, 1))

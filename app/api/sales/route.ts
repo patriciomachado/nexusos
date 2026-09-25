@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { saleSchema } from '@/lib/validations/schemas'
+import { findOpenRegister } from '@/lib/cash/server'
 
 export async function POST(req: NextRequest) {
     const ctx = await getContext()
@@ -20,16 +21,10 @@ export async function POST(req: NextRequest) {
     // 2. Ensure cash register is open and belongs to the company
     let registerId = saleData.cash_register_id
 
-    const { data: activeRegister, error: registerError } = await db
-        .from('cash_registers')
-        .select('id')
-        .eq('company_id', companyId)
-        .eq('status', 'open')
-        .order('opened_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
+    // The seller's own register, else the store's open one.
+    const activeRegister = await findOpenRegister(db, companyId, dbUser.id)
 
-    if (registerError || !activeRegister) {
+    if (!activeRegister) {
         return NextResponse.json({ error: 'Nenhum caixa aberto encontrado para esta empresa.' }, { status: 400 })
     }
 
@@ -128,6 +123,14 @@ export async function POST(req: NextRequest) {
         paymentEntries.sort((a, b) => b[1] - a[1])
         const primaryMethodId = paymentEntries[0][0]
 
+        // Crediário (fiado): not received yet, so it goes to "contas a receber"
+        // instead of the register, and needs the customer.
+        const isCredit = (id: string) => (methodById.get(id)?.code || '').toUpperCase() === 'INSTALLMENT'
+        if (paymentEntries.some(([id]) => isCredit(id)) && !saleData.customer_id) {
+            return NextResponse.json({ error: 'Para vender no crediário, escolha o cliente.' }, { status: 400 })
+        }
+        const cashEntries = paymentEntries.filter(([id]) => !isCredit(id))
+
         const fmt = (n: number) => `R$ ${n.toFixed(2).replace('.', ',')}`
         const paymentSummary = paymentEntries.length > 1 || change > 0
             ? `Pagamento: ${paymentEntries.map(([id, amount]) => `${methodById.get(id)?.name} ${fmt(amount)}`).join(' + ')}${change > 0 ? ` · Recebido em dinheiro ${fmt(cashTotal)}, troco ${fmt(change)}` : ''}`
@@ -195,16 +198,16 @@ export async function POST(req: NextRequest) {
             .single()
 
         // One entry per payment method, so the register closes correctly by method.
-        const { error: cashError } = await db
+        const { error: cashError } = cashEntries.length === 0 ? { error: null } : await db
             .from('cash_transactions')
-            .insert(paymentEntries.map(([methodId, amount]) => ({
+            .insert(cashEntries.map(([methodId, amount]) => ({
                 cash_register_id: registerId,
                 company_id: companyId,
                 type: 'entry',
                 amount,
                 payment_method_id: methodId,
                 transaction_type_id: transType?.id,
-                description: paymentEntries.length > 1
+                description: cashEntries.length > 1
                     ? `Venda PDV - ID: ${sale.id.substring(0, 8)} (${methodById.get(methodId)?.name})`
                     : `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
                 source_type: 'product_sale',
@@ -252,8 +255,9 @@ export async function POST(req: NextRequest) {
                 customer_id: saleData.customer_id || null,
                 amount,
                 payment_method: methodMap[methodById.get(methodId)?.code || ''] || 'dinheiro',
-                payment_status: 'completed',
+                payment_status: isCredit(methodId) ? 'pending' : 'completed',
                 payment_date: new Date().toISOString(),
+                due_date: isCredit(methodId) ? new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10) : null,
                 reference_id: sale.id,
                 sale_id: sale.id,
                 notes: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,

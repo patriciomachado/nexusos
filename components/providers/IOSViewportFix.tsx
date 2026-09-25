@@ -30,12 +30,14 @@ export default function IOSViewportFix() {
             // Don't measure while the keyboard is up.
             const el = document.activeElement
             if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || (el as HTMLElement | null)?.isContentEditable) return
+            let off = false
+            try { off = localStorage.getItem('nexus_iosfix_off') === '1' } catch { /* ignore */ }
             const rect = probe.getBoundingClientRect()
             const landscape = window.innerWidth > window.innerHeight
             // screen.* is in portrait terms on iOS.
             const screenH = landscape ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height)
             const gap = Math.round(screenH - rect.bottom)
-            if (gap > 0 && gap <= 200) {
+            if (!off && gap > 0 && gap <= 200) {
                 root.style.setProperty('--ios-gap', `${gap}px`)
                 root.classList.add('ios-gap')
             } else {
@@ -44,6 +46,17 @@ export default function IOSViewportFix() {
             }
         }
         const later = () => { setTimeout(measure, 350); setTimeout(measure, 1000) }
+        // iOS 26 can leave the page shifted after the keyboard closes; the app
+        // itself never scrolls the window, so put it back at the top.
+        const afterKeyboard = () => {
+            setTimeout(() => {
+                const el = document.activeElement
+                if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return
+                if (window.scrollY !== 0 || (window.visualViewport?.offsetTop ?? 0) !== 0) window.scrollTo(0, 0)
+                measure()
+            }, 300)
+            later()
+        }
         const onVisible = () => { if (document.visibilityState === 'visible') later() }
 
         measure()
@@ -53,7 +66,7 @@ export default function IOSViewportFix() {
         vv?.addEventListener('resize', measure)
         window.addEventListener('orientationchange', later)
         window.addEventListener('pageshow', later)
-        document.addEventListener('focusout', later)
+        document.addEventListener('focusout', afterKeyboard)
         document.addEventListener('visibilitychange', onVisible)
         // iOS doesn't always fire resize when the viewport settles; re-check now and then.
         const iv = setInterval(measure, 3000)
@@ -63,7 +76,7 @@ export default function IOSViewportFix() {
             vv?.removeEventListener('resize', measure)
             window.removeEventListener('orientationchange', later)
             window.removeEventListener('pageshow', later)
-            document.removeEventListener('focusout', later)
+            document.removeEventListener('focusout', afterKeyboard)
             document.removeEventListener('visibilitychange', onVisible)
             probe.remove()
         }

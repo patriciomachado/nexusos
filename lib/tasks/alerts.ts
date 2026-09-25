@@ -191,7 +191,7 @@ export async function collectAlerts(db: SupabaseClient, companyId: string, today
                     module: 'payments',
                     title: overdue ? `Recebimento vencido · ${customer}` : `Recebimento ${relativeDayLabel(p.due_date, today).toLowerCase()} · ${customer}`,
                     detail: `${brl(Number(p.amount))}${overdue ? ` · venceu há ${days} ${days === 1 ? 'dia' : 'dias'}` : ''}`,
-                    href: p.service_order_id ? `/service-orders/${p.service_order_id}` : p.customer_id ? `/customers/${p.customer_id}` : '/reports',
+                    href: '/contas?aba=receber',
                     severity: overdue ? 'high' : 'medium',
                     date: overdue ? today : p.due_date,
                     suggestion: overdue ? `Cobrar ${customer} (${brl(Number(p.amount))})` : `Lembrar ${customer} do pagamento`,
@@ -230,37 +230,32 @@ export async function collectAlerts(db: SupabaseClient, companyId: string, today
             })
         }),
 
-        // 6. Despesas fixas que vencem hoje ou nos próximos dias
-        safe('recurring_expenses', async () => {
+        // 6. Contas a pagar vencidas, de hoje e dos próximos dias
+        safe('bills', async () => {
             const { data, error } = await db
-                .from('recurring_expenses')
-                .select('id, description, amount, day_of_month')
+                .from('bills')
+                .select('id, description, amount, due_date')
                 .eq('company_id', companyId)
-                .eq('is_active', true)
-                .limit(100)
+                .eq('status', 'open')
+                .lte('due_date', addDays(today, 2))
+                .order('due_date')
+                .limit(50)
             if (error) throw error
-            const alerts: TaskAlert[] = []
-            for (let offset = 0; offset <= 2; offset++) {
-                const day = addDays(today, offset)
-                const dom = +day.slice(8, 10)
-                const lastDom = new Date(Date.UTC(+day.slice(0, 4), +day.slice(5, 7), 0)).getUTCDate()
-                for (const e of data || []) {
-                    const due = Math.min(e.day_of_month, lastDom)
-                    if (due !== dom) continue
-                    alerts.push({
-                        key: `expense:${e.id}:${day.slice(0, 7)}`,
-                        module: 'cash',
-                        title: `Pagar ${e.description}`,
-                        detail: `${brl(Number(e.amount))} · vence ${relativeDayLabel(day, today).toLowerCase()}`,
-                        href: '/cash-register',
-                        severity: offset === 0 ? 'high' : 'low',
-                        date: day,
-                        suggestion: `Pagar ${e.description}`,
-                        dismissible: true,
-                    })
+            return (data || []).map((b): TaskAlert => {
+                const overdue = b.due_date < today
+                const days = diffDays(b.due_date, today)
+                return {
+                    key: `bill:${b.id}`,
+                    module: 'cash',
+                    title: overdue ? `Conta vencida · ${b.description}` : `Pagar ${b.description}`,
+                    detail: `${brl(Number(b.amount))} · ${overdue ? `venceu há ${days} ${days === 1 ? 'dia' : 'dias'}` : `vence ${relativeDayLabel(b.due_date, today).toLowerCase()}`}`,
+                    href: '/contas',
+                    severity: overdue || b.due_date === today ? 'high' : 'low',
+                    date: overdue ? today : b.due_date,
+                    suggestion: `Pagar ${b.description}`,
+                    dismissible: false,
                 }
-            }
-            return alerts
+            })
         }),
 
         // 7. Aparelhos em revisão há muito tempo e trocas sem resposta

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { findOpenRegister } from '@/lib/cash/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { idSchema, osStatusUpdateSchema } from '@/lib/validations/schemas'
 
@@ -56,6 +57,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             .or(`company_id.eq.${companyId},company_id.is.null`)
             .single()
 
+        const onCredit = (pmData?.code || '').toUpperCase() === 'INSTALLMENT'
         const methodMap: Record<string, string> = {
             'CASH': 'dinheiro',
             'DEBIT_CARD': 'cartao_debito',
@@ -71,21 +73,21 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             service_order_id: id,
             amount: amount,
             payment_method: methodMap[pmData?.code || ''] || 'dinheiro',
-            payment_status: 'completed',
+            // Crediário/fiado: to receive later ("contas a receber"), not in the register now.
+            payment_status: onCredit ? 'pending' : 'completed',
             payment_date: new Date().toISOString(),
+            due_date: onCredit ? new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10) : null,
             created_by: dbUser.id,
             notes: `Pagamento automático OS #${os.order_number}`
         })
 
         // 2. Create Cash Transaction (for the Drawer/Register)
-        const { data: openRegisters } = await db
-            .from('cash_registers')
-            .select('id')
-            .eq('company_id', companyId)
-            .eq('status', 'open')
-            .order('opened_at', { ascending: false })
-
-        const openRegister = openRegisters && openRegisters.length > 0 ? openRegisters[0] : null
+        // The user's own register, else the store's open one.
+        const openRegister = onCredit ? null : await findOpenRegister(db, companyId, dbUser.id)
+        if (onCredit) {
+            updateData.parts_cost = calculatedPartsCost
+            if (payment_method_id) updateData.payment_method_id = payment_method_id
+        }
 
         if (openRegister) {
             const { data: transType } = await db

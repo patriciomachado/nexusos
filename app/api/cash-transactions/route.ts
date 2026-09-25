@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { cashTransactionSchema } from '@/lib/validations/schemas'
+import { isManager, isOwner, loadCashSettings, verifyPin } from '@/lib/cash/server'
+import { rateLimit } from '@/lib/security-rate-limit'
 
 export async function POST(req: NextRequest) {
     const ctx = await getContext()
@@ -27,12 +29,35 @@ export async function POST(req: NextRequest) {
     // Verify cash register state and ownership
     const { data: cashRegister } = await ctx.db
         .from('cash_registers')
-        .select('status, company_id')
+        .select('status, company_id, user_id')
         .eq('id', validatedData.cash_register_id)
         .single()
 
     if (!cashRegister || cashRegister.status === 'closed' || cashRegister.company_id !== ctx.companyId) {
         return NextResponse.json({ error: 'Caixa inválido, já fechado ou pertence a outra empresa.' }, { status: 400 })
+    }
+
+    const manual = validatedData.source_type === 'manual_sangria' || validatedData.source_type === 'manual_suprimento'
+    if (manual && cashRegister.user_id !== ctx.dbUser.id && !isManager(ctx.role)) {
+        return NextResponse.json({ error: 'Faça a movimentação no seu próprio caixa.' }, { status: 403 })
+    }
+
+    // Withdrawals above the store's limit need the owner's PIN (owners don't).
+    if (validatedData.source_type === 'manual_sangria' && !isOwner(ctx.role)) {
+        const { cash } = await loadCashSettings(ctx.db, ctx.companyId)
+        if (cash.sangria_limit > 0 && validatedData.amount > cash.sangria_limit) {
+            const pin = typeof body.owner_pin === 'string' ? body.owner_pin : ''
+            if (!cash.pin_hash) {
+                return NextResponse.json({ error: `Sangria acima de ${cash.sangria_limit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} só pelo dono.`, code: 'NEEDS_OWNER' }, { status: 403 })
+            }
+            if (pin && !rateLimit('owner-pin', 5, 10 * 60_000, ctx.dbUser.id)) {
+                return NextResponse.json({ error: 'Muitas tentativas de senha. Espere alguns minutos.', code: 'NEEDS_PIN' }, { status: 429 })
+            }
+            if (!verifyPin(pin, cash.pin_hash)) {
+                return NextResponse.json({ error: pin ? 'Senha do dono incorreta.' : 'Esta sangria precisa da senha do dono.', code: 'NEEDS_PIN' }, { status: 403 })
+            }
+            validatedData.justification = `${validatedData.justification ?? ''} · autorizada com a senha do dono`.replace(/^ · /, '')
+        }
     }
 
     const { data, error } = await ctx.db
@@ -72,6 +97,13 @@ export async function GET(req: NextRequest) {
 
     if (registerId) {
         query = query.eq('cash_register_id', registerId)
+    }
+    // Operators only see the movements of their own registers.
+    if (!isManager(ctx.role)) {
+        const { data: own } = await ctx.db.from('cash_registers').select('id').eq('company_id', ctx.companyId).eq('user_id', ctx.dbUser.id)
+        const ids = (own ?? []).map(r => r.id)
+        if (!ids.length) return NextResponse.json({ data: [], count: 0 })
+        query = query.in('cash_register_id', ids)
     }
 
     if (date) {
@@ -139,12 +171,15 @@ export async function DELETE(req: NextRequest) {
     // Verify cash register is still open
     const { data: cashRegister } = await ctx.db
         .from('cash_registers')
-        .select('status')
+        .select('status, user_id')
         .eq('id', transaction.cash_register_id)
         .single()
 
     if (!cashRegister || cashRegister.status === 'closed') {
         return NextResponse.json({ error: 'Não é possível excluir transações de caixa fechado' }, { status: 400 })
+    }
+    if (cashRegister.user_id !== ctx.dbUser.id && !isManager(ctx.role)) {
+        return NextResponse.json({ error: 'Só quem abriu este caixa ou o gerente pode apagar movimentações.' }, { status: 403 })
     }
 
     // Clear any service_orders references first to avoid FK constraint errors
@@ -198,12 +233,15 @@ export async function PUT(req: NextRequest) {
     // Verify cash register is still open
     const { data: cashRegister } = await ctx.db
         .from('cash_registers')
-        .select('status')
+        .select('status, user_id')
         .eq('id', transaction.cash_register_id)
         .single()
 
     if (!cashRegister || cashRegister.status === 'closed') {
         return NextResponse.json({ error: 'Não é possível editar transações de caixa fechado' }, { status: 400 })
+    }
+    if (cashRegister.user_id !== ctx.dbUser.id && !isManager(ctx.role)) {
+        return NextResponse.json({ error: 'Só quem abriu este caixa ou o gerente pode corrigir movimentações.' }, { status: 403 })
     }
 
     // Update the transaction
