@@ -24,7 +24,7 @@ export default function DailyRevenueChart({ data, granularity }: { data: Point[]
     const best = data.reduce<Point | null>((b, p) => (!b || p.os + p.pdv > b.os + b.pdv ? p : b), null)
 
     return (
-        <section className="viz rounded-2xl bg-card border border-border/60 p-4 sm:p-5">
+        <section className="rounded-2xl bg-card border border-border/60 p-4 sm:p-5">
             <header className="flex flex-wrap items-start justify-between gap-3 mb-3">
                 <div>
                     <h2 className="type-headline">Faturamento por {granularity === 'month' ? 'mês' : 'dia'}</h2>

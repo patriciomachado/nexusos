@@ -1,6 +1,7 @@
 import 'server-only'
 import { NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse, forbiddenResponse } from '@/lib/security'
+import { planRequiredResponse } from '@/lib/plan-server'
 import { canUseAlice, isAdminRole, loadSettings, type AliceSettings } from './config'
 
 type Ctx = NonNullable<Awaited<ReturnType<typeof getContext>>>
@@ -26,6 +27,7 @@ export async function requireAliceUser(): Promise<Result> {
     const { error } = await ctx.db.from('alice_settings').select('company_id').limit(1)
     if (error && missingTables(error)) return { response: migrationMissingResponse() }
     const settings = await loadSettings(ctx.db, ctx.companyId)
+    if (settings.plan_blocked) return { response: planRequiredResponse('alice') }
     if (!canUseAlice(ctx.role, settings)) {
         return { response: NextResponse.json({ error: settings.enabled ? 'Seu perfil não tem acesso à Alice. Fale com o administrador.' : 'A Alice está desativada nesta loja.' }, { status: 403 }) }
     }

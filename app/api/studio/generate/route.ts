@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
+import { companyHasFeature, planRequiredResponse } from '@/lib/plan-server'
 
 export async function POST(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
+    if (!await companyHasFeature(ctx.db, ctx.companyId, 'studio')) return planRequiredResponse('studio')
 
     const { db, companyId } = ctx
     const body = await req.json()

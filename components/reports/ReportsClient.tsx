@@ -4,12 +4,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ArrowDownRight, ArrowUpRight, Check, Loader2, MessageCircle, Pencil, Target } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import Segmented from '@/components/ui/Segmented'
 import { addDays, localDateString } from '@/lib/tasks/dates'
 import type { Report } from '@/lib/reports/compute'
 import DailyRevenueChart from './DailyRevenueChart'
 import { brl, change, dayLabel, duration, pct } from './format'
+import Money from './Money'
+import UpgradeCard from '@/components/plans/UpgradeCard'
 
 type Preset = 'hoje' | '7d' | 'mes' | 'mes-anterior' | 'ano' | 'custom'
 
@@ -28,11 +31,23 @@ function presetRange(p: Preset, today: string): { from: string; to: string } | n
     }
 }
 
+/**
+ * Chart colors (validated palette, light and dark steps) set inline on the
+ * page root, so they never depend on a stylesheet an installed app may still
+ * have cached from before a deploy.
+ */
+const VIZ = {
+    light: { '--viz-s1': '#2a78d6', '--viz-s2': '#eb6834', '--viz-grid': '#e1e0d9', '--viz-axis': '#898781', '--viz-good': '#006300', '--viz-bad': '#d03b3b' },
+    dark: { '--viz-s1': '#3987e5', '--viz-s2': '#d95926', '--viz-grid': '#2c2c2a', '--viz-axis': '#898781', '--viz-good': '#0ca30c', '--viz-bad': '#e66767' },
+}
+
 export default function ReportsClient({ canEditGoal }: { canEditGoal: boolean }) {
+    const { resolvedTheme } = useTheme()
+    const vizStyle = (resolvedTheme === 'dark' ? VIZ.dark : VIZ.light) as React.CSSProperties
     const today = useMemo(() => localDateString(), [])
     const [preset, setPreset] = useState<Preset>('mes')
     const [range, setRange] = useState(() => presetRange('mes', localDateString())!)
-    const [report, setReport] = useState<Report | null>(null)
+    const [report, setReport] = useState<(Report & { full?: boolean }) | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const request = useRef(0)
@@ -65,7 +80,7 @@ export default function ReportsClient({ canEditGoal }: { canEditGoal: boolean })
     }
 
     return (
-        <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-12 max-w-7xl mx-auto space-y-5">
+        <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-12 max-w-7xl mx-auto space-y-5" style={vizStyle}>
             {/* Filters: one row above everything they scope */}
             <div className="flex flex-wrap items-center gap-3">
                 <Segmented<Preset>
@@ -104,14 +119,23 @@ export default function ReportsClient({ canEditGoal }: { canEditGoal: boolean })
                 // Refetch keeps the frame: previous numbers stay, dimmed.
                 <div className={cn('space-y-5 transition-opacity', loading && 'opacity-60')}>
                     <Kpis report={report} />
-                    <Goal report={report} canEdit={canEditGoal} onSaved={() => load(range)} />
-                    <DailyRevenueChart data={report.daily} granularity={report.granularity} />
-                    <div className="grid lg:grid-cols-2 gap-5 items-start">
-                        <Dre report={report} />
-                        <Funnel report={report} />
-                    </div>
-                    <Technicians report={report} />
-                    <Customers report={report} />
+                    {report.full === false ? (
+                        <>
+                            <DailyRevenueChart data={report.daily} granularity={report.granularity} />
+                            <UpgradeCard feature="reports_full" compact />
+                        </>
+                    ) : (
+                        <>
+                            <Goal report={report} canEdit={canEditGoal} onSaved={() => load(range)} />
+                            <DailyRevenueChart data={report.daily} granularity={report.granularity} />
+                            <div className="grid lg:grid-cols-2 gap-5 items-start">
+                                <Dre report={report} />
+                                <Funnel report={report} />
+                            </div>
+                            <Technicians report={report} />
+                            <Customers report={report} />
+                        </>
+                    )}
                 </div>
             )}
         </div>
@@ -128,7 +152,7 @@ function Delta({ cur, prev, upIsGood = true }: { cur: number | null; prev: numbe
     const good = up === upIsGood
     const Icon = up ? ArrowUpRight : ArrowDownRight
     return (
-        <span className="viz text-[13px] inline-flex items-center gap-0.5" style={{ color: good ? 'var(--viz-good)' : 'var(--viz-bad)' }}>
+        <span className="text-[13px] inline-flex items-center gap-0.5 whitespace-nowrap" style={{ color: good ? 'var(--viz-good)' : 'var(--viz-bad)' }}>
             <Icon className="w-3.5 h-3.5" />
             <span className="font-semibold">{pct(Math.abs(c))}</span>
             <span className="text-muted-foreground ml-1">vs anterior</span>
@@ -136,11 +160,11 @@ function Delta({ cur, prev, upIsGood = true }: { cur: number | null; prev: numbe
     )
 }
 
-function Tile({ label, value, hint, children }: { label: string; value: string; hint?: string; children?: React.ReactNode }) {
+function Tile({ label, value, hint, children }: { label: string; value: React.ReactNode; hint?: string; children?: React.ReactNode }) {
     return (
         <div className="rounded-2xl bg-card border border-border/60 p-4 space-y-1 min-w-0">
             <p className="text-[13px] text-muted-foreground">{label}</p>
-            <p className="text-[26px] leading-tight font-semibold tracking-tight truncate">{value}</p>
+            <p className="text-[26px] sm:text-[28px] leading-tight font-semibold tracking-tight">{value}</p>
             {hint && <p className="text-[13px] text-muted-foreground truncate">{hint}</p>}
             {children}
         </div>
@@ -151,9 +175,9 @@ function Kpis({ report }: { report: Report }) {
     const { current: c, previous: p } = report.kpis
     return (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <Tile label="Faturamento" value={brl(c.revenue)}><Delta cur={c.revenue} prev={p.revenue} /></Tile>
-            <Tile label="Lucro líquido" value={brl(c.net)} hint={c.margin == null ? undefined : `Margem de ${pct(c.margin, 1)}`}><Delta cur={c.net} prev={p.net} /></Tile>
-            <Tile label="Ticket médio" value={c.ticketAvg == null ? '—' : brl(c.ticketAvg)}><Delta cur={c.ticketAvg} prev={p.ticketAvg} /></Tile>
+            <Tile label="Faturamento" value={<Money value={c.revenue} />}><Delta cur={c.revenue} prev={p.revenue} /></Tile>
+            <Tile label="Lucro líquido" value={<Money value={c.net} />} hint={c.margin == null ? undefined : `Margem de ${pct(c.margin, 1)}`}><Delta cur={c.net} prev={p.net} /></Tile>
+            <Tile label="Ticket médio" value={<Money value={c.ticketAvg} />}><Delta cur={c.ticketAvg} prev={p.ticketAvg} /></Tile>
             <Tile label="Atendimentos pagos" value={String(c.tickets)} hint={`${c.osPaid} OS · ${c.sales} vendas`}><Delta cur={c.tickets} prev={p.tickets} /></Tile>
         </div>
     )
@@ -208,7 +232,7 @@ function Goal({ report, canEdit, onSaved }: { report: Report; canEdit: boolean; 
     const { goal, progress, projection } = report.goal
     const onTrack = projection >= goal
     return (
-        <section className="viz rounded-2xl bg-card border border-border/60 p-4 sm:p-5 space-y-3">
+        <section className="rounded-2xl bg-card border border-border/60 p-4 sm:p-5 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="type-headline flex items-center gap-2"><Target className="w-4 h-4 text-primary" /> Meta do mês</h2>
                 {editing ? editor : canEdit && <button type="button" onClick={() => setEditing(true)} className="text-[13px] text-primary inline-flex items-center gap-1"><Pencil className="w-3.5 h-3.5" /> Alterar</button>}
@@ -265,7 +289,7 @@ function Dre({ report }: { report: Report }) {
                     {d.expenses.map(e => <DreLine revenue={revenue} key={e.label} label={e.label} value={e.amount} sub />)}
                     <tr className="border-t-2 border-foreground/20 font-semibold text-[15px]">
                         <td className="py-2.5">Lucro líquido</td>
-                        <td className="text-right tabular-nums viz" style={{ color: net < 0 ? 'var(--viz-bad)' : undefined }}>{brl(net)}</td>
+                        <td className="text-right tabular-nums" style={{ color: net < 0 ? 'var(--viz-bad)' : undefined }}>{brl(net)}</td>
                         <td className="text-right tabular-nums text-muted-foreground text-[12px]">{share(net)}</td>
                     </tr>
                 </tbody>
@@ -287,7 +311,7 @@ function Funnel({ report }: { report: Report }) {
     ] as const
     const max = Math.max(1, ...stages.map(s => f.counts[s.key]))
     return (
-        <section className="viz rounded-2xl bg-card border border-border/60 p-4 sm:p-5">
+        <section className="rounded-2xl bg-card border border-border/60 p-4 sm:p-5">
             <h2 className="type-headline">Ordens de serviço abertas no período</h2>
             <p className="text-[13px] text-muted-foreground mb-3">{f.total} OS · onde estão agora{f.counts.cancelled ? ` · ${f.counts.cancelled} canceladas` : ''}</p>
             <ul className="space-y-2.5">

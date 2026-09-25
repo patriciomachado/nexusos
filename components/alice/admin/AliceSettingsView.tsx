@@ -12,6 +12,7 @@ export interface SettingsPayload {
         staff_roles: string[]
         store_info: string | null
         monthly_limit: number
+        plan_limit?: number
         whatsapp_enabled: boolean
         whatsapp_phone_number_id: string | null
         whatsapp_display_phone: string | null
@@ -19,7 +20,7 @@ export interface SettingsPayload {
         whatsapp_token_set: boolean
     }
     usage: number
-    environment: { ai: boolean; model: string; transcription: boolean; whatsappWebhook: boolean; webhookUrl: string }
+    environment: { ai: boolean; model: string; whatsappModel?: string; transcription: boolean; whatsappWebhook: boolean; webhookUrl: string }
 }
 
 const ROLE_OPTIONS = [
@@ -79,7 +80,7 @@ export default function AliceSettingsView({ data, onSaved }: { data: SettingsPay
                     </div>
                 </header>
                 <ul className="px-5 pb-4 space-y-2">
-                    <Check2 ok={environment.ai} label="Chave da IA" hint={environment.ai ? `Modelo ${environment.model}` : 'Adicione ANTHROPIC_API_KEY na Vercel (console.anthropic.com → API Keys).'} />
+                    <Check2 ok={environment.ai} label="Chave da IA" hint={environment.ai ? `App: ${environment.model}${environment.whatsappModel ? ` · WhatsApp: ${environment.whatsappModel}` : ''}` : 'Adicione ANTHROPIC_API_KEY na Vercel (console.anthropic.com → API Keys).'} />
                     <Check2 ok={environment.transcription} label="Comandos de voz com transcrição" hint={environment.transcription ? 'Ativo' : 'Opcional: adicione OPENAI_API_KEY (ou TRANSCRIBE_API_KEY) para a voz funcionar em todos os aparelhos e para entender áudios do WhatsApp. Sem ela, o app usa o reconhecimento de voz do próprio navegador quando disponível.'} warn />
                 </ul>
                 <div className="border-t border-border/60 px-5 py-4 flex items-center justify-between gap-4">
@@ -116,6 +117,7 @@ export default function AliceSettingsView({ data, onSaved }: { data: SettingsPay
                         <input id="alice-limit" inputMode="numeric" value={limit} onChange={e => setLimit(e.target.value.replace(/\D/g, ''))} className="w-28 h-9 px-3 rounded-lg bg-foreground/[0.05] text-[15px] tabular-nums focus:outline-none focus:ring-2 focus:ring-primary/40" />
                         <button type="button" disabled={busy === 'limit' || Number(limit) === settings.monthly_limit || !limit} onClick={() => apply('limit', { monthly_limit: Number(limit) })} className="h-9 px-3 rounded-full text-[14px] font-semibold text-primary disabled:opacity-40">Salvar</button>
                     </div>
+                    {!!settings.plan_limit && <p className="text-[13px] text-muted-foreground">Seu plano inclui até {settings.plan_limit.toLocaleString('pt-BR')} respostas por mês.</p>}
                 </div>
             </section>
 

@@ -9,7 +9,7 @@ export const metadata = { title: 'Tarefas · Nexus OS' }
 
 export default async function TarefasPage() {
     const ctx = await getContext()
-    if (!ctx) redirect('/sign-in')
+    if (!ctx) redirect('/entrar')
     // The Tarefas module is personal to the shop's administrator.
     if (!TASK_ROLES.includes(ctx.role)) redirect('/dashboard')
 

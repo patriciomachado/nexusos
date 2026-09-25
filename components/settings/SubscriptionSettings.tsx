@@ -1,133 +1,26 @@
 'use client'
 
-import { Sparkles, ChevronRight, Clock, ShieldCheck, Zap, Users } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import { ChevronRight, Sparkles } from 'lucide-react'
+import { usePlan } from '@/components/plans/PlanProvider'
+import { PLANS } from '@/lib/plans'
 
-interface SubscriptionSettingsProps {
-    company: {
-        subscription_plan: string
-        subscription_status: string
-        max_users: number
-        trial_ends_at: string | null
-    }
-}
 
-export default function SubscriptionSettings({ company }: SubscriptionSettingsProps) {
-    const isTrial = company.subscription_status === 'trial'
-    const isActive = company.subscription_status === 'active'
-
+/** Summary of the plan in Settings; details and changes live on /settings/subscription. */
+export default function SubscriptionSettings(_props: { company?: unknown }) {
+    const plan = PLANS[usePlan()]
     return (
-        <div className="space-y-8">
-            <div className="flex items-center gap-3">
-                <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-500 shadow-inner">
-                    <ShieldCheck className="w-6 h-6" />
-                </div>
-                <div className="space-y-0.5">
-                    <h2 className="text-2xl font-black tracking-tighter text-foreground">Plano & Licenciamento</h2>
-                    <p className="text-xs font-semibold text-muted-foreground">Gestão de cotas e infraestrutura</p>
-                </div>
+        <Link href="/settings/subscription" className="flex items-center gap-4 rounded-2xl bg-card border border-border/60 p-5 hover:bg-foreground/[0.02] transition-colors">
+            <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5" />
             </div>
-
-            {/* Bento Grid Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                {/* Block 1: Plan Details */}
-                <div className="p-8 rounded-2xl bg-card/40 border border-border/60 relative overflow-hidden group flex flex-col justify-between min-h-[220px]">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-[50px] rounded-full group-hover:bg-indigo-500/10 transition-colors duration-700" />
-                    
-                    <div className="space-y-4 relative z-10">
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-muted-foreground">Plano Ativo</span>
-                            <div className={cn(
-                                "flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border",
-                                isActive || isTrial
-                                    ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                                    : 'text-rose-400 bg-rose-500/10 border-rose-500/20'
-                            )}>
-                                <div className={cn(
-                                    "w-1.5 h-1.5 rounded-full",
-                                    isActive || isTrial ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'
-                                )} />
-                                {isTrial ? 'PRO Trials' : isActive ? 'Ativo' : 'Inativo'}
-                            </div>
-                        </div>
-                        <div>
-                            <p className="text-[28px] sm:text-[34px] leading-tight font-black text-foreground tracking-tighter capitalize">{company.subscription_plan}</p>
-                            <p className="text-xs text-muted-foreground mt-1 font-bold tracking-tight">Assinatura do Workspace</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Block 2: Talent Quota / Usage */}
-                <div className="p-8 rounded-2xl bg-card/40 border border-border/60 relative overflow-hidden group flex flex-col justify-between min-h-[220px]">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] rounded-full group-hover:bg-primary/10 transition-colors duration-700" />
-                    
-                    <div className="space-y-6 relative z-10 w-full">
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-muted-foreground">Cotas de Talentos</span>
-                            <div className="p-2 rounded-xl bg-foreground/[0.03] border border-border/60 text-muted-foreground">
-                                <Users className="w-4 h-4" />
-                            </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            <div className="flex justify-between items-end">
-                                <span className="text-xs font-semibold text-muted-foreground">Usuários no Time</span>
-                                <span className="text-2xl font-black text-foreground tracking-tighter">02 <span className="text-muted-foreground text-lg">/ {company.max_users.toString().padStart(2, '0')}</span></span>
-                            </div>
-                            <div className="w-full h-1.5 bg-foreground/[0.03] rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-indigo-500 rounded-full"
-                                    style={{ width: `${(2 / company.max_users) * 100}%` }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Block 3: Trial / Manage Actions */}
-                <div className="p-8 rounded-2xl bg-card/40 border border-border/60 relative overflow-hidden group flex flex-col justify-between min-h-[220px]">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-[50px] rounded-full group-hover:bg-emerald-500/10 transition-colors duration-700" />
-                    
-                    <div className="space-y-4 relative z-10 w-full h-full flex flex-col justify-between">
-                        {isTrial && company.trial_ends_at ? (
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-xs font-semibold text-muted-foreground">Período de Testes</span>
-                                    <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
-                                        <Clock className="w-4 h-4 animate-spin-slow" />
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-end">
-                                    <span className="text-xs font-semibold text-muted-foreground">Tempo Restante</span>
-                                    <span className="text-2xl font-black text-foreground tracking-tighter">
-                                        {Math.max(0, Math.ceil((new Date(company.trial_ends_at).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} Dias
-                                    </span>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-xs font-semibold text-muted-foreground">Gerenciar</span>
-                                    <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
-                                        <Zap className="w-4 h-4" />
-                                    </div>
-                                </div>
-                                <span className="text-xs font-semibold text-muted-foreground block leading-tight">Configurações de faturamento e upgrades</span>
-                            </div>
-                        )}
-
-                        <div className="pt-2">
-                            <Link href="/settings/subscription" className="w-full h-12 rounded-2xl bg-foreground text-background font-semibold text-[13px] active:scale-95 transition-all flex items-center justify-center gap-2 group">
-                                GERENCIAR
-                                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-
+            <div className="flex-1 min-w-0">
+                <p className="text-[17px] font-semibold">Plano {plan.name}</p>
+                <p className="text-[14px] text-muted-foreground">
+                    {plan.maxUsers ? `Até ${plan.maxUsers} usuários` : 'Usuários sem limite'} · R$ {plan.price}/mês · ver planos e pagamento
+                </p>
             </div>
-        </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+        </Link>
     )
 }

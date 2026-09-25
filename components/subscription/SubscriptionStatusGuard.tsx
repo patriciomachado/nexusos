@@ -5,8 +5,13 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { AlertCircle, CreditCard, Clock } from 'lucide-react'
 import Link from 'next/link'
+import Header from '@/components/layout/Header'
+import { FEATURE_INFO, hasFeature, PLANS, routeFeature, type PlanId } from '@/lib/plans'
+import { PlanProvider } from '@/components/plans/PlanProvider'
+import UpgradeCard from '@/components/plans/UpgradeCard'
 
 interface SubscriptionStatusGuardProps {
+    plan: PlanId
     isValid: boolean
     isTrialing: boolean
     daysRemaining: number
@@ -14,6 +19,7 @@ interface SubscriptionStatusGuardProps {
 }
 
 export function SubscriptionStatusGuard({ 
+    plan,
     isValid, 
     isTrialing, 
     daysRemaining, 
@@ -29,7 +35,17 @@ export function SubscriptionStatusGuard({
         pathname === '/'
 
     if (isValid || isAllowedPath) {
-        return <>{children}</>
+        // Pro-only pages on the Essencial plan: explain and offer the upgrade.
+        const feature = routeFeature(pathname)
+        if (isValid && feature && !hasFeature(plan, feature)) {
+            return (
+                <div className="min-h-screen bg-background">
+                    <Header title={FEATURE_INFO[feature].title} subtitle="Disponível no plano Pro" />
+                    <div className="px-4 py-8 sm:py-16"><UpgradeCard feature={feature} /></div>
+                </div>
+            )
+        }
+        return <PlanProvider plan={plan}>{children}</PlanProvider>
     }
 
     return (
@@ -60,8 +76,8 @@ export function SubscriptionStatusGuard({
                             <CreditCard className="w-5 h-5" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium">Nexus OS Essencial</p>
-                            <p className="text-xs text-muted-foreground">R$ 99,00 / mês</p>
+                            <p className="text-sm font-medium">Planos Essencial e Pro</p>
+                            <p className="text-xs text-muted-foreground">A partir de R$ {PLANS.essencial.price} / mês</p>
                         </div>
                     </div>
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase'
+import { companyHasFeature } from '@/lib/plan-server'
 
 export async function GET(
     req: NextRequest,
@@ -63,6 +64,11 @@ export async function GET(
 
         if (!companyId || !companyData) {
             return NextResponse.json({ error: 'Catálogo não encontrado' }, { status: 404 })
+        }
+
+        // The online catalog is a Pro feature.
+        if (!await companyHasFeature(db, companyId, 'catalog')) {
+            return NextResponse.json({ error: 'Catálogo indisponível no momento' }, { status: 404 })
         }
 
         // Fetch ONLY public customer-facing device fields (Sanitizing cost_price and IMEIs)

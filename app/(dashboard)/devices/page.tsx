@@ -16,8 +16,11 @@ import CatalogSettingsForm from '@/components/devices/CatalogSettingsForm'
 import { formatCurrency, cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import { useFeature } from '@/components/plans/PlanProvider'
+import UpgradeCard from '@/components/plans/UpgradeCard'
 
 function DevicesContent() {
+    const catalogIncluded = useFeature('catalog')
     const [activeTab, setActiveTab] = useState<'inventory' | 'tradein' | 'catalog'>('inventory')
     
     // Data State
@@ -547,7 +550,8 @@ function DevicesContent() {
                 )}
 
                 {/* TAB 3: CATÁLOGO DIGITAL PÚBLICO & CONFIGURAÇÃO VISUAL */}
-                {activeTab === 'catalog' && (
+                {activeTab === 'catalog' && !catalogIncluded && <UpgradeCard feature="catalog" />}
+                {activeTab === 'catalog' && catalogIncluded && (
                     <div className="space-y-6 animate-in fade-in duration-300">
                         {/* Top Bar Banner with Quick Link */}
                         <div className="bg-card border border-border rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

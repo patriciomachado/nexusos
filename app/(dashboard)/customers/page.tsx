@@ -15,7 +15,7 @@ export default async function CustomersPage({
     searchParams: Promise<{ search?: string }>
 }) {
     const { userId } = await auth()
-    if (!userId) redirect('/sign-in')
+    if (!userId) redirect('/entrar')
 
     const db = createAdminClient()
     const { data: currentUser } = await db.from('users').select('role').eq('clerk_id', userId).single()

@@ -1,7 +1,7 @@
 import 'server-only'
 import Anthropic from '@anthropic-ai/sdk'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { aliceModel, ROLE_LABELS } from './config'
+import { aliceModel, modelOptions, ROLE_LABELS } from './config'
 import { STAFF_TOOLS } from './tools/staff'
 import { CUSTOMER_TOOLS } from './tools/customer'
 import { allowedFor, formatZodError, toApiTool, ToolError, type AnyTool, type ToolContext } from './tools/types'
@@ -248,17 +248,17 @@ export async function runAlice({ ctx, storeName, emit = () => {} }: RunOptions):
     ]
 
     const messages = await loadHistory(ctx.db, ctx.conversationId)
+    const model = aliceModel(ctx.channel)
     let finalText = ''
 
     for (let round = 0; round < MAX_ROUNDS; round++) {
         const stream = anthropic().messages.stream({
-            model: aliceModel(),
+            model,
             max_tokens: 16000,
             system,
             tools,
             messages,
-            thinking: { type: 'adaptive' },
-            output_config: { effort: isCustomer ? 'low' : 'medium' },
+            ...modelOptions(model, isCustomer ? 'low' : 'medium'),
             cache_control: { type: 'ephemeral' },
         })
         stream.on('text', d => emit({ t: 'text', d }))

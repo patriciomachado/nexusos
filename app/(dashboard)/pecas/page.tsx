@@ -6,7 +6,7 @@ import PecasClient from './PecasClient'
 
 export default async function PecasPage() {
     const { userId } = await auth()
-    if (!userId) redirect('/sign-in')
+    if (!userId) redirect('/entrar')
 
     const db = createAdminClient()
 

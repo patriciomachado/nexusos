@@ -1,4 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { getCompanyPlan } from '@/lib/plan-server'
+import { hasFeature, PLANS, type PlanId } from '@/lib/plans'
 
 /** Full control: configure Alice and use every tool. */
 export const ADMIN_ROLES = ['admin', 'owner']
@@ -17,11 +19,24 @@ export const ROLE_LABELS: Record<string, string> = {
 }
 
 /**
- * Model for both agents. Override with ALICE_MODEL in the environment; the
- * default is Anthropic's recommended general model.
+ * Model per channel, chosen for cost (see the pricing study):
+ * - app (staff; creates OS, reads finances): Claude Sonnet 5
+ * - WhatsApp (short customer answers, high volume): Claude Haiku 4.5
+ * Override with ALICE_MODEL / ALICE_WHATSAPP_MODEL.
  */
-export function aliceModel() {
-    return process.env.ALICE_MODEL?.trim() || 'claude-opus-5'
+export function aliceModel(channel: 'app' | 'whatsapp' = 'app') {
+    if (channel === 'whatsapp') return process.env.ALICE_WHATSAPP_MODEL?.trim() || 'claude-haiku-4-5'
+    return process.env.ALICE_MODEL?.trim() || 'claude-sonnet-5'
+}
+
+/**
+ * Request options each model accepts. Adaptive thinking and `effort` exist on
+ * the current generation (Sonnet 5, Opus 5, Fable…); Haiku 4.5 and older
+ * reject them, so they run without extended thinking.
+ */
+export function modelOptions(model: string, effort: 'low' | 'medium' | 'high') {
+    const legacy = /haiku-4|sonnet-4-5|opus-4-5|-3-|claude-3/.test(model)
+    return legacy ? {} : { thinking: { type: 'adaptive' as const }, output_config: { effort } }
 }
 
 export function aliceConfigured() {
@@ -40,6 +55,10 @@ export interface AliceSettings {
     whatsapp_verified_name: string | null
     monthly_limit: number
     updated_at?: string
+    /** The company's plan does not include Alice (Essencial). */
+    plan_blocked?: boolean
+    /** Replies per month the plan allows; monthly_limit never goes above it. */
+    plan_limit?: number
 }
 
 export const DEFAULT_SETTINGS: Omit<AliceSettings, 'company_id'> = {
@@ -51,12 +70,24 @@ export const DEFAULT_SETTINGS: Omit<AliceSettings, 'company_id'> = {
     whatsapp_access_token: null,
     whatsapp_display_phone: null,
     whatsapp_verified_name: null,
-    monthly_limit: 3000,
+    monthly_limit: 1500,
 }
 
 export async function loadSettings(db: SupabaseClient, companyId: string): Promise<AliceSettings> {
-    const { data } = await db.from('alice_settings').select('*').eq('company_id', companyId).maybeSingle()
-    return { ...DEFAULT_SETTINGS, ...(data ?? {}), company_id: companyId }
+    const [{ data }, plan] = await Promise.all([
+        db.from('alice_settings').select('*').eq('company_id', companyId).maybeSingle(),
+        getCompanyPlan(db, companyId),
+    ])
+    return withPlan({ ...DEFAULT_SETTINGS, ...(data ?? {}), company_id: companyId }, plan)
+}
+
+/** Applies the plan on top of what the admin saved: off on Essencial, limit capped on Pro. */
+export function withPlan(settings: AliceSettings, plan: PlanId): AliceSettings {
+    const planLimit = PLANS[plan].aliceReplies
+    if (!hasFeature(plan, 'alice')) {
+        return { ...settings, enabled: false, whatsapp_enabled: false, monthly_limit: 0, plan_blocked: true, plan_limit: 0 }
+    }
+    return { ...settings, monthly_limit: Math.min(settings.monthly_limit, planLimit), plan_blocked: false, plan_limit: planLimit }
 }
 
 /** Settings as the admin screen sees them: the WhatsApp token never leaves the server. */
@@ -71,11 +102,12 @@ export function isAdminRole(role: string) {
 
 /** May this user talk to Alice inside the app? */
 export function canUseAlice(role: string, settings: AliceSettings) {
+    if (settings.plan_blocked) return false
     if (isAdminRole(role)) return true
     return settings.enabled && settings.staff_roles.includes(role)
 }
 
-/** Replies Alice gave this calendar month (both channels), for the cost cap. */
+/** Answers Alice gave this calendar month (both channels, tool-only rounds not counted), for the cost cap. */
 export async function monthlyUsage(db: SupabaseClient, companyId: string) {
     const start = new Date()
     start.setUTCDate(1)
@@ -85,6 +117,7 @@ export async function monthlyUsage(db: SupabaseClient, companyId: string) {
         .select('id', { count: 'exact', head: true })
         .eq('company_id', companyId)
         .eq('role', 'assistant')
+        .not('text', 'is', null)
         .gte('created_at', start.toISOString())
     return count ?? 0
 }

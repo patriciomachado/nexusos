@@ -1,6 +1,7 @@
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { aliceConfigured, monthlyUsage, type AliceSettings } from './config'
+import { aliceConfigured, DEFAULT_SETTINGS, monthlyUsage, withPlan, type AliceSettings } from './config'
+import { getCompanyPlan } from '@/lib/plan-server'
 import { runAlice, saveMessage } from './agent'
 import { downloadMedia, markReadAndTyping, sendText, type IncomingMessage } from './whatsapp'
 import { transcribe, transcriptionConfigured, audioFilename } from './transcribe'
@@ -54,8 +55,9 @@ export async function handleIncoming(db: SupabaseClient, msg: IncomingMessage) {
         .select('*')
         .eq('whatsapp_phone_number_id', msg.phoneNumberId)
         .maybeSingle()
-    const settings = settingsRow as AliceSettings | null
-    if (!settings?.whatsapp_enabled || !settings.whatsapp_access_token) return
+    if (!settingsRow) return
+    const settings = withPlan({ ...DEFAULT_SETTINGS, ...settingsRow } as AliceSettings, await getCompanyPlan(db, settingsRow.company_id))
+    if (!settings.whatsapp_enabled || !settings.whatsapp_access_token) return
     const token = settings.whatsapp_access_token
     const companyId = settings.company_id
     const phone = digitsOnly(msg.from)

@@ -5,7 +5,7 @@ import MesaClient from './MesaClient'
 
 export default async function AppointmentsPage() {
     const { userId } = await auth()
-    if (!userId) redirect('/sign-in')
+    if (!userId) redirect('/entrar')
 
     const db = createAdminClient()
     const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId!).single()
