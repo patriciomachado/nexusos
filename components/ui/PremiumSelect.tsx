@@ -19,7 +19,7 @@ interface Props {
     error?: boolean
 }
 
-export default function PremiumSelect({ options, selectedId, onSelect, placeholder = "Selecionar...", label, error }: Props) {
+export default function PremiumSelect({ options, selectedId, onSelect, placeholder = "Selecionar…", label, error }: Props) {
     const [isOpen, setIsOpen] = useState(false)
     const buttonRef = useRef<HTMLButtonElement>(null)
     const dropdownRef = useRef<HTMLDivElement>(null)
@@ -68,8 +68,6 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
     }, [isOpen])
 
     // Close on Escape
-
-    // Close on Escape
     useEffect(() => {
         if (!isOpen) return
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -85,6 +83,8 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
             <button
                 ref={buttonRef}
                 type="button"
+                aria-haspopup="listbox"
+                aria-expanded={isOpen}
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
                     "relative h-11 w-full bg-foreground/[0.04] border rounded-xl py-2.5 pl-3.5 pr-10 text-left md:text-[15px] text-base transition-colors",
@@ -125,7 +125,7 @@ export default function PremiumSelect({ options, selectedId, onSelect, placehold
                                     >
                                         <span className="flex-1 text-left truncate">{o.name}</span>
                                         {o.id === selectedId && (
-                                            <Check className="w-4 h-4 text-primary" />
+                                            <Check aria-hidden className="w-4 h-4 text-primary" />
                                         )}
                                     </button>
                                 </li>

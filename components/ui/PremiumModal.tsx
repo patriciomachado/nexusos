@@ -83,7 +83,7 @@ export default function PremiumModal({
                             aria-label="Fechar"
                             className="w-8 h-8 shrink-0 rounded-full bg-foreground/[0.07] hover:bg-foreground/[0.12] flex items-center justify-center text-muted-foreground transition-colors"
                         >
-                            <X className="w-4 h-4" strokeWidth={2.5} />
+                            <X aria-hidden className="w-4 h-4" strokeWidth={2.5} />
                         </button>
                     </div>
                 </div>

@@ -217,7 +217,7 @@ export default function AppointmentForm({
  disabled={loading || isCreatingCustomer}
  className="px-8 py-3 rounded-2xl bg-primary text-primary-foreground active:scale-95 transition-all font-semibold text-[13px] disabled:opacity-50"
  >
-                    {loading ? 'Salvando...' : appointment ? 'Salvar Alterações' : 'Confirmar Agendamento'}
+                    {loading ? 'Salvando…' : appointment ? 'Salvar Alterações' : 'Confirmar Agendamento'}
                 </button>
             </div>
         </form>

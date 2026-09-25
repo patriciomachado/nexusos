@@ -64,7 +64,7 @@ export function Drawer({ isOpen, onClose, children, title }: DrawerProps) {
               <X className="w-4 h-4" strokeWidth={2.5} />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto overscroll-contain">
             {children}
           </div>
         </div>

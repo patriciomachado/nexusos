@@ -560,7 +560,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
  className="px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2"
  >
                             <Save className="w-4 h-4" />
-                            {isSaving ? 'Salvando...' : 'Salvar Alterações'}
+                            {isSaving ? 'Salvando…' : 'Salvar Alterações'}
                         </button>
                     </div>
                 </div>
