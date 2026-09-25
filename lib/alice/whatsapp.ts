@@ -32,7 +32,25 @@ export function validSignature(rawBody: string, header: string | null) {
 }
 
 export class WhatsAppError extends Error {
-    constructor(message: string, public code?: number) { super(message) }
+    constructor(message: string, public code?: number, public details?: string) { super(message) }
+}
+
+type GraphError = { message?: string; code?: number; error_user_msg?: string; error_data?: { details?: string } }
+
+/** Registration errors from Meta, in words the store owner can act on. */
+const REGISTER_ERRORS: Record<number, string> = {
+    133005: 'PIN incorreto. Este número já tem verificação em duas etapas com outro PIN: use o PIN antigo ou desative/troque o PIN no WhatsApp Manager (Números de telefone → Configurações → Verificação em duas etapas).',
+    133006: 'O número ainda não foi verificado. Confirme o código de SMS/ligação na Meta antes de registrar.',
+    133008: 'Muitas tentativas de PIN. Aguarde algumas horas e tente de novo.',
+    133009: 'Tentativas rápidas demais. Aguarde alguns minutos e tente de novo.',
+    133010: 'O número não está registrado na plataforma. Verifique o número na Meta e tente de novo.',
+    133015: 'Este número foi removido do app WhatsApp há pouco tempo. Aguarde uns 5 minutos e tente de novo.',
+    133016: 'Limite de registros deste número atingido por hoje. Tente amanhã.',
+    133000: 'Uma tentativa anterior de descadastrar o número falhou. Descadastre e tente registrar de novo.',
+    133004: 'Serviço da Meta indisponível no momento. Tente de novo em alguns minutos.',
+    100: 'A Meta recusou os dados enviados (confira a identificação do número e se o PIN tem 6 dígitos).',
+    10: 'O token não tem permissão sobre este número. Gere o token com whatsapp_business_management e whatsapp_business_messaging e dê acesso à conta do WhatsApp deste número.',
+    200: 'O token não tem permissão sobre este número. Dê ao usuário do sistema acesso à conta do WhatsApp deste número e gere o token de novo.',
 }
 
 async function graph<T>(token: string, path: string, init?: RequestInit): Promise<T> {
@@ -40,13 +58,15 @@ async function graph<T>(token: string, path: string, init?: RequestInit): Promis
         ...init,
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
     })
-    const data = await res.json().catch(() => ({})) as { error?: { message?: string; code?: number } } & T
+    const data = await res.json().catch(() => ({})) as { error?: GraphError } & T
     if (!res.ok) {
         const code = data.error?.code
+        const details = [data.error?.error_user_msg, data.error?.error_data?.details].filter(Boolean).join(' ') || undefined
+        if (path.endsWith('/register') && code && REGISTER_ERRORS[code]) throw new WhatsAppError(REGISTER_ERRORS[code], code, details)
         // 131047: outside the 24h customer service window.
         if (code === 131047) throw new WhatsAppError('Passaram mais de 24h desde a última mensagem do cliente; o WhatsApp só permite responder dentro dessa janela.', code)
         if (code === 190 || res.status === 401) throw new WhatsAppError('Token do WhatsApp inválido ou expirado.', code)
-        throw new WhatsAppError(data.error?.message || `Erro ${res.status} na API do WhatsApp`, code)
+        throw new WhatsAppError(data.error?.message || `Erro ${res.status} na API do WhatsApp`, code, details)
     }
     return data
 }
@@ -92,6 +112,36 @@ export async function describeNumber(token: string, phoneNumberId: string) {
     return graph<{ display_phone_number?: string; verified_name?: string; quality_rating?: string }>(
         token, `${phoneNumberId}?fields=display_phone_number,verified_name,quality_rating`,
     )
+}
+
+/**
+ * Registers the number on the Cloud API with its two-step verification PIN
+ * (the "Registrar" button in Meta's dashboard, but with the real error).
+ */
+export async function registerNumber(token: string, phoneNumberId: string, pin: string) {
+    await graph(token, `${phoneNumberId}/register`, {
+        method: 'POST',
+        body: JSON.stringify({ messaging_product: 'whatsapp', pin }),
+    })
+}
+
+export interface NumberStatus {
+    display_phone_number?: string
+    verified_name?: string
+    code_verification_status?: string
+    name_status?: string
+    platform_type?: string
+    quality_rating?: string
+}
+
+/** Where the number stands (verified? name approved? on the Cloud API?). */
+export async function numberStatus(token: string, phoneNumberId: string): Promise<NumberStatus> {
+    try {
+        return await graph<NumberStatus>(token, `${phoneNumberId}?fields=display_phone_number,verified_name,code_verification_status,name_status,platform_type,quality_rating`)
+    } catch (err) {
+        if (err instanceof WhatsAppError && err.code === 100) return describeNumber(token, phoneNumberId)
+        throw err
+    }
 }
 
 /** WhatsApp caps a text at 4096 characters. */
