@@ -46,6 +46,25 @@ ALTER TABLE device_trade_ins
 
 CREATE INDEX IF NOT EXISTS idx_devices_warranty ON devices(company_id, warranty_until) WHERE status = 'vendido';
 
+-- Clientes: etiquetas e registro das mensagens automáticas/campanhas -----------
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS tags TEXT[] NOT NULL DEFAULT '{}';
+CREATE INDEX IF NOT EXISTS idx_customers_tags ON customers USING GIN (tags);
+
+CREATE TABLE IF NOT EXISTS customer_messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    customer_id UUID REFERENCES customers(id) ON DELETE SET NULL,
+    kind TEXT NOT NULL,          -- birthday, review, campaign
+    ref TEXT NOT NULL,           -- what it was about (year, OS id, campaign id…)
+    text TEXT,
+    status TEXT NOT NULL DEFAULT 'sent',
+    created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (company_id, kind, ref)
+);
+CREATE INDEX IF NOT EXISTS idx_customer_messages_customer ON customer_messages(customer_id, created_at DESC);
+ALTER TABLE customer_messages ENABLE ROW LEVEL SECURITY;
+
 -- Contas a receber canceladas ficam como 'cancelled'.
 DO $$
 DECLARE
