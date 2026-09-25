@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
+import { companyHasFeature, planRequiredResponse } from '@/lib/plan-server'
 
 export async function GET(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
+    if (!await companyHasFeature(ctx.db, ctx.companyId, 'studio')) return planRequiredResponse('studio')
 
     const { db, companyId } = ctx
     const { searchParams } = new URL(req.url)
@@ -36,6 +38,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
+    if (!await companyHasFeature(ctx.db, ctx.companyId, 'studio')) return planRequiredResponse('studio')
 
     const { db, companyId, dbUser } = ctx
     const body = await req.json()
@@ -86,6 +89,7 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
+    if (!await companyHasFeature(ctx.db, ctx.companyId, 'studio')) return planRequiredResponse('studio')
 
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')

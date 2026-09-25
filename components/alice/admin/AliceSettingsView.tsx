@@ -12,6 +12,7 @@ export interface SettingsPayload {
         staff_roles: string[]
         store_info: string | null
         monthly_limit: number
+        plan_limit?: number
         whatsapp_enabled: boolean
         whatsapp_phone_number_id: string | null
         whatsapp_display_phone: string | null
@@ -116,6 +117,7 @@ export default function AliceSettingsView({ data, onSaved }: { data: SettingsPay
                         <input id="alice-limit" inputMode="numeric" value={limit} onChange={e => setLimit(e.target.value.replace(/\D/g, ''))} className="w-28 h-9 px-3 rounded-lg bg-foreground/[0.05] text-[15px] tabular-nums focus:outline-none focus:ring-2 focus:ring-primary/40" />
                         <button type="button" disabled={busy === 'limit' || Number(limit) === settings.monthly_limit || !limit} onClick={() => apply('limit', { monthly_limit: Number(limit) })} className="h-9 px-3 rounded-full text-[14px] font-semibold text-primary disabled:opacity-40">Salvar</button>
                     </div>
+                    {!!settings.plan_limit && <p className="text-[13px] text-muted-foreground">Seu plano inclui até {settings.plan_limit.toLocaleString('pt-BR')} respostas por mês.</p>}
                 </div>
             </section>
 

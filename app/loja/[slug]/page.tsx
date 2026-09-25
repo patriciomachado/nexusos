@@ -74,6 +74,7 @@ interface PublicCatalogData {
 export function DynamicCatalogContent({ slug }: { slug: string }) {
     const [data, setData] = useState<PublicCatalogData | null>(null)
     const [loading, setLoading] = useState(true)
+    const [unavailable, setUnavailable] = useState(false)
 
     const [allDevices, setAllDevices] = useState<Device[]>([])
     const [activeTab, setActiveTab] = useState<'devices' | 'accessories'>('devices')
@@ -115,6 +116,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
         let remoteDevices: Device[] = []
         try {
             const res = await fetch(`/api/catalog/${slug}`)
+            if (res.status === 404) setUnavailable(true)
             if (res.ok) {
                 const catalogData = await res.json()
                 setData(catalogData)
@@ -138,6 +140,17 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
         } finally {
             setLoading(false)
         }
+    }
+
+    if (unavailable && !loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-50 text-neutral-900 p-6 text-center">
+                <div>
+                    <p className="text-lg font-semibold">Catálogo indisponível</p>
+                    <p className="text-sm text-neutral-500 mt-1">Este catálogo não está disponível no momento.</p>
+                </div>
+            </div>
+        )
     }
 
     if (loading) {

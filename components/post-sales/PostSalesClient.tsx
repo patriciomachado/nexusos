@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { Check, MessageCircle, Search, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Segmented from '@/components/ui/Segmented'
+import { useFeature } from '@/components/plans/PlanProvider'
+import UpgradeCard from '@/components/plans/UpgradeCard'
 
 export interface Rating {
     id: string
@@ -82,7 +84,8 @@ function useContacted() {
 }
 
 export default function PostSalesClient({ ratings, delivered, storeName, googleReviewUrl }: { ratings: Rating[]; delivered: Delivered[]; storeName: string; googleReviewUrl: string | null }) {
-    const [tab, setTab] = useState<Tab>('contatar')
+    const canContact = useFeature('post_sales_contact')
+    const [tab, setTab] = useState<Tab>(() => (canContact ? 'contatar' : 'avaliacoes'))
     const [now] = useState(() => Date.now())
     const { contacted, mark } = useContacted()
     const [origin, setOrigin] = useState('')
@@ -125,13 +128,14 @@ export default function PostSalesClient({ ratings, delivered, storeName, googleR
                 onChange={setTab}
                 ariaLabel="Seções do pós-venda"
                 options={[
-                    { value: 'contatar', label: 'Contatar', badge: pending },
+                    { value: 'contatar', label: 'Contatar', badge: canContact ? pending : undefined },
                     { value: 'avaliacoes', label: 'Avaliações' },
                     { value: 'tendencia', label: 'Tendência' },
                 ]}
             />
 
-            {tab === 'contatar' && (
+            {tab === 'contatar' && !canContact && <UpgradeCard feature="post_sales_contact" compact />}
+            {tab === 'contatar' && canContact && (
                 <div className="space-y-4">
                     <ActionGroup
                         title="Recuperar clientes insatisfeitos"

@@ -12,6 +12,7 @@ import type { Report } from '@/lib/reports/compute'
 import DailyRevenueChart from './DailyRevenueChart'
 import { brl, change, dayLabel, duration, pct } from './format'
 import Money from './Money'
+import UpgradeCard from '@/components/plans/UpgradeCard'
 
 type Preset = 'hoje' | '7d' | 'mes' | 'mes-anterior' | 'ano' | 'custom'
 
@@ -46,7 +47,7 @@ export default function ReportsClient({ canEditGoal }: { canEditGoal: boolean })
     const today = useMemo(() => localDateString(), [])
     const [preset, setPreset] = useState<Preset>('mes')
     const [range, setRange] = useState(() => presetRange('mes', localDateString())!)
-    const [report, setReport] = useState<Report | null>(null)
+    const [report, setReport] = useState<(Report & { full?: boolean }) | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const request = useRef(0)
@@ -118,14 +119,23 @@ export default function ReportsClient({ canEditGoal }: { canEditGoal: boolean })
                 // Refetch keeps the frame: previous numbers stay, dimmed.
                 <div className={cn('space-y-5 transition-opacity', loading && 'opacity-60')}>
                     <Kpis report={report} />
-                    <Goal report={report} canEdit={canEditGoal} onSaved={() => load(range)} />
-                    <DailyRevenueChart data={report.daily} granularity={report.granularity} />
-                    <div className="grid lg:grid-cols-2 gap-5 items-start">
-                        <Dre report={report} />
-                        <Funnel report={report} />
-                    </div>
-                    <Technicians report={report} />
-                    <Customers report={report} />
+                    {report.full === false ? (
+                        <>
+                            <DailyRevenueChart data={report.daily} granularity={report.granularity} />
+                            <UpgradeCard feature="reports_full" compact />
+                        </>
+                    ) : (
+                        <>
+                            <Goal report={report} canEdit={canEditGoal} onSaved={() => load(range)} />
+                            <DailyRevenueChart data={report.daily} granularity={report.granularity} />
+                            <div className="grid lg:grid-cols-2 gap-5 items-start">
+                                <Dre report={report} />
+                                <Funnel report={report} />
+                            </div>
+                            <Technicians report={report} />
+                            <Customers report={report} />
+                        </>
+                    )}
                 </div>
             )}
         </div>

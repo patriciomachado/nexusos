@@ -1,4 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { getCompanyPlan } from '@/lib/plan-server'
+import { hasFeature, PLANS, type PlanId } from '@/lib/plans'
 
 /** Full control: configure Alice and use every tool. */
 export const ADMIN_ROLES = ['admin', 'owner']
@@ -53,6 +55,10 @@ export interface AliceSettings {
     whatsapp_verified_name: string | null
     monthly_limit: number
     updated_at?: string
+    /** The company's plan does not include Alice (Essencial). */
+    plan_blocked?: boolean
+    /** Replies per month the plan allows; monthly_limit never goes above it. */
+    plan_limit?: number
 }
 
 export const DEFAULT_SETTINGS: Omit<AliceSettings, 'company_id'> = {
@@ -68,8 +74,20 @@ export const DEFAULT_SETTINGS: Omit<AliceSettings, 'company_id'> = {
 }
 
 export async function loadSettings(db: SupabaseClient, companyId: string): Promise<AliceSettings> {
-    const { data } = await db.from('alice_settings').select('*').eq('company_id', companyId).maybeSingle()
-    return { ...DEFAULT_SETTINGS, ...(data ?? {}), company_id: companyId }
+    const [{ data }, plan] = await Promise.all([
+        db.from('alice_settings').select('*').eq('company_id', companyId).maybeSingle(),
+        getCompanyPlan(db, companyId),
+    ])
+    return withPlan({ ...DEFAULT_SETTINGS, ...(data ?? {}), company_id: companyId }, plan)
+}
+
+/** Applies the plan on top of what the admin saved: off on Essencial, limit capped on Pro. */
+export function withPlan(settings: AliceSettings, plan: PlanId): AliceSettings {
+    const planLimit = PLANS[plan].aliceReplies
+    if (!hasFeature(plan, 'alice')) {
+        return { ...settings, enabled: false, whatsapp_enabled: false, monthly_limit: 0, plan_blocked: true, plan_limit: 0 }
+    }
+    return { ...settings, monthly_limit: Math.min(settings.monthly_limit, planLimit), plan_blocked: false, plan_limit: planLimit }
 }
 
 /** Settings as the admin screen sees them: the WhatsApp token never leaves the server. */
@@ -84,6 +102,7 @@ export function isAdminRole(role: string) {
 
 /** May this user talk to Alice inside the app? */
 export function canUseAlice(role: string, settings: AliceSettings) {
+    if (settings.plan_blocked) return false
     if (isAdminRole(role)) return true
     return settings.enabled && settings.staff_roles.includes(role)
 }

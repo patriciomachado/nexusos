@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireAliceAdmin } from '@/lib/alice/access'
-import { aliceConfigured, aliceModel, monthlyUsage, publicSettings, STAFF_ROLES } from '@/lib/alice/config'
+import { aliceConfigured, aliceModel, loadSettings, monthlyUsage, publicSettings, STAFF_ROLES } from '@/lib/alice/config'
+import { planRequiredResponse } from '@/lib/plan-server'
 import { transcriptionConfigured } from '@/lib/alice/transcribe'
 import { webhookConfigured, describeNumber, WhatsAppError } from '@/lib/alice/whatsapp'
 import { appUrl } from '@/lib/alice/config'
@@ -42,6 +43,8 @@ export async function PUT(req: NextRequest) {
     const parsed = putSchema.safeParse(await req.json().catch(() => null))
     if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Dados inválidos.' }, { status: 400 })
     const next = { ...parsed.data }
+    if (settings.plan_blocked && (next.enabled || next.whatsapp_enabled)) return planRequiredResponse('alice')
+    if (next.monthly_limit != null && settings.plan_limit != null) next.monthly_limit = Math.min(next.monthly_limit, settings.plan_limit)
 
     const phoneId = next.whatsapp_phone_number_id !== undefined ? next.whatsapp_phone_number_id : settings.whatsapp_phone_number_id
     const token = next.whatsapp_access_token !== undefined ? next.whatsapp_access_token : settings.whatsapp_access_token
@@ -74,6 +77,5 @@ export async function PUT(req: NextRequest) {
         console.error('[alice] settings save failed:', error)
         return NextResponse.json({ error: 'Não foi possível salvar.' }, { status: 500 })
     }
-    const { data } = await ctx.db.from('alice_settings').select('*').eq('company_id', ctx.companyId).single()
-    return NextResponse.json({ settings: publicSettings({ ...settings, ...data }) })
+    return NextResponse.json({ settings: publicSettings(await loadSettings(ctx.db, ctx.companyId)) })
 }

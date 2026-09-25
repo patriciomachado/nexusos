@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getContext, unauthorizedResponse, forbiddenResponse } from '@/lib/security'
+import { companyHasFeature, planRequiredResponse } from '@/lib/plan-server'
 import { computeReport } from '@/lib/reports/compute'
 import { diffDays, dateStringInZone, DEFAULT_TIMEZONE } from '@/lib/tasks/dates'
 
@@ -24,8 +25,11 @@ export async function GET(req: NextRequest) {
     if (diffDays(from, to) > 366 * 2) return NextResponse.json({ error: 'Escolha um período de até 2 anos.' }, { status: 400 })
 
     try {
-        const report = await computeReport(ctx.db, ctx.companyId, { from, to })
-        return NextResponse.json(report, { headers: { 'Cache-Control': 'no-store' } })
+        const [report, full] = await Promise.all([
+            computeReport(ctx.db, ctx.companyId, { from, to }),
+            companyHasFeature(ctx.db, ctx.companyId, 'reports_full'),
+        ])
+        return NextResponse.json({ ...report, full }, { headers: { 'Cache-Control': 'no-store' } })
     } catch (err) {
         console.error('[reports] failed:', err)
         return NextResponse.json({ error: 'Não foi possível gerar o relatório.' }, { status: 500 })
@@ -39,6 +43,7 @@ export async function PUT(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
     if (!['admin', 'owner'].includes(ctx.role)) return forbiddenResponse()
+    if (!await companyHasFeature(ctx.db, ctx.companyId, 'reports_full')) return planRequiredResponse('reports_full')
     const parsed = goalSchema.safeParse(await req.json().catch(() => null))
     if (!parsed.success) return NextResponse.json({ error: 'Meta inválida.' }, { status: 400 })
     const { data: company } = await ctx.db.from('companies').select('settings').eq('id', ctx.companyId).single()

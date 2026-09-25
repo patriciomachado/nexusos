@@ -83,6 +83,7 @@ async function ensureUserExists(clerkId: string, email: string, name: string): P
 }
 
 import { getSubscriptionStatus } from '@/lib/subscription'
+import { getCompanyPlan } from '@/lib/plan-server'
 import { SubscriptionStatusGuard } from '@/components/subscription/SubscriptionStatusGuard'
 
 export default async function DashboardLayout({
@@ -106,6 +107,7 @@ export default async function DashboardLayout({
     if (companyId) {
         subscription = await getSubscriptionStatus(companyId)
     }
+    const plan = await getCompanyPlan(createAdminClient(), companyId)
 
     return (
         <>
@@ -120,6 +122,7 @@ export default async function DashboardLayout({
             <main className="flex-1 overflow-y-auto overflow-x-hidden relative pb-[env(safe-area-inset-bottom)] w-full max-w-full" suppressHydrationWarning>
                 <NotificationGenerator />
                 <SubscriptionStatusGuard 
+                    plan={plan}
                     isValid={subscription.isValid} 
                     isTrialing={subscription.isTrialing} 
                     daysRemaining={subscription.daysRemaining}
