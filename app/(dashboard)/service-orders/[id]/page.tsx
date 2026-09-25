@@ -2,41 +2,53 @@ import { auth } from '@clerk/nextjs/server'
 import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
 import { notFound } from 'next/navigation'
-import { formatDateTime, formatCurrency, OS_STATUS_LABELS, OS_STATUS_COLORS, OS_PRIORITY_LABELS, cn } from '@/lib/utils'
 import Link from 'next/link'
-import { ArrowLeft, Clock, MapPin, User, Wrench, DollarSign, Calendar, Info, CheckCircle2, XCircle } from 'lucide-react'
-import OSActions from '@/components/os/OSActions'
+import { Check, ChevronLeft, Phone } from 'lucide-react'
+import { formatDateTime, formatCurrency, cn } from '@/lib/utils'
+import OSDetailActions from '@/components/os/OSDetailActions'
+import OSStatusBadge from '@/components/os/OSStatusBadge'
 import OSGallery from '@/components/os/OSGallery'
 import OSSecurityView from '@/components/os/OSSecurityView'
+import { parseInternalNotes } from '@/lib/os/notes'
+import { OS_PRIORITY, OS_STATUS } from '@/lib/os/status'
 
-interface ParsedNotes {
-    cleanNotes: string | null
-    security: { type: 'pin' | 'pattern'; value: string } | null
+type Row = Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
+
+function Group({ title, children, footer }: { title?: string; children: React.ReactNode; footer?: React.ReactNode }) {
+    return (
+        <section className="space-y-1.5">
+            {title && <h2 className="px-4 text-[13px] font-medium text-muted-foreground">{title}</h2>}
+            <div className="rounded-2xl bg-card border border-border/60 divide-y divide-border/60 overflow-hidden">{children}</div>
+            {footer && <div className="px-4 text-[13px] text-muted-foreground">{footer}</div>}
+        </section>
+    )
 }
 
-function parseInternalNotes(notes: string | null): ParsedNotes {
-    if (!notes) return { cleanNotes: null, security: null }
+function Line({ label, children }: { label: string; children: React.ReactNode }) {
+    return (
+        <div className="px-4 py-3 flex items-start justify-between gap-4">
+            <span className="text-[15px] text-muted-foreground shrink-0">{label}</span>
+            <span className="text-[15px] text-right min-w-0 break-words">{children}</span>
+        </div>
+    )
+}
 
-    const lines = notes.split('\n')
-    let security: { type: 'pin' | 'pattern'; value: string } | null = null
-    const cleanLines = lines.filter(line => {
-        if (line.includes('[Segurança]')) {
-            const matchPin = line.match(/\[Segurança\] PIN\/Senha:\s*(.*)/i)
-            const matchPattern = line.match(/\[Segurança\] Padrão Android:\s*(.*)/i)
-            if (matchPin) {
-                security = { type: 'pin', value: matchPin[1].trim() }
-            } else if (matchPattern) {
-                security = { type: 'pattern', value: matchPattern[1].trim() }
-            }
-            return false
-        }
-        return true
-    })
+function Text({ label, children }: { label: string; children: React.ReactNode }) {
+    return (
+        <div className="px-4 py-3">
+            <p className="text-[13px] text-muted-foreground mb-0.5">{label}</p>
+            <p className="text-[17px] leading-snug whitespace-pre-line break-words">{children}</p>
+        </div>
+    )
+}
 
-    return {
-        cleanNotes: cleanLines.join('\n').trim() || null,
-        security
-    }
+const HISTORY_FIELDS: Record<string, string> = { status: 'Situação', technician_id: 'Técnico', priority: 'Prioridade' }
+
+/** Shows stored values the way the app names them (status "em_andamento" → "Em andamento"). */
+function historyValue(field: string, value: string) {
+    if (field === 'status') return OS_STATUS[value]?.label ?? value
+    if (field === 'priority') return OS_PRIORITY[value]?.label ?? value
+    return value
 }
 
 export default async function ServiceOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -45,17 +57,15 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
     const db = createAdminClient()
 
     const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId!).single()
-    const { data: company } = await db.from('companies').select('name, logo_url, cnpj').eq('id', user?.company_id).single()
     const { data: os } = await db
         .from('service_orders')
         .select(`
       *,
       customers(name, phone, email, address, city),
-      technicians(name, phone, specialties),
+      technicians(name, phone),
       service_order_items(*),
       service_order_attachments(*),
-      service_order_history(*, users(full_name)),
-      payments(*)
+      service_order_history(*, users(full_name))
     `)
         .eq('id', id)
         .eq('company_id', user?.company_id)
@@ -64,418 +74,165 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
     if (!os) notFound()
 
     const { cleanNotes, security } = parseInternalNotes(os.internal_notes)
-    const statusClasses = OS_STATUS_COLORS[os.status] || ''
+    const customer = os.customers as Row | null
+    const technician = os.technicians as Row | null
+    const items = (os.service_order_items ?? []) as Row[]
+    const itemsTotal = items.reduce((s, i) => s + (Number(i.total_price) || 0), 0)
+    const subtotal = itemsTotal || Number(os.estimated_cost) || 0
+    const discount = Number(os.discount_amount) || 0
+    const total = Number(os.final_cost) || Math.max(0, subtotal - (itemsTotal ? discount : 0))
+    const checklist = (Array.isArray(os.checklist_progress) ? os.checklist_progress : []) as Row[]
+    const checked = checklist.filter(c => c.completed).length
+    const history = [...((os.service_order_history ?? []) as Row[])].sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))
+    const priority = OS_PRIORITY[os.priority] ?? OS_PRIORITY.normal
+    const phoneDigits = String(customer?.phone ?? '').replace(/\D/g, '')
 
     return (
-        <div className="animate-fade-in bg-background min-h-screen transition-colors duration-300">
-            <Header title={`OS Nº ${os.order_number}`} />
-            <div className="p-4 md:p-6 max-w-6xl mx-auto">
-                {/* Back + Header */}
-                <div className="flex items-start justify-between mb-6 gap-4">
-                    <div className="min-w-0 flex-1">
-                        <Link href="/service-orders" className="flex items-center gap-1.5 text-sm text-foreground/40 hover:text-muted-foreground transition-colors mb-3">
-                            <ArrowLeft className="w-4 h-4" />
-                            Voltar para OS
-                        </Link>
-                        <div className="flex items-center gap-4">
-                            {company?.logo_url && (
-                                <img src={company.logo_url} alt={company.name} className="w-12 h-12 object-contain rounded-xl bg-white p-1" />
-                            )}
-                            <div>
-                                <h1 className="text-2xl font-bold text-foreground">{os.title}</h1>
-                                <p className="text-sm text-muted-foreground">{company?.name}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusClasses}`}>
-                                {OS_STATUS_LABELS[os.status]}
-                            </span>
-                            <span className="text-sm text-foreground/40">Prioridade: <span className="text-foreground/70">{OS_PRIORITY_LABELS[os.priority]}</span></span>
-                            <span className="text-sm text-foreground/40">Criada em: <span className="text-foreground/70">{formatDateTime(os.created_at)}</span></span>
-                        </div>
+        <div className="min-h-full bg-background">
+            <Header title={os.order_number} />
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-3 pb-12">
+                <Link href="/service-orders" className="inline-flex items-center gap-0.5 -ml-1.5 h-9 pr-2 text-[17px] text-primary">
+                    <ChevronLeft className="w-5 h-5" /> Ordens de serviço
+                </Link>
+
+                {/* Summary */}
+                <div className="mt-2 mb-5">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <OSStatusBadge status={os.status} />
+                        {os.priority && os.priority !== 'normal' && <span className={cn('text-[13px] font-medium', priority.tone)}>Prioridade {priority.label.toLowerCase()}</span>}
                     </div>
-                    <OSActions os={os as any} variant="detail" />
+                    <h1 className="text-[28px] leading-tight font-semibold tracking-tight break-words">
+                        {[os.title, os.equipment_description].filter(Boolean).join(' · ') || os.order_number}
+                    </h1>
+                    <p className="mt-1 text-[15px] text-muted-foreground">
+                        Aberta em {formatDateTime(os.created_at)}
+                        {os.scheduled_date && <> · entrega prevista {formatDateTime(os.scheduled_date)}</>}
+                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-                    {/* Main info */}
-                    <div className="md:col-span-2 space-y-4 md:space-y-6">
-                        {/* Details card */}
-                        <div className="rounded-2xl border border-border/50 bg-card/30 p-4 md:p-6 shadow-sm">
-                            <h2 className="text-[13px] font-semibold text-muted-foreground mb-4 md:mb-6 flex items-center gap-2">
-                                <Info className="w-3 h-3" />
-                                Informações Gerais
-                            </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 text-sm">
-                                <div className="sm:col-span-2 flex flex-wrap items-center gap-3 mb-2">
-                                    <span className={cn(
-                                        "px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-300",
-                                        os.status === 'concluida' || os.status === 'faturada'
-                                            ? "bg-emerald-500 text-white"
-                                            : "bg-indigo-500 text-white"
-                                    )}>
-                                        {OS_STATUS_LABELS[os.status]}
-                                    </span>
-                                    {os.terms_accepted && (
-                                        <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-semibold">
-                                            <Info className="w-3 h-3" />
-                                            Termos Aceitos
-                                        </span>
-                                    )}
-                                </div>
-                                
-                                {os.problem_description && (
-                                    <div className="sm:col-span-2 bg-muted/20 p-4 rounded-xl border border-border/30">
-                                        <span className="text-xs font-semibold text-muted-foreground block mb-2">Problema Relatado</span>
-                                        <p className="text-foreground/90 leading-relaxed italic">"{os.problem_description}"</p>
-                                    </div>
-                                )}
+                <OSDetailActions os={{ id: os.id, order_number: os.order_number, status: os.status, tracking_token: os.tracking_token, total, customer: customer ? { name: customer.name, phone: customer.phone } : null }} />
 
-                                {os.description && (
-                                    <div className="sm:col-span-2">
-                                        <span className="text-xs font-semibold text-muted-foreground block mb-1">Diagnóstico Técnico / Descrição</span>
-                                        <p className="text-foreground/80 leading-relaxed">{os.description}</p>
-                                    </div>
-                                )}
-                                
-                                {os.solution_applied && (
-                                    <div className="sm:col-span-2 bg-emerald-500/5 p-4 rounded-xl border border-emerald-500/10">
-                                        <span className="text-xs font-semibold text-emerald-600/60 dark:text-emerald-400/60 block mb-1">Solução Aplicada</span>
-                                        <p className="text-emerald-700 dark:text-emerald-300 font-medium">{os.solution_applied}</p>
-                                    </div>
-                                )}
-
-                                <div className="space-y-4">
-                                    {os.equipment_description && (
-                                        <div>
-                                            <span className="text-xs font-semibold text-muted-foreground block mb-1">Equipamento</span>
-                                            <div className="flex items-center gap-2 text-foreground/80">
-                                                <Wrench className="w-4 h-4 text-primary/40" />
-                                                <p className="font-semibold">{os.equipment_description}</p>
-                                            </div>
-                                        </div>
-                                    )}
-                                    {os.equipment_serial && (
-                                        <div>
-                                            <span className="text-xs font-semibold text-muted-foreground block mb-1">Número de Série</span>
-                                            <p className="text-foreground/80 font-mono text-xs bg-muted/30 px-2 py-1 rounded inline-block">{os.equipment_serial}</p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="space-y-4">
-                                    {os.scheduled_date && (
-                                        <div>
-                                            <span className="text-xs font-semibold text-muted-foreground block mb-1">Agendada para</span>
-                                            <div className="flex items-center gap-2 text-foreground/80">
-                                                <Calendar className="w-4 h-4 text-primary/40" />
-                                                <p>{formatDateTime(os.scheduled_date)}</p>
-                                            </div>
-                                        </div>
-                                    )}
-                                    {os.warranty_months > 0 && (
-                                        <div>
-                                            <span className="text-xs font-semibold text-muted-foreground block mb-1">Garantia</span>
-                                            <p className="text-foreground/80 font-bold">{os.warranty_months} meses</p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {os.checklist_progress && os.checklist_progress.length > 0 && (
-                                    <div className="sm:col-span-2 pt-4 border-t border-border/30">
-                                        <span className="text-xs font-semibold text-muted-foreground block mb-3">Checklist do Dispositivo</span>
-                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                            {os.checklist_progress.map((item: any) => (
-                                                <div
-                                                    key={item.id}
-                                                    className={`px-3 py-2 rounded-xl text-xs flex items-center justify-between border ${
- item.completed
- ? 'bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border-emerald-500/10 font-bold'
- : 'bg-muted/10 text-muted-foreground border-border/20 line-through decoration-1'
- }`}
-                                                >
-                                                    <span className="truncate">{item.text}</span>
-                                                    {item.completed ? (
-                                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                                                    ) : (
-                                                        <XCircle className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {cleanNotes && (
-                                    <div className="sm:col-span-2">
-                                        <span className="text-xs font-semibold text-muted-foreground block mb-1">Notas Internas</span>
-                                        <p className="text-amber-700 dark:text-amber-400 text-xs bg-amber-500/5 rounded-xl border border-amber-500/10 p-3 italic">
-                                            {cleanNotes}
+                <div className="mt-6 grid lg:grid-cols-[minmax(0,1fr)_340px] gap-6 items-start">
+                    <div className="space-y-6 min-w-0">
+                        {/* Items */}
+                        <Group title="Peças e serviços">
+                            {items.length ? items.map(i => (
+                                <div key={i.id} className="px-4 py-3 flex items-center gap-3">
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[17px] leading-snug break-words">{i.item_name}</p>
+                                        <p className="text-[13px] text-muted-foreground tabular-nums">
+                                            {Number(i.quantity)} × {formatCurrency(Number(i.unit_price))}{i.inventory_item_id ? ' · do estoque' : ''}
                                         </p>
                                     </div>
-                                )}
-                            </div>
-                        </div>
+                                    <span className="text-[17px] tabular-nums shrink-0">{formatCurrency(Number(i.total_price))}</span>
+                                </div>
+                            )) : (
+                                <p className="px-4 py-4 text-[15px] text-muted-foreground">
+                                    Nenhum item ainda. <Link href={`/service-orders/${os.id}/edit`} className="text-primary">Adicionar orçamento</Link>
+                                </p>
+                            )}
+                            {(items.length > 0 || total > 0) && (
+                                <>
+                                    {discount > 0 && itemsTotal > 0 && (
+                                        <>
+                                            <Line label="Subtotal"><span className="tabular-nums">{formatCurrency(subtotal)}</span></Line>
+                                            <Line label="Desconto"><span className="tabular-nums text-red-600 dark:text-red-400">− {formatCurrency(discount)}</span></Line>
+                                        </>
+                                    )}
+                                    <div className="px-4 py-3 flex items-center justify-between">
+                                        <span className="text-[17px] font-semibold">Total</span>
+                                        <span className="text-[22px] font-semibold tabular-nums">{formatCurrency(total)}</span>
+                                    </div>
+                                </>
+                            )}
+                        </Group>
 
-                        {/* Device Photos and Attachments */}
-                        <OSGallery 
-                            devicesPhotos={{
-                                photo_front_url: os.photo_front_url,
-                                photo_back_url: os.photo_back_url
-                            }}
+                        {/* Problem */}
+                        {(os.problem_description || os.description || os.solution_applied || os.device_condition) && (
+                            <Group title="Problema e diagnóstico">
+                                {os.problem_description && <Text label="Relato do cliente">{os.problem_description}</Text>}
+                                {os.device_condition && <Text label="Estado na entrada">{os.device_condition}</Text>}
+                                {os.description && <Text label="Laudo técnico">{os.description}</Text>}
+                                {os.solution_applied && <Text label="Solução aplicada">{os.solution_applied}</Text>}
+                            </Group>
+                        )}
+
+                        {checklist.length > 0 && (
+                            <Group title={`Testes na entrada · ${checked} de ${checklist.length} funcionando`}>
+                                <div className="p-3 grid grid-cols-2 gap-2">
+                                    {checklist.map(c => (
+                                        <div key={c.id} className={cn('min-h-[40px] px-3 py-2 rounded-xl text-[15px] leading-tight flex items-center gap-2', c.completed ? 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-300' : 'bg-foreground/[0.04] text-muted-foreground')}>
+                                            {c.completed ? <Check className="w-4 h-4 shrink-0" strokeWidth={3} /> : <span className="w-4 h-4 shrink-0 rounded-full border-2 border-foreground/20" aria-label="não conferido" />}
+                                            <span className="min-w-0">{c.text}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Group>
+                        )}
+
+                        <OSGallery
+                            devicesPhotos={{ photo_front_url: os.photo_front_url, photo_back_url: os.photo_back_url }}
                             attachments={os.service_order_attachments}
                         />
 
-                        {/* Items/Materials */}
-                        <div className="rounded-2xl border border-border/50 bg-card/30 p-4 md:p-6 shadow-sm overflow-x-auto">
-                            <div className="flex items-center justify-between mb-4 md:mb-6 gap-2">
-                                <h2 className="text-[13px] font-semibold text-muted-foreground flex items-center gap-2">
-                                    <DollarSign className="w-3 h-3" />
-                                    Itens e Serviços
-                                </h2>
-                                <span className="text-xs font-semibold px-2 py-1 bg-primary/10 text-primary rounded-md tracking-tighter shrink-0">
-                                    {os.service_order_items?.length || 0} ITENS
-                                </span>
-                            </div>
-                            
-                            <div className="overflow-x-auto -mx-4 md:-mx-6">
-                                <table className="w-full text-sm min-w-[500px]">
-                                    <thead>
-                                        <tr className="border-b border-border/50 text-xs font-semibold text-muted-foreground">
-                                            <th className="text-left px-6 pb-3">Descrição do Item/Serviço</th>
-                                            <th className="text-right px-4 pb-3">Qtd</th>
-                                            <th className="text-right px-4 pb-3">Unitário</th>
-                                            <th className="text-right px-6 pb-3">Subtotal</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-border/30">
-                                        {os.service_order_items && os.service_order_items.length > 0 ? (
-                                            (os.service_order_items as any[]).map((item) => (
-                                                <tr key={item.id} className="hover:bg-muted/5 transition-colors group">
-                                                    <td className="px-6 py-4">
-                                                        <div className="font-medium text-foreground/80 group-hover:text-primary transition-colors">
-                                                            {item.item_name}
-                                                        </div>
-                                                        {item.inventory_item_id && (
-                                                            <span className="text-[11px] font-bold text-muted-foreground bg-muted/40 px-1.5 py-0.5 rounded">PEÇA DO ESTOQUE</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-4 py-4 text-right text-muted-foreground font-mono">
-                                                        {item.quantity}
-                                                    </td>
-                                                    <td className="px-4 py-4 text-right text-muted-foreground font-mono">
-                                                        {formatCurrency(item.unit_price)}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-right font-bold text-foreground/90">
-                                                        {formatCurrency(item.total_price)}
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground italic">
-                                                    Nenhum item adicionado a esta OS.
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                    {os.service_order_items && os.service_order_items.length > 0 && (
-                                        <tfoot>
-                                            <tr className="bg-muted/5">
-                                                <td colSpan={3} className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground">Soma dos Itens:</td>
-                                                <td className="px-6 py-4 text-right font-black text-foreground text-lg tracking-tighter">
-                                                    {formatCurrency((os.service_order_items as any[]).reduce((s, i) => s + (Number(i.total_price) || 0), 0))}
-                                                </td>
-                                            </tr>
-                                        </tfoot>
-                                    )}
-                                </table>
-                            </div>
-                        </div>
-
-                        {/* History */}
-                        <div className="rounded-2xl border border-border/50 bg-card/30 p-4 md:p-6 shadow-sm">
-                            <h2 className="text-[13px] font-semibold text-muted-foreground mb-4 md:mb-6 flex items-center gap-2">
-                                <Clock className="w-3 h-3" />
-                                Jornada da OS
-                            </h2>
-                            <div className="space-y-6 relative before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-[1px] before:bg-border/30">
-                                {os.service_order_history && os.service_order_history.length > 0 ? (
-                                    (os.service_order_history as any[]).reverse().map((h) => (
-                                        <div key={h.id} className="relative pl-8 group">
-                                            <div className="absolute left-0 top-1.5 w-5 h-5 rounded-full border-4 border-background bg-primary group-hover:scale-110 transition-transform shadow-sm" />
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-xs font-bold text-primary">{h.changed_by_name || 'Sistema'}</span>
-                                                    <span className="text-[11px] text-muted-foreground font-mono tracking-tighter bg-muted/30 px-1.5 py-0.5 rounded">
-                                                        {formatDateTime(h.created_at)}
-                                                    </span>
-                                                </div>
-                                                <div className="text-xs text-foreground/70 leading-relaxed">
-                                                    {h.field_name && (
-                                                        <>
-                                                            Alterou <span className="font-bold text-foreground/90">{h.field_name}</span>
-                                                            {h.old_value && h.new_value && (
-                                                                <span className="text-muted-foreground"> de <span className="text-destructive/70 line-through decoration-1">{h.old_value}</span> para <span className="text-emerald-600 dark:text-emerald-400 font-bold">{h.new_value}</span></span>
-                                                            )}
-                                                        </>
-                                                    )}
-                                                    {h.change_reason && (
-                                                        <div className="mt-1 bg-muted/10 p-2 rounded-lg border border-border/20 italic">
-                                                            {h.change_reason}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p className="text-xs text-muted-foreground italic ml-8">Nenhum histórico registrado.</p>
-                                )}
-                            </div>
-                        </div>
+                        {history.length > 0 && (
+                            <Group title="Histórico">
+                                {history.map(h => (
+                                    <div key={h.id} className="px-4 py-3">
+                                        <p className="text-[15px] leading-snug">
+                                            {h.field_name ? (
+                                                <>
+                                                    {HISTORY_FIELDS[h.field_name] ?? h.field_name}
+                                                    {h.new_value ? <>: <span className="font-medium">{historyValue(h.field_name, h.new_value)}</span></> : ' alterado'}
+                                                    {h.old_value && <span className="text-muted-foreground"> (era {historyValue(h.field_name, h.old_value)})</span>}
+                                                </>
+                                            ) : (h.change_reason || 'Atualização')}
+                                        </p>
+                                        {h.field_name && h.change_reason && <p className="text-[13px] text-muted-foreground mt-0.5">{h.change_reason}</p>}
+                                        <p className="text-[13px] text-muted-foreground mt-0.5">
+                                            {h.changed_by_name || h.users?.full_name || 'Sistema'} · {formatDateTime(h.created_at)}
+                                        </p>
+                                    </div>
+                                ))}
+                            </Group>
+                        )}
                     </div>
 
-                    {/* Sidebar info */}
-                    <div className="space-y-4 md:space-y-6">
-                        {/* Customer */}
-                        {os.customers && (
-                            <div className="rounded-2xl border border-border/50 bg-card/30 p-4 md:p-5 shadow-sm hover:border-primary/30 transition-colors">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <div className="p-2 rounded-lg bg-primary/10">
-                                        <User className="w-4 h-4 text-primary" />
+                    <div className="space-y-6 min-w-0">
+                        <Group title="Cliente">
+                            {customer ? (
+                                <>
+                                    <div className="px-4 py-3">
+                                        <p className="text-[17px] font-medium break-words">{customer.name}</p>
+                                        {customer.email && <p className="text-[15px] text-muted-foreground break-all">{customer.email}</p>}
+                                        {customer.address && <p className="text-[15px] text-muted-foreground">{customer.address}{customer.city ? `, ${customer.city}` : ''}</p>}
                                     </div>
-                                    <h3 className="text-[13px] font-semibold text-muted-foreground">Proprietário</h3>
-                                </div>
-                                <div className="space-y-3">
-                                    <div>
-                                        <p className="text-sm font-bold text-foreground">{(os.customers as any).name}</p>
-                                        {(os.customers as any).phone && (
-                                            <a href={`tel:${(os.customers as any).phone}`} className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 mt-1">
-                                                <Info className="w-3 h-3" />
-                                                {(os.customers as any).phone}
-                                            </a>
-                                        )}
-                                    </div>
-                                    {(os.customers as any).email && (
-                                        <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                                            <Info className="w-3 h-3" />
-                                            {(os.customers as any).email}
-                                        </p>
+                                    {phoneDigits && (
+                                        <a href={`tel:${phoneDigits}`} className="px-4 min-h-[48px] flex items-center gap-3 text-primary">
+                                            <Phone className="w-[18px] h-[18px]" />
+                                            <span className="text-[17px] tabular-nums">{customer.phone}</span>
+                                        </a>
                                     )}
-                                    {(os.customers as any).address && (
-                                        <div className="pt-3 border-t border-border/30 flex items-start gap-2">
-                                            <MapPin className="w-3.5 h-3.5 text-primary/40 shrink-0 mt-0.5" />
-                                            <p className="text-[11px] text-muted-foreground leading-tight">{(os.customers as any).address}, {(os.customers as any).city}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
+                                </>
+                            ) : <p className="px-4 py-3 text-[15px] text-muted-foreground">Sem cliente</p>}
+                        </Group>
 
-                        {/* Technician */}
-                        {os.technicians && (
-                            <div className="rounded-2xl border border-border/50 bg-card/30 p-4 md:p-5 shadow-sm hover:border-amber-500/30 transition-colors">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500">
-                                        <Wrench className="w-4 h-4" />
-                                    </div>
-                                    <h3 className="text-[13px] font-semibold text-muted-foreground">Especialista</h3>
-                                </div>
-                                <p className="text-sm font-bold text-foreground">{(os.technicians as any).name}</p>
-                                {(os.technicians as any).phone && <p className="text-xs text-muted-foreground mt-1">{(os.technicians as any).phone}</p>}
-                                {(os.technicians as any).specialties && (
-                                    <div className="flex flex-wrap gap-1 mt-3">
-                                        {(os.technicians as any).specialties.slice(0, 3).map((s: string) => (
-                                            <span key={s} className="text-xs font-semibold bg-amber-500/5 text-amber-600 dark:text-amber-400 border border-amber-500/10 px-1.5 py-0.5 rounded tracking-tighter">
-                                                {s}
-                                            </span>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                        <Group title="Aparelho">
+                            <Line label="Tipo">{os.title || '—'}</Line>
+                            {os.equipment_description && <Line label="Modelo">{os.equipment_description}</Line>}
+                            {os.equipment_serial && <Line label="Série / IMEI"><span className="font-mono text-[14px]">{os.equipment_serial}</span></Line>}
+                            {os.turns_on === false && <Line label="Ligava na entrada">Não</Line>}
+                            <Line label="Técnico">{technician?.name ?? <span className="text-muted-foreground">Nenhum</span>}</Line>
+                            {Number(os.warranty_months) > 0 && <Line label="Garantia">{os.warranty_months} {Number(os.warranty_months) === 1 ? 'mês' : 'meses'}</Line>}
+                            {os.terms_accepted && <Line label="Termos">Aceitos pelo cliente</Line>}
+                        </Group>
 
-                        {/* OSSecurityView if security credentials exist */}
-                        {security && (
-                            <OSSecurityView type={security.type} value={security.value} />
-                        )}
+                        {security && <OSSecurityView type={security.type} value={security.value} />}
 
-                        {/* Financial Card - Enhanced */}
-                        <div className="rounded-2xl border-2 border-primary/20 bg-primary/5 p-6 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary/20 transition-all duration-500" />
-                            
-                            <div className="flex items-center gap-2 mb-6">
-                                <div className="p-2 rounded-lg bg-primary text-white">
-                                    <DollarSign className="w-4 h-4" />
-                                </div>
-                                <h3 className="text-[13px] font-semibold text-primary">Resumo Financeiro</h3>
-                            </div>
-
-                            <div className="space-y-4 text-sm relative z-10">
-                                {os.estimated_cost > 0 && (
-                                    <div className="flex justify-between items-center group/item">
-                                        <span className="text-muted-foreground text-xs tracking-tighter font-bold">Orçamento Inicial</span>
-                                        <span className="text-foreground/70 font-mono font-medium">{formatCurrency(os.estimated_cost)}</span>
-                                    </div>
-                                )}
-                                
-                                {(() => {
-                                    const itemsTotal = os.service_order_items?.reduce((acc: number, item: any) => acc + (Number(item.total_price) || 0), 0) || 0;
-                                    const subtotal = itemsTotal || os.estimated_cost;
-                                    const discount = Number(os.discount_amount) || 0;
-                                    const finalValue = (os.final_cost || subtotal) - (os.final_cost ? 0 : discount);
-                                    
-                                    return (
-                                        <>
-                                            <div className="flex justify-between items-center group/item">
-                                                <span className="text-muted-foreground text-xs tracking-tighter font-bold">Subtotal</span>
-                                                <span className="text-foreground/70 font-mono font-medium">{formatCurrency(subtotal)}</span>
-                                            </div>
-
-                                            {discount > 0 && (
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-rose-500/60 text-xs tracking-tighter font-bold">Desconto Concedido</span>
-                                                    <span className="text-rose-500 font-mono font-bold">- {formatCurrency(discount)}</span>
-                                                </div>
-                                            )}
-
-                                            <div className="pt-4 mt-2 border-t border-primary/10">
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs font-semibold text-primary/60 mb-1 text-center">Valor Total a Pagar</span>
-                                                    <div className="text-3xl font-black text-primary text-center tracking-tighter tabular-nums drop-shadow-sm">
-                                                        {formatCurrency(finalValue)}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </>
-                                    );
-                                })()}
-                                
-                                {os.status === 'faturada' && (
-                                    <div className="mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-center">
-                                        <p className="text-xs font-semibold flex items-center justify-center gap-2">
-                                            <Info className="w-3 h-3" />
-                                            OS Finalizada e Paga
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Tracking link */}
-                        {os.tracking_token && (
-                            <div className="rounded-2xl border border-border/50 bg-muted/20 p-5 group shadow-sm">
-                                <h3 className="text-[13px] font-semibold text-muted-foreground mb-3">Link de Rastreio</h3>
-                                <div className="flex items-center gap-2">
-                                    <div className="flex-1 bg-background/50 border border-border/50 rounded-xl px-3 py-2 text-[11px] font-mono text-muted-foreground truncate select-all">
-                                        {`${typeof window !== 'undefined' ? window.location.origin : ''}/tracking/${os.tracking_token}`}
-                                    </div>
-                                </div>
-                                <p className="text-[11px] text-muted-foreground mt-3 text-center leading-tight">
-                                    O cliente pode usar este link para ver o status da OS sem precisar de login.
-                                </p>
-                            </div>
+                        {cleanNotes && (
+                            <Group title="Observação interna">
+                                <p className="px-4 py-3 text-[15px] whitespace-pre-line break-words">{cleanNotes}</p>
+                            </Group>
                         )}
                     </div>
                 </div>

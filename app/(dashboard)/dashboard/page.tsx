@@ -16,7 +16,8 @@ import Link from 'next/link'
 import RevenueChart from '@/components/dashboard/RevenueChart'
 import { cn } from '@/lib/utils'
 import EmployeeDashboard from '@/components/dashboard/EmployeeDashboard'
-import DashboardOnboardingWrapper from '@/components/dashboard/DashboardOnboardingWrapper'
+import SetupAssistant, { type SetupCompany } from '@/components/onboarding/SetupAssistant'
+import { needsOnboarding } from '@/lib/onboarding/status'
 import TasksTodayWidget from '@/components/tasks/TasksTodayWidget'
 
 interface ServiceOrder {
@@ -223,7 +224,6 @@ export default async function DashboardPage() {
     const db = createAdminClient()
     const { data: user } = await db.from('users').select('id, role, company_id, full_name, companies(name)').eq('clerk_id', userId).single()
     const companyId = user?.company_id
-    const companyName = (user?.companies as unknown as { name: string })?.name || ''
 
     if (!companyId) return null
 
@@ -233,7 +233,11 @@ export default async function DashboardPage() {
         return <EmployeeDashboard role={user.role} recentOS={recentOS || []} />
     }
 
-    const data = await getDashboardData(companyId)
+    const [data, { data: company }] = await Promise.all([
+        getDashboardData(companyId),
+        db.from('companies').select('id, name, phone, cnpj, logo_url, zip_code, address, city, state, warranty_terms, google_review_url, settings').eq('id', companyId).single(),
+    ])
+    const showSetup = company ? await needsOnboarding(db, company) : false
 
     const hour = new Date().getHours()
     const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite'
@@ -492,7 +496,7 @@ export default async function DashboardPage() {
                     </div>
                 </div>
             </div>
-            <DashboardOnboardingWrapper companyId={companyId} companyName={companyName} />
+            {showSetup && company && <SetupAssistant company={company as SetupCompany} />}
         </div>
     )
 }

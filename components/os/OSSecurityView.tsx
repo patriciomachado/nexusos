@@ -1,154 +1,57 @@
 'use client'
 
 import { useState } from 'react'
-import { Eye, EyeOff, Lock, Grid3X3 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Eye, EyeOff, Lock } from 'lucide-react'
 
 interface OSSecurityViewProps {
     type: 'pin' | 'pattern'
     value: string
 }
 
-const GRID_POINTS = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+const pos = (i: number) => ({ x: (i % 3) * 100 + 50, y: Math.floor(i / 3) * 100 + 50 })
 
-function getPointPos(index: number) {
-    const col = index % 3
-    const row = Math.floor(index / 3)
-    return { x: col * 100 + 50, y: row * 100 + 50 }
-}
-
+/** The device unlock code, hidden until someone taps to show it. */
 export default function OSSecurityView({ type, value }: OSSecurityViewProps) {
     const [visible, setVisible] = useState(false)
-
-    // Decode pattern string "0-2-1-4-6-7-8" to number array [0, 2, 1, 4, 6, 7, 8]
     const points = type === 'pattern' ? value.split('-').map(Number).filter(n => !isNaN(n)) : []
 
     return (
-        <div className="rounded-2xl border border-amber-500/10 bg-amber-500/5 p-4 md:p-5 shadow-sm space-y-4">
-            {/* Header */}
-            <div className="flex items-center justify-between gap-2 border-b border-amber-500/10 pb-3">
-                <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-500">
-                        {type === 'pin' ? <Lock className="w-4 h-4" /> : <Grid3X3 className="w-4 h-4" />}
-                    </div>
-                    <div>
-                        <h4 className="text-[13px] font-semibold text-amber-600 dark:text-amber-400">Segurança do Dispositivo</h4>
-                        <p className="text-[11px] text-muted-foreground">Credenciais de acesso técnico fornecidas pelo cliente</p>
-                    </div>
-                </div>
-                
-                <button
- type="button"
- onClick={() => setVisible(!visible)}
- className={cn(
- "px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all flex items-center gap-1.5 border",
- visible
- ? "bg-amber-500/10 border-amber-500/20 text-amber-500 hover:bg-amber-500/20"
- : "bg-foreground/[0.03] border-border/60 text-muted-foreground hover:bg-foreground/[0.05]"
- )}
- >
-                    {visible ? (
-                        <>
-                            <EyeOff className="w-3 h-3" />
-                            Ocultar Credencial
-                        </>
-                    ) : (
-                        <>
-                            <Eye className="w-3 h-3" />
-                            Mostrar Credencial
-                        </>
-                    )}
+        <section className="space-y-1.5">
+            <h2 className="px-4 text-[13px] font-medium text-muted-foreground">Senha do aparelho</h2>
+            <div className="rounded-2xl bg-card border border-border/60 divide-y divide-border/60 overflow-hidden">
+                <button type="button" onClick={() => setVisible(v => !v)} aria-expanded={visible} className="w-full px-4 min-h-[52px] flex items-center gap-3 text-left">
+                    <Lock className="w-[18px] h-[18px] text-muted-foreground shrink-0" />
+                    <span className="flex-1 text-[17px]">{type === 'pin' ? 'PIN ou senha' : 'Padrão de desenho'}</span>
+                    <span className="text-[15px] text-primary inline-flex items-center gap-1.5">
+                        {visible ? <><EyeOff className="w-4 h-4" /> Ocultar</> : <><Eye className="w-4 h-4" /> Mostrar</>}
+                    </span>
                 </button>
-            </div>
-
-            {/* Display Area */}
-            <div className="flex flex-col items-center justify-center min-h-[50px] transition-all duration-300">
-                {visible ? (
-                    type === 'pin' ? (
-                        <div className="text-center py-2">
-                            <span className="text-xs font-bold text-muted-foreground block mb-1">Senha / PIN</span>
-                            <span className="text-xl font-mono font-black text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/25 px-4 py-2 rounded-xl inline-block shadow-inner">
-                                {value}
-                            </span>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center gap-3 animate-in fade-in zoom-in-95 duration-200">
-                            <span className="text-xs font-bold text-muted-foreground text-center">Desenho de Desbloqueio</span>
-                            
-                            <div className="relative p-3 bg-foreground/[0.03] border border-foreground/5 rounded-2xl">
-                                <svg
-                                    viewBox="0 0 300 300"
-                                    className="w-44 h-44 select-none pointer-events-none"
-                                >
-                                    {/* Lines between connected points */}
-                                    {points.slice(0, -1).map((pt, i) => {
-                                        const a = getPointPos(pt)
-                                        const b = getPointPos(points[i + 1])
-                                        return (
-                                            <line
-                                                key={`line-${i}`}
-                                                x1={a.x} y1={a.y} x2={b.x} y2={b.y}
-                                                stroke="rgb(245,158,11)"
-                                                strokeWidth="5"
-                                                strokeLinecap="round"
-                                                opacity="0.8"
-                                            />
-                                        )
-                                    })}
-
-                                    {/* Number markers inside circles in drawing order */}
-                                    {points.map((pt, index) => {
-                                        const pos = getPointPos(pt)
-                                        return (
-                                            <g key={`marker-${index}`}>
-                                                <circle
-                                                    cx={pos.x} cy={pos.y} r="18"
-                                                    fill="rgba(245,158,11,0.2)"
-                                                    stroke="rgb(245,158,11)"
-                                                    strokeWidth="1.5"
-                                                />
-                                                <text
-                                                    x={pos.x} y={pos.y + 4}
-                                                    textAnchor="middle"
-                                                    fill="rgb(245,158,11)"
-                                                    className="text-xs font-semibold"
-                                                >
-                                                    {index + 1}
-                                                </text>
-                                            </g>
-                                        )
-                                    })}
-
-                                    {/* Standard grid points */}
-                                    {GRID_POINTS.map(i => {
-                                        const pos = getPointPos(i)
-                                        const isActive = points.includes(i)
-                                        if (isActive) return null // Handled above with numbers
-                                        return (
-                                            <g key={i}>
-                                                <circle
-                                                    cx={pos.x} cy={pos.y} r="16"
-                                                    className="fill-foreground/[0.02] stroke-foreground/10"
-                                                    strokeWidth="1.5"
-                                                />
-                                                <circle
-                                                    cx={pos.x} cy={pos.y} r="4"
-                                                    className="fill-foreground/30"
-                                                />
-                                            </g>
-                                        )
-                                    })}
-                                </svg>
-                            </div>
-                        </div>
-                    )
-                ) : (
-                    <div className="flex flex-col items-center gap-1.5 py-4 text-muted-foreground">
-                        <Lock className="w-5 h-5 opacity-40 animate-pulse" />
-                        <span className="text-xs font-semibold">Credencial Ocultada por Segurança</span>
+                {visible && (
+                    <div className="px-4 py-4 flex justify-center animate-in fade-in duration-200">
+                        {type === 'pin' ? (
+                            <span className="text-[28px] font-semibold tracking-[0.2em] tabular-nums select-all break-all">{value}</span>
+                        ) : (
+                            <svg viewBox="0 0 300 300" className="w-44 h-44" role="img" aria-label={`Padrão: ${points.map(p => p + 1).join(', ')}`}>
+                                {points.slice(1).map((p, i) => {
+                                    const a = pos(points[i]); const b = pos(p)
+                                    return <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="hsl(var(--primary))" strokeWidth={6} strokeLinecap="round" opacity={0.7} />
+                                })}
+                                {Array.from({ length: 9 }, (_, i) => {
+                                    const order = points.indexOf(i)
+                                    return (
+                                        <g key={i}>
+                                            <circle cx={pos(i).x} cy={pos(i).y} r={24} fill={order >= 0 ? 'hsl(var(--primary))' : 'hsl(var(--foreground) / 0.06)'} />
+                                            {order >= 0
+                                                ? <text x={pos(i).x} y={pos(i).y + 7} textAnchor="middle" fontSize="20" fontWeight="600" fill="white">{order + 1}</text>
+                                                : <circle cx={pos(i).x} cy={pos(i).y} r={5} fill="hsl(var(--foreground) / 0.35)" />}
+                                        </g>
+                                    )
+                                })}
+                            </svg>
+                        )}
                     </div>
                 )}
             </div>
-        </div>
+        </section>
     )
 }
