@@ -15,7 +15,8 @@ export async function GET() {
         usage: await monthlyUsage(ctx.db, ctx.companyId),
         environment: {
             ai: aliceConfigured(),
-            model: aliceModel(),
+            model: aliceModel('app'),
+            whatsappModel: aliceModel('whatsapp'),
             transcription: transcriptionConfigured(),
             whatsappWebhook: webhookConfigured(),
             webhookUrl: `${appUrl()}/api/whatsapp/webhook`,

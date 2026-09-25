@@ -17,11 +17,24 @@ export const ROLE_LABELS: Record<string, string> = {
 }
 
 /**
- * Model for both agents. Override with ALICE_MODEL in the environment; the
- * default is Anthropic's recommended general model.
+ * Model per channel, chosen for cost (see the pricing study):
+ * - app (staff; creates OS, reads finances): Claude Sonnet 5
+ * - WhatsApp (short customer answers, high volume): Claude Haiku 4.5
+ * Override with ALICE_MODEL / ALICE_WHATSAPP_MODEL.
  */
-export function aliceModel() {
-    return process.env.ALICE_MODEL?.trim() || 'claude-opus-5'
+export function aliceModel(channel: 'app' | 'whatsapp' = 'app') {
+    if (channel === 'whatsapp') return process.env.ALICE_WHATSAPP_MODEL?.trim() || 'claude-haiku-4-5'
+    return process.env.ALICE_MODEL?.trim() || 'claude-sonnet-5'
+}
+
+/**
+ * Request options each model accepts. Adaptive thinking and `effort` exist on
+ * the current generation (Sonnet 5, Opus 5, Fable…); Haiku 4.5 and older
+ * reject them, so they run without extended thinking.
+ */
+export function modelOptions(model: string, effort: 'low' | 'medium' | 'high') {
+    const legacy = /haiku-4|sonnet-4-5|opus-4-5|-3-|claude-3/.test(model)
+    return legacy ? {} : { thinking: { type: 'adaptive' as const }, output_config: { effort } }
 }
 
 export function aliceConfigured() {
@@ -51,7 +64,7 @@ export const DEFAULT_SETTINGS: Omit<AliceSettings, 'company_id'> = {
     whatsapp_access_token: null,
     whatsapp_display_phone: null,
     whatsapp_verified_name: null,
-    monthly_limit: 3000,
+    monthly_limit: 1500,
 }
 
 export async function loadSettings(db: SupabaseClient, companyId: string): Promise<AliceSettings> {
@@ -75,7 +88,7 @@ export function canUseAlice(role: string, settings: AliceSettings) {
     return settings.enabled && settings.staff_roles.includes(role)
 }
 
-/** Replies Alice gave this calendar month (both channels), for the cost cap. */
+/** Answers Alice gave this calendar month (both channels, tool-only rounds not counted), for the cost cap. */
 export async function monthlyUsage(db: SupabaseClient, companyId: string) {
     const start = new Date()
     start.setUTCDate(1)
@@ -85,6 +98,7 @@ export async function monthlyUsage(db: SupabaseClient, companyId: string) {
         .select('id', { count: 'exact', head: true })
         .eq('company_id', companyId)
         .eq('role', 'assistant')
+        .not('text', 'is', null)
         .gte('created_at', start.toISOString())
     return count ?? 0
 }
