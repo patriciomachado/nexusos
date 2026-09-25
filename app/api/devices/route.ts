@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
         }
 
         if (search) {
-            query = query.or(`model.ilike.%${search}%,imei_1.ilike.%${search}%,serial_number.ilike.%${search}%`)
+            query = query.or(`model.ilike.%${search}%,brand.ilike.%${search}%,imei_1.ilike.%${search}%,imei_2.ilike.%${search}%,serial_number.ilike.%${search}%`)
         }
 
         const { data, error } = await query
@@ -78,7 +78,11 @@ export async function POST(req: NextRequest) {
                 included_items: body.included_items || [],
                 images: body.images || [],
                 technical_passport: body.technical_passport || {},
-                notes: body.notes || null
+                notes: body.notes || null,
+                ...(body.extra_costs !== undefined ? { extra_costs: Number(body.extra_costs || 0) } : {}),
+                ...(body.test_checklist !== undefined ? { test_checklist: body.test_checklist } : {}),
+                ...(body.warranty_months !== undefined ? { warranty_months: Math.max(0, Math.round(Number(body.warranty_months) || 0)) } : {}),
+                ...(body.trade_in_id ? { trade_in_id: body.trade_in_id } : {}),
             })
             .select()
             .single()
@@ -128,6 +132,9 @@ export async function PUT(req: NextRequest) {
         if (body.images !== undefined) updatePayload.images = body.images
         if (body.technical_passport !== undefined) updatePayload.technical_passport = body.technical_passport
         if (body.notes !== undefined) updatePayload.notes = body.notes
+        if (body.extra_costs !== undefined) updatePayload.extra_costs = Number(body.extra_costs || 0)
+        if (body.test_checklist !== undefined) updatePayload.test_checklist = body.test_checklist
+        if (body.warranty_months !== undefined) updatePayload.warranty_months = Math.max(0, Math.round(Number(body.warranty_months) || 0))
 
         const { data, error } = await db
             .from('devices')

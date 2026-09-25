@@ -130,8 +130,8 @@ export function groupOf(tx: Tx): 'cash' | 'pix' | 'debit' | 'credit' | 'other' {
     if (code === 'CREDIT_CARD' || name.includes('crédito') || name.includes('credito')) return 'credit'
     return 'other'
 }
-const isCost = (tx: Tx) => tx.type === 'exit' && (tx.source_type === 'service_order' || tx.source_type === 'product_sale')
-const isSale = (tx: Tx) => tx.type === 'entry' && ['service_order', 'product_sale', 'receivable'].includes(tx.source_type ?? '')
+const isCost = (tx: Tx) => tx.type === 'exit' && (tx.source_type === 'service_order' || tx.source_type === 'product_sale' || tx.source_type === 'device_sale')
+const isSale = (tx: Tx) => tx.type === 'entry' && ['service_order', 'product_sale', 'receivable', 'device_sale'].includes(tx.source_type ?? '')
 
 export function feeOf(group: string, amount: number, s: CashSettings) {
     const rule = group === 'debit' ? s.fees.debit : group === 'credit' ? s.fees.credit : group === 'pix' ? s.fees.pix : null

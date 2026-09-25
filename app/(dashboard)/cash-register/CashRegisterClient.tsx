@@ -37,7 +37,7 @@ async function getJson(url: string) {
 }
 const list = (d: unknown): CashTx[] => (Array.isArray(d) ? d : Array.isArray((d as { data?: unknown })?.data) ? (d as { data: CashTx[] }).data : [])
 const firstName = (r: Register) => r.users?.full_name?.split(' ')[0] ?? 'Operador'
-const SALE_SOURCES = ['service_order', 'product_sale', 'receivable']
+const SALE_SOURCES = ['service_order', 'product_sale', 'receivable', 'device_sale']
 
 export default function CashRegisterClient({ role, userId }: { role: string; userId: string }) {
     const manager = ['admin', 'owner', 'manager'].includes(role)

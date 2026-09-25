@@ -26,6 +26,26 @@ ALTER TABLE cash_transactions
         'recurring_expense', 'manual', 'bill', 'receivable', 'refund', 'device_sale', 'device_purchase'
     )) NOT VALID;
 
+-- Aparelhos: venda, garantia, custos extras e checklist de teste ---------------
+ALTER TABLE devices
+    ADD COLUMN IF NOT EXISTS extra_costs NUMERIC(10, 2) NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS test_checklist JSONB NOT NULL DEFAULT '{}'::jsonb,
+    ADD COLUMN IF NOT EXISTS warranty_months INTEGER NOT NULL DEFAULT 3,
+    ADD COLUMN IF NOT EXISTS sold_at TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS sold_price NUMERIC(10, 2),
+    ADD COLUMN IF NOT EXISTS sold_customer_id UUID REFERENCES customers(id) ON DELETE SET NULL,
+    ADD COLUMN IF NOT EXISTS warranty_until DATE,
+    ADD COLUMN IF NOT EXISTS trade_in_id UUID;
+
+ALTER TABLE device_trade_ins
+    ADD COLUMN IF NOT EXISTS photos JSONB NOT NULL DEFAULT '[]'::jsonb,
+    ADD COLUMN IF NOT EXISTS reference_price NUMERIC(10, 2),
+    ADD COLUMN IF NOT EXISTS suggested_price NUMERIC(10, 2),
+    ADD COLUMN IF NOT EXISTS device_id UUID,
+    ADD COLUMN IF NOT EXISTS customer_id UUID REFERENCES customers(id) ON DELETE SET NULL;
+
+CREATE INDEX IF NOT EXISTS idx_devices_warranty ON devices(company_id, warranty_until) WHERE status = 'vendido';
+
 -- Contas a receber canceladas ficam como 'cancelled'.
 DO $$
 DECLARE

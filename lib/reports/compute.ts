@@ -69,7 +69,7 @@ export function isExpense(tx: Row) {
     if (tx.type !== 'exit') return false
     const source = tx.source_type as string | null
     // Refunds already lower revenue (negative payment); sangria only moves cash.
-    if (source === 'service_order' || source === 'product_sale' || source === 'manual_sangria' || source === 'refund') return false
+    if (source === 'service_order' || source === 'product_sale' || source === 'manual_sangria' || source === 'refund' || source === 'device_purchase') return false
     const code = (Array.isArray(tx.transaction_types) ? tx.transaction_types[0] : tx.transaction_types as Row | null)?.code
     return code !== 'SANGRIA'
 }
@@ -77,6 +77,7 @@ export function isExpense(tx: Row) {
 function expenseCategory(tx: Row) {
     if (tx.source_type === 'recurring_expense' || tx.source_type === 'bill' || tx.source_type === 'bill_bank') return 'Contas'
     if (tx.source_type === 'card_fee') return 'Taxas da maquininha'
+    if (tx.source_type === 'device_sale') return 'Custo de aparelhos vendidos'
     const type = (Array.isArray(tx.transaction_types) ? tx.transaction_types[0] : tx.transaction_types as Row | null)
     const name = String(type?.name ?? '')
     return name && type?.code !== 'EXPENSE' ? name : 'Despesas avulsas'

@@ -100,7 +100,7 @@ export default function TransactionHistory({ registers, onChanged, settings = nu
             const a = num(t.amount)
             const src = t.source_type
             if (t.type === 'entry') {
-                if (src === 'service_order' || src === 'product_sale' || src === 'payment' || src === 'receivable') {
+                if (src === 'service_order' || src === 'product_sale' || src === 'payment' || src === 'receivable' || src === 'device_sale') {
                     revenue += a
                     const rule = feeRule(methodGroup(t), settings)
                     if (rule) fees += Math.round(a * rule.rate) / 100
