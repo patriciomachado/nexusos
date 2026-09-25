@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { findOpenRegister } from '@/lib/cash/server'
+import { notifyReady } from '@/lib/os/notify'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { idSchema, osStatusUpdateSchema } from '@/lib/validations/schemas'
 
@@ -163,6 +164,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         change_reason: reason,
     })
 
-    return NextResponse.json({ success: true })
+    // Ready: tell the customer (unless the screen asked not to).
+    let notice: Awaited<ReturnType<typeof notifyReady>> | null = null
+    if (status === 'concluida' && os.status !== 'concluida' && body?.notify !== false) {
+        notice = await notifyReady(db, companyId, id).catch(() => null)
+    }
+
+    return NextResponse.json({ success: true, notice })
 }
 
