@@ -10,7 +10,7 @@ import { openQuickAdd } from './QuickAddDialog'
 import { PRIORITY_META, type TaskPriority } from '@/lib/tasks/types'
 
 /** "Seu dia" card on the admin dashboard. */
-export default function TasksTodayWidget() {
+export default function TasksTodayWidget({ limit = 6, className }: { limit?: number; className?: string } = {}) {
     const summary = useTaskStore(s => s.summary)
     const fetchSummary = useTaskStore(s => s.fetchSummary)
 
@@ -25,15 +25,15 @@ export default function TasksTodayWidget() {
 
     const items = summary.top ?? []
     return (
-        <section className="bg-card rounded-3xl border border-border/60 overflow-hidden" aria-labelledby="your-day">
+        <section className={cn('bg-card rounded-2xl border border-border/60 overflow-hidden', className)} aria-labelledby="your-day">
             <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-3">
                 <div>
                     <h2 id="your-day" className="type-headline text-foreground">Seu dia</h2>
                     <p className="text-[13px] text-muted-foreground">
                         {summary.total === 0
                             ? 'Nada pendente para hoje'
-                            : `${summary.today} ${summary.today === 1 ? 'tarefa' : 'tarefas'} · ${summary.alerts} ${summary.alerts === 1 ? 'aviso' : 'avisos'} dos módulos`}
-                        {summary.overdue > 0 && <span className="text-red-600 dark:text-red-400"> · {summary.overdue} com prazo vencido</span>}
+                            : `${summary.today} ${summary.today === 1 ? 'tarefa' : 'tarefas'} · ${summary.alerts} ${summary.alerts === 1 ? 'aviso' : 'avisos'}`}
+                        {summary.overdue > 0 && <span className="text-red-600 dark:text-red-400"> · {summary.overdue} {summary.overdue === 1 ? 'atrasada' : 'atrasadas'}</span>}
                     </p>
                 </div>
                 <div className="flex items-center gap-1">
@@ -47,7 +47,7 @@ export default function TasksTodayWidget() {
             </div>
             {items.length > 0 && (
                 <ul className="border-t border-border/60">
-                    {items.slice(0, 6).map((item, i) => (
+                    {items.slice(0, limit).map((item, i) => (
                         <li key={item.id} className="relative">
                             {i > 0 && <div className="absolute left-[52px] right-0 top-0 h-px bg-border/60" aria-hidden />}
                             <Link
@@ -70,6 +70,15 @@ export default function TasksTodayWidget() {
                             </Link>
                         </li>
                     ))}
+                    {items.length > limit && (
+                        <li className="relative">
+                            <div className="absolute left-[52px] right-0 top-0 h-px bg-border/60" aria-hidden />
+                            <Link href="/tarefas" className="flex items-center gap-3 px-5 py-2.5 text-[15px] text-primary hover:bg-foreground/[0.03]">
+                                <span className="w-[28px] shrink-0" />
+                                Ver mais {items.length - limit}
+                            </Link>
+                        </li>
+                    )}
                 </ul>
             )}
         </section>

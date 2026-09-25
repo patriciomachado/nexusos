@@ -11,12 +11,12 @@ import { addDays, diffDays, dateStringInZone, DEFAULT_TIMEZONE } from '@/lib/tas
  *   (fixed bills, manual expenses…). A "sangria" moves cash, it isn't spending.
  */
 
-type Row = Record<string, unknown>
-const num = (v: unknown) => Number(v ?? 0) || 0
+export type Row = Record<string, unknown>
+export const num = (v: unknown) => Number(v ?? 0) || 0
 
 /** Local (Brasília) day → instant. Brasília has no DST since 2019. */
-const startOf = (day: string) => new Date(`${day}T00:00:00-03:00`).toISOString()
-const localDay = (iso: string) => dateStringInZone(DEFAULT_TIMEZONE, new Date(iso))
+export const startOf = (day: string) => new Date(`${day}T00:00:00-03:00`).toISOString()
+export const localDay = (iso: string) => dateStringInZone(DEFAULT_TIMEZONE, new Date(iso))
 const hoursBetween = (a?: unknown, b?: unknown) => {
     if (!a || !b) return null
     const h = (new Date(String(b)).getTime() - new Date(String(a)).getTime()) / 3_600_000
@@ -34,7 +34,7 @@ export function previousPeriod({ from, to }: Period): Period {
     return { from: addDays(from, -len), to: addDays(from, -1) }
 }
 
-interface Totals {
+export interface Totals {
     revenue: number
     revenueOs: number
     revenuePdv: number
@@ -45,7 +45,7 @@ interface Totals {
     sales: number
 }
 
-function totals(payments: Row[], osById: Map<string, Row>, sales: Row[], exits: Row[]): Totals {
+export function totals(payments: Row[], osById: Map<string, Row>, sales: Row[], exits: Row[]): Totals {
     const osIds = new Set<string>()
     const saleIds = new Set<string>()
     let revenueOs = 0, revenuePdv = 0, looseSales = 0
@@ -63,7 +63,7 @@ function totals(payments: Row[], osById: Map<string, Row>, sales: Row[], exits: 
     return { revenue: revenueOs + revenuePdv, revenueOs, revenuePdv, costParts, costProducts, expenses, osPaid: osIds.size, sales: saleIds.size + looseSales }
 }
 
-function isExpense(tx: Row) {
+export function isExpense(tx: Row) {
     if (tx.type !== 'exit') return false
     const source = tx.source_type as string | null
     if (source === 'service_order' || source === 'product_sale' || source === 'manual_sangria') return false
@@ -76,6 +76,13 @@ function expenseCategory(tx: Row) {
     const type = (Array.isArray(tx.transaction_types) ? tx.transaction_types[0] : tx.transaction_types as Row | null)
     const name = String(type?.name ?? '')
     return name && type?.code !== 'EXPENSE' ? name : 'Despesas avulsas'
+}
+
+export function summarize(t: Totals) {
+    const gross = t.revenue - t.costParts - t.costProducts
+    const net = gross - t.expenses
+    const tickets = t.osPaid + t.sales
+    return { revenue: t.revenue, gross, net, margin: t.revenue ? net / t.revenue : null, tickets, ticketAvg: tickets ? t.revenue / tickets : null, osPaid: t.osPaid, sales: t.sales }
 }
 
 export async function computeReport(db: SupabaseClient, companyId: string, period: Period) {
@@ -125,12 +132,6 @@ export async function computeReport(db: SupabaseClient, companyId: string, perio
     const cur = totals(curPayments, osById, sales.filter(s => inCurrent(s.created_at)), exits.filter(e => inCurrent(e.created_at)))
     const before = totals(prevPayments, osById, sales.filter(s => !inCurrent(s.created_at)), exits.filter(e => !inCurrent(e.created_at)))
 
-    const summarize = (t: Totals) => {
-        const gross = t.revenue - t.costParts - t.costProducts
-        const net = gross - t.expenses
-        const tickets = t.osPaid + t.sales
-        return { revenue: t.revenue, gross, net, margin: t.revenue ? net / t.revenue : null, tickets, ticketAvg: tickets ? t.revenue / tickets : null, osPaid: t.osPaid, sales: t.sales }
-    }
 
     // DRE lines for the current period.
     const expenseGroups = new Map<string, number>()
