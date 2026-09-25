@@ -65,6 +65,18 @@ CREATE TABLE IF NOT EXISTS customer_messages (
 CREATE INDEX IF NOT EXISTS idx_customer_messages_customer ON customer_messages(customer_id, created_at DESC);
 ALTER TABLE customer_messages ENABLE ROW LEVEL SECURITY;
 
+-- Equipe: ponto --------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS time_clock (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    kind TEXT NOT NULL CHECK (kind IN ('in', 'out')),
+    at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    note TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_time_clock_user ON time_clock(company_id, user_id, at DESC);
+ALTER TABLE time_clock ENABLE ROW LEVEL SECURITY;
+
 -- Contas a receber canceladas ficam como 'cancelled'.
 DO $$
 DECLARE
