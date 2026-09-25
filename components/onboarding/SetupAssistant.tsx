@@ -161,7 +161,7 @@ export default function SetupAssistant({ company }: { company: SetupCompany }) {
     if (!open) return null
 
     return (
-        <div className="fixed inset-0 z-[950] bg-background flex flex-col animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Configurar a loja">
+        <div className="fixed inset-0 ios-fill z-[950] bg-background flex flex-col animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Configurar a loja">
             {/* Top bar */}
             <div className="shrink-0 pt-[env(safe-area-inset-top)] border-b border-border/60 material-bar">
                 <div className="max-w-xl mx-auto h-14 px-4 flex items-center gap-3">

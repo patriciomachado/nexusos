@@ -66,7 +66,7 @@ export default function BottomNav({ userRole = 'attendant' }: { userRole?: UserR
             <div
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                    'fixed inset-0 bg-black/35 transition-opacity duration-300',
+                    'fixed inset-0 ios-fill bg-black/35 transition-opacity duration-300',
                     mobileMenuOpen ? 'opacity-100' : 'opacity-0'
                 )}
             />
@@ -74,7 +74,7 @@ export default function BottomNav({ userRole = 'attendant' }: { userRole?: UserR
             <nav
                 aria-label="Menu principal"
                 className={cn(
-                    'fixed inset-y-0 left-0 w-[86vw] max-w-sm h-full bg-background flex flex-col overflow-hidden shadow-2xl',
+                    'fixed inset-y-0 ios-fill left-0 w-[86vw] max-w-sm bg-background flex flex-col overflow-hidden shadow-2xl',
                     'transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]',
                     mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                 )}

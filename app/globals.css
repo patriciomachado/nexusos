@@ -321,6 +321,12 @@
 }
 
 @layer utilities {
+  /* iPhone installed app: stretch bottom-pinned layers over the strip iOS
+     sometimes leaves (see components/providers/IOSViewportFix.tsx). */
+  html.ios-gap .ios-fill {
+    bottom: calc(-1 * var(--ios-gap, 0px)) !important;
+  }
+
   /* Content-layer card: solid surface, hairline border (no glass in content). */
   .glass-premium {
     @apply bg-card border border-border/70 shadow-sm;

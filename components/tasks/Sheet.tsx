@@ -59,7 +59,7 @@ export default function Sheet({ open, onClose, title, subtitle, children, footer
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center sm:p-6 bg-black/35 animate-in fade-in duration-200"
+            className="fixed inset-0 ios-fill z-[1000] flex items-end sm:items-center justify-center sm:p-6 bg-black/35 animate-in fade-in duration-200"
             onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
         >
             <div

@@ -48,7 +48,7 @@ export default function PremiumModal({
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[100000] flex items-end sm:items-center justify-center sm:p-4 bg-black/35 animate-in fade-in duration-200"
+            className="fixed inset-0 ios-fill z-[100000] flex items-end sm:items-center justify-center sm:p-4 bg-black/35 animate-in fade-in duration-200"
             onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
         >
             <div
