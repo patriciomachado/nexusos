@@ -208,7 +208,7 @@ export default function ProductCatalog() {
                         <p className="text-xs font-semibold text-muted-foreground">Sincronizando Catálogo...</p>
                     </div>
                 ) : products.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 lg:gap-6">
                         {products.map((product) => (
                             <ProductCard key={product.id} product={product} />
                         ))}

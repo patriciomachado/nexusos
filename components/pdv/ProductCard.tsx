@@ -28,7 +28,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     return (
         <div className="group glass-premium bg-card/65 border border-border/60 rounded-2xl overflow-hidden hover:shadow-2xl active:scale-[0.97] transition-all duration-300 animate-in fade-in slide-in-from-bottom-4">
             {/* Image Section */}
-            <div className="relative h-48 bg-foreground/[0.03] overflow-hidden">
+            <div className="relative aspect-[4/3] lg:aspect-auto lg:h-48 bg-foreground/[0.03] overflow-hidden">
                 {/* Image Placeholder with Gradient */}
                 <div className="absolute inset-0 z-10" />
                 {product.image_url ? (
@@ -44,9 +44,9 @@ export default function ProductCard({ product }: ProductCardProps) {
                 )}
 
                 {/* Category Badge */}
-                <div className="absolute top-4 left-4 z-20">
+                <div className="absolute top-2 left-2 lg:top-4 lg:left-4 z-20 max-w-[calc(100%-1rem)]">
                     <span className={cn(
-                        "px-3 py-1 rounded-full border border-border/60 text-xs font-semibold",
+                        "block truncate px-2 lg:px-3 py-0.5 lg:py-1 rounded-full border border-border/60 text-[11px] lg:text-xs font-semibold backdrop-blur-sm",
                         isService ? "bg-orange-500/20 text-orange-500" : "bg-background/50 text-foreground"
                     )}>
                         {product.category || (isService ? 'Serviço' : 'Produto')}
@@ -55,14 +55,14 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
 
             {/* Content Section */}
-            <div className="p-5 space-y-4">
+            <div className="p-3 lg:p-5 space-y-2 lg:space-y-4">
                 <div>
-                    <h3 className="font-bold text-base text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+                    <h3 className="font-semibold lg:font-bold text-[14px] lg:text-base leading-snug text-foreground line-clamp-2 lg:line-clamp-1 min-h-[2.5em] lg:min-h-0 group-hover:text-primary transition-colors">
                         {product.name}
                     </h3>
                     <div className="flex items-center gap-2 mt-1">
                         <span className={cn(
-                            "text-xs font-bold",
+                            "text-[12px] lg:text-xs font-medium lg:font-bold",
                             !isService && Number(product.quantity_in_stock) <= Number(product.minimum_quantity) ? 'text-destructive' : 'text-muted-foreground'
                         )}>
                             {stockStatus}
@@ -70,10 +70,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-2">
-                    <div className="flex flex-col">
-                        <span className="text-xs font-semibold text-muted-foreground leading-none mb-1">Valor Final</span>
-                        <span className="text-xl font-black text-foreground tracking-tight">
+                <div className="flex items-center justify-between gap-2 lg:pt-2">
+                    <div className="flex flex-col min-w-0">
+                        <span className="hidden lg:block text-xs font-semibold text-muted-foreground leading-none mb-1">Valor Final</span>
+                        <span className="text-[17px] lg:text-xl font-bold lg:font-black text-foreground tracking-tight truncate">
                             {formatCurrency(price)}
                         </span>
                     </div>
@@ -81,7 +81,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <button
                         onClick={() => addItem(product)}
                         className={cn(
-                            "p-3 rounded-2xl transition-all active:scale-95 flex items-center gap-2 group/btn",
+                            "p-2.5 lg:p-3 rounded-xl lg:rounded-2xl shrink-0 transition-all active:scale-95 flex items-center gap-2 group/btn",
                             isService
                                 ? "bg-orange-500/10 text-orange-500 hover:bg-orange-500 hover:text-white"
                                 : "bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500 hover:text-white"
