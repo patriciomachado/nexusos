@@ -1,5 +1,6 @@
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { readDocuments } from '@/lib/settings/documents'
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 const METHOD: Record<string, string> = { dinheiro: 'Dinheiro', pix: 'Pix', cartao_debito: 'Débito', cartao_credito: 'Crédito', crediario: 'Crediário', transferencia: 'Transferência', devolucao: 'Devolução' }
@@ -16,7 +17,8 @@ export async function loadReceipt(db: SupabaseClient, companyId: string, saleId:
     const items = (sale.sale_items ?? []) as { item_name: string; quantity: number; unit_price: number; total_price: number; returned_quantity?: number }[]
     const pays = (payments ?? []).filter(p => Number(p.amount) > 0).map(p => ({ label: METHOD[p.payment_method as string] ?? String(p.payment_method), amount: Number(p.amount), installments: Number(p.installments) || 1 }))
     const code = `#${String(sale.id).slice(0, 4).toUpperCase()}`
-    const receiptFooter = ((company?.settings ?? {}) as { receipt?: { footer?: string } }).receipt?.footer ?? null
+    const doc = readDocuments(company?.settings)
+    const receiptFooter = doc.receipt_footer || null
 
     const text = [
         `*${company?.name ?? 'Loja'}* · Recibo da venda ${code}`,
@@ -30,5 +32,5 @@ export async function loadReceipt(db: SupabaseClient, companyId: string, saleId:
         receiptFooter || 'Obrigado pela preferência!',
     ].filter((l): l is string => l !== null).join('\n')
 
-    return { sale, company, customer, items, payments: pays, code, text, footer: receiptFooter }
+    return { sale, company, customer, items, payments: pays, code, text, footer: receiptFooter, doc }
 }

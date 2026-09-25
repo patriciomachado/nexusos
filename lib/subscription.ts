@@ -1,4 +1,5 @@
 import { createAdminClient } from './supabase'
+import { billingCompanyId } from './stores/server'
 
 export interface SubscriptionStatus {
     isValid: boolean
@@ -14,7 +15,7 @@ export async function getSubscriptionStatus(companyId: string): Promise<Subscrip
     const { data: subscription, error } = await db
         .from('subscriptions')
         .select('*')
-        .eq('company_id', companyId)
+        .eq('company_id', await billingCompanyId(db, companyId))
         .single()
 
     if (error || !subscription) {

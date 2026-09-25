@@ -1,103 +1,102 @@
-import PageHeader from '@/components/ui/PageHeader'
-import { auth } from '@clerk/nextjs/server'
-import { createAdminClient } from '@/lib/supabase'
-import Header from '@/components/layout/Header'
-import CompanySettingsForm from '@/components/settings/CompanySettingsForm'
-import SubscriptionSettings from '@/components/settings/SubscriptionSettings'
-import PaymentMethodsSettings from '@/components/settings/PaymentMethodsSettings'
-import { Building2, Globe, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
-import { ChevronRight, Smartphone, Wand2 } from 'lucide-react'
+import { redirect } from 'next/navigation'
+import {
+    Banknote, Bell, Building2, ChevronRight, Clock, CreditCard, Database, Download, FileText, Landmark, MessageCircle,
+    Smartphone, Sparkles, Store, Upload, UserCheck, Users, Wallet, Wand2,
+} from 'lucide-react'
+import Header from '@/components/layout/Header'
+import { SettingsRow, SettingsSection } from '@/components/settings/SettingsList'
+import { getContext } from '@/lib/security'
+import { isOwner } from '@/lib/cash/server'
+import { getCompanyPlan } from '@/lib/plan-server'
+import { PLANS } from '@/lib/plans'
+import { listStores } from '@/lib/stores/server'
 
+/** Settings hub in the iPhone "Ajustes" layout: every setting of the store in one list. */
 export default async function SettingsPage() {
-    const { userId } = await auth()
-    const db = createAdminClient()
-    const { data: user } = await db.from('users').select('company_id, role').eq('clerk_id', userId!).single()
+    const ctx = await getContext()
+    if (!ctx) redirect('/entrar')
+    const { db, companyId, role, userId } = ctx
+    const owner = isOwner(role)
 
-    if (user?.role !== 'admin') {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[80vh] p-8 text-center space-y-8 animate-fade-in">
-                <div className="p-8 rounded-2xl bg-rose-500/10 text-rose-500 relative">
-                    <div className="absolute inset-0 bg-rose-500/20 blur-[60px] rounded-full" />
-                    <ShieldCheck className="w-20 h-20 relative z-10" />
-                </div>
-                <div className="space-y-4">
-                    <h1 className="text-[28px] sm:text-[34px] leading-tight font-black text-foreground tracking-tighter">Barreira de Segurança</h1>
-                    <p className="text-muted-foreground text-lg max-w-sm mx-auto font-medium leading-relaxed">
-                        Seu nível de acesso atual não permite a modificação de parâmetros estruturais do sistema.
-                    </p>
-                </div>
-                <button className="bg-muted px-8 py-4 rounded-2xl font-semibold text-[13px] hover:bg-muted/80 transition-all">Solicitar Acesso Master</button>
-            </div>
-        )
-    }
-
-    const { data: company } = await db.from('companies').select('*').eq('id', user?.company_id).single()
+    const [{ data: company }, plan, stores] = await Promise.all([
+        db.from('companies').select('name, logo_url, city, state, parent_company_id').eq('id', companyId).single(),
+        getCompanyPlan(db, companyId),
+        listStores(db, userId, companyId, role).catch(() => []),
+    ])
 
     return (
-        <div className="animate-fade-in pb-20 bg-background min-h-screen transition-colors duration-300">
-            <Header title="Configuração Estrutural" />
+        <div className="min-h-full bg-background">
+            <Header title="Configurações" />
+            <div className="max-w-2xl mx-auto px-4 pt-4 pb-16 space-y-6">
+                <Link href={owner ? '/settings/loja' : '/profile'} className="flex items-center gap-4 rounded-2xl bg-card border border-border/60 p-4 hover:bg-foreground/[0.02] transition-colors">
+                    {company?.logo_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={company.logo_url} alt="" className="w-14 h-14 rounded-full object-cover bg-white border border-border/60" />
+                    ) : (
+                        <span className="w-14 h-14 rounded-full bg-primary/10 text-primary text-[22px] font-semibold flex items-center justify-center">{company?.name?.charAt(0)?.toUpperCase() ?? 'N'}</span>
+                    )}
+                    <span className="flex-1 min-w-0">
+                        <span className="block text-[20px] font-semibold truncate">{company?.name ?? 'Minha loja'}</span>
+                        <span className="block text-[14px] text-muted-foreground truncate">
+                            {[company?.parent_company_id ? 'Filial' : stores.length > 1 ? 'Matriz' : null, [company?.city, company?.state].filter(Boolean).join(' - ') || null, `Plano ${PLANS[plan].name}`].filter(Boolean).join(' · ')}
+                        </span>
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/60" />
+                </Link>
 
-            <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-10 space-y-12 max-w-screen-2xl mx-auto">
+                {owner ? (
+                    <>
+                        <SettingsSection>
+                            <SettingsRow href="/settings/loja" icon={Building2} color="bg-blue-500" label="Dados da loja" detail="Nome, logo, endereço, garantia e avaliação" />
+                            <SettingsRow href="/settings/lojas" icon={Store} color="bg-indigo-500" label="Lojas e filiais" value={stores.length > 1 ? `${stores.length} lojas` : undefined} />
+                            <SettingsRow href="/settings/subscription" icon={Sparkles} color="bg-violet-500" label="Plano" value={PLANS[plan].name} />
+                        </SettingsSection>
 
-                {/* Section: System Identity */}
-                <div className="space-y-6">
-                    <PageHeader
-                        eyebrow="Identidade Corporativa"
-                        title="Perfil do Sistema"
-                        subtitle="Configure os dados que serão exibidos em ordens de serviço, recibos e comunicações oficiais."
-                    />
+                        <SettingsSection title="Vendas e dinheiro">
+                            <SettingsRow href="/settings/pagamentos" icon={CreditCard} color="bg-emerald-500" label="Formas de pagamento" />
+                            <SettingsRow href="/cash-register?ajustes=1" icon={Wallet} color="bg-green-600" label="Caixa e maquininha" detail="Taxas, limite de sangria, senha do dono e relatório" />
+                            <SettingsRow href="/contas" icon={Landmark} color="bg-teal-600" label="Contas a pagar e receber" />
+                        </SettingsSection>
 
-                    <div className="p-10 rounded-2xl glass-premium bg-card/65 border border-border/60 overflow-hidden relative group transition-all duration-300">
-                        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/3 group-hover:bg-indigo-500/10 transition-colors duration-700" />
-                        <CompanySettingsForm company={company} companyId={user?.company_id} />
-                    </div>
-                </div>
+                        <SettingsSection title="Documentos">
+                            <SettingsRow href="/settings/documentos" icon={FileText} color="bg-orange-500" label="Recibo e OS" detail="Cores, logo, textos e termos impressos" />
+                        </SettingsSection>
 
-                <div className="grid lg:grid-cols-2 gap-12">
-                    {/* Section: Subscription */}
-                    <div className="relative z-10 space-y-3">
-                        {company && <SubscriptionSettings company={company} />}
-                        <Link href="/dashboard?configurar=1" className="flex items-center gap-4 rounded-2xl bg-card border border-border/60 p-5 hover:bg-foreground/[0.02] transition-colors">
-                            <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                                <Wand2 className="w-5 h-5" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-[17px] font-semibold">Assistente de configuração</p>
-                                <p className="text-[14px] text-muted-foreground">Rever nome, logo, endereço, garantia e link do Google</p>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                        </Link>
-                        <Link href="/settings/tela" className="flex items-center gap-4 rounded-2xl bg-card border border-border/60 p-5 hover:bg-foreground/[0.02] transition-colors">
-                            <div className="w-11 h-11 rounded-xl bg-foreground/[0.06] text-muted-foreground flex items-center justify-center shrink-0">
-                                <Smartphone className="w-5 h-5" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-[17px] font-semibold">Diagnóstico da tela</p>
-                                <p className="text-[14px] text-muted-foreground">Mede a tela do celular quando o app aparece cortado</p>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                        </Link>
-                    </div>
+                        <SettingsSection title="Pessoas">
+                            <SettingsRow href="/team" icon={Users} color="bg-sky-500" label="Equipe" detail="Convites, comissões e metas" />
+                            <SettingsRow href="/team?tab=perms" icon={UserCheck} color="bg-cyan-600" label="Permissões por função" />
+                            <SettingsRow href="/team?tab=clock" icon={Clock} color="bg-slate-500" label="Ponto" />
+                        </SettingsSection>
 
-                    {/* Section: Financial Gateways */}
-                    <div className="lg:col-span-2 space-y-8">
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs font-semibold text-primary/60">Gateways de Recebimento</span>
-                            </div>
-                            <h2 className="text-3xl font-black text-foreground tracking-tighter">Métodos de Pagamento</h2>
-                        </div>
-                        <div className="p-10 rounded-2xl glass-premium bg-card/65 border border-border/60 relative overflow-hidden group transition-all duration-300 hover:border-primary/20">
-                            <div className="absolute top-0 left-0 w-96 h-96 bg-primary/5 blur-[100px] rounded-full -translate-x-1/2 -translate-y-1/2 group-hover:bg-primary/10 transition-colors" />
-                            <div className="relative z-10">
-                                <PaymentMethodsSettings />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        <SettingsSection title="Clientes e WhatsApp">
+                            <SettingsRow href="/alice" icon={MessageCircle} color="bg-green-500" label="Alice e WhatsApp" detail="Assistente de IA e número conectado" />
+                            <SettingsRow href="/customers?automacoes=1" icon={Bell} color="bg-rose-500" label="Mensagens automáticas" detail="Aniversário, pós-venda e revisão" />
+                        </SettingsSection>
+
+                        <SettingsSection title="Dados" footer="Exporte planilhas quando quiser e guarde um backup completo da loja.">
+                            <SettingsRow href="/settings/exportar" icon={Download} color="bg-blue-600" label="Exportar e backup" />
+                            <SettingsRow href="/settings/import" icon={Upload} color="bg-zinc-500" label="Importar dados" />
+                        </SettingsSection>
+
+                        <SettingsSection title="Sistema">
+                            <SettingsRow href="/dashboard?configurar=1" icon={Wand2} color="bg-fuchsia-500" label="Assistente de configuração" />
+                            <SettingsRow href="/settings/tela" icon={Smartphone} color="bg-zinc-600" label="Diagnóstico da tela" detail="Quando o app aparece cortado no celular" />
+                        </SettingsSection>
+                    </>
+                ) : (
+                    <>
+                        <SettingsSection>
+                            <SettingsRow href="/team?tab=clock" icon={Clock} color="bg-slate-500" label="Meu ponto" />
+                            {stores.length > 1 && <SettingsRow href="/settings/lojas" icon={Store} color="bg-indigo-500" label="Trocar de loja" value={`${stores.length} lojas`} />}
+                            {role === 'manager' && <SettingsRow href="/settings/exportar" icon={Database} color="bg-blue-600" label="Exportar planilhas" />}
+                            {role === 'manager' && <SettingsRow href="/contas" icon={Banknote} color="bg-teal-600" label="Contas a pagar e receber" />}
+                            <SettingsRow href="/settings/tela" icon={Smartphone} color="bg-zinc-600" label="Diagnóstico da tela" />
+                        </SettingsSection>
+                        <p className="px-4 text-[13px] text-muted-foreground">Os demais ajustes da loja ficam com o dono.</p>
+                    </>
+                )}
             </div>
         </div>
     )
 }
-

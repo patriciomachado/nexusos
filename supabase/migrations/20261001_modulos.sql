@@ -94,4 +94,24 @@ ALTER TABLE payments
     ADD CONSTRAINT payments_payment_status_check
     CHECK (payment_status IN ('pending', 'completed', 'failed', 'refunded', 'partial', 'cancelled')) NOT VALID;
 
+-- ---------------------------------------------------------------------------
+-- Configurações: lojas e filiais
+-- ---------------------------------------------------------------------------
+-- Uma filial é uma empresa com parent_company_id apontando para a matriz; a
+-- assinatura da matriz vale para as filiais.
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS parent_company_id UUID REFERENCES companies(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_companies_parent ON companies(parent_company_id);
+
+-- Quem pode trocar para qual loja (e com qual função lá).
+CREATE TABLE IF NOT EXISTS store_access (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    clerk_id VARCHAR(255) NOT NULL,
+    company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    role VARCHAR(50) NOT NULL DEFAULT 'admin',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (clerk_id, company_id)
+);
+CREATE INDEX IF NOT EXISTS idx_store_access_clerk ON store_access(clerk_id);
+ALTER TABLE store_access ENABLE ROW LEVEL SECURITY;
+
 NOTIFY pgrst, 'reload schema';

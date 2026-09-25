@@ -38,7 +38,7 @@ const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCa
 const daysSince = (iso: string | null) => (iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000) : Infinity)
 const initials = (n: string) => n.split(' ').filter(Boolean).slice(0, 2).map(p => p[0]?.toUpperCase()).join('')
 
-export default function CustomersClient({ role }: { role: string }) {
+export default function CustomersClient({ role, openAutomations }: { role: string; openAutomations?: boolean }) {
     const manager = ['admin', 'owner', 'manager'].includes(role)
     const [rows, setRows] = useState<CustomerRow[]>([])
     const [loading, setLoading] = useState(true)
@@ -46,7 +46,7 @@ export default function CustomersClient({ role }: { role: string }) {
     const [imeiIds, setImeiIds] = useState<string[] | null>(null)
     const [segment, setSegment] = useState<Segment>('all')
     const [campaign, setCampaign] = useState(false)
-    const [autoOpen, setAutoOpen] = useState(false)
+    const [autoOpen, setAutoOpen] = useState(!!openAutomations)
 
     const load = useCallback(() => {
         fetch('/api/customers/insights').then(r => r.json()).then(d => setRows(Array.isArray(d.data) ? d.data : [])).catch(() => toast.error('Não foi possível carregar os clientes')).finally(() => setLoading(false))

@@ -1,6 +1,7 @@
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { billingCompanyId } from './stores/server'
 import { FEATURE_INFO, hasFeature, type Feature, type PlanId } from './plans'
 
 /**
@@ -9,7 +10,7 @@ import { FEATURE_INFO, hasFeature, type Feature, type PlanId } from './plans'
  */
 export async function getCompanyPlan(db: SupabaseClient, companyId: string | null | undefined): Promise<PlanId> {
     if (!companyId) return 'pro'
-    const { data, error } = await db.from('subscriptions').select('status, plan').eq('company_id', companyId).maybeSingle()
+    const { data, error } = await db.from('subscriptions').select('status, plan').eq('company_id', await billingCompanyId(db, companyId)).maybeSingle()
     if (error || !data) return 'pro'
     if (data.status === 'trial') return 'pro'
     return data.plan === 'essencial' ? 'essencial' : 'pro'

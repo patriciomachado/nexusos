@@ -29,8 +29,9 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
             </div>
             <div className="print-report receipt max-w-[380px] mx-auto rounded-2xl bg-white text-black p-5 font-mono text-[13px] leading-relaxed shadow-sm">
                 <div className="text-center">
-                    {company?.logo_url && <img src={company.logo_url} alt="" className="h-12 mx-auto mb-1 object-contain" />}
+                    {r.doc.show_logo && company?.logo_url && <img src={company.logo_url} alt="" className="h-12 mx-auto mb-1 object-contain" />}
                     <p className="font-bold text-[15px]">{company?.name}</p>
+                    {r.doc.tagline && <p>{r.doc.tagline}</p>}
                     {company?.cnpj && <p>CNPJ {company.cnpj}</p>}
                     {where && <p>{where}</p>}
                     {company?.phone && <p>{company.phone}</p>}

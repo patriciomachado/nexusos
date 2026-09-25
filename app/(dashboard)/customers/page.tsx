@@ -3,11 +3,12 @@ import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
 import CustomersClient from './CustomersClient'
 
-export default async function CustomersPage() {
+export default async function CustomersPage({ searchParams }: { searchParams: Promise<{ automacoes?: string }> }) {
+    const { automacoes } = await searchParams
     const { userId } = await auth()
     if (!userId) redirect('/entrar')
     const db = createAdminClient()
     const { data: user } = await db.from('users').select('role').eq('clerk_id', userId).single()
     if (!user || user.role === 'customer') redirect('/dashboard')
-    return <CustomersClient role={user.role ?? 'attendant'} />
+    return <CustomersClient role={user.role ?? 'attendant'} openAutomations={automacoes === '1'} />
 }

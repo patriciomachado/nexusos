@@ -50,7 +50,7 @@ export const navGroups: NavGroup[] = [
             { href: '/contas', label: 'Contas a pagar e receber', icon: ReceiptText, roles: ['admin', 'owner', 'manager'], tint: 'bg-sky-500' },
             { href: '/team', label: 'Equipe e ponto', icon: Users2, roles: ['admin', 'owner', 'manager', 'cashier', 'technician', 'attendant', 'talento'], tint: 'bg-purple-500' },
             { href: '/reports', label: 'Relatórios', icon: BarChart3, roles: ['admin', 'manager'], tint: 'bg-indigo-500' },
-            { href: '/settings', label: 'Configurações', icon: Settings, roles: ['admin'], tint: 'bg-zinc-500' },
+            { href: '/settings', label: 'Configurações', icon: Settings, roles: ['admin', 'owner', 'manager', 'cashier', 'technician', 'attendant', 'talento'], tint: 'bg-zinc-500' },
         ]
     }
 ]

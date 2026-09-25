@@ -54,10 +54,13 @@ async function send(url: string, method: string, body?: unknown) {
     return d
 }
 
-export default function TeamClient({ role, meId, storeName }: { role: string; meId: string; storeName: string }) {
+type Tab = 'people' | 'perf' | 'clock' | 'log' | 'perms'
+
+export default function TeamClient({ role, meId, storeName, initialTab }: { role: string; meId: string; storeName: string; initialTab?: string }) {
     const manager = ['admin', 'owner', 'manager'].includes(role)
     const owner = ['admin', 'owner'].includes(role)
-    const [tab, setTab] = useState<'people' | 'perf' | 'clock' | 'log' | 'perms'>(manager ? 'people' : 'clock')
+    const allowed: Tab[] = owner ? ['people', 'perf', 'clock', 'log', 'perms'] : manager ? ['people', 'perf', 'clock', 'log'] : ['clock']
+    const [tab, setTab] = useState<Tab>(allowed.includes(initialTab as Tab) ? initialTab as Tab : manager ? 'people' : 'clock')
 
     return (
         <div className="min-h-full bg-background">
