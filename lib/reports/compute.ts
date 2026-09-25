@@ -1,6 +1,7 @@
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { addDays, diffDays, dateStringInZone, DEFAULT_TIMEZONE } from '@/lib/tasks/dates'
+import { extraExpenses } from './extra'
 
 /**
  * Store reports for a period, with the same-length previous period for
@@ -8,7 +9,8 @@ import { addDays, diffDays, dateStringInZone, DEFAULT_TIMEZONE } from '@/lib/tas
  * - Revenue: completed payments (OS billed + PDV sales) by payment date.
  * - Cost of sales: parts of the billed OS + cost of the products sold.
  * - Expenses: cash exits that aren't a cost of sale or a withdrawal
- *   (fixed bills, manual expenses…). A "sangria" moves cash, it isn't spending.
+ *   (bills, manual expenses…), bills paid from the bank and the card
+ *   machine fees. A "sangria" moves cash, it isn't spending.
  */
 
 export type Row = Record<string, unknown>
@@ -72,7 +74,8 @@ export function isExpense(tx: Row) {
 }
 
 function expenseCategory(tx: Row) {
-    if (tx.source_type === 'recurring_expense') return 'Contas fixas'
+    if (tx.source_type === 'recurring_expense' || tx.source_type === 'bill' || tx.source_type === 'bill_bank') return 'Contas'
+    if (tx.source_type === 'card_fee') return 'Taxas da maquininha'
     const type = (Array.isArray(tx.transaction_types) ? tx.transaction_types[0] : tx.transaction_types as Row | null)
     const name = String(type?.name ?? '')
     return name && type?.code !== 'EXPENSE' ? name : 'Despesas avulsas'
@@ -96,7 +99,7 @@ export async function computeReport(db: SupabaseClient, companyId: string, perio
     const registerIds = (registers ?? []).map(r => r.id as string)
 
     const [paymentsRes, salesRes, exitsRes, createdOsRes, techsRes, companyRes, newCustRes, prevNewCustRes] = await Promise.all([
-        db.from('payments').select('amount, payment_date, service_order_id, sale_id, customer_id')
+        db.from('payments').select('amount, payment_date, payment_method, service_order_id, sale_id, customer_id')
             .eq('company_id', companyId).eq('payment_status', 'completed').gte('payment_date', prevFromIso).lt('payment_date', toIso).limit(20000),
         db.from('sales').select('id, total_cost, final_amount, created_at, status')
             .eq('company_id', companyId).gte('created_at', prevFromIso).lt('created_at', toIso).limit(20000),
@@ -128,7 +131,7 @@ export async function computeReport(db: SupabaseClient, companyId: string, perio
     }
 
     const sales = ((salesRes.data ?? []) as Row[]).filter(s => !['cancelled', 'cancelada', 'canceled'].includes(String(s.status)))
-    const exits = ((exitsRes.data ?? []) as Row[]).filter(isExpense)
+    const exits = [...((exitsRes.data ?? []) as Row[]).filter(isExpense), ...await extraExpenses(db, companyId, prevFromIso, toIso, payments)]
     const cur = totals(curPayments, osById, sales.filter(s => inCurrent(s.created_at)), exits.filter(e => inCurrent(e.created_at)))
     const before = totals(prevPayments, osById, sales.filter(s => !inCurrent(s.created_at)), exits.filter(e => !inCurrent(e.created_at)))
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getContext, unauthorizedResponse } from '@/lib/security'
+import { getContext, unauthorizedResponse, forbiddenResponse } from '@/lib/security'
+import { isOwner } from '@/lib/cash/server'
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const ctx = await getContext()
@@ -7,6 +8,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     const { db, companyId } = ctx
     const { id } = await params
+    if (!isOwner(ctx.role)) return forbiddenResponse()
 
     try {
         // Delete associated cash transactions first

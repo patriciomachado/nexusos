@@ -9,7 +9,7 @@ import { PrimaryButton, SecondaryButton, brl } from '@/components/ui/form'
 import { Amount } from '@/components/dashboard/Privacy'
 import { TransactionSheet } from './CashSheets'
 import TxRow from './TxRow'
-import { type CashTx, cleanDescription, dayLabel, isCostRecord, num, sourceLabel, timeOf } from './cash-utils'
+import { type CashSettingsView, type CashTx, cleanDescription, dayLabel, feeRule, isCostRecord, methodGroup, num, sourceLabel, timeOf } from './cash-utils'
 import { cn } from '@/lib/utils'
 
 interface Register {
@@ -24,6 +24,7 @@ interface Register {
 
 type Payment = {
     id: string
+    payment_status?: string | null
     amount: number | string
     created_at: string
     payment_date?: string | null
@@ -44,7 +45,7 @@ function monthKey(d: Date) {
  * past closings. Payments that never went through a cash register (older
  * records) are merged in so the month total matches what was received.
  */
-export default function TransactionHistory({ registers, onChanged }: { registers: Register[]; onChanged: () => void }) {
+export default function TransactionHistory({ registers, onChanged, settings = null }: { registers: Register[]; onChanged: () => void; settings?: CashSettingsView | null }) {
     const [txs, setTxs] = useState<CashTx[]>([])
     const [payments, setPayments] = useState<Payment[]>([])
     const [loading, setLoading] = useState(true)
@@ -71,7 +72,7 @@ export default function TransactionHistory({ registers, onChanged }: { registers
 
     // Cash movements + payments that have no matching movement (same source and amount, or same amount within 5s).
     const all = useMemo<CashTx[]>(() => {
-        const extra = payments.filter(p => {
+        const extra = payments.filter(p => (p.payment_status ?? 'completed') === 'completed').filter(p => {
             const src = p.reference_id || p.service_order_id || p.sale_id || p.id
             return !txs.some(tx =>
                 num(tx.amount) === num(p.amount) &&
@@ -93,14 +94,16 @@ export default function TransactionHistory({ registers, onChanged }: { registers
     const inMonth = useMemo(() => all.filter(t => month === 'all' || monthKey(new Date(t.created_at)) === month), [all, month])
 
     const m = useMemo(() => {
-        let revenue = 0, supply = 0, expenses = 0, withdrawals = 0, costs = 0
+        let revenue = 0, supply = 0, expenses = 0, withdrawals = 0, costs = 0, fees = 0
         const seen = new Set<string>()
         for (const t of inMonth) {
             const a = num(t.amount)
             const src = t.source_type
             if (t.type === 'entry') {
-                if (src === 'service_order' || src === 'product_sale' || src === 'payment') {
+                if (src === 'service_order' || src === 'product_sale' || src === 'payment' || src === 'receivable') {
                     revenue += a
+                    const rule = feeRule(methodGroup(t), settings)
+                    if (rule) fees += Math.round(a * rule.rate) / 100
                     const key = t.source_id || t.id
                     if (!seen.has(key)) {
                         seen.add(key)
@@ -112,9 +115,9 @@ export default function TransactionHistory({ registers, onChanged }: { registers
                 else expenses += a
             }
         }
-        const net = revenue - costs - expenses
-        return { revenue, supply, expenses, withdrawals, costs, net, margin: revenue > 0 ? net / revenue : null }
-    }, [inMonth])
+        const net = revenue - costs - expenses - fees
+        return { revenue, supply, expenses, withdrawals, costs, fees, net, margin: revenue > 0 ? net / revenue : null }
+    }, [inMonth, settings])
 
     const shown = useMemo(() => {
         const q = query.trim().toLowerCase()
@@ -186,10 +189,10 @@ export default function TransactionHistory({ registers, onChanged }: { registers
             </div>
 
             <section aria-label="Resumo do período" className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <Tile label="Faturamento" foot={`${inMonth.filter(t => t.type === 'entry' && ['service_order', 'product_sale', 'payment'].includes(t.source_type ?? '')).length} recebimentos`}><Amount value={m.revenue} /></Tile>
+                <Tile label="Faturamento" foot={`${inMonth.filter(t => t.type === 'entry' && ['service_order', 'product_sale', 'payment', 'receivable'].includes(t.source_type ?? '')).length} recebimentos`}><Amount value={m.revenue} /></Tile>
                 <Tile label="Lucro líquido" foot={m.margin == null ? 'sem faturamento' : `margem de ${(m.margin * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`}><Amount value={m.net} /></Tile>
                 <Tile label="Custo de peças e produtos"><Amount value={m.costs} /></Tile>
-                <Tile label="Despesas" foot={m.withdrawals > 0 ? <>Sangrias: <Amount value={m.withdrawals} plain /></> : undefined}><Amount value={m.expenses} /></Tile>
+                <Tile label="Despesas e taxas" foot={<>{m.fees > 0 && <>Maquininha: <Amount value={m.fees} plain /></>}{m.fees > 0 && m.withdrawals > 0 && ' · '}{m.withdrawals > 0 && <>Sangrias: <Amount value={m.withdrawals} plain /></>}</>}><Amount value={m.expenses + m.fees} /></Tile>
             </section>
 
             <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-6 lg:items-start">
@@ -251,7 +254,7 @@ export default function TransactionHistory({ registers, onChanged }: { registers
                         )}
                     </ul>
                     <p className="px-4 text-[13px] text-muted-foreground">
-                        Lucro líquido = faturamento − custo de peças e produtos − despesas. Suprimentos e sangrias só movem dinheiro e não contam como lucro ou despesa.
+                        Lucro líquido = faturamento − custo de peças e produtos − despesas pagas no caixa − taxas da maquininha. Suprimentos e sangrias só movem dinheiro. Contas pagas pelo banco aparecem em Relatórios.
                     </p>
                 </aside>
             </div>

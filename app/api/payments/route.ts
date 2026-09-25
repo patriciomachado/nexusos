@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { paymentSchema } from '@/lib/validations/schemas'
+import { findOpenRegister } from '@/lib/cash/server'
 
 export async function GET(req: NextRequest) {
     const ctx = await getContext()
@@ -49,12 +50,7 @@ export async function POST(req: NextRequest) {
 
     // 1. If there's an open cash register, record a transaction there too
     if (validation.data.payment_status === 'completed') {
-        const { data: openRegister } = await db
-            .from('cash_registers')
-            .select('id')
-            .eq('company_id', companyId)
-            .eq('status', 'open')
-            .maybeSingle()
+        const openRegister = await findOpenRegister(db, companyId, dbUser.id)
 
         if (openRegister) {
             // Map payment method string to ID

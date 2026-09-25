@@ -8,12 +8,9 @@ export default async function CashRegisterPage() {
     if (!userId) redirect('/entrar')
 
     const db = createAdminClient()
-    const { data: currentUser } = await db.from('users').select('role').eq('clerk_id', userId).single()
+    const { data: currentUser } = await db.from('users').select('id, role').eq('clerk_id', userId).single()
+    if (!currentUser) redirect('/dashboard')
 
-    // Only Admin and Manager can access Cash Register
-    if (currentUser?.role !== 'admin' && currentUser?.role !== 'manager') {
-        redirect('/dashboard')
-    }
-
-    return <CashRegisterClient />
+    // Everyone can run their own register; managers also see the others and the history.
+    return <CashRegisterClient role={currentUser.role ?? 'attendant'} userId={currentUser.id} />
 }

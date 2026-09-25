@@ -1,7 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { CalendarClock, ChevronRight, Lock, Minus, Plus, RefreshCw, Unlock, Wallet } from 'lucide-react'
+import Link from 'next/link'
+import { ChevronRight, Landmark, Lock, Minus, Plus, ReceiptText, RefreshCw, Settings2, Unlock, Wallet } from 'lucide-react'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { toast } from 'sonner'
 import Header from '@/components/layout/Header'
@@ -10,18 +11,22 @@ import { PrimaryButton, brl } from '@/components/ui/form'
 import { Amount, PrivacyProvider, PrivacyToggle, PrivateBlock } from '@/components/dashboard/Privacy'
 import VizScope from '@/components/reports/VizScope'
 import { CloseCashSheet, MovementSheet, OpenCashSheet, TransactionSheet } from '@/components/cash/CashSheets'
+import CashSettingsSheet from '@/components/cash/CashSettingsSheet'
 import TransactionHistory from '@/components/cash/TransactionHistory'
-import RecurringExpensesModal from '@/components/financeiro/RecurringExpensesModal'
 import TxRow from '@/components/cash/TxRow'
-import { type CashTx, METHOD_GROUPS, drawerCash, methodGroup, num, timeOf } from '@/components/cash/cash-utils'
+import { type CashSettingsView, type CashTx, METHOD_GROUPS, drawerCash, feeRule, methodGroup, num, timeOf } from '@/components/cash/cash-utils'
 import { cn, getLocalDateString } from '@/lib/utils'
 
 interface Register {
     id: string
+    user_id: string
     opened_at: string
     closed_at?: string | null
     opening_balance: number | string
     closing_balance?: number | string | null
+    counted_cash?: number | string | null
+    cash_difference?: number | string | null
+    left_in_drawer?: number | string | null
     status: 'open' | 'closed'
     users?: { full_name?: string } | null
 }
@@ -31,12 +36,19 @@ async function getJson(url: string) {
     return res.json()
 }
 const list = (d: unknown): CashTx[] => (Array.isArray(d) ? d : Array.isArray((d as { data?: unknown })?.data) ? (d as { data: CashTx[] }).data : [])
+const firstName = (r: Register) => r.users?.full_name?.split(' ')[0] ?? 'Operador'
+const SALE_SOURCES = ['service_order', 'product_sale', 'receivable']
 
-export default function CashRegisterClient() {
+export default function CashRegisterClient({ role, userId }: { role: string; userId: string }) {
+    const manager = ['admin', 'owner', 'manager'].includes(role)
+    const owner = ['admin', 'owner'].includes(role)
     const [tab, setTab] = useState<'today' | 'history'>('today')
+    const [viewId, setViewId] = useState<string | null>(null)
     const [register, setRegister] = useState<Register | null>(null)
+    const [openRegs, setOpenRegs] = useState<Register[]>([])
     const [txs, setTxs] = useState<CashTx[]>([])
     const [registers, setRegisters] = useState<Register[]>([])
+    const [settings, setSettings] = useState<CashSettingsView | null>(null)
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
     const [filter, setFilter] = useState<'all' | 'entry' | 'exit'>('all')
@@ -45,16 +57,27 @@ export default function CashRegisterClient() {
     const [openSheet, setOpenSheet] = useState(false)
     const [closeSheet, setCloseSheet] = useState(false)
     const [movement, setMovement] = useState<'entry' | 'exit' | null>(null)
-    const [recurring, setRecurring] = useState(false)
+    const [settingsOpen, setSettingsOpen] = useState(false)
     const [selected, setSelected] = useState<CashTx | null>(null)
+
+    const loadSettings = useCallback(() => {
+        getJson('/api/cash-settings').then(d => { if (d && d.fees) setSettings(d) }).catch(() => {})
+    }, [])
 
     const load = useCallback(async () => {
         setRefreshing(true)
         try {
-            const [cur, regs] = await Promise.all([getJson('/api/cash-registers/current'), getJson('/api/cash-registers')])
-            const current: Register | null = cur && !cur.error && cur.id ? cur : null
+            const [cur, regs, opens] = await Promise.all([
+                getJson(viewId ? `/api/cash-registers/current?id=${viewId}` : '/api/cash-registers/current?mine=1'),
+                getJson('/api/cash-registers'),
+                manager ? getJson('/api/cash-registers?status=open&list=1') : Promise.resolve(null),
+            ])
+            let current: Register | null = cur && !cur.error && cur.id ? cur : null
+            if (current && current.status !== 'open') current = null
+            if (viewId && !current) setViewId(null)
             setRegister(current)
             setRegisters(Array.isArray(regs?.data) ? regs.data : [])
+            setOpenRegs(Array.isArray(opens?.data) ? opens.data : [])
             const t = current
                 ? await getJson(`/api/cash-transactions?cash_register_id=${current.id}`)
                 : await getJson(`/api/cash-transactions?date=${getLocalDateString()}`)
@@ -66,32 +89,48 @@ export default function CashRegisterClient() {
             setLoading(false)
             setRefreshing(false)
         }
-    }, [])
+    }, [viewId, manager])
 
     useEffect(() => {
-         
         load()
     }, [load])
+    useEffect(() => {
+        loadSettings()
+    }, [loadSettings])
 
     const opening = num(register?.opening_balance)
     const s = useMemo(() => {
-        let entries = 0, exits = 0, sales = 0
-        const byMethod: Record<string, number> = { cash: 0, pix: 0, card: 0, other: 0 }
+        let entries = 0, exits = 0, sales = 0, fees = 0
+        const byMethod: Record<string, number> = { cash: 0, pix: 0, debit: 0, credit: 0, other: 0 }
+        const landing = new Map<string, number>()
         for (const tx of txs) {
             const a = num(tx.amount)
             if (tx.type === 'entry') {
                 entries += a
-                if (tx.source_type === 'service_order' || tx.source_type === 'product_sale') {
+                if (SALE_SOURCES.includes(tx.source_type ?? '')) {
                     sales += 1
-                    byMethod[methodGroup(tx)] += a
+                    const g = methodGroup(tx)
+                    byMethod[g] += a
+                    const rule = feeRule(g, settings)
+                    if (rule) {
+                        const fee = Math.round(a * rule.rate) / 100
+                        fees += fee
+                        if (rule.days > 0) {
+                            const d = new Date(tx.created_at)
+                            d.setDate(d.getDate() + rule.days)
+                            const key = d.toLocaleDateString('sv-SE')
+                            landing.set(key, (landing.get(key) ?? 0) + a - fee)
+                        }
+                    }
                 }
             } else {
                 exits += a
             }
         }
         const received = Object.values(byMethod).reduce((x, y) => x + y, 0)
-        return { entries, exits, sales, byMethod, received, balance: opening + entries - exits, drawer: drawerCash(opening, txs) }
-    }, [txs, opening])
+        const upcoming = [...landing].sort(([a], [b]) => a.localeCompare(b)).slice(0, 4)
+        return { entries, exits, sales, byMethod, received, fees, upcoming, balance: opening + entries - exits, drawer: drawerCash(opening, txs) }
+    }, [txs, opening, settings])
 
     const chart = useMemo(() => {
         if (!register) return []
@@ -105,7 +144,14 @@ export default function CashRegisterClient() {
     }, [register, txs, opening])
 
     const shown = txs.filter(t => filter === 'all' || t.type === filter)
-    const lastClosed = registers.find(r => r.status === 'closed')
+    const mineOpen = openRegs.find(r => r.user_id === userId)
+    const others = openRegs.filter(r => r.user_id !== userId)
+    const isMine = !!register && register.user_id === userId
+    const canAct = !!register && (isMine || manager)
+    const myLastClosed = registers.find(r => r.status === 'closed' && r.user_id === userId)
+    const suggested = myLastClosed?.left_in_drawer != null ? num(myLastClosed.left_in_drawer) : null
+    const closings = registers.filter(r => r.status === 'closed')
+    const pinOver = !owner && settings && settings.sangria_limit > 0 ? settings.sangria_limit : null
 
     return (
         <div className="min-h-full bg-background">
@@ -113,13 +159,25 @@ export default function CashRegisterClient() {
             <PrivacyProvider>
                 <div className="max-w-6xl mx-auto px-4 lg:px-8 pt-4 pb-10 space-y-4">
                     <div className="flex items-center justify-between gap-3">
-                        <Segmented
-                            ariaLabel="Ver"
-                            value={tab}
-                            onChange={setTab}
-                            options={[{ value: 'today', label: 'Hoje' }, { value: 'history', label: 'Histórico' }]}
-                        />
+                        {manager ? (
+                            <Segmented
+                                ariaLabel="Ver"
+                                value={tab}
+                                onChange={setTab}
+                                options={[{ value: 'today', label: 'Hoje' }, { value: 'history', label: 'Histórico' }]}
+                            />
+                        ) : <span className="text-[15px] text-muted-foreground px-1">Meu caixa</span>}
                         <div className="flex items-center gap-2">
+                            {owner && (
+                                <button
+                                    type="button"
+                                    onClick={() => setSettingsOpen(true)}
+                                    aria-label="Ajustes do caixa"
+                                    className="w-10 h-10 rounded-full bg-foreground/[0.06] hover:bg-foreground/[0.1] flex items-center justify-center"
+                                >
+                                    <Settings2 className="w-[18px] h-[18px]" />
+                                </button>
+                            )}
                             <button
                                 type="button"
                                 onClick={load}
@@ -132,8 +190,17 @@ export default function CashRegisterClient() {
                         </div>
                     </div>
 
-                    {tab === 'history' ? (
-                        <TransactionHistory key={historyKey} registers={registers} onChanged={load} />
+                    {manager && (others.length > 0 || viewId) && tab === 'today' && (
+                        <nav aria-label="Caixas abertos" className="flex items-center gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4">
+                            <SwitchPill on={!viewId} onClick={() => setViewId(null)}>Meu caixa{mineOpen ? '' : ' (fechado)'}</SwitchPill>
+                            {others.map(r => (
+                                <SwitchPill key={r.id} on={viewId === r.id} onClick={() => setViewId(r.id)}>Caixa de {firstName(r)}</SwitchPill>
+                            ))}
+                        </nav>
+                    )}
+
+                    {tab === 'history' && manager ? (
+                        <TransactionHistory key={historyKey} registers={registers} onChanged={load} settings={settings} />
                     ) : loading ? (
                         <div className="space-y-4" aria-busy>
                             <div className="h-48 rounded-2xl bg-card border border-border/60 animate-pulse" />
@@ -147,7 +214,7 @@ export default function CashRegisterClient() {
                                     <section aria-labelledby="bal-title" className="rounded-2xl bg-card border border-border/60 overflow-hidden">
                                         <div className="p-4 pb-3">
                                             <div className="flex items-center justify-between gap-3">
-                                                <h2 id="bal-title" className="text-[15px] font-medium text-muted-foreground">Saldo do caixa</h2>
+                                                <h2 id="bal-title" className="text-[15px] font-medium text-muted-foreground">{isMine ? 'Saldo do caixa' : `Caixa de ${firstName(register)}`}</h2>
                                                 <span className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 text-[13px] font-medium">
                                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Aberto às {timeOf(register.opened_at)}
                                                 </span>
@@ -171,22 +238,32 @@ export default function CashRegisterClient() {
                                             <h2 className="text-[20px] font-semibold">Caixa fechado</h2>
                                             <p className="text-[15px] text-muted-foreground mt-0.5">Abra o caixa para registrar as vendas e o dinheiro do dia.</p>
                                         </div>
-                                        <PrimaryButton className="w-full sm:w-auto" onClick={() => setOpenSheet(true)}><Unlock className="w-5 h-5" /> Abrir caixa</PrimaryButton>
-                                        {lastClosed && (
+                                        <PrimaryButton className="w-full sm:w-auto" onClick={() => setOpenSheet(true)}><Unlock className="w-5 h-5" /> Abrir meu caixa</PrimaryButton>
+                                        {myLastClosed && (
                                             <p className="text-[13px] text-muted-foreground">
-                                                Último fechamento: {new Date(lastClosed.closed_at || lastClosed.opened_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}
-                                                {' · '}<Amount value={num(lastClosed.closing_balance)} plain />
+                                                Último fechamento: {new Date(myLastClosed.closed_at || myLastClosed.opened_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}
+                                                {suggested != null && <> · ficou <Amount value={suggested} plain /> na gaveta</>}
+                                            </p>
+                                        )}
+                                        {others.length > 0 && (
+                                            <p className="text-[13px] text-muted-foreground">
+                                                {others.length === 1 ? `O caixa de ${firstName(others[0])} está aberto` : `${others.length} caixas abertos`}; as vendas vão para {others.length === 1 ? 'ele' : 'o mais recente'} até você abrir o seu.
                                             </p>
                                         )}
                                     </section>
                                 )}
 
-                                <nav aria-label="Ações do caixa" className="grid grid-cols-4 gap-2">
-                                    <Action label="Suprimento" disabled={!register} onClick={() => setMovement('entry')} className="text-emerald-600 dark:text-emerald-400"><Plus className="w-6 h-6" /></Action>
-                                    <Action label="Sangria" disabled={!register} onClick={() => setMovement('exit')} className="text-red-600 dark:text-red-400"><Minus className="w-6 h-6" /></Action>
-                                    <Action label="Contas fixas" onClick={() => setRecurring(true)} className="text-sky-600 dark:text-sky-400"><CalendarClock className="w-6 h-6" /></Action>
+                                <nav aria-label="Ações do caixa" className={cn('grid gap-2', manager ? 'grid-cols-4' : 'grid-cols-3')}>
+                                    <Action label="Suprimento" disabled={!canAct} onClick={() => setMovement('entry')} className="text-emerald-600 dark:text-emerald-400"><Plus className="w-6 h-6" /></Action>
+                                    <Action label="Sangria" disabled={!canAct} onClick={() => setMovement('exit')} className="text-red-600 dark:text-red-400"><Minus className="w-6 h-6" /></Action>
+                                    {manager && (
+                                        <Link href="/contas" className="flex flex-col items-center gap-1.5 min-w-0">
+                                            <span className="w-14 h-14 rounded-2xl flex items-center justify-center bg-card border border-border/60 text-sky-600 dark:text-sky-400 transition-transform active:scale-95"><ReceiptText className="w-6 h-6" /></span>
+                                            <span className="text-[13px] font-medium truncate max-w-full">Contas</span>
+                                        </Link>
+                                    )}
                                     {register
-                                        ? <Action label="Fechar" onClick={() => setCloseSheet(true)} className="text-orange-600 dark:text-orange-400"><Lock className="w-6 h-6" /></Action>
+                                        ? <Action label="Fechar" disabled={!canAct} onClick={() => setCloseSheet(true)} className="text-orange-600 dark:text-orange-400"><Lock className="w-6 h-6" /></Action>
                                         : <Action label="Abrir" onClick={() => setOpenSheet(true)} primary><Unlock className="w-6 h-6" /></Action>}
                                 </nav>
 
@@ -209,7 +286,34 @@ export default function CashRegisterClient() {
                                                     </li>
                                                 ))}
                                             </ul>
-                                            <p className="text-[13px] text-muted-foreground">{s.sales} {s.sales === 1 ? 'venda ou OS paga' : 'vendas e OS pagas'} neste caixa.</p>
+                                            {s.fees > 0 && (
+                                                <div className="flex items-center justify-between gap-3 pt-2 border-t border-border/60 text-[15px]">
+                                                    <span className="text-muted-foreground">Taxas da maquininha</span>
+                                                    <span className="tabular-nums text-red-600 dark:text-red-400">−<Amount value={s.fees} plain /></span>
+                                                </div>
+                                            )}
+                                            {s.fees > 0 && (
+                                                <div className="flex items-center justify-between gap-3 text-[15px]">
+                                                    <span className="font-medium">Líquido</span>
+                                                    <span className="tabular-nums font-semibold"><Amount value={s.received - s.fees} plain /></span>
+                                                </div>
+                                            )}
+                                            {s.upcoming.length > 0 && (
+                                                <div className="pt-2 border-t border-border/60 space-y-1">
+                                                    <p className="text-[13px] text-muted-foreground flex items-center gap-1.5"><Landmark className="w-3.5 h-3.5" /> Cai na conta</p>
+                                                    {s.upcoming.map(([day, v]) => (
+                                                        <div key={day} className="flex items-center justify-between text-[15px]">
+                                                            <span>{new Date(`${day}T12:00:00`).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
+                                                            <span className="tabular-nums"><Amount value={v} plain /></span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            <p className="text-[13px] text-muted-foreground">
+                                                {s.sales} {s.sales === 1 ? 'recebimento' : 'recebimentos'} neste caixa.
+                                                {owner && !s.fees && settings && ' '}
+                                                {owner && !s.fees && settings && <button type="button" onClick={() => setSettingsOpen(true)} className="text-primary">Cadastrar taxas da maquininha</button>}
+                                            </p>
                                         </div>
                                     </section>
                                 )}
@@ -274,20 +378,33 @@ export default function CashRegisterClient() {
                                 <section aria-labelledby="closings-title" className="space-y-2">
                                     <div className="flex items-end justify-between px-1">
                                         <h2 id="closings-title" className="text-[20px] font-semibold tracking-tight">Fechamentos</h2>
-                                        <button type="button" onClick={() => setTab('history')} className="text-[15px] text-primary inline-flex items-center">Histórico <ChevronRight className="w-4 h-4" /></button>
+                                        {manager && <button type="button" onClick={() => setTab('history')} className="text-[15px] text-primary inline-flex items-center">Histórico <ChevronRight className="w-4 h-4" /></button>}
                                     </div>
                                     <ul className="rounded-2xl bg-card border border-border/60 divide-y divide-border/60 overflow-hidden">
-                                        {registers.filter(r => r.status === 'closed').slice(0, 4).map(r => (
-                                            <li key={r.id} className="flex items-center gap-3 px-4 py-3">
-                                                <Wallet className="w-[18px] h-[18px] text-muted-foreground shrink-0" />
-                                                <span className="flex-1 min-w-0">
-                                                    <span className="block text-[15px] font-medium truncate">{new Date(r.opened_at).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
-                                                    <span className="block text-[13px] text-muted-foreground truncate">{timeOf(r.opened_at)}–{r.closed_at ? timeOf(r.closed_at) : '…'}{r.users?.full_name ? ` · ${r.users.full_name}` : ''}</span>
-                                                </span>
-                                                <span className="text-[15px] font-medium tabular-nums"><Amount value={num(r.closing_balance)} plain /></span>
-                                            </li>
-                                        ))}
-                                        {!registers.some(r => r.status === 'closed') && (
+                                        {closings.slice(0, 4).map(r => {
+                                            const diff = r.cash_difference == null ? null : num(r.cash_difference)
+                                            return (
+                                                <li key={r.id}>
+                                                    <Link href={`/cash-register/relatorio/${r.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-foreground/[0.02]">
+                                                        <Wallet className="w-[18px] h-[18px] text-muted-foreground shrink-0" />
+                                                        <span className="flex-1 min-w-0">
+                                                            <span className="block text-[15px] font-medium truncate">{new Date(r.opened_at).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
+                                                            <span className="block text-[13px] text-muted-foreground truncate">{timeOf(r.opened_at)}–{r.closed_at ? timeOf(r.closed_at) : '…'}{r.users?.full_name ? ` · ${r.users.full_name}` : ''}</span>
+                                                        </span>
+                                                        <span className="flex flex-col items-end shrink-0">
+                                                            <span className="text-[15px] font-medium tabular-nums"><Amount value={num(r.closing_balance)} plain /></span>
+                                                            {diff != null && (
+                                                                <span className={cn('text-[12px] font-medium tabular-nums', Math.abs(diff) < 0.01 ? 'text-emerald-700 dark:text-emerald-400' : diff > 0 ? 'text-sky-700 dark:text-sky-400' : 'text-red-600 dark:text-red-400')}>
+                                                                    {Math.abs(diff) < 0.01 ? 'bateu ✓' : <>{diff > 0 ? 'sobrou' : 'faltou'} <Amount value={Math.abs(diff)} plain /></>}
+                                                                </span>
+                                                            )}
+                                                        </span>
+                                                        <ChevronRight className="w-4 h-4 text-muted-foreground/60 shrink-0" />
+                                                    </Link>
+                                                </li>
+                                            )
+                                        })}
+                                        {!closings.length && (
                                             <li className="px-4 py-6 text-center text-[15px] text-muted-foreground">Nenhum fechamento ainda.</li>
                                         )}
                                     </ul>
@@ -298,14 +415,14 @@ export default function CashRegisterClient() {
                 </div>
             </PrivacyProvider>
 
-            <OpenCashSheet open={openSheet} onClose={() => setOpenSheet(false)} onDone={load} />
+            <OpenCashSheet open={openSheet} onClose={() => setOpenSheet(false)} onDone={() => { setViewId(null); load() }} suggested={suggested} />
             {register && (
                 <>
-                    <MovementSheet open={movement !== null} type={movement ?? 'entry'} registerId={register.id} onClose={() => setMovement(null)} onDone={load} />
+                    <MovementSheet open={movement !== null} type={movement ?? 'entry'} registerId={register.id} pinOver={pinOver} onClose={() => setMovement(null)} onDone={load} />
                     <CloseCashSheet
                         open={closeSheet}
                         onClose={() => setCloseSheet(false)}
-                        onDone={load}
+                        onDone={() => { setViewId(null); load() }}
                         registerId={register.id}
                         opening={opening}
                         entries={s.entries}
@@ -315,16 +432,25 @@ export default function CashRegisterClient() {
                     />
                 </>
             )}
-            <TransactionSheet tx={selected} onClose={() => setSelected(null)} onDone={load} editable={!!register && selected?.cash_register_id === register.id} />
-            {recurring && <RecurringExpensesModal isOpen={recurring} onClose={() => { setRecurring(false); load() }} />}
+            <TransactionSheet tx={selected} onClose={() => setSelected(null)} onDone={load} editable={canAct && selected?.cash_register_id === register?.id} />
+            {owner && <CashSettingsSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} settings={settings} onSaved={loadSettings} />}
         </div>
+    )
+}
+
+function SwitchPill({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
+    return (
+        <button type="button" onClick={onClick} className={cn('shrink-0 h-9 px-3.5 rounded-full text-[15px] font-medium transition-colors', on ? 'bg-primary text-primary-foreground' : 'bg-foreground/[0.06] hover:bg-foreground/[0.1]')}>
+            {children}
+        </button>
     )
 }
 
 const METHOD_COLOR: Record<string, string> = {
     cash: 'bg-emerald-500',
     pix: 'bg-teal-400',
-    card: 'bg-indigo-500',
+    debit: 'bg-sky-500',
+    credit: 'bg-indigo-500',
     other: 'bg-foreground/30',
 }
 

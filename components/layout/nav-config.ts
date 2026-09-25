@@ -1,7 +1,7 @@
 import {
     LayoutDashboard, ClipboardList, Calendar, Users,
     Package, BarChart3, Settings, Zap,
-    Wallet, HeartHandshake, Users2, Wrench, Smartphone, ListChecks, Sparkles,
+    Wallet, ReceiptText, HeartHandshake, Users2, Wrench, Smartphone, ListChecks, Sparkles,
 } from 'lucide-react'
 import type { UserRole } from '@/types'
 
@@ -46,7 +46,8 @@ export const navGroups: NavGroup[] = [
         title: 'Administrativo',
         items: [
             { href: '/alice', label: 'Alice (IA)', icon: Sparkles, roles: ['admin', 'owner'], tint: 'bg-violet-500' },
-            { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'manager', 'cashier'], tint: 'bg-green-500' },
+            { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'owner', 'manager', 'cashier', 'technician', 'attendant', 'talento'], tint: 'bg-green-500' },
+            { href: '/contas', label: 'Contas a pagar e receber', icon: ReceiptText, roles: ['admin', 'owner', 'manager'], tint: 'bg-sky-500' },
             { href: '/team', label: 'Equipe', icon: Users2, roles: ['admin', 'manager'], tint: 'bg-purple-500' },
             { href: '/reports', label: 'Relatórios', icon: BarChart3, roles: ['admin', 'manager'], tint: 'bg-indigo-500' },
             { href: '/settings', label: 'Configurações', icon: Settings, roles: ['admin'], tint: 'bg-zinc-500' },
@@ -65,8 +66,8 @@ export function visibleGroups(role: string): NavGroup[] {
         .map(group => ({
             ...group,
             items: group.items.filter(item => {
-                // Attendants only see OS and PDV. No exceptions.
-                if (role === 'attendant') return ['/service-orders', '/pdv'].includes(item.href)
+                // Attendants only see OS, PDV and their own register.
+                if (role === 'attendant') return ['/service-orders', '/pdv', '/cash-register'].includes(item.href)
                 return item.roles.includes(role)
             }),
         }))

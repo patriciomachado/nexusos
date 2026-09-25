@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { CheckCircle2, Loader2, Trash2 } from 'lucide-react'
+import { CheckCircle2, FileText, Loader2, Send, Trash2 } from 'lucide-react'
+import Link from 'next/link'
 import Sheet from '@/components/tasks/Sheet'
 import { Chips, Field, Group, PrimaryButton, SecondaryButton, TextArea, TextInput, brl, moneyText, parseMoney } from '@/components/ui/form'
 import { cn } from '@/lib/utils'
 import { type CashTx, cleanDescription, methodName, num, sourceLabel, timeOf } from './cash-utils'
 
 /** Big money field ("R$ 0,00") with the numeric keypad on phones. */
-function MoneyField({ value, onChange, autoFocus, label }: { value: string; onChange: (v: string) => void; autoFocus?: boolean; label: string }) {
+export function MoneyField({ value, onChange, autoFocus, label }: { value: string; onChange: (v: string) => void; autoFocus?: boolean; label: string }) {
     return (
         <label className="block rounded-2xl bg-foreground/[0.04] px-4 py-3">
             <span className="block text-[13px] text-muted-foreground">{label}</span>
@@ -29,14 +30,14 @@ function MoneyField({ value, onChange, autoFocus, label }: { value: string; onCh
     )
 }
 
-async function send(url: string, method: string, body?: unknown) {
+export async function send(url: string, method: string, body?: unknown) {
     const res = await fetch(url, {
         method,
         headers: body ? { 'Content-Type': 'application/json' } : undefined,
         body: body ? JSON.stringify(body) : undefined,
     })
     const data = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(data.error || 'Não foi possível salvar.')
+    if (!res.ok) throw Object.assign(new Error(data.error || 'Não foi possível salvar.'), { code: data.code as string | undefined })
     return data
 }
 
@@ -76,7 +77,7 @@ export function OpenCashSheet({ open, onClose, onDone, suggested }: { open: bool
             <div className="space-y-3">
                 <MoneyField label="Troco inicial" value={value} onChange={setValue} autoFocus />
                 {suggested != null && suggested > 0 && (
-                    <p className="px-1 text-[13px] text-muted-foreground">Sugerido: o que ficou no último fechamento ({brl(suggested)}).</p>
+                    <p className="px-1 text-[13px] text-muted-foreground">Preenchido com o que ficou na gaveta no último fechamento ({brl(suggested)}). Confira antes de abrir.</p>
                 )}
                 <p className="px-1 text-[13px] text-muted-foreground">Pode deixar em branco se a gaveta está vazia.</p>
             </div>
@@ -93,8 +94,18 @@ const REASONS: Record<'entry' | 'exit', string[]> = {
     exit: ['Depósito no banco', 'Pagamento de fornecedor', 'Retirada do dono', 'Despesa da loja', 'Outro'],
 }
 
-export function MovementSheet({ open, onClose, onDone, type, registerId }: { open: boolean; onClose: () => void; onDone: () => void; type: 'entry' | 'exit'; registerId: string }) {
+export function MovementSheet({ open, onClose, onDone, type, registerId, pinOver }: {
+    open: boolean
+    onClose: () => void
+    onDone: () => void
+    type: 'entry' | 'exit'
+    registerId: string
+    /** Withdrawals above this need the owner's PIN (null = never). */
+    pinOver?: number | null
+}) {
     const [value, setValue] = useState('')
+    const [pin, setPin] = useState('')
+    const [askPin, setAskPin] = useState(false)
     const [reason, setReason] = useState('')
     const [note, setNote] = useState('')
     const [methodId, setMethodId] = useState('')
@@ -105,12 +116,12 @@ export function MovementSheet({ open, onClose, onDone, type, registerId }: { ope
     useEffect(() => {
         if (!open) return
          
-        setValue(''); setReason(''); setNote('')
+        setValue(''); setReason(''); setNote(''); setPin(''); setAskPin(false)
         fetch('/api/payment-methods').then(r => r.json()).then((data: Method[]) => {
             if (!Array.isArray(data)) return
             const order = ['CASH', 'PIX', 'DEBIT_CARD', 'CREDIT_CARD']
             const rank = (m: Method) => { const i = order.indexOf(m.code); return i < 0 ? 99 : i }
-            setMethods([...data].sort((a, b) => rank(a) - rank(b)))
+            setMethods(data.filter(m => m.code !== 'INSTALLMENT').sort((a, b) => rank(a) - rank(b)))
             setMethodId(data.find(m => m.code === 'CASH')?.id ?? data[0]?.id ?? '')
         }).catch(() => {})
     }, [open])
@@ -121,6 +132,8 @@ export function MovementSheet({ open, onClose, onDone, type, registerId }: { ope
         if (!reason) return toast.error('Escolha o motivo.')
         if (reason === 'Outro' && !note.trim()) return toast.error('Conte o motivo em poucas palavras.')
         const justification = [reason === 'Outro' ? null : reason, note.trim() || null].filter(Boolean).join(' · ')
+        const needsPin = !isEntry && pinOver != null && pinOver > 0 && amount > pinOver
+        if ((needsPin || askPin) && !pin) { setAskPin(true); return toast.error('Esta sangria precisa da senha do dono.') }
         setSaving(true)
         try {
             await send('/api/cash-transactions', 'POST', {
@@ -131,16 +144,21 @@ export function MovementSheet({ open, onClose, onDone, type, registerId }: { ope
                 description: `${isEntry ? 'Suprimento' : 'Sangria'}: ${reason === 'Outro' ? note.trim() : reason}`,
                 source_type: isEntry ? 'manual_suprimento' : 'manual_sangria',
                 justification,
+                owner_pin: pin || undefined,
             })
             toast.success(isEntry ? 'Suprimento registrado' : 'Sangria registrada')
             onDone()
             onClose()
         } catch (e) {
-            toast.error((e as Error).message)
+            const err = e as Error & { code?: string }
+            if (err.code === 'NEEDS_PIN') { setAskPin(true); setPin('') }
+            toast.error(err.message)
         } finally {
             setSaving(false)
         }
     }
+
+    const showPin = !isEntry && (askPin || (pinOver != null && pinOver > 0 && parseMoney(value) > pinOver))
 
     return (
         <Sheet
@@ -171,6 +189,13 @@ export function MovementSheet({ open, onClose, onDone, type, registerId }: { ope
                         <Chips ariaLabel="Forma" options={methods.map(m => ({ value: m.id, label: m.name }))} value={methodId} onChange={setMethodId} />
                     </div>
                 )}
+                {showPin && (
+                    <Group footer={pinOver ? `Sangrias acima de ${brl(pinOver)} precisam da autorização do dono.` : 'Precisa da autorização do dono.'}>
+                        <Field label="Senha do dono" htmlFor="mv-pin">
+                            <TextInput id="mv-pin" type="password" inputMode="numeric" autoComplete="off" maxLength={6} value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, ''))} placeholder="••••" />
+                        </Field>
+                    </Group>
+                )}
                 <Group>
                     <Field label={reason === 'Outro' ? 'Motivo' : 'Observação (opcional)'} htmlFor="mv-note">
                         <TextArea id="mv-note" rows={2} value={note} onChange={e => setNote(e.target.value)} placeholder={isEntry ? 'Ex.: troco do banco' : 'Ex.: pago ao motoboy'} />
@@ -195,21 +220,26 @@ export function CloseCashSheet({ open, onClose, onDone, registerId, opening, ent
     drawer: number
 }) {
     const [counted, setCounted] = useState('')
+    const [left, setLeft] = useState('')
+    const [leftTouched, setLeftTouched] = useState(false)
     const [saving, setSaving] = useState(false)
-    const [done, setDone] = useState(false)
+    const [done, setDone] = useState<null | { sent: boolean; reason?: string }>(null)
 
     useEffect(() => {
-         
-        if (open) { setCounted(''); setDone(false) }
+        if (open) { setCounted(''); setLeft(''); setLeftTouched(false); setDone(null) }
     }, [open])
 
     const diff = counted.trim() ? parseMoney(counted) - drawer : null
+    const leftValue = leftTouched ? left : counted
 
     const submit = async () => {
         setSaving(true)
         try {
-            await send(`/api/cash-registers/${registerId}/close`, 'POST')
-            setDone(true)
+            const res = await send(`/api/cash-registers/${registerId}/close`, 'POST', {
+                counted_cash: counted.trim() ? parseMoney(counted) : null,
+                left_in_drawer: leftValue.trim() ? parseMoney(leftValue) : null,
+            })
+            setDone(res.report ?? { sent: false })
         } catch (e) {
             toast.error((e as Error).message)
         } finally {
@@ -217,18 +247,36 @@ export function CloseCashSheet({ open, onClose, onDone, registerId, opening, ent
         }
     }
 
+    const share = async () => {
+        try {
+            const r = await fetch(`/api/cash-registers/${registerId}/report`).then(x => x.json())
+            if (!r.text) throw new Error()
+            const nav = navigator as Navigator & { share?: (d: { text: string }) => Promise<void> }
+            if (nav.share) await nav.share({ text: r.text.replace(/\*/g, '') })
+            else window.open(`https://wa.me/?text=${encodeURIComponent(r.text)}`, '_blank')
+        } catch { /* cancelled */ }
+    }
+
     if (done) {
         // Reload only now: the screen behind swaps to "caixa fechado" and this sheet goes away.
         const finish = () => { onClose(); onDone() }
         return (
             <Sheet open={open} onClose={finish} title="Caixa fechado" footer={<PrimaryButton className="w-full" onClick={finish}>OK</PrimaryButton>}>
-                <div className="py-6 flex flex-col items-center text-center gap-3">
+                <div className="py-4 flex flex-col items-center text-center gap-3">
                     <CheckCircle2 className="w-14 h-14 text-emerald-500" />
                     <p className="text-[17px]">Fechado com saldo de <strong className="tabular-nums">{brl(balance)}</strong>.</p>
-                    {diff != null && Math.abs(diff) >= 0.01 && (
-                        <p className="text-[15px] text-muted-foreground">Na contagem, {diff > 0 ? 'sobraram' : 'faltaram'} <strong className="text-foreground tabular-nums">{brl(Math.abs(diff))}</strong> em dinheiro.</p>
+                    {diff != null && (
+                        <p className="text-[15px] text-muted-foreground">
+                            {Math.abs(diff) < 0.01 ? 'A contagem bateu certinho.' : <>Na contagem, {diff > 0 ? 'sobraram' : 'faltaram'} <strong className="text-foreground tabular-nums">{brl(Math.abs(diff))}</strong> em dinheiro.</>}
+                        </p>
                     )}
-                    <p className="text-[13px] text-muted-foreground">O fechamento fica no Histórico.</p>
+                    <p className="text-[13px] text-muted-foreground">
+                        {done.sent ? 'Relatório enviado no WhatsApp.' : done.reason === 'no_phone' ? 'Para receber o relatório no WhatsApp, cadastre o número em Ajustes do caixa.' : done.reason === 'no_whatsapp' ? 'O WhatsApp da loja não está conectado; envie o relatório por aqui.' : 'O fechamento fica no Histórico.'}
+                    </p>
+                    <div className="flex gap-2 w-full pt-1">
+                        <Link href={`/cash-register/relatorio/${registerId}`} className="flex-1 h-11 rounded-full bg-foreground/[0.07] inline-flex items-center justify-center gap-1.5 text-[15px] font-medium"><FileText className="w-4 h-4" /> Relatório / PDF</Link>
+                        <button type="button" onClick={share} className="flex-1 h-11 rounded-full bg-foreground/[0.07] inline-flex items-center justify-center gap-1.5 text-[15px] font-medium"><Send className="w-4 h-4" /> Compartilhar</button>
+                    </div>
                 </div>
             </Sheet>
         )
@@ -256,7 +304,7 @@ export function CloseCashSheet({ open, onClose, onDone, registerId, opening, ent
                 </Group>
 
                 <div className="space-y-2">
-                    <MoneyField label="Dinheiro contado na gaveta (opcional)" value={counted} onChange={setCounted} />
+                    <MoneyField label="Dinheiro contado na gaveta" value={counted} onChange={setCounted} />
                     <p className="px-1 text-[13px] text-muted-foreground">Esperado em dinheiro: <span className="text-foreground font-medium tabular-nums">{brl(drawer)}</span>. Pix e cartão não entram na contagem.</p>
                 </div>
 
@@ -271,6 +319,18 @@ export function CloseCashSheet({ open, onClose, onDone, registerId, opening, ent
                         <span className="tabular-nums">{Math.abs(diff) < 0.01 ? '✓' : brl(Math.abs(diff))}</span>
                     </div>
                 )}
+
+                <Group footer="O que fica na gaveta vira a sugestão de troco na próxima abertura. Se for depositar parte, informe só o que fica.">
+                    <Field label="Fica na gaveta para amanhã (R$)" htmlFor="close-left">
+                        <TextInput
+                            id="close-left"
+                            inputMode="decimal"
+                            value={leftValue}
+                            onChange={e => { setLeftTouched(true); setLeft(e.target.value.replace(/[^\d.,]/g, '')) }}
+                            placeholder={counted || '0,00'}
+                        />
+                    </Field>
+                </Group>
 
                 <p className="px-1 text-[13px] text-muted-foreground">Depois de fechado, novas vendas e movimentações vão para o próximo caixa.</p>
             </div>
@@ -364,6 +424,7 @@ export function TransactionSheet({ tx, onClose, onDone, editable }: { tx: CashTx
             ) : undefined}
         >
             <div className="space-y-4">
+                <div tabIndex={-1} data-autofocus className="outline-none" aria-hidden />
                 <p className={cn('text-[34px] font-semibold tracking-tight tabular-nums', entry ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400')}>
                     {entry ? '+' : '−'} {brl(num(tx.amount))}
                 </p>
