@@ -7,7 +7,7 @@ import SubscriptionSettings from '@/components/settings/SubscriptionSettings'
 import PaymentMethodsSettings from '@/components/settings/PaymentMethodsSettings'
 import { Building2, Globe, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
-import { ChevronRight, Wand2 } from 'lucide-react'
+import { ChevronRight, Smartphone, Wand2 } from 'lucide-react'
 
 export default async function SettingsPage() {
     const { userId } = await auth()
@@ -65,6 +65,16 @@ export default async function SettingsPage() {
                             <div className="flex-1 min-w-0">
                                 <p className="text-[17px] font-semibold">Assistente de configuração</p>
                                 <p className="text-[14px] text-muted-foreground">Rever nome, logo, endereço, garantia e link do Google</p>
+                            </div>
+                            <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+                        </Link>
+                        <Link href="/settings/tela" className="flex items-center gap-4 rounded-2xl bg-card border border-border/60 p-5 hover:bg-foreground/[0.02] transition-colors">
+                            <div className="w-11 h-11 rounded-xl bg-foreground/[0.06] text-muted-foreground flex items-center justify-center shrink-0">
+                                <Smartphone className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[17px] font-semibold">Diagnóstico da tela</p>
+                                <p className="text-[14px] text-muted-foreground">Mede a tela do celular quando o app aparece cortado</p>
                             </div>
                             <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
                         </Link>
