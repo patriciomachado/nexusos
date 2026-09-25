@@ -48,9 +48,9 @@ export const navGroups: NavGroup[] = [
             { href: '/alice', label: 'Alice (IA)', icon: Sparkles, roles: ['admin', 'owner'], tint: 'bg-violet-500' },
             { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'owner', 'manager', 'cashier', 'technician', 'attendant', 'talento'], tint: 'bg-green-500' },
             { href: '/contas', label: 'Contas a pagar e receber', icon: ReceiptText, roles: ['admin', 'owner', 'manager'], tint: 'bg-sky-500' },
-            { href: '/team', label: 'Equipe', icon: Users2, roles: ['admin', 'manager'], tint: 'bg-purple-500' },
+            { href: '/team', label: 'Equipe e ponto', icon: Users2, roles: ['admin', 'owner', 'manager', 'cashier', 'technician', 'attendant', 'talento'], tint: 'bg-purple-500' },
             { href: '/reports', label: 'Relatórios', icon: BarChart3, roles: ['admin', 'manager'], tint: 'bg-indigo-500' },
-            { href: '/settings', label: 'Configurações', icon: Settings, roles: ['admin'], tint: 'bg-zinc-500' },
+            { href: '/settings', label: 'Configurações', icon: Settings, roles: ['admin', 'owner', 'manager', 'cashier', 'technician', 'attendant', 'talento'], tint: 'bg-zinc-500' },
         ]
     }
 ]
@@ -61,13 +61,15 @@ export function safeRoleOf(userRole?: UserRole | string): string {
     return userRole && VALID_ROLES.includes(userRole) ? userRole : 'attendant'
 }
 
-export function visibleGroups(role: string): NavGroup[] {
+/** Menu for a role; `hidden` are pages the owner turned off for it (Equipe → Permissões). */
+export function visibleGroups(role: string, hidden: string[] = []): NavGroup[] {
     return navGroups
         .map(group => ({
             ...group,
             items: group.items.filter(item => {
+                if (hidden.includes(item.href) && role !== 'admin' && role !== 'owner') return false
                 // Attendants only see OS, PDV and their own register.
-                if (role === 'attendant') return ['/service-orders', '/pdv', '/cash-register'].includes(item.href)
+                if (role === 'attendant') return ['/service-orders', '/pdv', '/cash-register', '/team'].includes(item.href)
                 return item.roles.includes(role)
             }),
         }))
@@ -86,4 +88,9 @@ export const ROLE_LABELS: Record<string, string> = {
     cashier: 'Caixa',
     attendant: 'Atendente',
     talento: 'Talento',
+}
+
+/** Pages the owner can hide per role (everything except the owner's own tools). */
+export function permissionModules() {
+    return navGroups.flatMap(g => g.items).filter(i => !['/dashboard', '/settings', '/alice'].includes(i.href))
 }

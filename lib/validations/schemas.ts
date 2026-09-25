@@ -14,14 +14,31 @@ export const appointmentSchema = z.object({
 })
 
 // Customer Schema
-export const customerSchema = z.object({
+const optionalText = z.string().max(500).optional().nullable()
+const customerFields = z.object({
   name: z.string().min(2, 'Nome muito curto'),
-  email: z.string().email('E-mail inválido').optional().or(z.literal('')),
-  phone: z.string().optional(),
-  address: z.string().optional(),
-  document: z.string().optional(),
-  is_active: z.boolean().default(true)
+  email: z.string().email('E-mail inválido').optional().nullable().or(z.literal('')),
+  phone: optionalText,
+  cpf_cnpj: optionalText,
+  address: optionalText,
+  city: optionalText,
+  state: optionalText,
+  zip_code: optionalText,
+  notes: z.string().max(4000).optional().nullable(),
+  birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inválida').optional().nullable().or(z.literal('')),
+  tags: z.array(z.string().min(1).max(30)).max(20).optional(),
+  is_active: z.boolean().optional(),
 })
+/** Empty e-mail / birth date become null (the columns are typed). */
+function cleanCustomer<T extends { email?: string | null; birth_date?: string | null }>({ birth_date, email, ...rest }: T) {
+  return {
+    ...rest,
+    ...(email !== undefined ? { email: email || null } : {}),
+    ...(birth_date !== undefined ? { birth_date: birth_date || null } : {}),
+  }
+}
+export const customerSchema = customerFields.transform(cleanCustomer)
+export const customerUpdateSchema = customerFields.partial().transform(cleanCustomer)
 
 // Inventory Item Schema
 export const inventoryItemSchema = z.object({
@@ -108,7 +125,10 @@ export const saleSchema = z.object({
   payments: z.array(z.object({
     payment_method_id: z.string().uuid('Método de pagamento inválido'),
     amount: z.number().positive('Valor do pagamento deve ser positivo').max(10_000_000),
+    installments: z.number().int().min(1).max(24).optional(),
   })).min(1).max(5).optional(),
+  /** Owner's PIN, when the discount is above the store's limit. */
+  owner_pin: z.string().max(12).optional(),
   items: z.array(z.object({
     inventory_item_id: z.string().uuid('Item de estoque inválido'),
     item_name: z.string(),

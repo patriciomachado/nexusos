@@ -258,6 +258,33 @@ export async function collectAlerts(db: SupabaseClient, companyId: string, today
             })
         }),
 
+        // 6b. Garantia de aparelho vendido acabando: bom momento para falar com o cliente
+        safe('device_warranty', async () => {
+            const { data, error } = await db
+                .from('devices')
+                .select('id, brand, model, warranty_until, sold_customer_id, customers:sold_customer_id(name)')
+                .eq('company_id', companyId)
+                .eq('status', 'vendido')
+                .gte('warranty_until', today)
+                .lte('warranty_until', addDays(today, 7))
+                .limit(20)
+            if (error) throw error
+            return (data || []).map((d): TaskAlert => {
+                const who = one(d.customers as Rel<{ name: string }>)?.name
+                return {
+                    key: `warranty:${d.id}`,
+                    module: 'devices',
+                    title: `Garantia acabando · ${[d.brand, d.model].filter(Boolean).join(' ')}`,
+                    detail: `${who ? `${who} · ` : ''}termina ${relativeDayLabel(d.warranty_until, today).toLowerCase()}`,
+                    href: '/devices?aba=vendidos',
+                    severity: 'low',
+                    date: today,
+                    suggestion: who ? `Falar com ${who} sobre o aparelho (revisão, película, capinha)` : 'Falar com o cliente sobre o aparelho',
+                    dismissible: true,
+                }
+            })
+        }),
+
         // 7. Aparelhos em revisão há muito tempo e trocas sem resposta
         safe('devices', async () => {
             const cutoff = new Date(Date.now() - DEVICE_REVIEW_DAYS * 86_400_000).toISOString()

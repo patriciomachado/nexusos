@@ -31,6 +31,7 @@ export async function PUT(req: NextRequest) {
         ...current,
         fees: body.fees ?? current.fees,
         sangria_limit: body.sangria_limit ?? current.sangria_limit,
+        max_discount_pct: body.max_discount_pct ?? current.max_discount_pct,
         report_phone: 'report_phone' in body ? body.report_phone : current.report_phone,
         pin_hash: current.pin_hash,
     })

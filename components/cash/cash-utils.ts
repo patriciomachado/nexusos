@@ -42,6 +42,7 @@ export interface FeeRule { rate: number; days: number }
 export interface CashSettingsView {
     fees: { debit: FeeRule; credit: FeeRule; credit_installments: FeeRule; pix: FeeRule }
     sangria_limit: number
+    max_discount_pct: number
     has_pin: boolean
     report_phone: string | null
     can_edit: boolean
@@ -59,7 +60,7 @@ export function methodName(tx: CashTx) {
 
 /** Automatic cost records (parts/products cost) are bookkeeping, not money leaving the drawer. */
 export function isCostRecord(tx: CashTx) {
-    return tx.type === 'exit' && (tx.source_type === 'service_order' || tx.source_type === 'product_sale')
+    return tx.type === 'exit' && (tx.source_type === 'service_order' || tx.source_type === 'product_sale' || tx.source_type === 'device_sale')
 }
 
 export function sourceLabel(tx: CashTx) {
@@ -71,6 +72,9 @@ export function sourceLabel(tx: CashTx) {
         case 'recurring_expense': return 'Conta fixa'
         case 'payment': return 'Pagamento'
         case 'bill': return 'Conta paga'
+        case 'refund': return 'Devolução'
+        case 'device_sale': return tx.type === 'exit' ? 'Custo do aparelho' : 'Venda de aparelho'
+        case 'device_purchase': return 'Compra de aparelho'
         case 'receivable': return 'Recebimento'
         default: return tx.type === 'entry' ? 'Entrada' : 'Saída'
     }

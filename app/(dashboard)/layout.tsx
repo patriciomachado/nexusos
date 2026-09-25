@@ -108,6 +108,13 @@ export default async function DashboardLayout({
         subscription = await getSubscriptionStatus(companyId)
     }
     const plan = await getCompanyPlan(createAdminClient(), companyId)
+    // Pages the owner hid for this role (Equipe → Permissões).
+    let hidden: string[] = []
+    if (companyId) {
+        const { data: co } = await createAdminClient().from('companies').select('settings').eq('id', companyId).single()
+        const perms = ((co?.settings ?? {}) as { permissions?: Record<string, string[]> }).permissions
+        hidden = Array.isArray(perms?.[role]) ? perms![role] : []
+    }
 
     return (
         <>
@@ -115,7 +122,7 @@ export default async function DashboardLayout({
             the dynamic viewport height can get stuck short (e.g. after the keyboard
             closes), which left a blank strip at the bottom. */}
         <div className="app-frame fixed inset-x-0 bottom-0 ios-fill top-[env(safe-area-inset-top)] flex bg-background overflow-hidden max-w-full w-full transition-colors duration-300" suppressHydrationWarning>
-            <Sidebar userRole={role} />
+            <Sidebar userRole={role} hidden={hidden} />
             <main className="flex-1 overflow-y-auto overflow-x-hidden relative pb-[env(safe-area-inset-bottom)] w-full max-w-full" suppressHydrationWarning>
                 <NotificationGenerator />
                 <SubscriptionStatusGuard 
@@ -127,7 +134,7 @@ export default async function DashboardLayout({
                     {children}
                 </SubscriptionStatusGuard>
             </main>
-            <BottomNav userRole={role} />
+            <BottomNav userRole={role} hidden={hidden} />
             {(role === 'admin' || role === 'owner') && (
                 <>
                     <ReminderWatcher />

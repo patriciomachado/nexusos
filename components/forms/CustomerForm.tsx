@@ -2,29 +2,45 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import Header from '@/components/layout/Header'
 import { toast } from 'sonner'
-import { PremiumInput } from '@/components/ui/PremiumInput'
-import { PremiumTextarea } from '@/components/ui/PremiumTextarea'
-import { User, Mail, Phone, FileText, MapPin, Globe, Hash, Save, X, Trash2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Loader2, Trash2 } from 'lucide-react'
+import Header from '@/components/layout/Header'
 import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
+import { Field, Group, PrimaryButton, SecondaryButton, TextArea, TextInput } from '@/components/ui/form'
+import { cn } from '@/lib/utils'
 
 interface Props {
     companyId: string
     customerId?: string
-    initial?: any
+    initial?: Partial<Record<'name' | 'email' | 'phone' | 'cpf_cnpj' | 'address' | 'city' | 'state' | 'zip_code' | 'notes' | 'birth_date', string | null>>
     hideHeader?: boolean
-    onSuccess?: (customer: { id: string, name: string }) => void
+    onSuccess?: (customer: { id: string; name: string }) => void
 }
 
-export default function CustomerForm({ companyId, customerId, initial, hideHeader, onSuccess }: Props) {
+function maskPhone(v: string) {
+    const d = v.replace(/\D/g, '').slice(0, 11)
+    if (d.length <= 2) return d
+    if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`
+    if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`
+    return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`
+}
+function maskDoc(v: string) {
+    const d = v.replace(/\D/g, '').slice(0, 14)
+    if (d.length <= 11) return d.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+    return d.replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2')
+}
+
+/** Customer form in the app's grouped-list style; also used inside the OS/PDV pickers. */
+export default function CustomerForm({ customerId, initial, hideHeader, onSuccess }: Props) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
+    const [confirmDelete, setConfirmDelete] = useState(false)
+    const [more, setMore] = useState(!!(initial?.address || initial?.city || initial?.notes || initial?.cpf_cnpj))
     const [form, setForm] = useState({
         name: initial?.name || '',
-        email: initial?.email || '',
         phone: initial?.phone || '',
+        email: initial?.email || '',
+        birth_date: initial?.birth_date || '',
         cpf_cnpj: initial?.cpf_cnpj || '',
         address: initial?.address || '',
         city: initial?.city || '',
@@ -32,186 +48,84 @@ export default function CustomerForm({ companyId, customerId, initial, hideHeade
         zip_code: initial?.zip_code || '',
         notes: initial?.notes || '',
     })
+    const set = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }))
 
-    function handleChange(name: string, value: string) {
-        setForm(p => ({ ...p, [name]: value }))
-    }
-
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault()
+    const submit = (e?: React.FormEvent) => {
+        e?.preventDefault()
+        if (form.name.trim().length < 2) return toast.error('Informe o nome do cliente.')
         startTransition(async () => {
             try {
-                const url = customerId ? `/api/customers/${customerId}` : '/api/customers'
-                const method = customerId ? 'PUT' : 'POST'
-                const res = await fetch(url, {
-                    method,
+                const res = await fetch(customerId ? `/api/customers/${customerId}` : '/api/customers', {
+                    method: customerId ? 'PUT' : 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(form)
+                    body: JSON.stringify({ ...form, name: form.name.trim(), state: form.state.trim().toUpperCase().slice(0, 2) }),
                 })
-
-                let resJson: any
-                const contentType = res.headers.get('content-type') || ''
-                if (contentType.includes('application/json')) {
-                    resJson = await res.json()
-                } else {
-                    // Fallback for non-JSON responses from Vercel/Proxy errors
-                    const text = await res.text()
-                    throw new Error(`Erro do servidor (${res.status}): ${text.substring(0, 100)}...`)
+                const data = await res.json().catch(() => ({}))
+                if (!res.ok) {
+                    const msg = typeof data.error === 'string' ? data.error : data.error?.email?._errors?.[0] ?? data.error?.birth_date?._errors?.[0] ?? 'Não foi possível salvar'
+                    throw new Error(msg)
                 }
-
-                if (res.ok) {
-                    toast.success(customerId ? 'Cliente atualizado!' : 'Cliente criado!')
-                    const data = resJson
-                    if (onSuccess) {
-                        onSuccess({
-                            id: data?.id || customerId || '',
-                            name: form.name
-                        })
-                    } else {
-                        router.push(`/customers/${data?.id || customerId}`)
-                    }
-                } else {
-                    toast.error(resJson?.error || 'Erro ao salvar cliente')
-                }
-            } catch (err: any) {
-                console.error('Error saving customer:', err)
-                toast.error(err.message || 'Erro inesperatdo ao salvar cliente. Tente novamente.')
+                toast.success(customerId ? 'Cliente atualizado' : 'Cliente cadastrado')
+                if (onSuccess) onSuccess({ id: data?.id || customerId || '', name: form.name.trim() })
+                else router.push(`/customers/${data?.id || customerId}`)
+            } catch (err) {
+                toast.error((err as Error).message)
             }
         })
     }
 
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-
-    async function handleDelete() {
-        startTransition(async () => {
-            try {
-                const res = await fetch(`/api/customers/${customerId}`, {
-                    method: 'DELETE',
-                })
-
-                if (res.ok) {
-                    toast.success('Cliente removido com sucesso!')
-                    router.push('/customers')
-                    router.refresh()
-                } else {
-                    const error = await res.json()
-                    toast.error(error.error || 'Erro ao deletar cliente')
-                }
-            } catch (err: any) {
-                toast.error('Erro ao conectar com o servidor')
-            } finally {
-                setShowDeleteConfirm(false)
-            }
-        })
-    }
-
-    const fields = [
-        { label: 'NOME COMPLETO *', name: 'name', type: 'text', required: true, placeholder: 'Ex: João Silva', icon: <User className="w-4 h-4" /> },
-        { label: 'E-MAIL DE CONTATO', name: 'email', type: 'email', placeholder: 'joao@empresa.com', icon: <Mail className="w-4 h-4" /> },
-        { label: 'TELEFONE / WHATSAPP', name: 'phone', type: 'tel', placeholder: '(11) 99999-9999', icon: <Phone className="w-4 h-4" /> },
-        { label: 'CPF OU CNPJ', name: 'cpf_cnpj', type: 'text', placeholder: '000.000.000-00', icon: <FileText className="w-4 h-4" /> },
-        { label: 'ENDEREÇO RESIDENCIAL/COMERCIAL', name: 'address', type: 'text', placeholder: 'Rua, número, bairro', icon: <MapPin className="w-4 h-4" /> },
-        { label: 'CIDADE', name: 'city', type: 'text', placeholder: 'Ex: São Paulo', icon: <Globe className="w-4 h-4" /> },
-        { label: 'ESTADO', name: 'state', type: 'text', placeholder: 'SP', icon: <Globe className="w-4 h-4" /> },
-        { label: 'CEP', name: 'zip_code', type: 'text', placeholder: '00000-000', icon: <Hash className="w-4 h-4" /> },
-    ]
+    const remove = () => startTransition(async () => {
+        const res = await fetch(`/api/customers/${customerId}`, { method: 'DELETE' })
+        if (res.ok) { toast.success('Cliente removido'); router.push('/customers'); router.refresh() }
+        else toast.error((await res.json().catch(() => ({}))).error || 'Não foi possível remover')
+        setConfirmDelete(false)
+    })
 
     return (
-        <div className={cn("animate-fade-in pb-10", hideHeader && "pb-0")}>
-            {!hideHeader && <Header title={customerId ? 'Atualizar Registro' : 'Novo Cadastro de Cliente'} />}
+        <div className={cn(!hideHeader && 'min-h-full bg-background')}>
+            {!hideHeader && <Header title={customerId ? 'Editar cliente' : 'Novo cliente'} />}
+            <form onSubmit={submit} className={cn('space-y-5', !hideHeader && 'max-w-2xl mx-auto px-4 pt-4 pb-16')}>
+                <Group>
+                    <Field label="Nome" htmlFor="cf-name"><TextInput id="cf-name" value={form.name} onChange={e => set('name', e.target.value)} placeholder="Nome completo" autoComplete="name" data-autofocus /></Field>
+                    <Field label="WhatsApp" htmlFor="cf-phone"><TextInput id="cf-phone" type="tel" inputMode="tel" value={form.phone} onChange={e => set('phone', maskPhone(e.target.value))} placeholder="(11) 98888-7777" /></Field>
+                    <Field label="Aniversário" htmlFor="cf-birth" hint="Para a mensagem automática de parabéns."><TextInput id="cf-birth" type="date" value={form.birth_date} onChange={e => set('birth_date', e.target.value)} /></Field>
+                    <Field label="E-mail" htmlFor="cf-email"><TextInput id="cf-email" type="email" inputMode="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="opcional" /></Field>
+                </Group>
 
-            <form onSubmit={handleSubmit} className={cn("p-4 max-w-5xl mx-auto space-y-6", !hideHeader && "mt-4")}>
-                <div className={cn(
-                    "relative overflow-hidden group transition-all",
-                    !hideHeader ? "bg-card/40 border border-border rounded-2xl p-6" : "p-0"
-                )}>
-                    {!hideHeader && <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[120px] rounded-full transition-all group-hover:bg-indigo-500/10" />}
-
-                    <div className="relative z-10 space-y-6">
-                        <div className="flex items-center gap-3 border-b border-border pb-4">
-                            <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400">
-                                <User className="w-5 h-5" />
+                {more ? (
+                    <>
+                        <Group title="Documento e endereço">
+                            <Field label="CPF ou CNPJ" htmlFor="cf-doc"><TextInput id="cf-doc" inputMode="numeric" value={form.cpf_cnpj} onChange={e => set('cpf_cnpj', maskDoc(e.target.value))} placeholder="000.000.000-00" /></Field>
+                            <Field label="Endereço" htmlFor="cf-addr"><TextInput id="cf-addr" value={form.address} onChange={e => set('address', e.target.value)} placeholder="Rua, número, bairro" /></Field>
+                            <div className="grid grid-cols-[1fr_72px_120px] divide-x divide-border/60">
+                                <Field label="Cidade" htmlFor="cf-city"><TextInput id="cf-city" value={form.city} onChange={e => set('city', e.target.value)} /></Field>
+                                <Field label="UF" htmlFor="cf-uf"><TextInput id="cf-uf" value={form.state} onChange={e => set('state', e.target.value.slice(0, 2))} /></Field>
+                                <Field label="CEP" htmlFor="cf-cep"><TextInput id="cf-cep" inputMode="numeric" value={form.zip_code} onChange={e => set('zip_code', e.target.value.replace(/\D/g, '').slice(0, 8).replace(/(\d{5})(\d)/, '$1-$2'))} /></Field>
                             </div>
-                            <div>
-                                <h2 className="text-sm font-semibold text-foreground/70 tracking-tight">Informações Básicas</h2>
-                            </div>
-                        </div>
+                        </Group>
+                        <Group>
+                            <Field label="Observações" htmlFor="cf-notes"><TextArea id="cf-notes" rows={3} value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Preferências, indicações…" /></Field>
+                        </Group>
+                    </>
+                ) : (
+                    <button type="button" onClick={() => setMore(true)} className="px-1 text-[15px] text-primary font-medium">+ CPF, endereço e observações</button>
+                )}
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {fields.map(f => (
-                                <div key={f.name} className={f.name === 'address' ? 'md:col-span-2' : ''}>
-                                    <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">{f.label}</label>
-                                    <PremiumInput
-                                        name={f.name}
-                                        type={f.type}
-                                        value={(form as any)[f.name]}
-                                        onChange={(e) => handleChange(f.name, e.target.value)}
-                                        required={f.required}
-                                        placeholder={f.placeholder}
-                                        icon={f.icon}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="pt-2">
-                            <label className="block text-[13px] font-medium text-muted-foreground mb-2">Observações adicionais</label>
-                            <PremiumTextarea
-                                name="notes"
-                                value={form.notes}
-                                onChange={(e) => handleChange('notes', e.target.value)}
-                                rows={3}
-                                placeholder="Anotações internas..."
-                                className="border-border focus:border-primary/30 min-h-[80px]"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <div className={cn(
-                    "flex flex-col sm:flex-row items-center gap-4 pt-2",
-                    hideHeader && "border-t border-border mt-6 pt-6"
-                )}>
-                    {customerId && (
-                        <button
- type="button"
- onClick={() => setShowDeleteConfirm(true)}
- className="w-full sm:w-auto px-6 h-14 rounded-xl border border-rose-500/20 bg-rose-500/5 text-rose-500 font-semibold text-[13px] hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center gap-2"
- >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            EXCLUIR
-                        </button>
-                    )}
-                    <button
- type="submit"
- disabled={isPending}
- className="bg-primary w-full sm:flex-1 disabled:opacity-50 text-white p-4 h-14 rounded-xl font-semibold text-[13px] transition-all active:scale-95 flex items-center justify-center gap-3"
- >
-                        {isPending ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                        {isPending ? 'PROCESSANDO...' : 'SALVAR ALTERAÇÕES'}
-                    </button>
-                    <button
- type="button"
- onClick={() => onSuccess ? onSuccess({ id: '', name: '' }) : router.back()}
- className="w-full sm:w-auto px-8 h-14 rounded-xl border border-border bg-card text-foreground/40 font-semibold text-[13px] hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2"
- >
-                        <X className="w-3.5 h-3.5" />
-                        ABORTAR
-                    </button>
+                <div className="flex gap-2">
+                    {customerId && !hideHeader && <SecondaryButton onClick={() => setConfirmDelete(true)} aria-label="Remover" className="text-red-600"><Trash2 className="w-5 h-5" /></SecondaryButton>}
+                    <PrimaryButton type="submit" className="flex-1" disabled={isPending}>{isPending && <Loader2 className="w-5 h-5 animate-spin" />}{customerId ? 'Salvar' : 'Cadastrar cliente'}</PrimaryButton>
                 </div>
             </form>
 
             <PremiumConfirmDialog
-                isOpen={showDeleteConfirm}
-                title="Excluir Cliente"
-                description="Tem certeza que deseja desativar este cliente? Esta ação não removerá os dados permanentemente, mas o cliente não aparecerá mais nas listagens ativas."
-                confirmLabel="Sim, Excluir"
-                cancelLabel="Não, Manter"
-                onConfirm={handleDelete}
-                onCancel={() => setShowDeleteConfirm(false)}
+                isOpen={confirmDelete}
+                onCancel={() => setConfirmDelete(false)}
+                onConfirm={remove}
+                title="Remover cliente?"
+                description="O cliente sai da lista. As OS e vendas dele continuam no histórico."
+                confirmLabel="Remover"
+                variant="danger"
             />
         </div>
-
     )
 }
-

@@ -103,7 +103,7 @@ export default function ItemsEditor({ items, onChange, inventory }: { items: OSI
             </div>
 
             {/* Stock search */}
-            <Sheet open={picking} onClose={() => { setPicking(false); setQuery('') }} title="Adicionar do estoque">
+            <Sheet open={picking} onClose={() => { setPicking(false); setQuery('') }} title="Adicionar do estoque" full>
                 <div className="sticky top-0 bg-card pb-3 z-10">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

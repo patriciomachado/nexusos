@@ -37,9 +37,9 @@ async function getJson(url: string) {
 }
 const list = (d: unknown): CashTx[] => (Array.isArray(d) ? d : Array.isArray((d as { data?: unknown })?.data) ? (d as { data: CashTx[] }).data : [])
 const firstName = (r: Register) => r.users?.full_name?.split(' ')[0] ?? 'Operador'
-const SALE_SOURCES = ['service_order', 'product_sale', 'receivable']
+const SALE_SOURCES = ['service_order', 'product_sale', 'receivable', 'device_sale']
 
-export default function CashRegisterClient({ role, userId }: { role: string; userId: string }) {
+export default function CashRegisterClient({ role, userId, openSettings }: { role: string; userId: string; openSettings?: boolean }) {
     const manager = ['admin', 'owner', 'manager'].includes(role)
     const owner = ['admin', 'owner'].includes(role)
     const [tab, setTab] = useState<'today' | 'history'>('today')
@@ -57,7 +57,7 @@ export default function CashRegisterClient({ role, userId }: { role: string; use
     const [openSheet, setOpenSheet] = useState(false)
     const [closeSheet, setCloseSheet] = useState(false)
     const [movement, setMovement] = useState<'entry' | 'exit' | null>(null)
-    const [settingsOpen, setSettingsOpen] = useState(false)
+    const [settingsOpen, setSettingsOpen] = useState(!!openSettings)
     const [selected, setSelected] = useState<CashTx | null>(null)
 
     const loadSettings = useCallback(() => {

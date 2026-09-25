@@ -183,7 +183,7 @@ export default function PostSalesClient({ ratings, delivered, storeName, googleR
                         />
                     ) : (
                         <p className="text-[13px] text-muted-foreground rounded-xl bg-foreground/[0.03] px-3 py-2.5">
-                            Dica: cadastre o link de avaliação do Google em <Link href="/settings" className="text-primary">Configurações</Link> para convidar quem deu 5 estrelas.
+                            Dica: cadastre o link de avaliação do Google em <Link href="/settings/loja" className="text-primary">Configurações → Dados da loja</Link> para convidar quem deu 5 estrelas.
                         </p>
                     )}
                 </div>

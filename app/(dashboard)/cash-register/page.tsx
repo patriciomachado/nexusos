@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
 import CashRegisterClient from './CashRegisterClient'
 
-export default async function CashRegisterPage() {
+export default async function CashRegisterPage({ searchParams }: { searchParams: Promise<{ ajustes?: string }> }) {
+    const { ajustes } = await searchParams
     const { userId } = await auth()
     if (!userId) redirect('/entrar')
 
@@ -12,5 +13,5 @@ export default async function CashRegisterPage() {
     if (!currentUser) redirect('/dashboard')
 
     // Everyone can run their own register; managers also see the others and the history.
-    return <CashRegisterClient role={currentUser.role ?? 'attendant'} userId={currentUser.id} />
+    return <CashRegisterClient role={currentUser.role ?? 'attendant'} userId={currentUser.id} openSettings={ajustes === '1'} />
 }

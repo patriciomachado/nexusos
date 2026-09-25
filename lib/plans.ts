@@ -3,7 +3,7 @@
  * subscription page) and the landing page (pricing table).
  */
 export type PlanId = 'essencial' | 'pro'
-export type Feature = 'alice' | 'studio' | 'catalog' | 'reports_full' | 'post_sales_contact' | 'unlimited_users'
+export type Feature = 'alice' | 'studio' | 'catalog' | 'reports_full' | 'post_sales_contact' | 'unlimited_users' | 'multi_store'
 
 export interface Plan {
     id: PlanId
@@ -35,7 +35,7 @@ export const PLANS: Record<PlanId, Plan> = {
         tagline: 'Para crescer com equipe, IA e vendas online.',
         maxUsers: null,
         aliceReplies: 1500,
-        features: ['alice', 'studio', 'catalog', 'reports_full', 'post_sales_contact', 'unlimited_users'],
+        features: ['alice', 'studio', 'catalog', 'reports_full', 'post_sales_contact', 'unlimited_users', 'multi_store'],
     },
 }
 
@@ -46,6 +46,7 @@ export const FEATURE_INFO: Record<Feature, { title: string; description: string 
     reports_full: { title: 'Relatórios completos', description: 'DRE, meta do mês, funil de OS, desempenho por técnico e clientes.' },
     post_sales_contact: { title: 'Pós-venda ativo', description: 'Lista de quem contatar depois da entrega, com mensagem pronta no WhatsApp.' },
     unlimited_users: { title: 'Equipe sem limite', description: 'Cadastre todos os técnicos, atendentes e caixas que precisar.' },
+    multi_store: { title: 'Lojas e filiais', description: 'Abra filiais na mesma assinatura, troque de loja num toque e compare o faturamento.' },
 }
 
 /** Pricing table rows (landing and subscription page). */
@@ -60,6 +61,7 @@ export const PLAN_ROWS: { label: string; essencial: boolean | string; pro: boole
     { label: 'Pós-venda com contato pelo WhatsApp', essencial: false, pro: true },
     { label: 'Catálogo online', essencial: false, pro: true },
     { label: 'Studio de conteúdo', essencial: false, pro: true },
+    { label: 'Lojas e filiais', essencial: false, pro: true },
 ]
 
 export function hasFeature(plan: PlanId, feature: Feature) {

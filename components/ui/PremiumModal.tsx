@@ -12,6 +12,8 @@ interface PremiumModalProps {
     subtitle?: string
     children: React.ReactNode
     maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+    /** Phones: whole screen from the top (long forms that open the keyboard). */
+    full?: boolean
 }
 
 export default function PremiumModal({
@@ -20,7 +22,8 @@ export default function PremiumModal({
     title,
     subtitle,
     children,
-    maxWidth = 'md'
+    maxWidth = 'md',
+    full = false
 }: PremiumModalProps) {
     const [mounted, setMounted] = useState(false)
 
@@ -48,7 +51,7 @@ export default function PremiumModal({
 
     return createPortal(
         <div
-            className="fixed inset-0 ios-fill z-[100000] flex items-end sm:items-center justify-center sm:p-4 bg-black/35 animate-in fade-in duration-200"
+            className={cn('fixed inset-0 ios-fill z-[100000] flex sm:items-center justify-center sm:p-4 bg-black/35 animate-in fade-in duration-200', full ? 'items-stretch pt-[calc(env(safe-area-inset-top)+10px)]' : 'items-end')}
             onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
         >
             <div
@@ -56,7 +59,8 @@ export default function PremiumModal({
                 aria-modal="true"
                 aria-label={title}
                 className={cn(
-                    "bg-card w-full rounded-t-3xl sm:rounded-3xl border border-border/60 overflow-hidden flex flex-col animate-sheet-up relative max-h-[92vh]",
+                    "bg-card w-full rounded-t-3xl sm:rounded-3xl border border-border/60 overflow-hidden flex flex-col animate-sheet-up relative",
+                    full ? 'h-full sm:h-auto sm:max-h-[92vh]' : 'max-h-[92vh]',
                     maxWidthClasses[maxWidth]
                 )}
             >
@@ -85,7 +89,7 @@ export default function PremiumModal({
                 </div>
 
                 {/* Content */}
-                <div className="px-6 pb-6 pt-3 overflow-y-auto" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}>
+                <div className="px-6 pb-6 pt-3 overflow-y-auto flex-1 min-h-0 overscroll-contain" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}>
                     {children}
                 </div>
             </div>
