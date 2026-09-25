@@ -217,7 +217,8 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
     cancelada: { label: 'Cancelada', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20' },
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ configurar?: string }> }) {
+    const { configurar } = await searchParams
     const { userId } = await auth()
     if (!userId) return null
 
@@ -237,7 +238,8 @@ export default async function DashboardPage() {
         getDashboardData(companyId),
         db.from('companies').select('id, name, phone, cnpj, logo_url, zip_code, address, city, state, warranty_terms, google_review_url, settings').eq('id', companyId).single(),
     ])
-    const showSetup = company ? await needsOnboarding(db, company) : false
+    // ?configurar=1 reopens the setup assistant on purpose (link in Ajustes).
+    const showSetup = company ? (configurar === '1' || await needsOnboarding(db, company)) : false
 
     const hour = new Date().getHours()
     const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite'

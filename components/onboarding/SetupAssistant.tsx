@@ -94,7 +94,7 @@ export default function SetupAssistant({ company }: { company: SetupCompany }) {
         try {
             await post({ action: 'finish' })
             setOpen(false)
-            if (goTo) router.push(goTo)
+            router.replace(goTo ?? '/dashboard')
             router.refresh()
         } catch (err) {
             toast.error((err as Error).message)
@@ -333,7 +333,7 @@ export default function SetupAssistant({ company }: { company: SetupCompany }) {
                             </PrimaryButton>
                         </>
                     )}
-                    {step === 3 && <PrimaryButton onClick={() => { setOpen(false); router.refresh() }} className="flex-1">Ir para o painel</PrimaryButton>}
+                    {step === 3 && <PrimaryButton onClick={() => { setOpen(false); router.replace('/dashboard'); router.refresh() }} className="flex-1">Ir para o painel</PrimaryButton>}
                 </div>
             </div>
         </div>
