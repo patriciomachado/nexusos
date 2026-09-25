@@ -1,15 +1,11 @@
-import { SignIn } from '@clerk/nextjs'
+import { redirect } from 'next/navigation'
 
-export default function SignInPage() {
-    return (
-        <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-                <div className="text-center mb-8">
-                    <h1 className="text-2xl font-bold text-white">Bem-vindo de volta</h1>
-                    <p className="text-white/60 mt-2">Entre na sua conta do Nexus OS</p>
-                </div>
-                <SignIn />
-            </div>
-        </div>
-    )
+/** Old login address: the app's login now lives at /entrar. */
+export default async function SignInPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+    const params = new URLSearchParams()
+    for (const [k, v] of Object.entries(await searchParams)) {
+        if (typeof v === 'string') params.set(k, v)
+    }
+    const qs = params.toString()
+    redirect(qs ? `/entrar?${qs}` : '/entrar')
 }

@@ -157,7 +157,7 @@ export default function OnboardingFlow() {
                                 <span className={`font-black uppercase tracking-widest transition-colors ${step === 4 ? 'text-primary' : 'text-white/20'}`}>Onboarding</span>
                             </div>
                             <div className="h-6 w-px bg-white/10 mx-2 hidden sm:block" />
-                            <Link href="/sign-in" className="text-[13px] font-black text-[#A0A0B5] hover:text-white transition-colors">Entrar</Link>
+                            <Link href="/entrar" className="text-[13px] font-black text-[#A0A0B5] hover:text-white transition-colors">Entrar</Link>
                         </div>
                     </div>
                 </div>
@@ -375,7 +375,7 @@ function StepFinal({ onboardingData }: { onboardingData: { money: number; time: 
                 <Link href="/sign-up" className="w-full bg-primary hover:bg-primary/90 text-white px-10 py-5 rounded-2xl text-xs font-black transition-all hover:scale-105 shadow-xl shadow-primary/30 text-center">
                     Criar Minha Conta Grátis
                 </Link>
-                <Link href="/sign-in" className="w-full bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 text-white px-10 py-5 rounded-2xl text-xs font-black transition-all text-center">
+                <Link href="/entrar" className="w-full bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 text-white px-10 py-5 rounded-2xl text-xs font-black transition-all text-center">
                     Já Tenho Conta
                 </Link>
             </div>

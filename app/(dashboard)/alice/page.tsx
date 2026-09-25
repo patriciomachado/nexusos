@@ -9,7 +9,7 @@ export const metadata = { title: 'Alice · Nexus OS' }
 
 export default async function AlicePage() {
     const ctx = await getContext()
-    if (!ctx) redirect('/sign-in')
+    if (!ctx) redirect('/entrar')
     // Configuration, WhatsApp chats and the activity log are for the administrator.
     if (!ADMIN_ROLES.includes(ctx.role)) redirect('/dashboard')
 

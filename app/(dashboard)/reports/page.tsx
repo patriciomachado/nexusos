@@ -7,7 +7,7 @@ export const metadata = { title: 'Relatórios · Nexus OS' }
 
 export default async function ReportsPage() {
     const ctx = await getContext()
-    if (!ctx) redirect('/sign-in')
+    if (!ctx) redirect('/entrar')
     if (!['admin', 'owner', 'manager'].includes(ctx.role)) redirect('/dashboard')
 
     return (

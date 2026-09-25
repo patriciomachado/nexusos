@@ -92,7 +92,7 @@ export default async function DashboardLayout({
 }) {
     noStore()
     const clerkUser = await currentUser()
-    if (!clerkUser) redirect('/sign-in')
+    if (!clerkUser) redirect('/entrar')
 
     const userId = clerkUser.id
     const email = clerkUser.emailAddresses[0]?.emailAddress || ''
