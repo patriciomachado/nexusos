@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
-import { BottomBar, PrimaryButton, SecondaryButton } from './ui'
+import { BottomBar, PrimaryButton, SecondaryButton } from '@/components/ui/form'
 import { BudgetSection, ClientSection, DeliverySection, DeviceSection, LockSection, ProblemSection } from './sections'
 import { saveOS, useOSForm, type InventoryOption, type Option } from './state'
 

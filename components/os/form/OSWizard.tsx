@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { Check, CheckCircle2, ChevronLeft, Loader2, Printer } from 'lucide-react'
 import Segmented from '@/components/ui/Segmented'
 import { cn } from '@/lib/utils'
-import { BottomBar, PrimaryButton, SecondaryButton } from './ui'
+import { BottomBar, PrimaryButton, SecondaryButton } from '@/components/ui/form'
 import { BudgetSection, ClientSection, DeliverySection, DeviceSection, LockSection, ProblemSection } from './sections'
 import { saveOS, useOSForm, type InventoryOption, type Option, type OSFormState } from './state'
 

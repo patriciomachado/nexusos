@@ -42,9 +42,16 @@ export async function PUT(req: NextRequest, { params }: P) {
         return NextResponse.json({ error: validation.error.format() }, { status: 400 })
     }
 
+    // settings is a JSON object shared by several screens: merge, never replace.
+    const update: Record<string, unknown> = { ...validation.data }
+    if (validation.data.settings) {
+        const { data: current } = await db.from('companies').select('settings').eq('id', id).single()
+        update.settings = { ...((current?.settings as Record<string, unknown> | null) ?? {}), ...validation.data.settings }
+    }
+
     const { data, error } = await db
         .from('companies')
-        .update(validation.data)
+        .update(update)
         .eq('id', id)
         .select()
         .single()

@@ -7,7 +7,7 @@ import { cn, getLocalDateTimePickerValue } from '@/lib/utils'
 import CustomerPicker from './CustomerPicker'
 import DeviceLockInput from './DeviceLockInput'
 import ItemsEditor from './ItemsEditor'
-import { brl, Chips, Field, Group, moneyText, parseMoney, SelectRow, SwitchRow, TextArea, TextInput } from './ui'
+import { brl, Chips, Field, Group, moneyText, parseMoney, SelectRow, SwitchRow, TextArea, TextInput } from '@/components/ui/form'
 import { DEVICE_TYPES, PRIORITY_OPTIONS, STATUS_OPTIONS, type InventoryOption, type OSFormState, type Option, type SideKey } from './state'
 
 /* ─── Cliente ──────────────────────────────────────────────────────────── */

@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { Minus, Package, Plus, Search, Wrench } from 'lucide-react'
 import Sheet from '@/components/tasks/Sheet'
 import { cn } from '@/lib/utils'
-import { brl, moneyText, parseMoney, TextInput } from './ui'
+import { brl, moneyText, parseMoney, TextInput } from '@/components/ui/form'
 import type { InventoryOption, OSItem } from './state'
 
 const normalize = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
