@@ -6,7 +6,7 @@ import { deliverDueReminders, deliverRoutineReminders } from '@/lib/tasks/remind
 export const dynamic = 'force-dynamic'
 
 function authorized(req: NextRequest) {
-    const secret = process.env.CRON_SECRET
+    const secret = process.env.CRON_SECRET?.trim().replace(/^["']|["']$/g, '')
     if (!secret) return false
     const header = req.headers.get('authorization') ?? ''
     const expected = `Bearer ${secret}`

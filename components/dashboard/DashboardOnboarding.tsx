@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Sparkles, ArrowRight, ShieldCheck, Check, Camera, Link as LinkIcon, Building2, Smartphone, MapPin, Globe, Upload, X, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
+import { compressImage, extensionOf } from '@/lib/images/compress'
 
 interface DashboardOnboardingProps {
     companyId: string
@@ -101,13 +102,13 @@ export default function DashboardOnboarding({ companyId, companyName, onComplete
         setErrorMessage(null)
 
         try {
-            const fileExt = file.name.split('.').pop()
-            const fileName = `company-${companyId}-logo-${Date.now()}.${fileExt}`
+            const logo = await compressImage(file, 'logo')
+            const fileName = `company-${companyId}-logo-${Date.now()}.${extensionOf(logo)}`
             const filePath = `company-logos/${fileName}`
 
             const { data, error } = await supabase.storage
                 .from('product-images')
-                .upload(filePath, file, { upsert: true })
+                .upload(filePath, logo, { upsert: true, contentType: logo.type })
 
             if (error) throw error
 

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Check, X, Copy, Loader2, MessageCircle, Mic, Sparkles, ShieldCheck, ExternalLink } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import RegisterNumber from './RegisterNumber'
 
 export interface SettingsPayload {
     settings: {
@@ -182,6 +183,7 @@ export default function AliceSettingsView({ data, onSaved }: { data: SettingsPay
                         </div>
                         <p className="text-[12px] text-muted-foreground flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> O token fica só no servidor e nunca é exibido de novo.</p>
                     </form>
+                    {settings.whatsapp_token_set && settings.whatsapp_phone_number_id && <RegisterNumber key={settings.whatsapp_phone_number_id} />}
                 </div>
 
                 <div className="border-t border-border/60 px-5 py-4 space-y-2">
