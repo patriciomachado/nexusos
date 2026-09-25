@@ -1,3 +1,4 @@
+import { insertOrderItems } from '@/lib/os/items'
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { serviceOrderSchema } from '@/lib/validations/schemas'
@@ -116,10 +117,7 @@ export async function POST(req: NextRequest) {
             })
         }
 
-        const { error: itemsError } = await ctx.db.from('service_order_items').insert(itemsToInsert)
-        if (itemsError) {
-            console.error('Error inserting OS items:', itemsError)
-        }
+        await insertOrderItems(ctx.db, itemsToInsert)
 
         // Update the header parts_cost
         await ctx.db

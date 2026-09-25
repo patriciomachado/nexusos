@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Info, X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
 
 interface AttachmentImage {
     id: string
@@ -66,11 +66,9 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
         <>
             {/* Device Photos */}
             {(devicesPhotos?.photo_front_url || devicesPhotos?.photo_back_url) && (
-                <div className="rounded-2xl border border-border/50 bg-card/30 p-4 md:p-6 shadow-sm">
-                    <h2 className="text-[13px] font-semibold text-muted-foreground mb-4 md:mb-6 flex items-center gap-2">
-                        <Info className="w-3 h-3" />
-                        Fotos do Dispositivo
-                    </h2>
+                <section className="space-y-1.5">
+                    <h2 className="px-4 text-[13px] font-medium text-muted-foreground">Fotos na entrada</h2>
+                    <div className="rounded-2xl bg-card border border-border/60 p-3">
                     <div className="grid grid-cols-2 gap-3 md:gap-4">
                         {devicesPhotos?.photo_front_url && (
                             <div className="space-y-2">
@@ -103,16 +101,15 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
                             </div>
                         )}
                     </div>
-                </div>
+                    </div>
+                </section>
             )}
 
             {/* Attachments */}
             {attachments && attachments.length > 0 && (
-                <div className="rounded-2xl border border-border/50 bg-card/30 p-4 md:p-6 shadow-sm">
-                    <h2 className="text-[13px] font-semibold text-muted-foreground mb-4 md:mb-6 flex items-center gap-2">
-                        <Info className="w-3 h-3" />
-                        Imagens Adicionadas
-                    </h2>
+                <section className="space-y-1.5">
+                    <h2 className="px-4 text-[13px] font-medium text-muted-foreground">Outras imagens</h2>
+                    <div className="rounded-2xl bg-card border border-border/60 p-3">
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                         {attachments.map((attachment, idx) => {
                             if (attachment.file_type !== 'photo') return null
@@ -139,7 +136,8 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
                             )
                         })}
                     </div>
-                </div>
+                    </div>
+                </section>
             )}
 
             {/* Lightbox */}

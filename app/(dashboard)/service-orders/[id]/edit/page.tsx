@@ -1,7 +1,8 @@
 import { auth } from '@clerk/nextjs/server'
 import { createAdminClient } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
-import NewOSForm from '@/components/forms/NewOSForm'
+import Header from '@/components/layout/Header'
+import OSEditForm from '@/components/os/form/OSEditForm'
 
 export default async function EditServiceOrderPage({ params }: { params: Promise<{ id: string }> }) {
     const { userId } = await auth()
@@ -10,7 +11,6 @@ export default async function EditServiceOrderPage({ params }: { params: Promise
 
     const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId!).single()
     const companyId = user?.company_id
-    const { data: company } = await db.from('companies').select('warranty_terms').eq('id', companyId).single()
 
     if (!companyId) return notFound()
 
@@ -33,28 +33,19 @@ export default async function EditServiceOrderPage({ params }: { params: Promise
     ] = await Promise.all([
         db.from('customers').select('id, name').eq('company_id', companyId).eq('is_active', true).order('name'),
         db.from('technicians').select('id, name').eq('company_id', companyId).eq('is_active', true).order('name'),
-        db.from('inventory_items').select('id, name, selling_price, category').eq('company_id', companyId).eq('is_active', true).order('name'),
+        db.from('inventory_items').select('id, name, selling_price, cost_price, category').eq('company_id', companyId).eq('is_active', true).order('name'),
         db.from('service_order_items').select('*').eq('service_order_id', id)
     ])
 
     return (
-        <div className="animate-fade-in">
-            <div className="p-8 border-b border-border bg-card/40">
-                <div className="max-w-6xl mx-auto flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-foreground tracking-tight">Editar Ordem de Serviço</h1>
-                        <p className="text-muted-foreground text-sm mt-1 font-semibold">OS #{os.order_number} · {os.title}</p>
-                    </div>
-                </div>
-            </div>
-
-            <NewOSForm
+        <div className="min-h-full flex flex-col bg-background">
+            <Header title={`Editar ${os.order_number}`} subtitle={os.title} />
+            <OSEditForm
+                order={{ ...os, items: osItems ?? [] }}
                 customers={customers || []}
                 technicians={technicians || []}
-                inventoryItems={inventoryItems || []}
+                inventory={inventoryItems || []}
                 companyId={companyId}
-                initialData={{ ...os, items: osItems }}
-                warrantyTerms={company?.warranty_terms}
             />
         </div>
     )
