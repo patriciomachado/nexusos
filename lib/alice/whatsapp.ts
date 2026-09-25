@@ -1,5 +1,6 @@
 import 'server-only'
 import crypto from 'crypto'
+import type { InboundMessage } from './gateway'
 
 /**
  * WhatsApp Cloud API (Meta). One Meta app serves every store:
@@ -145,7 +146,7 @@ export async function numberStatus(token: string, phoneNumberId: string): Promis
 }
 
 /** WhatsApp caps a text at 4096 characters. */
-function splitMessage(text: string, max = 3800) {
+export function splitMessage(text: string, max = 3800) {
     if (text.length <= max) return [text]
     const parts: string[] = []
     let rest = text
@@ -162,15 +163,9 @@ function splitMessage(text: string, max = 3800) {
 
 // ─── Webhook payload ─────────────────────────────────────────────────────────
 
-export interface IncomingMessage {
+/** A Cloud API message: the common inbound shape plus the receiving number id. */
+export interface IncomingMessage extends InboundMessage {
     phoneNumberId: string
-    from: string
-    id: string
-    timestamp: number
-    profileName: string | null
-    type: string
-    text: string | null
-    mediaId: string | null
 }
 
 type WebhookBody = {
@@ -210,7 +205,7 @@ export function parseWebhook(body: unknown): IncomingMessage[] {
                     profileName: contact?.profile?.name ?? null,
                     type: m.type,
                     text: m.text?.body ?? m.button?.text ?? m.interactive?.button_reply?.title ?? m.interactive?.list_reply?.title ?? null,
-                    mediaId: m.audio?.id ?? m.voice?.id ?? null,
+                    media: (m.audio?.id ?? m.voice?.id) ? { kind: 'cloud', id: (m.audio?.id ?? m.voice?.id)! } : null,
                 })
             }
         }

@@ -43,6 +43,8 @@ export function aliceConfigured() {
     return !!process.env.ANTHROPIC_API_KEY?.trim()
 }
 
+export type WhatsAppProvider = 'cloud' | 'evolution' | 'zapi'
+
 export interface AliceSettings {
     company_id: string
     enabled: boolean
@@ -53,6 +55,13 @@ export interface AliceSettings {
     whatsapp_access_token: string | null
     whatsapp_display_phone: string | null
     whatsapp_verified_name: string | null
+    /** cloud = Meta Cloud API; evolution / zapi = the store's own number connected by QR code. */
+    whatsapp_provider: WhatsAppProvider
+    whatsapp_gateway_url: string | null
+    whatsapp_gateway_instance: string | null
+    whatsapp_gateway_token: string | null
+    whatsapp_gateway_client_token: string | null
+    whatsapp_webhook_secret: string | null
     monthly_limit: number
     updated_at?: string
     /** The company's plan does not include Alice (Essencial). */
@@ -68,6 +77,12 @@ export const DEFAULT_SETTINGS: Omit<AliceSettings, 'company_id'> = {
     whatsapp_enabled: false,
     whatsapp_phone_number_id: null,
     whatsapp_access_token: null,
+    whatsapp_provider: 'cloud',
+    whatsapp_gateway_url: null,
+    whatsapp_gateway_instance: null,
+    whatsapp_gateway_token: null,
+    whatsapp_gateway_client_token: null,
+    whatsapp_webhook_secret: null,
     whatsapp_display_phone: null,
     whatsapp_verified_name: null,
     monthly_limit: 1500,
@@ -92,8 +107,14 @@ export function withPlan(settings: AliceSettings, plan: PlanId): AliceSettings {
 
 /** Settings as the admin screen sees them: the WhatsApp token never leaves the server. */
 export function publicSettings(s: AliceSettings) {
-    const { whatsapp_access_token, ...rest } = s
-    return { ...rest, whatsapp_token_set: !!whatsapp_access_token }
+    const { whatsapp_access_token, whatsapp_gateway_token, whatsapp_gateway_client_token, whatsapp_webhook_secret, ...rest } = s
+    return {
+        ...rest,
+        whatsapp_token_set: !!whatsapp_access_token,
+        whatsapp_gateway_token_set: !!whatsapp_gateway_token,
+        whatsapp_gateway_client_token_set: !!whatsapp_gateway_client_token,
+        whatsapp_webhook_ready: !!whatsapp_webhook_secret,
+    }
 }
 
 export function isAdminRole(role: string) {
