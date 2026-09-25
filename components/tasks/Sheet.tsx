@@ -29,29 +29,37 @@ export default function Sheet({ open, onClose, title, subtitle, children, footer
         setMounted(true)
     }, [])
 
+    // Latest onClose without re-running the effects below: callers often pass
+    // an inline function, which changes on every keystroke inside the sheet.
+    const onCloseRef = useRef(onClose)
+    useEffect(() => { onCloseRef.current = onClose })
+
     useEffect(() => {
         if (!open) return
         const prev = document.body.style.overflow
         document.body.style.overflow = 'hidden'
-        const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+        const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onCloseRef.current() }
         document.addEventListener('keydown', onKey)
-        // Move focus into the sheet for keyboard and screen reader users.
+        // Move focus into the sheet once, when it opens: the field marked
+        // data-autofocus, else the first field (never the close button, which
+        // would close the phone keyboard).
         const t = setTimeout(() => {
-            const el = panelRef.current?.querySelector<HTMLElement>('[data-autofocus], input, textarea, button')
-            el?.focus()
+            const panel = panelRef.current
+            const el = panel?.querySelector<HTMLElement>('[data-autofocus]') ?? panel?.querySelector<HTMLElement>('input, textarea, select')
+            if (el && !panel?.contains(document.activeElement)) el.focus()
         }, 50)
         return () => {
             document.body.style.overflow = prev
             document.removeEventListener('keydown', onKey)
             clearTimeout(t)
         }
-    }, [open, onClose])
+    }, [open])
 
     if (!mounted || !open) return null
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center sm:p-6 bg-black/35 animate-in fade-in duration-200"
+            className="fixed inset-0 ios-fill z-[1000] flex items-end sm:items-center justify-center sm:p-6 bg-black/35 animate-in fade-in duration-200"
             onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
         >
             <div

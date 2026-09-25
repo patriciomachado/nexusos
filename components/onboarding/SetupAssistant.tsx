@@ -94,7 +94,7 @@ export default function SetupAssistant({ company }: { company: SetupCompany }) {
         try {
             await post({ action: 'finish' })
             setOpen(false)
-            if (goTo) router.push(goTo)
+            router.replace(goTo ?? '/dashboard')
             router.refresh()
         } catch (err) {
             toast.error((err as Error).message)
@@ -161,7 +161,7 @@ export default function SetupAssistant({ company }: { company: SetupCompany }) {
     if (!open) return null
 
     return (
-        <div className="fixed inset-0 z-[950] bg-background flex flex-col animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Configurar a loja">
+        <div className="fixed inset-0 ios-fill z-[950] bg-background flex flex-col animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Configurar a loja">
             {/* Top bar */}
             <div className="shrink-0 pt-[env(safe-area-inset-top)] border-b border-border/60 material-bar">
                 <div className="max-w-xl mx-auto h-14 px-4 flex items-center gap-3">
@@ -333,7 +333,7 @@ export default function SetupAssistant({ company }: { company: SetupCompany }) {
                             </PrimaryButton>
                         </>
                     )}
-                    {step === 3 && <PrimaryButton onClick={() => { setOpen(false); router.refresh() }} className="flex-1">Ir para o painel</PrimaryButton>}
+                    {step === 3 && <PrimaryButton onClick={() => { setOpen(false); router.replace('/dashboard'); router.refresh() }} className="flex-1">Ir para o painel</PrimaryButton>}
                 </div>
             </div>
         </div>

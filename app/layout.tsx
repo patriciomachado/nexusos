@@ -7,6 +7,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
 
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
+import IOSViewportFix from '@/components/providers/IOSViewportFix'
 
 export const metadata: Metadata = {
   title: 'Nexus OS',
@@ -55,6 +56,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <IOSViewportFix />
             {/* Behind the iPhone clock (installed app): its text is white, so a dark strip keeps it readable. */}
             <div aria-hidden className="fixed top-0 inset-x-0 h-[env(safe-area-inset-top)] bg-black z-[700] pointer-events-none" />
             <Toaster

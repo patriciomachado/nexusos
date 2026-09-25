@@ -200,15 +200,23 @@ export function SecondaryButton({ className, children, ...props }: React.ButtonH
     )
 }
 
-/** Action bar pinned to the bottom of the scroll area, above the iPhone home bar. */
+/**
+ * Action bar at the bottom of the screen, above the iPhone home bar.
+ * Phones: fixed to the screen edge (sticky inside the scroll area floats too
+ * high in the installed iPhone app), with a spacer so nothing hides under it.
+ * Desktop: sticky at the bottom of the content column.
+ */
 export function BottomBar({ children, className }: { children: React.ReactNode; className?: string }) {
     return (
-        <div
-            className={cn('sticky bottom-0 z-20 mt-6 material-bar border-t border-border/60', className)}
-            style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
-        >
-            <div className="max-w-2xl mx-auto px-4 pt-3 flex items-center gap-3">{children}</div>
-        </div>
+        <>
+            <div aria-hidden className="lg:hidden shrink-0 h-[calc(6rem+env(safe-area-inset-bottom))]" />
+            <div
+                className={cn('fixed inset-x-0 bottom-0 ios-fill z-40 lg:sticky lg:inset-x-auto lg:z-20 lg:mt-6 material-bar border-t border-border/60', className)}
+                style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+            >
+                <div className="max-w-2xl mx-auto px-4 pt-3 flex items-center gap-3">{children}</div>
+            </div>
+        </>
     )
 }
 

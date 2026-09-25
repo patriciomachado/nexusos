@@ -69,7 +69,7 @@ export default function AliceAdmin() {
                     { value: 'atividade', label: 'Atividade' },
                 ]}
             />
-            {tab === 'config' && <AliceSettingsView data={data} onSaved={setData} />}
+            {tab === 'config' && <AliceSettingsView data={data} onSaved={setData} onReload={load} />}
             {tab === 'conversas' && <WhatsAppInbox enabled={data.settings.whatsapp_enabled} initialId={params.get('conversa')} onUnread={setUnread} onSetup={() => changeTab('config')} />}
             {tab === 'atividade' && <ActivityView />}
         </div>

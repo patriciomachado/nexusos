@@ -249,7 +249,7 @@ export default function AlicePanel() {
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[1000] flex justify-end bg-black/30 animate-in fade-in duration-150"
+            className="fixed inset-0 ios-fill z-[1000] flex justify-end bg-black/30 animate-in fade-in duration-150"
             onMouseDown={e => { if (e.target === e.currentTarget) setOpen(false) }}
         >
             <section

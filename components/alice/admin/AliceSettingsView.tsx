@@ -5,6 +5,8 @@ import { Check, X, Copy, Loader2, MessageCircle, Mic, Sparkles, ShieldCheck, Ext
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import RegisterNumber from './RegisterNumber'
+import QrConnect from './QrConnect'
+import Segmented from '@/components/ui/Segmented'
 
 export interface SettingsPayload {
     settings: {
@@ -18,9 +20,15 @@ export interface SettingsPayload {
         whatsapp_display_phone: string | null
         whatsapp_verified_name: string | null
         whatsapp_token_set: boolean
+        whatsapp_provider: 'cloud' | 'evolution' | 'zapi'
+        whatsapp_gateway_url: string | null
+        whatsapp_gateway_instance: string | null
+        whatsapp_gateway_token_set: boolean
+        whatsapp_gateway_client_token_set: boolean
+        whatsapp_webhook_ready: boolean
     }
     usage: number
-    environment: { ai: boolean; model: string; whatsappModel?: string; transcription: boolean; whatsappWebhook: boolean; webhookUrl: string }
+    environment: { ai: boolean; model: string; whatsappModel?: string; transcription: boolean; whatsappWebhook: boolean; webhookUrl: string; qrServer?: boolean }
 }
 
 const ROLE_OPTIONS = [
@@ -38,7 +46,7 @@ async function save(patch: Record<string, unknown>) {
     return data.settings as SettingsPayload['settings']
 }
 
-export default function AliceSettingsView({ data, onSaved }: { data: SettingsPayload; onSaved: (d: SettingsPayload) => void }) {
+export default function AliceSettingsView({ data, onSaved, onReload }: { data: SettingsPayload; onSaved: (d: SettingsPayload) => void; onReload?: () => void }) {
     const { settings, environment, usage } = data
     const [storeInfo, setStoreInfo] = useState(settings.store_info ?? '')
     const [limit, setLimit] = useState(String(settings.monthly_limit))
@@ -65,6 +73,9 @@ export default function AliceSettingsView({ data, onSaved }: { data: SettingsPay
         const roles = settings.staff_roles.includes(role) ? settings.staff_roles.filter(r => r !== role) : [...settings.staff_roles, role]
         apply('roles', { staff_roles: roles })
     }
+
+    const viaQr = settings.whatsapp_provider !== 'cloud'
+    const waReady = viaQr ? settings.whatsapp_webhook_ready && !!settings.whatsapp_display_phone : settings.whatsapp_token_set && !!settings.whatsapp_phone_number_id
 
     const usagePct = settings.monthly_limit ? Math.min(100, Math.round((usage / settings.monthly_limit) * 100)) : 100
 
@@ -127,7 +138,7 @@ export default function AliceSettingsView({ data, onSaved }: { data: SettingsPay
                     <span className="w-10 h-10 rounded-xl bg-green-500 text-white flex items-center justify-center shrink-0"><MessageCircle className="w-5 h-5" /></span>
                     <div className="min-w-0 flex-1">
                         <h2 className="type-headline">Atendimento no WhatsApp</h2>
-                        <p className="text-[14px] text-muted-foreground">API oficial da Meta. A Alice responde clientes sobre o status dos serviços, a loja e os aparelhos à venda, e chama você quando precisar.</p>
+                        <p className="text-[14px] text-muted-foreground">A Alice responde clientes sobre o status dos serviços, a loja e os aparelhos à venda, e chama você quando precisar.</p>
                     </div>
                 </header>
                 <div className="border-t border-border/60 px-5 py-4 flex items-center justify-between gap-4">
@@ -137,10 +148,41 @@ export default function AliceSettingsView({ data, onSaved }: { data: SettingsPay
                             {settings.whatsapp_display_phone ? `${settings.whatsapp_verified_name ?? 'Número'} · ${settings.whatsapp_display_phone}` : 'Conecte o número abaixo'}
                         </p>
                     </div>
-                    <Toggle checked={settings.whatsapp_enabled} busy={busy === 'wa'} disabled={!settings.whatsapp_token_set || !settings.whatsapp_phone_number_id} onChange={v => apply('wa', { whatsapp_enabled: v }, v ? 'A Alice vai responder no WhatsApp' : 'WhatsApp pausado')} label="Alice responde no WhatsApp" />
+                    <Toggle checked={settings.whatsapp_enabled} busy={busy === 'wa'} disabled={!waReady} onChange={v => apply('wa', { whatsapp_enabled: v }, v ? 'A Alice vai responder no WhatsApp' : 'WhatsApp pausado')} label="Alice responde no WhatsApp" />
                 </div>
 
-                <div className="border-t border-border/60 px-5 py-4 space-y-3">
+                <div className="border-t border-border/60 px-5 py-4 space-y-4">
+                    <div className="space-y-1.5">
+                        <p className="text-[15px] font-medium">Como conectar</p>
+                        <Segmented<'qr' | 'cloud'>
+                            value={viaQr ? 'qr' : 'cloud'}
+                            onChange={v => apply('provider', { whatsapp_provider: v === 'qr' ? 'evolution' : 'cloud' }, v === 'qr' ? 'Conexão por QR Code escolhida' : 'API oficial escolhida')}
+                            ariaLabel="Como conectar o WhatsApp"
+                            className="w-full [&>button]:flex-1"
+                            options={[{ value: 'qr', label: 'QR Code' }, { value: 'cloud', label: 'API oficial (Meta)' }]}
+                        />
+                        <p className="text-[13px] text-muted-foreground">
+                            {viaQr ? 'Mais simples: lê o QR Code com o celular da loja e pronto. Conexão não oficial.' : 'Oficial e estável, mas exige app na Meta, número verificado e registro.'}
+                        </p>
+                    </div>
+                    {viaQr ? (
+                        <QrConnect
+                            key={settings.whatsapp_provider + (settings.whatsapp_gateway_url ?? '') + (settings.whatsapp_gateway_instance ?? '')}
+                            provider={settings.whatsapp_provider === 'zapi' ? 'zapi' : 'evolution'}
+                            connectedPhone={settings.whatsapp_display_phone}
+                            connectedName={settings.whatsapp_verified_name}
+                            ready={settings.whatsapp_webhook_ready}
+                            serverConfigured={!!environment.qrServer}
+                            gatewayUrl={settings.whatsapp_gateway_url}
+                            gatewayInstance={settings.whatsapp_gateway_instance}
+                            tokenSet={settings.whatsapp_gateway_token_set}
+                            clientTokenSet={settings.whatsapp_gateway_client_token_set}
+                            busy={busy !== null}
+                            onSave={(patch, msg) => apply('gateway', patch, msg)}
+                            onChanged={() => onReload?.()}
+                        />
+                    ) : (
+                    <div className="space-y-3">
                     <p className="text-[15px] font-medium">Passo a passo (uma vez só)</p>
                     <ol className="text-[14px] text-muted-foreground space-y-2 list-decimal pl-5">
                         <li>Em <a className="text-primary inline-flex items-center gap-0.5" href="https://developers.facebook.com/apps" target="_blank" rel="noopener noreferrer">developers.facebook.com <ExternalLink className="w-3 h-3" /></a>, crie um app do tipo <b>Empresa</b> e adicione o produto <b>WhatsApp</b>.</li>
@@ -186,6 +228,9 @@ export default function AliceSettingsView({ data, onSaved }: { data: SettingsPay
                         <p className="text-[12px] text-muted-foreground flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> O token fica só no servidor e nunca é exibido de novo.</p>
                     </form>
                     {settings.whatsapp_token_set && settings.whatsapp_phone_number_id && <RegisterNumber key={settings.whatsapp_phone_number_id} />}
+                </div>
+
+                    )}
                 </div>
 
                 <div className="border-t border-border/60 px-5 py-4 space-y-2">

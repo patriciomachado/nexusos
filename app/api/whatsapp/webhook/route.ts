@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse, after } from 'next/server'
 import { createAdminClient } from '@/lib/supabase'
 import { parseWebhook, validSignature, verifyToken, webhookConfigured } from '@/lib/alice/whatsapp'
-import { handleIncoming } from '@/lib/alice/inbound'
+import { handleIncoming, settingsForPhoneNumberId } from '@/lib/alice/inbound'
 
 export const maxDuration = 120
 
@@ -34,7 +34,8 @@ export async function POST(req: NextRequest) {
             const db = createAdminClient()
             for (const msg of messages) {
                 try {
-                    await handleIncoming(db, msg)
+                    const settings = await settingsForPhoneNumberId(db, msg.phoneNumberId)
+                    if (settings) await handleIncoming(db, settings, msg)
                 } catch (err) {
                     console.error('[whatsapp] failed to handle message', msg.id, err)
                 }

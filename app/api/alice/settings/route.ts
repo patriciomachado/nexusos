@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { requireAliceAdmin } from '@/lib/alice/access'
 import { aliceConfigured, aliceModel, loadSettings, monthlyUsage, publicSettings, STAFF_ROLES } from '@/lib/alice/config'
 import { planRequiredResponse } from '@/lib/plan-server'
+import { qrServerConfigured } from '@/lib/alice/gateway'
 import { transcriptionConfigured } from '@/lib/alice/transcribe'
 import { webhookConfigured, describeNumber, WhatsAppError } from '@/lib/alice/whatsapp'
 import { appUrl } from '@/lib/alice/config'
@@ -21,6 +22,7 @@ export async function GET() {
             transcription: transcriptionConfigured(),
             whatsappWebhook: webhookConfigured(),
             webhookUrl: `${appUrl()}/api/whatsapp/webhook`,
+            qrServer: qrServerConfigured(),
         },
     })
 }
@@ -34,6 +36,12 @@ const putSchema = z.object({
     whatsapp_phone_number_id: z.string().trim().regex(/^\d{6,30}$/, 'Identificação do número inválida (só dígitos)').nullable().optional(),
     // Write-only: omitted keeps the saved token, null removes it.
     whatsapp_access_token: z.string().trim().min(20).max(1000).nullable().optional(),
+    // QR code connection (own server / Evolution API / Z-API). Tokens are write-only too.
+    whatsapp_provider: z.enum(['cloud', 'evolution', 'zapi']).optional(),
+    whatsapp_gateway_url: z.string().trim().url('Endereço do servidor inválido').max(300).nullable().optional().or(z.literal('').transform(() => null)),
+    whatsapp_gateway_instance: z.string().trim().regex(/^[\w.-]{1,120}$/, 'Nome/ID da instância inválido').nullable().optional().or(z.literal('').transform(() => null)),
+    whatsapp_gateway_token: z.string().trim().min(4).max(500).nullable().optional(),
+    whatsapp_gateway_client_token: z.string().trim().min(4).max(500).nullable().optional(),
 })
 
 export async function PUT(req: NextRequest) {
@@ -60,15 +68,23 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ error: `A Meta recusou as credenciais: ${message}` }, { status: 400 })
         }
     }
-    if (next.whatsapp_enabled && !(phoneId && token)) {
+    const provider = next.whatsapp_provider ?? settings.whatsapp_provider
+    // Switching the way of connecting pauses the WhatsApp until the new one is ready.
+    const switching = next.whatsapp_provider !== undefined && next.whatsapp_provider !== settings.whatsapp_provider
+    if (switching) Object.assign(next, { whatsapp_enabled: false })
+    if (next.whatsapp_enabled && provider === 'cloud' && !(phoneId && token)) {
         return NextResponse.json({ error: 'Informe a identificação do número e o token antes de ativar o WhatsApp.' }, { status: 400 })
+    }
+    if (next.whatsapp_enabled && provider !== 'cloud' && !settings.whatsapp_webhook_secret) {
+        return NextResponse.json({ error: 'Conecte o número pelo QR Code antes de ativar.' }, { status: 400 })
     }
 
     const { error } = await ctx.db.from('alice_settings').upsert({
         company_id: ctx.companyId,
         ...next,
         ...numberInfo,
-        ...(phoneId ? {} : { whatsapp_display_phone: null, whatsapp_verified_name: null, whatsapp_enabled: false }),
+        ...(provider === 'cloud' && !phoneId ? { whatsapp_display_phone: null, whatsapp_verified_name: null, whatsapp_enabled: false } : {}),
+        ...(switching ? { whatsapp_display_phone: null, whatsapp_verified_name: null } : {}),
         updated_by: ctx.dbUser.id,
         updated_at: new Date().toISOString(),
     }, { onConflict: 'company_id' })
