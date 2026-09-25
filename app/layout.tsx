@@ -14,7 +14,10 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    // Full-screen app: with 'default' iOS shrinks the app area by the status bar
+    // height a second time, leaving a blank strip at the bottom. The status bar
+    // area is painted by the strip below.
+    statusBarStyle: 'black-translucent',
     title: 'Nexus OS',
   },
 }
@@ -52,6 +55,8 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            {/* Behind the iPhone clock (installed app): its text is white, so a dark strip keeps it readable. */}
+            <div aria-hidden className="fixed top-0 inset-x-0 h-[env(safe-area-inset-top)] bg-black z-[700] pointer-events-none" />
             <Toaster
               position="top-center"
               offset={{ top: "calc(env(safe-area-inset-top) + 12px)" }}
