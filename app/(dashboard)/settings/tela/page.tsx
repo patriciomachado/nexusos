@@ -69,8 +69,8 @@ export default function ScreenDiagnosticsPage() {
             ['Área segura', `topo ${env.top} · base ${env.bottom}`],
             ['Rolagem da janela', String(Math.round(window.scrollY))],
             ['Correção (--ios-gap)', root.classList.contains('ios-gap') ? root.style.getPropertyValue('--ios-gap') || 'sim' : 'não'],
-            ['Recalcular ao abrir', (() => { try { return sessionStorage.getItem('nexus_iosfix_nudge') ?? '—' } catch { return '—' } })()],
             ['Tag apple-capable', document.querySelector('meta[name="apple-mobile-web-app-capable"]') ? 'sim' : 'não'],
+            ['Janela do app curta', window.innerHeight < screenH ? `sim, ${screenH - window.innerHeight} pt (some ao girar o celular)` : 'não'],
             ['Faltando embaixo', `${screenH - fb} px`],
         ])
     }, [])
@@ -122,7 +122,7 @@ export default function ScreenDiagnosticsPage() {
                     <SwitchRow label="Desligar a correção automática" description="Para comparar: tire um print com e sem." checked={fixOff} onChange={toggleFix} />
                 </Group>
                 <div className="flex gap-3">
-                    <SecondaryButton className="flex-1" onClick={() => { window.scrollTo(0, 0); window.dispatchEvent(new Event('nexus:ios-nudge')); setTimeout(run, 1500) }}>Recalcular</SecondaryButton>
+                    <SecondaryButton className="flex-1" onClick={() => { window.scrollTo(0, 0); run() }}>Medir de novo</SecondaryButton>
                     <PrimaryButton className="flex-1" onClick={copy}>Copiar números</PrimaryButton>
                 </div>
             </div>

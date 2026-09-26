@@ -328,9 +328,10 @@
   }
 
   /* Installed app on a phone/tablet: the app frame is as tall as the whole
-     screen (largest viewport), even when iOS reports a shorter one. */
+     screen (largest viewport), even when iOS reports a shorter one; not when
+     the whole window is short (ios-short), where that part isn't drawn. */
   @media (display-mode: standalone) and (pointer: coarse) {
-    .app-frame {
+    html:not(.ios-short) .app-frame {
       min-height: calc(100lvh - env(safe-area-inset-top));
     }
   }

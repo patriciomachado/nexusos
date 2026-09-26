@@ -36,8 +36,14 @@ export default function IOSViewportFix() {
             const landscape = window.innerWidth > window.innerHeight
             // screen.* is in portrait terms on iOS.
             const screenH = landscape ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height)
-            const gap = Math.round(Math.max(screenH - rect.bottom, screenH - window.innerHeight))
-            if (!off && gap > 0 && gap <= 200) {
+            const gap = Math.round(screenH - rect.bottom)
+            // iOS 18 can open the installed app with the whole window short
+            // (793 of 852pt; rotating the phone fixes it). Nothing is drawn
+            // below the window then, so stretching would push bars and sheet
+            // buttons out of sight: only stretch when the window is full height.
+            const windowShort = screenH - window.innerHeight > 0
+            root.classList.toggle('ios-short', windowShort)
+            if (!off && !windowShort && gap > 0 && gap <= 200) {
                 root.style.setProperty('--ios-gap', `${gap}px`)
                 root.classList.add('ios-gap')
             } else {
@@ -47,37 +53,6 @@ export default function IOSViewportFix() {
         }
         const later = () => { setTimeout(measure, 350); setTimeout(measure, 1000) }
 
-        // iOS 18 can launch the installed app with its window 59pt (the status
-        // bar) short at the bottom; rotating the phone fixes it. Changing the
-        // viewport tag makes WebKit lay the window out again, like a rotation.
-        const wait = (ms: number) => new Promise(r => setTimeout(r, ms))
-        const portraitShort = () => window.innerHeight < window.innerWidth ? false
-            : Math.max(screen.width, screen.height) - window.innerHeight > 0
-        let nudging = false
-        const nudge = async () => {
-            const meta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]')
-            if (!meta || nudging || !portraitShort()) return
-            nudging = true
-            const base = meta.content
-            const variants: [string, string][] = [
-                ['escala', /initial-scale=[\d.]+/.test(base) ? base.replace(/initial-scale=[\d.]+/, 'initial-scale=1.0001') : `${base}, initial-scale=1.0001`],
-                ['sem cover', base.replace(/,?\s*viewport-fit=cover/, '')],
-            ]
-            const log: string[] = []
-            for (const [name, content] of variants) {
-                if (!portraitShort()) break
-                meta.content = content
-                await wait(120)
-                meta.content = base
-                await wait(400)
-                log.push(`${name}: ${portraitShort() ? 'não' : 'resolveu'}`)
-            }
-            try { sessionStorage.setItem('nexus_iosfix_nudge', log.join(' · ') || 'não precisou') } catch { /* ignore */ }
-            nudging = false
-            measure()
-        }
-        const onNudge = () => { void nudge() }
-        setTimeout(onNudge, 400)
         // iOS 26 can leave the page shifted after the keyboard closes; the app
         // itself never scrolls the window, so put it back at the top.
         const afterKeyboard = () => {
@@ -89,7 +64,7 @@ export default function IOSViewportFix() {
             }, 300)
             later()
         }
-        const onVisible = () => { if (document.visibilityState === 'visible') { later(); setTimeout(onNudge, 400) } }
+        const onVisible = () => { if (document.visibilityState === 'visible') later() }
 
         measure()
         later()
@@ -100,7 +75,6 @@ export default function IOSViewportFix() {
         window.addEventListener('pageshow', later)
         document.addEventListener('focusout', afterKeyboard)
         document.addEventListener('visibilitychange', onVisible)
-        window.addEventListener('nexus:ios-nudge', onNudge)
         // iOS doesn't always fire resize when the viewport settles; re-check now and then.
         const iv = setInterval(measure, 3000)
         return () => {
@@ -111,8 +85,8 @@ export default function IOSViewportFix() {
             window.removeEventListener('pageshow', later)
             document.removeEventListener('focusout', afterKeyboard)
             document.removeEventListener('visibilitychange', onVisible)
-            window.removeEventListener('nexus:ios-nudge', onNudge)
             probe.remove()
+            root.classList.remove('ios-short')
         }
     }, [])
     return null
