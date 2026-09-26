@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import Segmented from '@/components/ui/Segmented'
 import { useFeature } from '@/components/plans/PlanProvider'
 import UpgradeCard from '@/components/plans/UpgradeCard'
+import GoogleReviews from './GoogleReviews'
 
 export interface Rating {
     id: string
@@ -33,7 +34,7 @@ export interface Delivered {
     rated: boolean
 }
 
-type Tab = 'contatar' | 'avaliacoes' | 'tendencia'
+type Tab = 'contatar' | 'avaliacoes' | 'google' | 'tendencia'
 type Filter = 'all' | '5' | '4' | 'low'
 
 const DAY = 86_400_000
@@ -83,9 +84,17 @@ function useContacted() {
     return { contacted: ids, mark }
 }
 
-export default function PostSalesClient({ ratings, delivered, storeName, googleReviewUrl }: { ratings: Rating[]; delivered: Delivered[]; storeName: string; googleReviewUrl: string | null }) {
+export default function PostSalesClient({ ratings, delivered, storeName, googleReviewUrl, owner, initialTab, googleFlash }: {
+    ratings: Rating[]
+    delivered: Delivered[]
+    storeName: string
+    googleReviewUrl: string | null
+    owner: boolean
+    initialTab?: string | null
+    googleFlash?: string | null
+}) {
     const canContact = useFeature('post_sales_contact')
-    const [tab, setTab] = useState<Tab>(() => (canContact ? 'contatar' : 'avaliacoes'))
+    const [tab, setTab] = useState<Tab>(() => (initialTab === 'google' ? 'google' : canContact ? 'contatar' : 'avaliacoes'))
     const [now] = useState(() => Date.now())
     const { contacted, mark } = useContacted()
     const [origin, setOrigin] = useState('')
@@ -130,6 +139,7 @@ export default function PostSalesClient({ ratings, delivered, storeName, googleR
                 options={[
                     { value: 'contatar', label: 'Contatar', badge: canContact ? pending : undefined },
                     { value: 'avaliacoes', label: 'Avaliações' },
+                    { value: 'google', label: 'Google' },
                     { value: 'tendencia', label: 'Tendência' },
                 ]}
             />
@@ -190,6 +200,7 @@ export default function PostSalesClient({ ratings, delivered, storeName, googleR
             )}
 
             {tab === 'avaliacoes' && <RatingsList ratings={ratings} />}
+            {tab === 'google' && <GoogleReviews owner={owner} storeName={storeName} flash={googleFlash} />}
             {tab === 'tendencia' && <Trend ratings={ratings} />}
         </div>
     )

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { timingSafeEqual } from 'crypto'
 import { createAdminClient } from '@/lib/supabase'
 import { deliverDueReminders, deliverRoutineReminders } from '@/lib/tasks/reminders'
+import { alertNewReviews } from '@/lib/google/alerts'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,7 +29,9 @@ export async function GET(req: NextRequest) {
         const db = createAdminClient()
         const tasks = await deliverDueReminders(db)
         const routines = await deliverRoutineReminders(db)
-        return NextResponse.json({ delivered: tasks.length + routines.length })
+        // New Google reviews, checked every 30 minutes per store.
+        const reviews = await alertNewReviews(db).catch(() => 0)
+        return NextResponse.json({ delivered: tasks.length + routines.length, reviews })
     } catch (error) {
         console.error('[cron/task-reminders] failed:', error)
         return NextResponse.json({ error: 'Falha ao enviar lembretes' }, { status: 500 })
