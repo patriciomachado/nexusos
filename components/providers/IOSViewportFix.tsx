@@ -3,15 +3,14 @@
 import { useEffect } from 'react'
 
 /**
- * iPhone/iPad, app installed on the home screen: iOS sometimes lays out
- * fixed elements in a viewport shorter than the screen, so everything pinned
- * to the bottom (the app frame, action bars, sheets, the menu) stops short
- * and leaves a strip. Measure the missing height and expose it as --ios-gap;
- * elements with the `ios-fill` class stretch down by that much.
+ * iPhone/iPad, app installed on the home screen: if iOS lays out fixed
+ * elements in a box shorter than the app's window, everything pinned to the
+ * bottom (the app frame, action bars, sheets, the menu) stops short. Measure
+ * the missing height and expose it as --ios-gap; elements with the `ios-fill`
+ * class stretch down by that much.
  *
  * The height is read from a `position: fixed; inset: 0` probe, which is
- * exactly the box the app frame gets, because window.innerHeight can report
- * the full screen while fixed elements still end short.
+ * exactly the box the app frame gets.
  */
 export default function IOSViewportFix() {
     useEffect(() => {
@@ -24,11 +23,6 @@ export default function IOSViewportFix() {
         const probe = document.createElement('div')
         probe.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;visibility:hidden;pointer-events:none;z-index:-1'
         document.body.appendChild(probe)
-        // Top safe area: 59 with the translucent status bar, 0 when the app
-        // starts below an opaque one.
-        const safeTop = document.createElement('div')
-        safeTop.style.cssText = 'position:fixed;top:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top)'
-        document.body.appendChild(safeTop)
 
         const root = document.documentElement
         const measure = () => {
@@ -38,20 +32,13 @@ export default function IOSViewportFix() {
             let off = false
             try { off = localStorage.getItem('nexus_iosfix_off') === '1' } catch { /* ignore */ }
             const rect = probe.getBoundingClientRect()
-            const landscape = window.innerWidth > window.innerHeight
-            // screen.* is in portrait terms on iOS.
-            const screenH = landscape ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height)
-            const gap = Math.round(screenH - rect.bottom)
-            // iOS 18 can open the installed app with the whole window short
-            // (793 of 852pt; rotating the phone fixes it). Nothing is drawn
-            // below the window then, so stretching would push bars and sheet
-            // buttons out of sight: only stretch when the window is full height.
-            // Below an opaque status bar the window is shorter than the screen
-            // by design; only a translucent bar (safe top > 0) makes it a bug.
-            const topInset = parseFloat(getComputedStyle(safeTop).paddingTop) || 0
-            const windowShort = topInset > 0 && screenH - window.innerHeight > 0
-            root.classList.toggle('ios-short', windowShort)
-            if (!off && !windowShort && gap > 0 && gap <= 200) {
+            // Compare with the app's own window, never with the screen: below
+            // the opaque status bar the window is 59pt shorter than the screen
+            // by design, and when iOS makes the window itself short nothing is
+            // drawn below it. Either way stretching would push the bottom bars
+            // and sheet buttons out of sight.
+            const gap = Math.round(window.innerHeight - rect.bottom)
+            if (!off && gap > 0 && gap <= 200) {
                 root.style.setProperty('--ios-gap', `${gap}px`)
                 root.classList.add('ios-gap')
             } else {
@@ -94,8 +81,6 @@ export default function IOSViewportFix() {
             document.removeEventListener('focusout', afterKeyboard)
             document.removeEventListener('visibilitychange', onVisible)
             probe.remove()
-            safeTop.remove()
-            root.classList.remove('ios-short')
         }
     }, [])
     return null
