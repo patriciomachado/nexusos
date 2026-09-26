@@ -280,7 +280,7 @@ export default function Catalog3DExperience({
                                     onClick={() => setIsPhotoModalOpen(true)}
                                     className="relative w-full h-36 sm:h-44 bg-[#070b14] rounded-2xl overflow-hidden border border-slate-800 group cursor-pointer hover:border-cyan-500/50 transition flex items-center justify-center p-2"
                                 >
-                                    <img
+                                    <img width={400} height={400}
                                         src={currentDevice.images[activePhotoIndex] || currentDevice.images[0]}
                                         alt={currentDevice.model}
                                         className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
@@ -305,7 +305,7 @@ export default function Catalog3DExperience({
                                                     activePhotoIndex === i ? 'border-cyan-400 scale-105 shadow-md shadow-cyan-500/20' : 'border-slate-800 opacity-60 hover:opacity-100'
                                                 }`}
                                             >
-                                                <img src={img} alt="Thumb" className="w-full h-full object-contain" />
+                                                <img width={400} height={400} src={img} alt="Thumb" className="w-full h-full object-contain" />
                                             </button>
                                         ))}
                                     </div>
@@ -453,7 +453,7 @@ export default function Catalog3DExperience({
                                         activePhotoIndex === idx ? 'border-cyan-400 scale-105 shadow-lg shadow-cyan-500/30' : 'border-slate-800 opacity-50 hover:opacity-100'
                                     }`}
                                 >
-                                    <img src={img} alt="Thumb" className="w-full h-full object-contain" />
+                                    <img width={400} height={400} src={img} alt="Thumb" className="w-full h-full object-contain" />
                                 </button>
                             ))}
                         </div>

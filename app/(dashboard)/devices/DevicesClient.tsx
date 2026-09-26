@@ -420,7 +420,7 @@ function PhotoStrip({ photos, onChange }: { photos: string[]; onChange: (p: stri
             {photos.map((src, i) => (
                 <div key={i} className="relative shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={src} alt="" className="w-20 h-20 rounded-2xl object-cover" />
+                    <img width={80} height={80} src={src} alt="" className="w-20 h-20 rounded-2xl object-cover" />
                     <button type="button" onClick={() => onChange(photos.filter((_, k) => k !== i))} aria-label="Remover foto" className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-black/70 text-white flex items-center justify-center"><X className="w-3.5 h-3.5" /></button>
                 </div>
             ))}

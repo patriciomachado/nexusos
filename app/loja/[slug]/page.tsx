@@ -253,7 +253,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                     <div className="flex items-center gap-3">
                         {companyLogo ? (
                             <div className="w-11 h-11 rounded-2xl overflow-hidden border p-0.5 bg-black shadow-lg" style={{ borderColor: `${theme.primary}50` }}>
-                                <img src={companyLogo} alt={companyName} className="w-full h-full object-cover rounded-xl" />
+                                <img width={400} height={400} src={companyLogo} alt={companyName} className="w-full h-full object-cover rounded-xl" />
                             </div>
                         ) : (
                             <div className="w-11 h-11 rounded-2xl text-black font-black text-lg flex items-center justify-center shadow-lg" style={{ backgroundColor: theme.primary }}>
@@ -489,7 +489,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                         <div className="space-y-3">
                                             {/* Photo Preview / Thumb Header */}
                                             <div className="relative w-full h-48 bg-black/40 rounded-2xl overflow-hidden border border-slate-800/80 flex items-center justify-center transition">
-                                                <img
+                                                <img width={400} height={400} loading="lazy"
                                                     src={mainPhoto}
                                                     alt={device.model}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -673,7 +673,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                         {Array.isArray(selectedDeviceModal.images) && selectedDeviceModal.images.length > 0 && (
                             <div className="space-y-3">
                                 <div className="w-full h-64 bg-black rounded-2xl overflow-hidden border border-slate-800">
-                                    <img
+                                    <img width={400} height={400}
                                         src={selectedDeviceModal.images[activePhotoIndex]}
                                         alt="Foto do Aparelho"
                                         className="w-full h-full object-contain"
@@ -691,7 +691,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                                 activePhotoIndex === idx ? "border-emerald-400 scale-105" : "border-slate-800 opacity-60"
                                             )}
                                         >
-                                            <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
+                                            <img width={400} height={400} loading="lazy" src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
                                         </button>
                                     ))}
                                 </div>

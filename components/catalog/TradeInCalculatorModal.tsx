@@ -83,7 +83,7 @@ export default function TradeInCalculatorModal({
                 {/* Target Device Header */}
                 <div className="p-4 bg-[#0A0D14] border border-slate-800 rounded-2xl flex items-center gap-4">
                     <div className="w-16 h-16 bg-black rounded-xl overflow-hidden shrink-0 border border-slate-800 p-1">
-                        <img
+                        <img width={400} height={400}
                             src={Array.isArray(targetDevice.images) && targetDevice.images.length > 0 ? targetDevice.images[0] : 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=300&auto=format&fit=crop&q=80'}
                             alt={targetDevice.model}
                             className="w-full h-full object-contain"
@@ -118,7 +118,7 @@ export default function TradeInCalculatorModal({
                                     style={isSel ? { borderColor: themePrimary } : {}}
                                 >
                                     <div className="w-10 h-10 rounded-lg overflow-hidden bg-black shrink-0 border border-slate-800">
-                                        <img src={item.image_url} alt={item.model} className="w-full h-full object-cover" />
+                                        <img width={400} height={400} loading="lazy" src={item.image_url} alt={item.model} className="w-full h-full object-cover" />
                                     </div>
                                     <div className="min-w-0">
                                         <p className="font-bold text-xs text-white truncate">{item.model}</p>

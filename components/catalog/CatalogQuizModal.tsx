@@ -234,7 +234,7 @@ export default function CatalogQuizModal({
                                                 style={isSel ? { borderColor: themePrimary } : {}}
                                             >
                                                 <div className="w-8 h-8 rounded-lg overflow-hidden bg-black shrink-0 border border-slate-800">
-                                                    <img src={item.image_url} alt={item.model} className="w-full h-full object-cover" />
+                                                    <img width={400} height={400} loading="lazy" src={item.image_url} alt={item.model} className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="min-w-0">
                                                     <p className="font-bold text-[11px] text-white truncate">{item.model}</p>
@@ -352,7 +352,7 @@ export default function CatalogQuizModal({
                             <div className="bg-[#0A0D14] border border-slate-800 rounded-2xl p-4 space-y-3 shadow-2xl relative overflow-hidden">
                                 <div className="flex items-center gap-4">
                                     <div className="w-24 h-24 bg-black rounded-xl overflow-hidden border border-slate-800 shrink-0 p-1">
-                                        <img 
+                                        <img width={400} height={400} 
                                             src={Array.isArray(matchedDevice.images) && matchedDevice.images.length > 0 ? matchedDevice.images[0] : 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&auto=format&fit=crop&q=80'} 
                                             alt={matchedDevice.model} 
                                             className="w-full h-full object-contain"

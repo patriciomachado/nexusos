@@ -167,7 +167,7 @@ export default async function InventoryPage({
                                     <div className="flex items-center gap-3 min-w-0 flex-1">
                                         <div className="w-12 h-12 rounded-xl bg-muted/40 border border-border/40 overflow-hidden shrink-0 flex items-center justify-center">
                                             {item.image_url ? (
-                                                <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                                <img width={400} height={400} loading="lazy" src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                                             ) : (
                                                 <Package className="w-5 h-5 opacity-30 text-muted-foreground" />
                                             )}
@@ -257,7 +257,7 @@ export default async function InventoryPage({
                                                 <div className="flex items-center gap-4">
                                                     <div className="w-12 h-12 rounded-2xl bg-muted/40 border border-border/40 overflow-hidden flex-shrink-0 relative group-hover:scale-105 transition duration-300 shadow-inner">
                                                         {item.image_url ? (
-                                                            <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                                            <img width={400} height={400} loading="lazy" src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                                                         ) : (
                                                             <div className="w-full h-full flex items-center justify-center opacity-20">
                                                                 <Package className="w-5 h-5" />

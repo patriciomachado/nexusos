@@ -80,7 +80,7 @@ export default function TrackingGallery({ devicesPhotos, attachments }: Props) {
                             onClick={() => openLightbox(0)}
                         >
                             <div className="aspect-video rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 group-hover:border-indigo-500/30 transition-colors">
-                                <img 
+                                <img width={400} height={400} loading="lazy" 
                                     src={devicesPhotos.photo_front_url} 
                                     alt="Frontal" 
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
@@ -95,7 +95,7 @@ export default function TrackingGallery({ devicesPhotos, attachments }: Props) {
                             onClick={() => openLightbox(devicesPhotos?.photo_front_url ? 1 : 0)}
                         >
                             <div className="aspect-video rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 group-hover:border-indigo-500/30 transition-colors">
-                                <img 
+                                <img width={400} height={400} loading="lazy" 
                                     src={devicesPhotos.photo_back_url} 
                                     alt="Traseira" 
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
@@ -114,7 +114,7 @@ export default function TrackingGallery({ devicesPhotos, attachments }: Props) {
                                 onClick={() => openLightbox(imageIndex)}
                             >
                                 <div className="aspect-video rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 group-hover:border-indigo-500/30 transition-colors">
-                                    <img 
+                                    <img width={400} height={400} loading="lazy" 
                                         src={attachment.file_url} 
                                         alt={attachment.file_name || 'Imagem'} 
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 

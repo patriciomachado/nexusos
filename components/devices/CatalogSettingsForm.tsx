@@ -535,7 +535,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         {tradeInValues.map(item => (
                             <div key={item.id} className="p-3 bg-background border border-border rounded-2xl flex items-center gap-3">
                                 <div className="w-11 h-11 bg-black rounded-xl overflow-hidden shrink-0 border border-border">
-                                    <img src={item.image_url} alt={item.model} className="w-full h-full object-cover" />
+                                    <img width={400} height={400} loading="lazy" src={item.image_url} alt={item.model} className="w-full h-full object-cover" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="font-bold text-xs truncate">{item.model} ({item.storage})</p>

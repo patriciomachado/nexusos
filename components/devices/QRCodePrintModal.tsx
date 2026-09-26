@@ -47,7 +47,7 @@ export default function QRCodePrintModal({ isOpen, onClose, device }: QRCodePrin
 
                     {/* QR Code Container */}
                     <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200 inline-block mx-auto">
-                        <img
+                        <img width={128} height={128}
                             src={qrCodeApiUrl}
                             alt="QR Code do Aparelho"
                             className="w-32 h-32 mx-auto rounded-lg"

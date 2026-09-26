@@ -85,7 +85,7 @@ export default function BottomNav({ userRole = 'attendant', hidden = [] }: { use
                     <div className="flex items-center gap-3 min-w-0">
                         <div className="w-10 h-10 rounded-xl bg-white p-1 shadow-sm ring-1 ring-black/5 flex items-center justify-center shrink-0">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={company?.logo_url || '/logo.png'} alt={company?.name || 'NexusOS'} className="w-full h-full object-contain" />
+                            <img width={400} height={400} src={company?.logo_url || '/logo.png'} alt={company?.name || 'NexusOS'} className="w-full h-full object-contain" />
                         </div>
                         <p className="type-title3 text-foreground truncate">{company?.name || 'NexusOS'}</p>
                     </div>

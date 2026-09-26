@@ -12,6 +12,7 @@ import Header from '@/components/layout/Header'
 import { BRAZILIAN_SEASONAL_EVENTS, WEEKLY_CONTENT_IDEAS } from '@/lib/studio-events'
 import { StudioScript, SeasonalEvent } from '@/types/studio'
 import TeleprompterModal from '@/components/studio/TeleprompterModal'
+import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
@@ -213,8 +214,9 @@ function StudioContent() {
         }
     }
 
+    const [scriptToDelete, setScriptToDelete] = useState<string | null>(null)
     const handleDeleteScript = async (id: string) => {
-        if (!confirm('Deseja excluir este roteiro salvo?')) return
+        setScriptToDelete(null)
 
         if (id.startsWith('local_')) {
             try {
@@ -726,7 +728,7 @@ function StudioContent() {
                                                 <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-md">
                                                     {script.category}
                                                 </span>
-                                                <button onClick={() => handleDeleteScript(script.id)} className="text-muted-foreground hover:text-rose-500 p-1">
+                                                <button type="button" onClick={() => setScriptToDelete(script.id)} aria-label="Excluir roteiro" className="text-muted-foreground hover:text-rose-500 p-1">
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
@@ -991,6 +993,14 @@ function StudioContent() {
             </div>
 
             {/* Teleprompter Modal */}
+            <PremiumConfirmDialog
+                isOpen={scriptToDelete !== null}
+                title="Excluir roteiro?"
+                description="Ele sai da sua biblioteca. Essa ação não pode ser desfeita."
+                confirmLabel="Excluir"
+                onConfirm={() => { if (scriptToDelete) handleDeleteScript(scriptToDelete) }}
+                onCancel={() => setScriptToDelete(null)}
+            />
             <TeleprompterModal
                 isOpen={isTeleprompterOpen}
                 onClose={() => setIsTeleprompterOpen(false)}

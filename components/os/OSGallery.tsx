@@ -77,7 +77,7 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
                                     className="aspect-video rounded-xl overflow-hidden border border-border bg-muted/50 cursor-pointer"
                                     onClick={() => openLightbox(0)}
                                 >
-                                    <img 
+                                    <img width={400} height={400} loading="lazy" 
                                         src={devicesPhotos.photo_front_url} 
                                         alt="Frontal" 
                                         className="w-full h-full object-cover transition-transform duration-500" 
@@ -92,7 +92,7 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
                                     className="aspect-video rounded-xl overflow-hidden border border-border bg-muted/50 cursor-pointer"
                                     onClick={() => openLightbox(devicesPhotos?.photo_front_url ? 1 : 0)}
                                 >
-                                    <img 
+                                    <img width={400} height={400} loading="lazy" 
                                         src={devicesPhotos.photo_back_url} 
                                         alt="Traseira" 
                                         className="w-full h-full object-cover transition-transform duration-500" 
@@ -121,7 +121,7 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
                                     onClick={() => openLightbox(imageIndex)}
                                 >
                                     <div className="aspect-video rounded-xl overflow-hidden border border-border bg-muted/50 group-hover:border-primary/30 transition-colors">
-                                        <img 
+                                        <img width={400} height={400} loading="lazy" 
                                             src={attachment.file_url} 
                                             alt={attachment.file_name || 'Imagem'} 
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
