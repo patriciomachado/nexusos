@@ -75,7 +75,7 @@ export default function Sidebar({ userRole = 'attendant', hidden = [] }: { userR
             <div className="h-16 flex items-center gap-3 px-4 shrink-0" suppressHydrationWarning>
                 <div className="w-10 h-10 rounded-xl bg-white shadow-sm ring-1 ring-black/5 flex items-center justify-center overflow-hidden shrink-0 p-1">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <img width={400} height={400}
                         src={company?.logo_url || '/logo.png'}
                         alt={company?.name || 'NexusOS'}
                         className="w-full h-full object-contain"

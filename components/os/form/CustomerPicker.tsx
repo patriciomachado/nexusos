@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Check, Plus, Search, UserRound } from 'lucide-react'
 import Sheet from '@/components/tasks/Sheet'
-import PremiumModal from '@/components/ui/PremiumModal'
 import CustomerForm from '@/components/forms/CustomerForm'
 import { cn } from '@/lib/utils'
 import type { Option } from './state'
@@ -132,8 +131,8 @@ export default function CustomerPicker({ customers, onCustomersChange, value, on
                 )}
             </Sheet>
 
-            <PremiumModal isOpen={creating !== null} onClose={() => setCreating(null)} title="Novo cliente" maxWidth="lg" full>
-                <div className="p-2">
+            <Sheet open={creating !== null} onClose={() => setCreating(null)} title="Novo cliente" size="lg" full>
+                <div className="pt-1">
                     <CustomerForm
                         companyId={companyId}
                         initial={{ name: creating ?? '' }}
@@ -148,7 +147,7 @@ export default function CustomerPicker({ customers, onCustomersChange, value, on
                         }}
                     />
                 </div>
-            </PremiumModal>
+            </Sheet>
         </>
     )
 }

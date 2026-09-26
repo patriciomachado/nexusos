@@ -157,7 +157,7 @@ export default function PdvClient({ companyId, role }: { companyId: string; role
                     )}
 
                     <div className="flex items-center gap-2">
-                        <label className="flex-1 min-w-0 flex items-center gap-2 h-12 px-3 rounded-xl bg-foreground/[0.06]">
+                        <label className="flex-1 min-w-0 flex items-center gap-2 h-12 px-3 rounded-xl bg-foreground/[0.06] focus-within:ring-2 focus-within:ring-primary/40">
                             <Search className="w-5 h-5 text-muted-foreground shrink-0" />
                             <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Produto, código ou SKU" className="flex-1 min-w-0 bg-transparent text-[17px] outline-none" />
                             {query && <button type="button" onClick={() => setQuery('')} aria-label="Limpar"><X className="w-4 h-4 text-muted-foreground" /></button>}
@@ -329,7 +329,7 @@ function CartPanel(p: {
                 <div className="flex items-center gap-2">
                     <span className="text-[15px] flex-1">Desconto</span>
                     <Segmented size="sm" ariaLabel="Tipo de desconto" value={p.discountMode} onChange={p.setDiscountMode} options={[{ value: 'brl', label: 'R$' }, { value: 'pct', label: '%' }]} />
-                    <input inputMode="decimal" value={p.discount} onChange={e => p.setDiscount(e.target.value.replace(/[^\d.,]/g, ''))} placeholder="0" aria-label="Desconto" className="w-20 h-9 rounded-lg bg-foreground/[0.06] px-2 text-right text-[16px] tabular-nums outline-none" />
+                    <input inputMode="decimal" value={p.discount} onChange={e => p.setDiscount(e.target.value.replace(/[^\d.,]/g, ''))} placeholder="0" aria-label="Desconto" className="w-20 h-9 rounded-lg bg-foreground/[0.06] px-2 text-right text-[16px] tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-primary/40" />
                 </div>
                 {p.discountNeedsPin && <p className="text-[13px] text-orange-700 dark:text-orange-400">Acima de {p.maxPct}%: vai pedir a senha do dono.</p>}
                 <div className="flex justify-between text-[15px] text-muted-foreground"><span>Subtotal</span><span className="tabular-nums">{brl(p.subtotal)}</span></div>
@@ -447,12 +447,12 @@ function CheckoutSheet({ total, subtotal, discountValue, discountNeedsPin, cart,
                         </div>
                         <Chips ariaLabel="Forma" options={methods.map(m => ({ value: m.id, label: m.name.replace(/^Cartão de /, '') }))} value={r.methodId} onChange={v => update(r.key, { methodId: v, installments: 1 })} />
                         <div className="flex items-center gap-2">
-                            <label className="flex-1 flex items-baseline gap-1 rounded-xl bg-foreground/[0.05] px-3 h-12">
+                            <label className="flex-1 flex items-baseline gap-1 rounded-xl bg-foreground/[0.05] px-3 h-12 focus-within:ring-2 focus-within:ring-primary/40">
                                 <span className="text-[15px] text-muted-foreground">R$</span>
                                 <input inputMode="decimal" value={r.amount} onChange={e => update(r.key, { amount: e.target.value.replace(/[^\d.,]/g, '') })} placeholder={amounts[i].toFixed(2).replace('.', ',')} aria-label="Valor" className="w-full min-w-0 bg-transparent text-[20px] font-semibold tabular-nums outline-none leading-[48px]" />
                             </label>
                             {isCredit(r.methodId) && (
-                                <select value={r.installments} onChange={e => update(r.key, { installments: Number(e.target.value) })} aria-label="Parcelas" className="h-12 rounded-xl bg-foreground/[0.05] px-3 text-[16px] outline-none">
+                                <select value={r.installments} onChange={e => update(r.key, { installments: Number(e.target.value) })} aria-label="Parcelas" className="h-12 rounded-xl bg-foreground/[0.05] px-3 text-[16px] outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
                                     {Array.from({ length: 12 }, (_, k) => k + 1).map(n => <option key={n} value={n}>{n === 1 ? 'À vista' : `${n}x de ${brl(amounts[i] / n)}`}</option>)}
                                 </select>
                             )}

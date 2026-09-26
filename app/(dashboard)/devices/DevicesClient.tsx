@@ -120,7 +120,7 @@ export default function DevicesClient() {
                 </div>
 
                 {(tab === 'stock' || tab === 'sold') && (
-                    <label className="flex items-center gap-2 h-11 px-3 rounded-xl bg-foreground/[0.06]">
+                    <label className="flex items-center gap-2 h-11 px-3 rounded-xl bg-foreground/[0.06] focus-within:ring-2 focus-within:ring-primary/40">
                         <Search className="w-[18px] h-[18px] text-muted-foreground shrink-0" />
                         <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Modelo, cor ou IMEI" className="flex-1 min-w-0 bg-transparent text-[17px] outline-none" />
                     </label>
@@ -420,7 +420,7 @@ function PhotoStrip({ photos, onChange }: { photos: string[]; onChange: (p: stri
             {photos.map((src, i) => (
                 <div key={i} className="relative shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={src} alt="" className="w-20 h-20 rounded-2xl object-cover" />
+                    <img width={80} height={80} src={src} alt="" className="w-20 h-20 rounded-2xl object-cover" />
                     <button type="button" onClick={() => onChange(photos.filter((_, k) => k !== i))} aria-label="Remover foto" className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-black/70 text-white flex items-center justify-center"><X className="w-3.5 h-3.5" /></button>
                 </div>
             ))}
@@ -589,7 +589,7 @@ function SellSheet({ d, onClose, onDone }: { d: Dev; onClose: () => void; onDone
                     <p className="px-1 text-[13px] text-muted-foreground">Forma de pagamento</p>
                     <Chips ariaLabel="Forma" options={methods.map(m => ({ value: m.id, label: m.name.replace(/^Cartão de /, '') }))} value={methodId} onChange={setMethodId} />
                     {credit && (
-                        <select value={installments} onChange={e => setInstallments(Number(e.target.value))} aria-label="Parcelas" className="w-full h-12 rounded-xl bg-foreground/[0.05] px-3 text-[16px] outline-none">
+                        <select value={installments} onChange={e => setInstallments(Number(e.target.value))} aria-label="Parcelas" className="w-full h-12 rounded-xl bg-foreground/[0.05] px-3 text-[16px] outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
                             {Array.from({ length: 12 }, (_, k) => k + 1).map(n => <option key={n} value={n}>{n === 1 ? 'À vista' : `${n}x de ${brl(value / n)}`}</option>)}
                         </select>
                     )}

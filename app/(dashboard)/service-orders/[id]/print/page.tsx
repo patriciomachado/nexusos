@@ -63,7 +63,7 @@ export default async function PrintOSPage({ params }: { params: Promise<{ id: st
                     <div className="flex gap-4 items-center">
                         {doc.show_logo && company?.logo_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={company.logo_url} alt="" className="w-16 h-16 object-contain" />
+                            <img width={64} height={64} src={company.logo_url} alt="" className="w-16 h-16 object-contain" />
                         ) : doc.show_logo ? (
                             <div className="w-16 h-16 rounded-lg flex items-center justify-center font-bold text-2xl text-white" style={{ background: accent }}>
                                 {company?.name?.charAt(0)?.toUpperCase() || 'N'}

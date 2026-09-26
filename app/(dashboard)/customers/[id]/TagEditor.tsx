@@ -41,7 +41,7 @@ export default function TagEditor({ customerId, initial }: { customerId: string;
                         onKeyDown={e => { if (e.key === 'Enter') add(text); if (e.key === 'Escape') setAdding(false) }}
                         onBlur={() => text ? add(text) : setAdding(false)}
                         placeholder="etiqueta"
-                        className="h-7 w-28 rounded-full bg-foreground/[0.06] px-2.5 text-[13px] outline-none"
+                        className="h-7 w-28 rounded-full bg-foreground/[0.06] px-2.5 text-[13px] outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     />
                     {SUGGESTED.filter(s => !tags.includes(s)).slice(0, 3).map(s => (
                         <button key={s} type="button" onMouseDown={e => e.preventDefault()} onClick={() => add(s)} className="h-7 px-2.5 rounded-full bg-foreground/[0.06] text-[13px]">#{s}</button>

@@ -103,7 +103,7 @@ function PhotoTile({ label, file, url, onPick, onClear }: { label: string; file:
         <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-foreground/[0.05]">
             {src ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={src} alt={label} className="w-full h-full object-cover" />
+                <img width={400} height={400} loading="lazy" src={src} alt={label} className="w-full h-full object-cover" />
             ) : (
                 <span className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-muted-foreground">
                     <Camera className="w-6 h-6" />

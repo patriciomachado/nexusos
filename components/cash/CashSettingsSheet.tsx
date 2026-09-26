@@ -82,7 +82,7 @@ export default function CashSettingsSheet({ open, onClose, settings, onSaved }: 
                         <div key={f.key} className="px-4 py-3">
                             <p className="text-[17px]">{f.label}</p>
                             <div className="mt-1 grid grid-cols-2 gap-3">
-                                <label className="flex items-center gap-2 rounded-xl bg-foreground/[0.05] px-3 h-11">
+                                <label className="flex items-center gap-2 rounded-xl bg-foreground/[0.05] px-3 h-11 focus-within:ring-2 focus-within:ring-primary/40">
                                     <input
                                         inputMode="decimal"
                                         value={fees[f.key].rate}
@@ -93,7 +93,7 @@ export default function CashSettingsSheet({ open, onClose, settings, onSaved }: 
                                     />
                                     <span className="text-[15px] text-muted-foreground">%</span>
                                 </label>
-                                <label className="flex items-center gap-2 rounded-xl bg-foreground/[0.05] px-3 h-11">
+                                <label className="flex items-center gap-2 rounded-xl bg-foreground/[0.05] px-3 h-11 focus-within:ring-2 focus-within:ring-primary/40">
                                     <span className="text-[15px] text-muted-foreground shrink-0">cai em</span>
                                     <input
                                         inputMode="numeric"

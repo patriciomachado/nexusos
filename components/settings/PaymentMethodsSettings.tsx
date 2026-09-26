@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useTransition } from 'react'
 import { toast } from 'sonner'
-import { Plus, Trash2, CheckCircle2, XCircle, CreditCard, Wallet, Landmark, QrCode } from 'lucide-react'
-import { PremiumInput } from '@/components/ui/PremiumInput'
+import { Plus, Trash2, CreditCard, Wallet, Landmark, QrCode, Loader2 } from 'lucide-react'
+import { Field, Group, TextInput } from '@/components/ui/form'
 import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 import { cn } from '@/lib/utils'
 
@@ -35,7 +35,7 @@ export default function PaymentMethodsSettings() {
             const data = await res.json()
             setMethods(Array.isArray(data) ? data : [])
         } catch (error) {
-            toast.error('Erro ao carregar meios de pagamento')
+            toast.error('Não foi possível carregar as formas de pagamento. Recarregue a página.')
         } finally {
             setIsLoading(false)
         }
@@ -53,7 +53,7 @@ export default function PaymentMethodsSettings() {
                 })
 
                 if (res.ok) {
-                    toast.success('Meio de pagamento adicionado!')
+                    toast.success('Forma de pagamento adicionada')
                     setNewName('')
                     fetchMethods()
                 } else {
@@ -61,7 +61,7 @@ export default function PaymentMethodsSettings() {
                     toast.error(error.error || 'Erro ao adicionar')
                 }
             } catch (error) {
-                toast.error('Erro de conexão')
+                toast.error('Sem conexão. Tente de novo.')
             }
         })
     }
@@ -85,7 +85,7 @@ export default function PaymentMethodsSettings() {
                     toast.error('Erro ao atualizar status')
                 }
             } catch (error) {
-                toast.error('Erro de conexão')
+                toast.error('Sem conexão. Tente de novo.')
             }
         })
     }
@@ -104,158 +104,93 @@ export default function PaymentMethodsSettings() {
                     toast.error(data.error || 'Erro ao excluir')
                 }
             } catch (error) {
-                toast.error('Erro de conexão')
+                toast.error('Sem conexão. Tente de novo.')
             }
         })
     }
 
     const getIcon = (code: string) => {
         const c = code?.toLowerCase() || ''
-        if (c.includes('money') || c.includes('dinheiro') || c.includes('cash')) return <Wallet className="w-5 h-5" />
-        if (c.includes('card') || c.includes('cartao') || c.includes('credit') || c.includes('debit')) return <CreditCard className="w-5 h-5" />
-        if (c.includes('pix') || c.includes('qr')) return <QrCode className="w-5 h-5" />
-        if (c.includes('bank') || c.includes('transfer')) return <Landmark className="w-5 h-5" />
-        return <Landmark className="w-5 h-5" />
+        if (c.includes('money') || c.includes('dinheiro') || c.includes('cash')) return Wallet
+        if (c.includes('card') || c.includes('cartao') || c.includes('credit') || c.includes('debit')) return CreditCard
+        if (c.includes('pix') || c.includes('qr')) return QrCode
+        return Landmark
     }
 
     return (
-        <div className="space-y-10">
-            <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-500 shadow-inner">
-                        <CreditCard className="w-6 h-6" />
-                    </div>
-                    <div className="space-y-0.5">
-                        <h2 className="text-2xl font-black tracking-tighter text-foreground">Métodos de Faturamento</h2>
-                        <p className="text-xs font-semibold text-muted-foreground">Gestão de gateways e recebimentos</p>
-                    </div>
+        <div className="space-y-5">
+            <Group title="Nova forma" footer="Ex.: boleto, link de pagamento, promissória.">
+                <div className="flex items-center gap-2 pr-2">
+                    <Field label="Nome" htmlFor="pm-new" className="flex-1">
+                        <TextInput
+                            id="pm-new"
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAdd() } }}
+                            placeholder="Ex.: Boleto…"
+                        />
+                    </Field>
+                    <button
+                        type="button"
+                        onClick={handleAdd}
+                        disabled={isPending || !newName.trim()}
+                        aria-label="Adicionar forma de pagamento"
+                        className="w-11 h-11 shrink-0 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 disabled:opacity-40 transition-opacity"
+                    >
+                        <Plus aria-hidden className="w-5 h-5" />
+                    </button>
                 </div>
-            </div>
+            </Group>
 
-            <div className="grid gap-8">
-                {/* Add New Section */}
-                <div className="p-8 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[80px] rounded-full group-hover:bg-indigo-500/10 transition-all duration-700" />
-
-                    <div className="relative z-10 space-y-6">
-                        <div className="space-y-1 pr-12">
-                            <h3 className="text-sm font-semibold text-foreground/80 tracking-tight">Expandir Opções</h3>
-                            <p className="text-xs font-bold text-muted-foreground leading-relaxed pr-10">Adicione métodos personalizados como Boleto, Link de Pagamento ou Promissória.</p>
-                        </div>
-
-                        <div className="flex gap-4">
-                            <div className="flex-1">
-                                <PremiumInput
-                                    placeholder="NOME DO NOVO MÉTODO..."
-                                    value={newName}
-                                    onChange={(e) => setNewName(e.target.value.toUpperCase())}
-                                    onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                                    className="bg-background/50 border-border/60 h-16 rounded-2xl"
-                                />
-                            </div>
-                            <button
- onClick={handleAdd}
- disabled={isPending || !newName.trim()}
- className="px-8 rounded-2xl bg-indigo-500 hover:bg-indigo-400 text-white font-semibold text-xs transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3 group/btn"
- >
-                                <Plus className="w-5 h-5 group-hover/btn:rotate-90 transition-transform" />
-                                <span className="hidden sm:inline">Adicionar</span>
-                            </button>
-                        </div>
-                    </div>
+            {isLoading ? (
+                <div className="flex items-center justify-center gap-2 py-12 text-[15px] text-muted-foreground" aria-live="polite">
+                    <Loader2 aria-hidden className="w-5 h-5 animate-spin" /> Carregando…
                 </div>
-
-                {/* List Section */}
-                <div className="space-y-4">
-                    {isLoading ? (
-                        <div className="flex flex-col items-center justify-center py-20 space-y-4 opacity-30">
-                            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-                            <p className="text-xs font-semibold">Sincronizando Gateways...</p>
-                        </div>
-                    ) : methods.length > 0 ? (
-                        <div className="grid sm:grid-cols-2 gap-4">
-                            {methods.map((pm) => (
-                                <div key={pm.id} className={cn(
-                                    "p-6 rounded-2xl bg-card/40 border border-border/60 transition-all duration-500 flex items-center justify-between group/item",
-                                    pm.is_active ? 'hover:border-indigo-500/30 ring-1 ring-transparent hover:ring-indigo-500/10' : 'opacity-60 grayscale'
-                                )}>
-                                    <div className="flex items-center gap-5">
-                                        <div className={cn(
-                                            "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-inner",
-                                            pm.is_active ? "bg-indigo-500/10 text-indigo-500 group-hover/item:scale-110" : "bg-muted text-muted-foreground"
-                                        )}>
-                                            {getIcon(pm.code)}
-                                        </div>
-                                        <div>
-                                            <p className="font-black text-foreground tracking-tight leading-none">{pm.name}</p>
-                                            <p className="text-xs font-semibold text-muted-foreground mt-2">
-                                                {pm.company_id ? 'Gateway Corporativo' : 'Padrão Nativo'}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3">
+            ) : methods.length > 0 ? (
+                <Group title="Formas cadastradas" footer="As formas do sistema não podem ser desativadas nem removidas.">
+                    {methods.map((pm) => {
+                        const Icon = getIcon(pm.code)
+                        const system = pm.company_id === null
+                        return (
+                            <div key={pm.id} className="flex items-center gap-3 px-4 min-h-[60px]">
+                                <span className={cn('w-8 h-8 rounded-lg flex items-center justify-center shrink-0', pm.is_active ? 'bg-primary/10 text-primary' : 'bg-foreground/[0.06] text-muted-foreground')}>
+                                    <Icon aria-hidden className="w-4 h-4" />
+                                </span>
+                                <span className="flex-1 min-w-0">
+                                    <span className={cn('block text-[17px] truncate', !pm.is_active && 'text-muted-foreground')}>{pm.name}</span>
+                                    <span className="block text-[13px] text-muted-foreground">{system ? 'Do sistema' : pm.is_active ? 'Ativa' : 'Desativada'}</span>
+                                </span>
+                                {!system && (
+                                    <>
+                                        <label className="relative shrink-0 cursor-pointer" aria-label={pm.is_active ? `Desativar ${pm.name}` : `Ativar ${pm.name}`}>
+                                            <input type="checkbox" className="sr-only peer" checked={pm.is_active} disabled={isPending} onChange={() => toggleActive(pm)} />
+                                            <span aria-hidden className="block relative w-[51px] h-[31px] rounded-full bg-foreground/[0.12] peer-checked:bg-emerald-500 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-primary/50 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:w-[27px] after:h-[27px] after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:after:translate-x-[20px]" />
+                                        </label>
                                         <button
-                                            onClick={() => toggleActive(pm)}
-                                            disabled={isPending || pm.company_id === null}
-                                            className={cn(
-                                                "p-3 rounded-xl transition-all border shrink-0",
-                                                pm.is_active
-                                                    ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/10'
-                                                    : 'text-muted-foreground bg-muted/10 border-border/60',
-                                                pm.company_id === null ? 'cursor-not-allowed border-dashed opacity-50' : 'active:scale-95 hover:border-emerald-500/40'
-                                            )}
-                                            title={pm.company_id === null ? 'Ativo por Padrão do Sistema' : pm.is_active ? 'Desativar Método' : 'Ativar Método'}
-                                        >
-                                            {pm.is_active ? <CheckCircle2 className="w-5 h-5 shadow-sm" /> : <XCircle className="w-5 h-5 opacity-40" />}
-                                        </button>
-
-                                        <button
-                                            onClick={() => {
-                                                if (pm.company_id === null) {
-                                                    toast.error('Impossível remover métodos nativos do sistema por segurança.', {
-                                                        description: 'Apenas métodos personalizados criados por você podem ser removidos.'
-                                                    })
-                                                    return
-                                                }
-                                                setPmToDelete(pm)
-                                                setConfirmOpen(true)
-                                            }}
+                                            type="button"
+                                            onClick={() => { setPmToDelete(pm); setConfirmOpen(true) }}
                                             disabled={isPending}
-                                            className={cn(
-                                                "p-3 rounded-xl transition-all border shrink-0",
-                                                pm.company_id === null
-                                                    ? 'text-muted-foreground bg-muted/5 border-border/60 cursor-not-allowed'
-                                                    : 'text-rose-500/60 bg-rose-500/5 border-transparent hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 shadow-sm active:scale-95'
-                                            )}
+                                            aria-label={`Remover ${pm.name}`}
+                                            className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors"
                                         >
-                                            <Trash2 className="w-5 h-5 shadow-sm-rose" />
+                                            <Trash2 aria-hidden className="w-5 h-5" />
                                         </button>
-
-                                        {pm.company_id === null && (
-                                            <div className="hidden lg:block px-4 py-2 rounded-xl bg-foreground/[0.03] border border-border/60 text-xs font-semibold text-muted-foreground">
-                                                Sistema
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="py-24 text-center border-4 border-dashed border-border/60 rounded-2xl bg-card/20 group">
-                            <Landmark className="w-16 h-16 text-muted-foreground mx-auto mb-6 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-700" />
-                            <p className="text-sm text-muted-foreground font-semibold">Nenhum gateway configurado</p>
-                        </div>
-                    )}
-                </div>
-            </div>
+                                    </>
+                                )}
+                            </div>
+                        )
+                    })}
+                </Group>
+            ) : (
+                <p className="py-12 text-center text-[15px] text-muted-foreground">Nenhuma forma de pagamento cadastrada.</p>
+            )}
 
             <PremiumConfirmDialog
                 isOpen={confirmOpen}
-                title="Remover Método"
-                description={`Tem certeza que deseja apagar permanentemente o método "${pmToDelete?.name}"? Esta ação não pode ser desfeita.`}
-                confirmLabel="Apagar Agora"
-                cancelLabel="Manter Método"
+                title="Remover forma de pagamento?"
+                description={`“${pmToDelete?.name ?? ''}” sai da lista. As vendas antigas continuam registradas.`}
+                confirmLabel="Remover"
+                cancelLabel="Manter"
                 onConfirm={() => {
                     if (pmToDelete) handleDelete(pmToDelete.id)
                     setConfirmOpen(false)

@@ -15,7 +15,7 @@ function Logo() {
         <Link href="/" className="flex items-center gap-2.5" aria-label="Nexus OS, início">
             <span className="w-8 h-8 rounded-[9px] bg-white shadow-sm ring-1 ring-black/5 flex items-center justify-center overflow-hidden p-0.5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo.png" alt="" className="w-full h-full object-contain" />
+                <img width={400} height={400} src="/logo.png" alt="" className="w-full h-full object-contain" />
             </span>
             <span className="text-[17px] font-semibold tracking-tight">Nexus OS</span>
         </Link>

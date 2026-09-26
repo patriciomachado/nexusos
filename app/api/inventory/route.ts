@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { inventoryItemSchema } from '@/lib/validations/schemas'
+import { logMovement } from '@/lib/inventory/movements'
+import { withoutNewColumns } from '@/lib/inventory/columns'
 
 export async function GET(req: NextRequest) {
     const ctx = await getContext()
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
 
-    const { db, companyId } = ctx
+    const { db, companyId, dbUser } = ctx
     const body = await req.json()
     
     const validation = inventoryItemSchema.safeParse(body)
@@ -38,12 +40,14 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: validation.error.format() }, { status: 400 })
     }
 
-    const { data, error } = await db
-        .from('inventory_items')
-        .insert({ ...validation.data, company_id: companyId })
-        .select()
-        .single()
-        
+    const insert = (row: Record<string, unknown>) => db.from('inventory_items').insert(row).select().single()
+    let { data, error } = await insert({ ...validation.data, company_id: companyId })
+    // Supplier and location need the 20261002 database update.
+    if (error && withoutNewColumns.applies(error)) ({ data, error } = await insert(withoutNewColumns.strip({ ...validation.data, company_id: companyId })))
+
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (data && Number(data.quantity_in_stock) > 0) {
+        await logMovement(db, { companyId, itemId: data.id, quantity: Number(data.quantity_in_stock), balance: Number(data.quantity_in_stock), kind: 'entrada', reason: 'Estoque inicial', unitCost: Number(data.cost_price) || null, userId: dbUser.id })
+    }
     return NextResponse.json(data, { status: 201 })
 }

@@ -112,7 +112,7 @@ export default function StoreForm({ company }: { company: StoreFormCompany }) {
                     <input type="file" accept="image/*" className="sr-only" onChange={pickLogo} />
                     {logo ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={logo} alt="Logo da loja" className="w-24 h-24 rounded-full object-contain bg-white border border-border/60" />
+                        <img width={96} height={96} src={logo} alt="Logo da loja" className="w-24 h-24 rounded-full object-contain bg-white border border-border/60" />
                     ) : (
                         <span className="w-24 h-24 rounded-full bg-primary/10 text-primary text-[34px] font-semibold flex items-center justify-center">{form.name.charAt(0).toUpperCase() || 'N'}</span>
                     )}

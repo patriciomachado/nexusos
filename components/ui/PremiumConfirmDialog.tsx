@@ -32,6 +32,13 @@ export default function PremiumConfirmDialog({
         setMounted(true)
     }, [])
 
+    useEffect(() => {
+        if (!isOpen) return
+        const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onCancel() }
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+    }, [isOpen, onCancel])
+
     if (!mounted || !isOpen) return null
 
     // Destructive actions use red text, never a filled button (alerts.md › Buttons).
@@ -48,21 +55,22 @@ export default function PremiumConfirmDialog({
     }
 
     return createPortal(
-        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-6 bg-black/35 animate-in fade-in duration-200">
+        <div className="fixed inset-0 ios-fill z-[100000] flex items-center justify-center p-6 bg-black/35 animate-in fade-in duration-200">
             <div
                 role="alertdialog"
                 aria-modal="true"
                 aria-labelledby="confirm-title"
+                aria-describedby="confirm-description"
                 className="material-thick w-full max-w-[300px] rounded-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200"
             >
                 <div className="px-5 pt-5 pb-4 flex flex-col items-center text-center">
                     <div className={cn("w-11 h-11 rounded-full flex items-center justify-center mb-3", iconStyles[variant])}>
-                        <AlertTriangle className="w-5 h-5" />
+                        <AlertTriangle aria-hidden className="w-5 h-5" />
                     </div>
                     <h2 id="confirm-title" className="type-headline text-foreground">
                         {title}
                     </h2>
-                    <p className="text-[13px] text-muted-foreground leading-snug mt-1">
+                    <p id="confirm-description" className="text-[13px] text-muted-foreground leading-snug mt-1">
                         {description}
                     </p>
                 </div>

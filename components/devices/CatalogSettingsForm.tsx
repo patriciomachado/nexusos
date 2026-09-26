@@ -240,7 +240,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                             <select
                                 value={deviceConditionMode}
                                 onChange={e => setDeviceConditionMode(e.target.value as any)}
-                                className="w-full bg-card border border-border rounded-xl px-3 py-2 text-xs font-bold outline-none"
+                                className="w-full bg-card border border-border rounded-xl px-3 py-2 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             >
                                 <option value="todos">✨ Vendo Novos Lacrados e Seminovos</option>
                                 <option value="novos">📦 Vendo SOMENTE Aparelhos Novos Lacrados</option>
@@ -259,7 +259,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                 value={warrantyText}
                                 onChange={e => setWarrantyText(e.target.value)}
                                 placeholder="Ex: Garantia da Loja inclusa em todos os aparelhos"
-                                className="w-full bg-card border border-border rounded-xl p-2.5 text-xs font-bold outline-none"
+                                className="w-full bg-card border border-border rounded-xl p-2.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             />
                         </div>
 
@@ -274,7 +274,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                 value={deliveryText}
                                 onChange={e => setDeliveryText(e.target.value)}
                                 placeholder="Ex: Entrega via Motoboy ou retirada na loja"
-                                className="w-full bg-card border border-border rounded-xl p-2.5 text-xs font-bold outline-none"
+                                className="w-full bg-card border border-border rounded-xl p-2.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             />
                         </div>
 
@@ -289,7 +289,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                 value={paymentMethodsText}
                                 onChange={e => setPaymentMethodsText(e.target.value)}
                                 placeholder="Ex: Até 12x no cartão de crédito ou PIX com desconto"
-                                className="w-full bg-card border border-border rounded-xl p-2.5 text-xs font-bold outline-none"
+                                className="w-full bg-card border border-border rounded-xl p-2.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             />
                         </div>
 
@@ -311,7 +311,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                                 <div className="space-y-1.5">
                                     <label className="text-[13px] font-medium text-muted-foreground block">Taxa Total 12x (%)</label>
-                                    <div className="flex items-center bg-card border border-border rounded-xl px-3 py-2">
+                                    <div className="flex items-center bg-card border border-border rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-primary/40">
                                         <input
                                             type="number"
                                             step="0.1"
@@ -331,7 +331,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                                 <div className="space-y-1.5">
                                     <label className="text-[13px] font-medium text-muted-foreground block">Taxa Total 24x (%)</label>
-                                    <div className="flex items-center bg-card border border-border rounded-xl px-3 py-2">
+                                    <div className="flex items-center bg-card border border-border rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-primary/40">
                                         <input
                                             type="number"
                                             step="0.1"
@@ -374,7 +374,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                     key={idx}
                                     type="button"
                                     onClick={() => applyPreset(preset)}
-                                    className="p-3 bg-background border border-border hover:border-primary/50 rounded-2xl text-left transition-all space-y-2 group"
+                                    className="p-3 bg-background border border-border hover:border-primary/50 rounded-2xl text-left transition space-y-2 group"
                                 >
                                     <div className="flex items-center justify-between">
                                         <span className="text-xs font-bold group-hover:text-primary transition-colors flex items-center gap-1.5">
@@ -463,7 +463,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                     <div className="space-y-4">
                         <div className="space-y-1">
                             <label className="text-[13px] font-medium text-muted-foreground ml-1">Link Exclusivo da Sua Loja (Slug)</label>
-                            <div className="flex items-center bg-background border border-border rounded-2xl px-3 py-2.5 text-xs font-mono font-bold">
+                            <div className="flex items-center bg-background border border-border rounded-2xl px-3 py-2.5 text-xs font-mono font-bold focus-within:ring-2 focus-within:ring-primary/40">
                                 <span className="text-muted-foreground select-none">https://nexusgestor.com/loja/</span>
                                 <input
                                     type="text"
@@ -481,7 +481,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                 value={catalogTitle}
                                 onChange={e => setCatalogTitle(e.target.value)}
                                 placeholder="Ex: Catálogo Oficial • Support Store"
-                                className="w-full bg-background border border-border rounded-2xl px-3 py-2.5 text-xs font-bold outline-none"
+                                className="w-full bg-background border border-border rounded-2xl px-3 py-2.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             />
                         </div>
 
@@ -492,7 +492,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                 value={announcementBar}
                                 onChange={e => setAnnouncementBar(e.target.value)}
                                 placeholder="Ex: ⚡ Frete Grátis via Motoboy na compra de qualquer iPhone hoje!"
-                                className="w-full bg-background border border-border rounded-2xl px-3 py-2.5 text-xs font-bold outline-none"
+                                className="w-full bg-background border border-border rounded-2xl px-3 py-2.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             />
                         </div>
 
@@ -502,7 +502,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                 value={whatsappCustomMessage}
                                 onChange={e => setWhatsappCustomMessage(e.target.value)}
                                 rows={2}
-                                className="w-full bg-background border border-border rounded-2xl p-3 text-xs font-bold outline-none"
+                                className="w-full bg-background border border-border rounded-2xl p-3 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             />
                         </div>
                     </div>
@@ -524,7 +524,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         <button
                             type="button"
                             onClick={restoreDefaultTradeIn}
-                            className="px-3 py-1.5 bg-muted text-muted-foreground hover:text-foreground text-xs font-bold rounded-xl transition-all flex items-center gap-1.5"
+                            className="px-3 py-1.5 bg-muted text-muted-foreground hover:text-foreground text-xs font-bold rounded-xl transition flex items-center gap-1.5"
                         >
                             <RefreshCw className="w-3.5 h-3.5" />
                             Valores Sugeridos
@@ -535,7 +535,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         {tradeInValues.map(item => (
                             <div key={item.id} className="p-3 bg-background border border-border rounded-2xl flex items-center gap-3">
                                 <div className="w-11 h-11 bg-black rounded-xl overflow-hidden shrink-0 border border-border">
-                                    <img src={item.image_url} alt={item.model} className="w-full h-full object-cover" />
+                                    <img width={400} height={400} loading="lazy" src={item.image_url} alt={item.model} className="w-full h-full object-cover" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="font-bold text-xs truncate">{item.model} ({item.storage})</p>
@@ -545,7 +545,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                                             type="number"
                                             value={item.estimated_value}
                                             onChange={e => updateTradeInValue(item.id, Number(e.target.value))}
-                                            className="w-full bg-card border border-border rounded-lg px-2 py-0.5 text-xs font-bold text-emerald-400 outline-none"
+                                            className="w-full bg-card border border-border rounded-lg px-2 py-0.5 text-xs font-bold text-emerald-400 outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                         />
                                     </div>
                                 </div>
@@ -557,10 +557,10 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
                         <button
  type="submit"
  disabled={isSaving}
- className="px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2"
+ className="px-6 py-3 bg-primary text-primary-foreground font-semibold text-xs rounded-2xl hover:bg-primary/90 transition flex items-center gap-2"
  >
                             <Save className="w-4 h-4" />
-                            {isSaving ? 'Salvando...' : 'Salvar Alterações'}
+                            {isSaving ? 'Salvando…' : 'Salvar Alterações'}
                         </button>
                     </div>
                 </div>
@@ -577,7 +577,7 @@ export default function CatalogSettingsForm({ initialSlug, onSaveSuccess }: Cata
 
                 {/* Smartphone Screen Mockup Container */}
                 <div 
-                    className="rounded-2xl border-4 border-slate-800 p-4 space-y-4 overflow-hidden transition-all duration-300 font-sans"
+                    className="rounded-2xl border-4 border-slate-800 p-4 space-y-4 overflow-hidden transition duration-300 font-sans"
                     style={{ backgroundColor: backgroundColor, color: '#FFFFFF' }}
                 >
                     {/* Top Announcement Bar */}

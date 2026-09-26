@@ -206,7 +206,7 @@ export default function BarcodeScannerModal({
                             type="button"
                             onClick={() => setSoundEnabled(!soundEnabled)}
                             className={cn(
-                                "p-2.5 rounded-xl border transition-all",
+                                "p-2.5 rounded-xl border transition",
                                 soundEnabled ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/40 border-transparent text-muted-foreground"
                             )}
                             title={soundEnabled ? "Som Ativado" : "Som Desativado"}
@@ -216,7 +216,7 @@ export default function BarcodeScannerModal({
                         <button
                             type="button"
                             onClick={handleClose}
-                            className="p-2.5 rounded-xl bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition-all"
+                            className="p-2.5 rounded-xl bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -265,7 +265,7 @@ export default function BarcodeScannerModal({
                         <button
                             type="button"
                             onClick={() => setShowManualInput(!showManualInput)}
-                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/60 hover:bg-muted text-xs font-bold text-foreground transition-all ml-auto"
+                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/60 hover:bg-muted text-xs font-bold text-foreground transition ml-auto"
                         >
                             <Keyboard className="w-4 h-4 text-primary" />
                             <span>{showManualInput ? 'Usar Câmera' : 'Digitar Código'}</span>
@@ -284,7 +284,7 @@ export default function BarcodeScannerModal({
                             />
                             <button
  type="submit"
- className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center gap-1 hover:bg-primary/90 transition-all"
+ className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center gap-1 hover:bg-primary/90 transition"
  >
                                 <Check className="w-4 h-4" />
                                 <span>OK</span>

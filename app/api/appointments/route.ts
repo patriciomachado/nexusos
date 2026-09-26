@@ -3,6 +3,14 @@ import { getContext, unauthorizedResponse } from '@/lib/security'
 import { getLocalDateString } from '@/lib/utils'
 import { appointmentSchema, idSchema } from '@/lib/validations/schemas'
 
+/** Without the 20261002 database update the technician is still required. */
+function dbError(error: { code?: string; message: string }) {
+    if (error.code === '23502' && error.message.includes('technician_id')) {
+        return NextResponse.json({ error: 'Escolha o técnico. Para agendar sem técnico, rode a atualização do banco (20261002_produtos_agenda.sql).' }, { status: 400 })
+    }
+    return NextResponse.json({ error: error.message }, { status: 500 })
+}
+
 export async function GET(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
@@ -14,7 +22,7 @@ export async function GET(req: NextRequest) {
 
     const { data, error } = await db
         .from('appointments')
-        .select('*, technicians(name), customers(name), service_orders(title, status)')
+        .select('*, technicians(name), customers(name, phone), service_orders(id, title, status, order_number)')
         .eq('company_id', companyId)
         .gte('scheduled_date', dateFrom)
         .lte('scheduled_date', dateTo)
@@ -42,7 +50,7 @@ export async function POST(req: NextRequest) {
         .select()
         .single()
         
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) return dbError(error)
     return NextResponse.json(data, { status: 201 })
 }
 
@@ -71,7 +79,7 @@ export async function PATCH(req: NextRequest) {
         .select()
         .single()
         
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) return dbError(error)
     return NextResponse.json(data)
 }
 

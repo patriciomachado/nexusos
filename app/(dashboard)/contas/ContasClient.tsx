@@ -333,7 +333,7 @@ function ReceivablesTab() {
             <PrimaryButton className="w-full" onClick={() => setCreating(true)}><Plus className="w-5 h-5" /> Novo fiado</PrimaryButton>
 
             {items.length > 5 && (
-                <label className="flex items-center gap-2 h-11 px-3 rounded-xl bg-foreground/[0.06]">
+                <label className="flex items-center gap-2 h-11 px-3 rounded-xl bg-foreground/[0.06] focus-within:ring-2 focus-within:ring-primary/40">
                     <Search className="w-[18px] h-[18px] text-muted-foreground shrink-0" />
                     <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar cliente" className="flex-1 min-w-0 bg-transparent text-[17px] outline-none" />
                 </label>
@@ -531,7 +531,7 @@ function NewCreditSheet({ open, onClose, onDone }: { open: boolean; onClose: () 
                             <button type="button" onClick={() => setCustomerId('')} className="text-[15px] text-primary">Trocar</button>
                         </div>
                     ) : (
-                        <div className="rounded-2xl bg-card border border-border/60 overflow-hidden">
+                        <div className="rounded-2xl bg-card border border-border/60 overflow-hidden focus-within:ring-2 focus-within:ring-primary/40">
                             <label className="flex items-center gap-2 px-4 h-12 border-b border-border/60">
                                 <Search className="w-[18px] h-[18px] text-muted-foreground" />
                                 <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar cliente" className="flex-1 min-w-0 bg-transparent text-[17px] outline-none" data-autofocus />

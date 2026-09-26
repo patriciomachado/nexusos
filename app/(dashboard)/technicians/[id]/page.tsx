@@ -37,7 +37,7 @@ export default async function TechnicianDetailPage({ params }: { params: Promise
             <div className="p-6 max-w-7xl mx-auto space-y-8">
                 {/* Back Link */}
                 <Link href="/technicians" className="inline-flex items-center gap-2 text-sm text-foreground/40 hover:text-foreground transition-colors group">
-                    <div className="p-1.5 rounded-lg bg-muted/5 border border-border group-hover:bg-orange-500/20 group-hover:border-orange-500/30 transition-all">
+                    <div className="p-1.5 rounded-lg bg-muted/5 border border-border group-hover:bg-orange-500/20 group-hover:border-orange-500/30 transition">
                         <ArrowLeft className="w-4 h-4" />
                     </div>
                     Voltar para Equipe Técnica
@@ -94,7 +94,7 @@ export default async function TechnicianDetailPage({ params }: { params: Promise
 
                     {/* Performance Metrics */}
                     <div className="space-y-4">
-                        <div className="p-6 rounded-2xl bg-muted/[0.02] border border-border group hover:border-indigo-500/20 transition-all">
+                        <div className="p-6 rounded-2xl bg-muted/[0.02] border border-border group hover:border-indigo-500/20 transition">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-400">
                                     <TrendingUp className="w-5 h-5" />
@@ -136,7 +136,7 @@ export default async function TechnicianDetailPage({ params }: { params: Promise
                                 <Link
                                     key={os.id}
                                     href={`/service-orders/${os.id}`}
-                                    className="p-6 rounded-2xl bg-card/40 border border-border hover:border-orange-500/30 transition-all group relative overflow-hidden"
+                                    className="p-6 rounded-2xl bg-card/40 border border-border hover:border-orange-500/30 transition group relative overflow-hidden"
                                 >
                                     <div className="relative z-10 flex items-center justify-between">
                                         <div className="space-y-3">
@@ -156,7 +156,7 @@ export default async function TechnicianDetailPage({ params }: { params: Promise
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="w-12 h-12 rounded-2xl bg-muted/5 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white transition-all">
+                                        <div className="w-12 h-12 rounded-2xl bg-muted/5 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white transition">
                                             <ChevronRight className="w-5 h-5" />
                                         </div>
                                     </div>

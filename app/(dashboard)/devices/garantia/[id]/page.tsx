@@ -34,7 +34,7 @@ export default async function WarrantyPage({ params }: { params: Promise<{ id: s
             <div className="print-report max-w-2xl mx-auto rounded-2xl bg-white text-black p-8 text-[14px] leading-relaxed shadow-sm space-y-5">
                 <header className="flex items-center gap-4 border-b border-black/10 pb-4">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    {company?.logo_url && <img src={company.logo_url} alt="" className="h-14 w-14 object-contain" />}
+                    {company?.logo_url && <img width={56} height={56} src={company.logo_url} alt="" className="h-14 w-14 object-contain" />}
                     <div>
                         <p className="text-[18px] font-bold">{company?.name}</p>
                         <p className="text-[12px] text-black/60">{[company?.cnpj ? `CNPJ ${company.cnpj}` : null, where, company?.phone].filter(Boolean).join(' · ')}</p>

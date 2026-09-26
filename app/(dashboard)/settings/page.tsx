@@ -32,7 +32,7 @@ export default async function SettingsPage() {
                 <Link href={owner ? '/settings/loja' : '/profile'} className="flex items-center gap-4 rounded-2xl bg-card border border-border/60 p-4 hover:bg-foreground/[0.02] transition-colors">
                     {company?.logo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={company.logo_url} alt="" className="w-14 h-14 rounded-full object-cover bg-white border border-border/60" />
+                        <img width={56} height={56} src={company.logo_url} alt="" className="w-14 h-14 rounded-full object-cover bg-white border border-border/60" />
                     ) : (
                         <span className="w-14 h-14 rounded-full bg-primary/10 text-primary text-[22px] font-semibold flex items-center justify-center">{company?.name?.charAt(0)?.toUpperCase() ?? 'N'}</span>
                     )}
