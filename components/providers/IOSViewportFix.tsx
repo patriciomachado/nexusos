@@ -31,18 +31,24 @@ export default function IOSViewportFix() {
             const el = document.activeElement
             if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || (el as HTMLElement | null)?.isContentEditable) return
             let off = false
-            try { off = localStorage.getItem('nexus_iosfix_off') === '1' } catch { /* ignore */ }
+            let bodyMode = true
+            try {
+                off = localStorage.getItem('nexus_iosfix_off') === '1'
+                bodyMode = localStorage.getItem('nexus_iosfix_body') !== '0'
+            } catch { /* ignore */ }
             const rect = probe.getBoundingClientRect()
             const landscape = window.innerWidth > window.innerHeight
             // screen.* is in portrait terms on iOS.
             const screenH = landscape ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height)
-            const gap = Math.round(screenH - rect.bottom)
+            // In body mode the probe spans the body, so read the window too.
+            const gap = Math.round(Math.max(screenH - rect.bottom, screenH - window.innerHeight))
             if (!off && gap > 0 && gap <= 200) {
                 root.style.setProperty('--ios-gap', `${gap}px`)
                 root.classList.add('ios-gap')
+                root.classList.toggle('ios-body', bodyMode)
             } else {
                 root.style.removeProperty('--ios-gap')
-                root.classList.remove('ios-gap')
+                root.classList.remove('ios-gap', 'ios-body')
             }
         }
         const later = () => { setTimeout(measure, 350); setTimeout(measure, 1000) }
