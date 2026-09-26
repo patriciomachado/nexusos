@@ -24,6 +24,11 @@ export default function IOSViewportFix() {
         const probe = document.createElement('div')
         probe.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;visibility:hidden;pointer-events:none;z-index:-1'
         document.body.appendChild(probe)
+        // Top safe area: 59 with the translucent status bar, 0 when the app
+        // starts below an opaque one.
+        const safeTop = document.createElement('div')
+        safeTop.style.cssText = 'position:fixed;top:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top)'
+        document.body.appendChild(safeTop)
 
         const root = document.documentElement
         const measure = () => {
@@ -41,7 +46,10 @@ export default function IOSViewportFix() {
             // (793 of 852pt; rotating the phone fixes it). Nothing is drawn
             // below the window then, so stretching would push bars and sheet
             // buttons out of sight: only stretch when the window is full height.
-            const windowShort = screenH - window.innerHeight > 0
+            // Below an opaque status bar the window is shorter than the screen
+            // by design; only a translucent bar (safe top > 0) makes it a bug.
+            const topInset = parseFloat(getComputedStyle(safeTop).paddingTop) || 0
+            const windowShort = topInset > 0 && screenH - window.innerHeight > 0
             root.classList.toggle('ios-short', windowShort)
             if (!off && !windowShort && gap > 0 && gap <= 200) {
                 root.style.setProperty('--ios-gap', `${gap}px`)
@@ -86,6 +94,7 @@ export default function IOSViewportFix() {
             document.removeEventListener('focusout', afterKeyboard)
             document.removeEventListener('visibilitychange', onVisible)
             probe.remove()
+            safeTop.remove()
             root.classList.remove('ios-short')
         }
     }, [])

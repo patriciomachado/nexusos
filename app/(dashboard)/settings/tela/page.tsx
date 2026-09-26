@@ -56,7 +56,7 @@ export default function ScreenDiagnosticsPage() {
         const fb = fixedBottom()
         const root = document.documentElement
         const iosVersion = navigator.userAgent.match(/OS (\d+[_\d]*)/)?.[1]?.replace(/_/g, '.') ?? '—'
-        setMarks({ screen: screenH, fixed: fb, visual: vv ? Math.round(vv.height + vv.offsetTop) : window.innerHeight })
+        setMarks({ screen: env.top > 0 ? screenH : window.innerHeight, fixed: fb, visual: vv ? Math.round(vv.height + vv.offsetTop) : window.innerHeight })
         setRows([
             ['iOS', iosVersion],
             ['App instalado', nav.standalone === true || matchMedia('(display-mode: standalone)').matches ? 'sim' : 'não'],
@@ -70,8 +70,10 @@ export default function ScreenDiagnosticsPage() {
             ['Rolagem da janela', String(Math.round(window.scrollY))],
             ['Correção (--ios-gap)', root.classList.contains('ios-gap') ? root.style.getPropertyValue('--ios-gap') || 'sim' : 'não'],
             ['Tag apple-capable', document.querySelector('meta[name="apple-mobile-web-app-capable"]') ? 'sim' : 'não'],
-            ['Janela do app curta', window.innerHeight < screenH ? `sim, ${screenH - window.innerHeight} pt (some ao girar o celular)` : 'não'],
-            ['Faltando embaixo', `${screenH - fb} px`],
+            ['Barra de status', env.top > 0 ? 'translúcida (app começa no topo da tela)' : 'opaca (app começa abaixo do relógio)'],
+            ['Janela do app curta', env.top > 0 && window.innerHeight < screenH ? `sim, ${screenH - window.innerHeight} pt (some ao girar o celular)` : 'não'],
+            // Below an opaque bar the app starts at the status bar's bottom.
+            ['Faltando embaixo', `${Math.max(0, (env.top > 0 ? screenH : window.innerHeight) - fb)} px`],
         ])
     }, [])
 
