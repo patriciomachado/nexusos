@@ -15,10 +15,11 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    // Full-screen app: with 'default' iOS shrinks the app area by the status bar
-    // height a second time, leaving a blank strip at the bottom. The status bar
-    // area is painted by the strip below.
-    statusBarStyle: 'black-translucent',
+    // Opaque black bar: the app starts below the clock and reaches the bottom
+    // of the screen. With 'black-translucent' iOS draws the app from the top of
+    // the screen but keeps the window 59pt short, leaving an empty band at the
+    // bottom that no CSS can fill (WebKit bug 301108; seen on iOS 18.7).
+    statusBarStyle: 'black',
     title: 'Nexus OS',
   },
   // Next only emits mobile-web-app-capable, which iOS ignores: without the
