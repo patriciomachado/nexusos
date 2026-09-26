@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     // WhatsApp, Alice and team settings stay per store.
     const settings = (current.settings ?? {}) as Record<string, unknown>
     const copied = input.copy_settings
-        ? Object.fromEntries(['documents', 'receipt', 'cash', 'permissions'].filter(k => k in settings).map(k => [k, settings[k]]))
+        ? Object.fromEntries(['documents', 'receipt', 'cash', 'permissions', 'modules_off'].filter(k => k in settings).map(k => [k, settings[k]]))
         : {}
 
     const { data: branch, error } = await db.from('companies').insert({

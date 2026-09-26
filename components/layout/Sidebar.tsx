@@ -17,7 +17,7 @@ const MODES = [
     { id: 'closed', icon: PanelLeftClose, label: 'Sempre fechado' },
 ] as const
 
-export default function Sidebar({ userRole = 'attendant', hidden = [] }: { userRole?: UserRole; hidden?: string[] }) {
+export default function Sidebar({ userRole = 'attendant', hidden = [], off = [] }: { userRole?: UserRole; hidden?: string[]; off?: string[] }) {
     const pathname = usePathname()
     const store = useAppStore()
     const [mounted, setMounted] = useState(false)
@@ -27,7 +27,7 @@ export default function Sidebar({ userRole = 'attendant', hidden = [] }: { userR
     const fetchTaskSummary = useTaskStore(s => s.fetchSummary)
 
     const role = safeRoleOf(userRole)
-    const groups = visibleGroups(role, hidden)
+    const groups = visibleGroups(role, hidden, off)
     const showsTasks = groups.some(g => g.items.some(i => i.badge === 'tasks'))
 
     useEffect(() => {

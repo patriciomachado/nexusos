@@ -16,7 +16,7 @@ import { visibleGroups, safeRoleOf, isActivePath, ROLE_LABELS } from './nav-conf
  * Mobile navigation drawer. Rows follow the iOS grouped-list pattern
  * (lists-and-tables.md): 44pt rows, colored symbol tiles, chevrons.
  */
-export default function BottomNav({ userRole = 'attendant', hidden = [] }: { userRole?: UserRole; hidden?: string[] }) {
+export default function BottomNav({ userRole = 'attendant', hidden = [], off = [] }: { userRole?: UserRole; hidden?: string[]; off?: string[] }) {
     const pathname = usePathname()
     const [mounted, setMounted] = useState(false)
     const { mobileMenuOpen, setMobileMenuOpen } = useAppStore()
@@ -52,7 +52,7 @@ export default function BottomNav({ userRole = 'attendant', hidden = [] }: { use
     if (!mounted) return null
 
     const role = safeRoleOf(userRole)
-    const groups = visibleGroups(role, hidden)
+    const groups = visibleGroups(role, hidden, off)
 
     return (
         <div
