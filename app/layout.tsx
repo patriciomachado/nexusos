@@ -8,6 +8,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'sw
 
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import IOSViewportFix from '@/components/providers/IOSViewportFix'
+import NoZoom from '@/components/providers/NoZoom'
 
 export const metadata: Metadata = {
   title: 'Nexus OS',
@@ -33,6 +34,9 @@ export const metadata: Metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
+  // App feel: no pinch or double-tap zoom (NoZoom covers iOS, which can ignore these).
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#F2F2F7' },
@@ -64,6 +68,7 @@ export default function RootLayout({
           >
             {children}
             <IOSViewportFix />
+            <NoZoom />
             {/* Behind the iPhone clock (installed app): its text is white, so a dark strip keeps it readable. */}
             <div aria-hidden className="fixed top-0 inset-x-0 h-[env(safe-area-inset-top)] bg-black z-[700] pointer-events-none" />
             <Toaster
