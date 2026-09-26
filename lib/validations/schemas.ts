@@ -200,6 +200,7 @@ export const serviceTypeSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   description: z.string().optional().nullable(),
   base_price: z.number().min(0).default(0),
+  estimated_time_minutes: z.number().int().min(0).max(10080).optional(),
   is_active: z.boolean().default(true).optional(),
 })
 

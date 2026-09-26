@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import {
-    Banknote, Bell, BellRing, Blocks, Building2, ChevronRight, Clock, CreditCard, Database, Download, FileText, Landmark, MessageCircle,
+    Banknote, Bell, BellRing, Blocks, Building2, Calculator, ChevronRight, Clock, CreditCard, Database, Download, FileText, Landmark, MessageCircle,
     Smartphone, Sparkles, Store, Upload, UserCheck, Users, Wallet, Wand2,
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
@@ -57,6 +57,7 @@ export default async function SettingsPage() {
                         </SettingsSection>
 
                         <SettingsSection title="Vendas e dinheiro">
+                            <SettingsRow href="/settings/precos" icon={Calculator} color="bg-amber-500" label="Preços" detail="Custo da hora, lucro e tabela de serviços" />
                             <SettingsRow href="/settings/pagamentos" icon={CreditCard} color="bg-emerald-500" label="Formas de pagamento" />
                             <SettingsRow href="/cash-register?ajustes=1" icon={Wallet} color="bg-green-600" label="Caixa e maquininha" detail="Taxas, limite de sangria, senha do dono e relatório" />
                             <SettingsRow href="/contas" icon={Landmark} color="bg-teal-600" label="Contas a pagar e receber" />
