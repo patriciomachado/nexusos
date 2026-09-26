@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase'
 import { dateStringInZone, DEFAULT_TIMEZONE, addDays } from '@/lib/tasks/dates'
 import { fill, normalizeAutomations, readyChannel, sendOnce, waPhone } from '@/lib/customers/messages'
 import { remindAppointment } from '@/lib/appointments/reminder'
+import { alertNewReviews } from '@/lib/google/alerts'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -74,7 +75,9 @@ export async function GET(req: NextRequest) {
             }
         }
     }
-    return NextResponse.json({ sent })
+    // Stores without the frequent reminder cron still hear about new Google reviews daily.
+    const reviews = await alertNewReviews(db, 60).catch(() => 0)
+    return NextResponse.json({ sent, reviews })
 }
 
 export const POST = GET
