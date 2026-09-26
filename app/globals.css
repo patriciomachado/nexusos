@@ -331,16 +331,6 @@
   /* Installed app on a phone/tablet: the app frame is as tall as the whole
      screen (largest viewport), even when iOS reports a shorter one. */
   @media (display-mode: standalone) and (pointer: coarse) {
-    /* iOS 26 installed app with a translucent status bar: the area fixed
-       elements are laid out in ends short by the status bar height, and
-       nothing is painted below it (a strip as tall as the top inset, even over
-       sheets). Making the root taller by that inset restores the full screen. */
-    html {
-      min-height: calc(100% + env(safe-area-inset-top));
-    }
-    body {
-      overscroll-behavior-y: none;
-    }
     .app-frame {
       min-height: calc(100lvh - env(safe-area-inset-top));
     }

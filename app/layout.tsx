@@ -21,6 +21,12 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: 'Nexus OS',
   },
+  // Next only emits mobile-web-app-capable, which iOS ignores: without the
+  // Apple tag the installed app runs in manifest mode, where the translucent
+  // status bar leaves the app area 59pt short at the bottom (iOS 18).
+  other: {
+    'apple-mobile-web-app-capable': 'yes',
+  },
 }
 
 export const viewport = {
