@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { idSchema, inventoryAdjustSchema } from '@/lib/validations/schemas'
+import { logMovement } from '@/lib/inventory/movements'
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -11,7 +12,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
 
-    const { db, companyId } = ctx
+    const { db, companyId, dbUser } = ctx
     const body = await req.json()
 
     const validation = inventoryAdjustSchema.safeParse(body)
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const { data: item } = await db
         .from('inventory_items')
-        .select('quantity_in_stock')
+        .select('quantity_in_stock, cost_price')
         .eq('id', id)
         .eq('company_id', companyId)
         .single()
@@ -40,6 +41,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    const q = Number(validation.data.quantity)
+    await logMovement(db, {
+        companyId, itemId: id, quantity: q, balance: newQty,
+        kind: validation.data.kind ?? (q > 0 ? 'entrada' : 'saida'),
+        reason: validation.data.reason,
+        unitCost: q > 0 ? (validation.data.unit_cost ?? Number(item.cost_price) ?? null) : null,
+        userId: dbUser.id,
+    })
+    // A purchase at a new cost updates the product's cost.
+    if (q > 0 && validation.data.unit_cost != null && validation.data.unit_cost > 0 && validation.data.unit_cost !== Number(item.cost_price)) {
+        await db.from('inventory_items').update({ cost_price: validation.data.unit_cost }).eq('id', id).eq('company_id', companyId)
+    }
     return NextResponse.json(data)
 }
 

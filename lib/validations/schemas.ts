@@ -6,9 +6,12 @@ export const idSchema = z.string().uuid('ID inválido')
 // Appointment Schema
 export const appointmentSchema = z.object({
   customer_id: z.string().uuid('Cliente inválido'),
-  technician_id: z.string().uuid('Técnico inválido'),
+  technician_id: z.string().uuid('Técnico inválido').nullable().optional(),
+  title: z.string().max(255).optional().nullable(),
   scheduled_date: z.string().datetime({ message: 'Data e hora inválidas' }),
-  notes: z.string().optional(),
+  scheduled_end_date: z.string().datetime({ message: 'Horário final inválido' }).optional().nullable(),
+  location_address: z.string().max(500).optional().nullable(),
+  notes: z.string().optional().nullable(),
   status: z.enum(['scheduled', 'confirmed', 'in_progress', 'completed', 'cancelled']).default('scheduled'),
   service_order_id: z.string().uuid('Ordem de serviço inválida').nullable().optional()
 })
@@ -54,6 +57,8 @@ export const inventoryItemSchema = z.object({
   unit: z.string().default('un'),
   barcode: z.string().optional().nullable(),
   image_url: z.string().optional().nullable(),
+  supplier: z.string().max(120).optional().nullable(),
+  location: z.string().max(60).optional().nullable(),
   serial_number_required: z.boolean().optional().default(false),
   is_active: z.boolean().default(true)
 })
@@ -207,7 +212,10 @@ export const paymentMethodSchema = z.object({
 
 // Inventory Adjustment Schema
 export const inventoryAdjustSchema = z.object({
-  quantity: z.number().describe('Quantidade a ser adicionada ou removida'),
+  quantity: z.number().refine(n => n !== 0, 'Quantidade não pode ser zero').describe('Quantidade a ser adicionada ou removida'),
+  kind: z.enum(['entrada', 'saida', 'ajuste']).optional(),
+  reason: z.string().max(200).optional().nullable(),
+  unit_cost: z.number().min(0).optional().nullable(),
 })
 
 // OS Status Update Schema

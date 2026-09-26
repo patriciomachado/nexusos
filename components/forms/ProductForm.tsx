@@ -46,6 +46,8 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
         unit: 'un',
         barcode: '',
         image_url: '',
+        supplier: '',
+        location: '',
     })
 
     const [photo, setPhoto] = useState<File | null>(null)
@@ -78,6 +80,8 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                 unit: initialData.unit || 'un',
                 barcode: initialData.barcode || '',
                 image_url: initialData.image_url || '',
+                supplier: initialData.supplier || '',
+                location: initialData.location || '',
             })
         }
         fetchCategories()
@@ -309,6 +313,11 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                         onChange={v => set('unit', v || 'un')}
                         options={[{ value: 'un', label: 'Unidade (un)' }, { value: 'pc', label: 'Peça (pc)' }, { value: 'par', label: 'Par' }, { value: 'cx', label: 'Caixa (cx)' }, { value: 'kg', label: 'Quilo (kg)' }]}
                     />
+                </Group>
+
+                <Group title="Compra e local">
+                    <Field label="Fornecedor" htmlFor="pf-supplier"><TextInput id="pf-supplier" value={form.supplier} onChange={e => set('supplier', e.target.value)} placeholder="Opcional" /></Field>
+                    <Field label="Onde fica na loja" htmlFor="pf-location" hint="Aparece na ficha e na busca."><TextInput id="pf-location" value={form.location} onChange={e => set('location', e.target.value)} placeholder="Ex.: Gaveta 3, vitrine" /></Field>
                 </Group>
 
                 <Group title="Códigos">

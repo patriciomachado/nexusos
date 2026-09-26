@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logMovement } from '@/lib/inventory/movements'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { saleSchema } from '@/lib/validations/schemas'
 import { findOpenRegister, isManager, isOwner, loadCashSettings, verifyPin } from '@/lib/cash/server'
@@ -216,6 +217,10 @@ export async function POST(req: NextRequest) {
                 })
                 .eq('id', updateData.id)
                 .eq('company_id', companyId)
+            await logMovement(db, {
+                companyId, itemId: updateData.id, quantity: -Number(insertData.quantity), balance: updateData.new_stock,
+                kind: 'venda', reason: `Venda ${sale.id.slice(0, 8)}`, unitCost: insertData.unit_cost, refId: sale.id, userId: dbUser.id,
+            })
         }
 
         // Update total cost on sale header
