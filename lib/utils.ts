@@ -167,5 +167,5 @@ export const APPOINTMENT_STATUS_LABELS: Record<string, string> = {
     confirmed: 'Confirmado',
     in_progress: 'Em Andamento',
     completed: 'Concluído',
-    canceled: 'Cancelado',
+    cancelled: 'Cancelado',
 }

@@ -18,8 +18,21 @@ import {
 import { cn, APPOINTMENT_STATUS_LABELS } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import PremiumModal from '@/components/ui/PremiumModal'
+import Sheet from '@/components/tasks/Sheet'
+import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
+import { toast } from 'sonner'
 import AppointmentForm from './AppointmentForm'
+import { Group, PrimaryButton, SecondaryButton } from '@/components/ui/form'
+
+function InfoRow({ icon, label, value }: { icon?: React.ReactNode; label: string; value: React.ReactNode }) {
+    return (
+        <div className="flex items-center gap-3 px-4 min-h-[52px]">
+            {icon && <span className="text-muted-foreground shrink-0">{icon}</span>}
+            <span className="text-[17px] text-foreground shrink-0">{label}</span>
+            <span className="ml-auto text-[17px] text-muted-foreground text-right truncate">{value}</span>
+        </div>
+    )
+}
 
 interface AppointmentsCalendarProps {
     initialAppointments: any[]
@@ -85,10 +98,29 @@ export default function AppointmentsCalendar({
         setSelectedAppointment(appt)
     }
 
+    // Keep the appointment selected: the form edits it (the details sheet
+    // hides while isEditing).
     const handleEdit = () => {
         setIsEditing(true)
-        setSelectedAppointment(null) // Close detail modal
-        setIsCreateModalOpen(true) // Open form modal
+        setIsCreateModalOpen(true)
+    }
+
+    const [confirmCancel, setConfirmCancel] = useState(false)
+    const cancelAppointment = async () => {
+        if (!selectedAppointment) return
+        setConfirmCancel(false)
+        const res = await fetch('/api/appointments', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: selectedAppointment.id, status: 'cancelled' }),
+        })
+        if (res.ok) {
+            toast.success('Agendamento cancelado')
+            setSelectedAppointment(null)
+            router.refresh()
+        } else {
+            toast.error('Não foi possível cancelar. Tente de novo.')
+        }
     }
 
     const handleRefresh = () => {
@@ -356,21 +388,25 @@ export default function AppointmentsCalendar({
                 </div>
             </div>
 
-            {/* Modals */}
-            <PremiumModal
-                isOpen={isCreateModalOpen}
+            <Sheet
+                open={isCreateModalOpen}
                 onClose={() => {
                     setIsCreateModalOpen(false)
                     setSelectedDateInModal(null)
                     setSelectedAppointment(null)
                     setIsEditing(false)
                 }}
-                title={isEditing ? "Editar Agendamento" : "Novo Agendamento"}
-                subtitle={isEditing ? "Altere os detalhes do compromisso" : (selectedDateInModal ? selectedDateInModal.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' }) : monthName)}
-                maxWidth="2xl"
+                title={isEditing ? 'Editar agendamento' : 'Novo agendamento'}
+                subtitle={isEditing ? undefined : (selectedDateInModal ? selectedDateInModal.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' }) : undefined)}
+                size="lg"
+                full
             >
                 <AppointmentForm
-                    onClose={() => setIsCreateModalOpen(false)}
+                    onClose={() => {
+                        setIsCreateModalOpen(false)
+                        setSelectedAppointment(null)
+                        setIsEditing(false)
+                    }}
                     customers={customers}
                     technicians={technicians}
                     serviceOrders={serviceOrders}
@@ -378,95 +414,52 @@ export default function AppointmentsCalendar({
                     initialDate={selectedDateInModal}
                     onSuccess={handleRefresh}
                 />
-            </PremiumModal>
+            </Sheet>
 
-            <PremiumModal
-                isOpen={!!selectedAppointment && !isEditing}
+            <Sheet
+                open={!!selectedAppointment && !isEditing}
                 onClose={() => setSelectedAppointment(null)}
-                title="Detalhes do Agendamento"
-                subtitle={selectedAppointment?.service_orders?.title || 'Compromisso'}
-                maxWidth="md"
+                title="Agendamento"
+                subtitle={selectedAppointment?.service_orders?.title || undefined}
+                footer={selectedAppointment && (
+                    <>
+                        {selectedAppointment.status !== 'cancelled' && (
+                            <SecondaryButton className="text-red-600 dark:text-red-400" onClick={() => setConfirmCancel(true)}>Cancelar</SecondaryButton>
+                        )}
+                        <PrimaryButton className="flex-1" onClick={handleEdit}>Editar</PrimaryButton>
+                    </>
+                )}
             >
                 {selectedAppointment && (
-                    <div className="space-y-6" suppressHydrationWarning>
-                        <div className="flex items-center gap-4 bg-muted/30 p-4 rounded-2xl border border-border/20" suppressHydrationWarning>
-                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center" suppressHydrationWarning>
-                                <Clock className="w-6 h-6 text-primary" suppressHydrationWarning />
-                            </div>
-                            <div suppressHydrationWarning>
-                                <div className="text-xs font-semibold text-muted-foreground" suppressHydrationWarning>Horário</div>
-                                <div className="text-sm font-bold text-foreground" suppressHydrationWarning>
-                                    {new Date(selectedAppointment.scheduled_date).toLocaleString('pt-BR', {
-                                        day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit'
-                                    })}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4" suppressHydrationWarning>
-                            <div className="flex items-center gap-3" suppressHydrationWarning>
-                                <div className="w-8 h-8 rounded-xl bg-foreground/[0.03] flex items-center justify-center" suppressHydrationWarning>
-                                    <User className="w-4 h-4 text-muted-foreground" suppressHydrationWarning />
-                                </div>
-                                <div suppressHydrationWarning>
-                                    <div className="text-xs font-semibold text-muted-foreground" suppressHydrationWarning>Cliente</div>
-                                    <div className="text-sm font-bold text-foreground" suppressHydrationWarning>{selectedAppointment.customers?.name || 'Cliente Direto'}</div>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-3" suppressHydrationWarning>
-                                <div className="w-8 h-8 rounded-xl bg-foreground/[0.03] flex items-center justify-center" suppressHydrationWarning>
-                                    <PenTool className="w-4 h-4 text-muted-foreground" suppressHydrationWarning />
-                                </div>
-                                <div suppressHydrationWarning>
-                                    <div className="text-xs font-semibold text-muted-foreground" suppressHydrationWarning>Técnico</div>
-                                    <div className="text-sm font-bold text-foreground" suppressHydrationWarning>{selectedAppointment.technicians?.name || 'Não atribuído'}</div>
-                                </div>
-                            </div>
-
-                                    {selectedAppointment.service_orders && (
-                                        <Link 
-                                            href={`/service-orders/${selectedAppointment.service_order_id}`}
-                                            className="flex items-center gap-3 group/os hover:bg-foreground/[0.05] p-2 rounded-2xl transition-colors"
-                                        >
-                                            <div className="w-8 h-8 rounded-xl bg-foreground/[0.03] flex items-center justify-center group-hover/os:bg-primary/10 transition-colors" suppressHydrationWarning>
-                                                <ClipboardList className="w-4 h-4 text-muted-foreground group-hover/os:text-primary transition-colors" suppressHydrationWarning />
-                                            </div>
-                                            <div suppressHydrationWarning>
-                                                <div className="text-xs font-semibold text-muted-foreground" suppressHydrationWarning>Ordem de Serviço</div>
-                                                <div className="text-sm font-bold text-foreground group-hover/os:text-primary transition-colors" suppressHydrationWarning>#{selectedAppointment.service_orders.order_number} - {selectedAppointment.service_orders.title}</div>
-                                            </div>
-                                        </Link>
-                                    )}
-                        </div>
-
-                        <div className="p-6 rounded-2xl bg-foreground/[0.03] border border-border/60" suppressHydrationWarning>
-                            <div className="text-xs font-semibold text-muted-foreground mb-2" suppressHydrationWarning>Status</div>
-                            <div className={cn(
-                                "inline-flex px-4 py-1.5 rounded-full text-xs font-semibold border",
-                                selectedAppointment.status === 'scheduled' ? "bg-blue-500/10 border-blue-500/20 text-blue-400" :
-                                    selectedAppointment.status === 'confirmed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
-                                        selectedAppointment.status === 'in_progress' ? "bg-orange-500/10 border-orange-500/20 text-orange-400" :
-                                            "bg-purple-500/10 border-purple-500/20 text-purple-400"
-                            )} suppressHydrationWarning>
-                                {APPOINTMENT_STATUS_LABELS[selectedAppointment.status] || selectedAppointment.status}
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3 pt-4" suppressHydrationWarning>
-                            <button
- onClick={handleEdit}
- className="flex-1 py-4 rounded-2xl bg-muted/20 text-[13px] font-semibold hover:bg-muted/30 transition-all border border-border/10"
- >
-                                Editar
-                            </button>
-                            <button className="flex-1 py-4 rounded-2xl bg-muted/20 text-[13px] font-semibold hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/20 transition-all border border-border/10">
-                                Cancelar
-                            </button>
-                        </div>
-                    </div>
+                    <Group>
+                        <InfoRow icon={<Clock aria-hidden className="w-4 h-4" />} label="Horário" value={new Date(selectedAppointment.scheduled_date).toLocaleString('pt-BR', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' })} />
+                        <InfoRow icon={<User aria-hidden className="w-4 h-4" />} label="Cliente" value={selectedAppointment.customers?.name || 'Sem cliente'} />
+                        <InfoRow icon={<PenTool aria-hidden className="w-4 h-4" />} label="Técnico" value={selectedAppointment.technicians?.name || 'Não atribuído'} />
+                        <InfoRow label="Situação" value={APPOINTMENT_STATUS_LABELS[selectedAppointment.status] || selectedAppointment.status} />
+                        {selectedAppointment.service_orders && (
+                            <Link
+                                href={`/service-orders/${selectedAppointment.service_order_id}`}
+                                className="flex items-center gap-3 px-4 min-h-[52px] hover:bg-foreground/[0.03] transition-colors"
+                            >
+                                <ClipboardList aria-hidden className="w-4 h-4 text-muted-foreground shrink-0" />
+                                <span className="flex-1 min-w-0 text-[17px] text-primary truncate">OS #{selectedAppointment.service_orders.order_number} {selectedAppointment.service_orders.title}</span>
+                                <ChevronRight aria-hidden className="w-4 h-4 text-muted-foreground/70 shrink-0" />
+                            </Link>
+                        )}
+                        {selectedAppointment.notes && <p className="px-4 py-3 text-[15px] text-muted-foreground whitespace-pre-wrap break-words">{selectedAppointment.notes}</p>}
+                    </Group>
                 )}
-            </PremiumModal>
+            </Sheet>
+
+            <PremiumConfirmDialog
+                isOpen={confirmCancel}
+                title="Cancelar agendamento?"
+                description="Ele continua na agenda, marcado como cancelado."
+                confirmLabel="Cancelar agendamento"
+                cancelLabel="Voltar"
+                onConfirm={cancelAppointment}
+                onCancel={() => setConfirmCancel(false)}
+            />
         </div>
     )
 }

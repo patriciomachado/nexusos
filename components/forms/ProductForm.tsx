@@ -4,11 +4,10 @@ import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/layout/Header'
 import { toast } from 'sonner'
-import { Package, Save, X, Camera, Image as ImageIcon, Loader2, Plus, QrCode } from 'lucide-react'
+import { Camera, Loader2, ScanBarcode } from 'lucide-react'
 import { formatCurrency, cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
-
-import PremiumAutocomplete from '@/components/ui/PremiumAutocomplete'
+import { Field, Group, PrimaryButton, SecondaryButton, SelectRow, TextArea, TextInput, parseMoney } from '@/components/ui/form'
 import BarcodeScannerModal from '@/components/ui/BarcodeScannerModal'
 import { compressImage, extensionOf } from '@/lib/images/compress'
 
@@ -71,8 +70,8 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                 sku: initialData.sku || '',
                 description: initialData.description || '',
                 category: initialData.category || '',
-                cost_price: initialData.cost_price?.toString() || '',
-                selling_price: initialData.selling_price?.toString() || '',
+                cost_price: initialData.cost_price != null ? String(initialData.cost_price).replace('.', ',') : '',
+                selling_price: initialData.selling_price != null ? String(initialData.selling_price).replace('.', ',') : '',
                 quantity_in_stock: initialData.quantity_in_stock?.toString() || '0',
                 minimum_quantity: initialData.minimum_quantity?.toString() || '1',
                 maximum_quantity: initialData.maximum_quantity?.toString() || '999',
@@ -140,13 +139,16 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
         return () => window.removeEventListener('paste', handlePaste)
     }, [])
 
-    function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
-        setForm(p => ({ ...p, [e.target.name]: e.target.value }))
-    }
+    const set = (key: keyof typeof form, value: string) => setForm(p => ({ ...p, [key]: value }))
+    const decimal = (v: string) => v.replace(/[^\d.,]/g, '')
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
+        if (!form.name.trim()) { toast.error('Informe o nome do produto'); return }
         startTransition(async () => {
+            // A category typed by hand is registered for the next products.
+            const category = form.category.trim()
+            if (category && !categories.includes(category)) await handleAddCategory(category)
             let finalImageUrl = form.image_url
 
             // 1. Upload photo if selected
@@ -185,11 +187,13 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
                 body: JSON.stringify({
                     ...form,
                     image_url: finalImageUrl,
-                    cost_price: parseFloat(form.cost_price) || 0,
-                    selling_price: parseFloat(form.selling_price) || 0,
-                    quantity_in_stock: parseFloat(form.quantity_in_stock) || 0,
-                    minimum_quantity: parseFloat(form.minimum_quantity) || 0,
-                    maximum_quantity: parseFloat(form.maximum_quantity) || 999,
+                    name: form.name.trim(),
+                    category: category,
+                    cost_price: parseMoney(form.cost_price),
+                    selling_price: parseMoney(form.selling_price),
+                    quantity_in_stock: parseMoney(form.quantity_in_stock),
+                    minimum_quantity: parseMoney(form.minimum_quantity),
+                    maximum_quantity: parseMoney(form.maximum_quantity) || 999,
                 }),
             })
 
@@ -228,224 +232,110 @@ export default function ProductForm({ productId, initialData }: ProductFormProps
         })
     }
 
-    const profit = (parseFloat(form.selling_price) || 0) - (parseFloat(form.cost_price) || 0)
-    const margin = parseFloat(form.selling_price) > 0 ? (profit / parseFloat(form.selling_price)) * 100 : 0
+    const selling = parseMoney(form.selling_price)
+    const profit = selling - parseMoney(form.cost_price)
+    const margin = selling > 0 ? (profit / selling) * 100 : 0
 
     function applyMarkup(percent: number) {
-        const cost = parseFloat(form.cost_price) || 0
+        const cost = parseMoney(form.cost_price)
         if (cost > 0) {
-            const selling = cost * (1 + percent / 100)
-            setForm(p => ({ ...p, selling_price: selling.toFixed(2) }))
+            setForm(p => ({ ...p, selling_price: (cost * (1 + percent / 100)).toFixed(2).replace('.', ',') }))
         } else {
             toast.error('Informe o preço de custo primeiro')
         }
     }
 
+    const image = preview || form.image_url
+    const saving = isPending || isUploading
+
     return (
-        <div className="animate-fade-in pb-10">
-            <Header
-                title={productId ? `Editando: ${form.name || 'Produto'}` : 'Novo Cadastro de Produto'}
-                subtitle={productId ? 'Atualize as informações do registro selecionado' : 'Preencha os dados para adicionar ao estoque'}
-            />
+        <div className="min-h-full bg-background">
+            <Header title={productId ? 'Editar produto' : 'Novo produto'} />
 
-            <form onSubmit={handleSubmit} className="p-4 max-w-5xl mx-auto space-y-6 mt-4">
-                <div className="bg-card/40 border border-border/50 rounded-2xl p-6 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[120px] rounded-full transition-all group-hover:bg-indigo-500/10" />
-
-                    <div className="relative z-10 space-y-6">
-                        <div className="flex items-center gap-3 border-b border-border/50 pb-4">
-                            <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                                <Package className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <h2 className="text-sm font-semibold text-muted-foreground tracking-tight">Identificação do Produto</h2>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="md:col-span-2 space-y-4">
-                                <div>
-                                    <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">Nome do produto *</label>
-                                    <PremiumAutocomplete
-                                        value={form.name}
-                                        onChange={val => setForm(p => ({ ...p, name: val }))}
-                                        options={PRODUCT_SUGGESTIONS}
-                                        placeholder="Ex: Tela iPhone 11 Incell"
-                                        required
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">SKU / código interno</label>
-                                        <input name="sku" value={form.sku} onChange={handleChange} className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-all font-mono" placeholder="TELA-IP11-INC" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">Categoria</label>
-                                        <PremiumAutocomplete
-                                            value={form.category}
-                                            onChange={val => setForm(p => ({ ...p, category: val }))}
-                                            onAdd={handleAddCategory}
-                                            isAdding={isAddingCategory}
-                                            options={categories}
-                                            placeholder="Ex: Peças"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="p-4 rounded-2xl bg-muted/30 border border-border/50 shadow-inner">
-                                    <p className="text-xs font-semibold text-muted-foreground mb-3">Análise de Lucratividade</p>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between items-end">
-                                            <span className="text-[11px] text-muted-foreground font-bold">LUCRO BRUTO:</span>
-                                            <span className={`text-sm font-semibold tracking-tight ${profit > 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-muted-foreground'}`}>
-                                                {formatCurrency(profit)}
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between items-end">
-                                            <span className="text-[11px] text-muted-foreground font-bold">MARGEM:</span>
-                                            <span className={`text-sm font-semibold tracking-tight ${margin > 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-muted-foreground'}`}>
-                                                {margin.toFixed(1)}%
-                                            </span>
-                                        </div>
-                                        <div className="h-1 bg-muted rounded-full overflow-hidden mt-2">
-                                            <div
-                                                className="h-full transition-all duration-500"
-                                                style={{ width: `${Math.min(Math.max(margin, 0), 100)}%` }}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">Imagem do Produto</label>
-                                <div className="relative group/photo h-full min-h-[160px]">
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="absolute inset-0 opacity-0 cursor-pointer z-20"
-                                        onChange={e => setPhoto(e.target.files?.[0] || null)}
-                                    />
-                                    <div className="h-full min-h-[160px] rounded-2xl border-2 border-dashed border-border/50 bg-foreground/[0.03] flex flex-col items-center justify-center gap-3 group-hover/photo:border-primary/30 transition-all overflow-hidden relative">
-                                        {preview ? (
-                                            <img src={preview} alt="Preview" className="w-full h-full object-cover" />
-                                        ) : form.image_url ? (
-
-                                            <img src={form.image_url} alt="Produto" className="w-full h-full object-cover" />
-                                        ) : (
-                                            <>
-                                                <div className="p-3 rounded-2xl bg-primary/5 text-primary/30">
-                                                    <Camera className="w-8 h-8" />
-                                                </div>
-                                                <div className="text-center">
-                                                    <p className="text-xs font-semibold text-muted-foreground leading-relaxed">
-                                                        Clique para escolher<br />
-                                                        <span className="text-primary/40">ou pressione Ctrl+V para colar</span>
-                                                    </p>
-                                                    <p className="text-xs text-muted-foreground mt-2">PNG, JPG ou WebP</p>
-                                                </div>
-                                            </>
-                                        )}
-                                        {(photo || form.image_url) && (
-                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/photo:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                                                <div className="flex flex-col items-center gap-2">
-                                                    <ImageIcon className="w-5 h-5 text-white" />
-                                                    <span className="text-xs font-semibold text-white leading-none">Substituir Imagem</span>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-border">
-                            <div className="md:col-span-1">
-                                <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">Preço de custo</label>
-                                <input type="number" step="0.01" name="cost_price" value={form.cost_price} onChange={handleChange} className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-sm text-foreground font-bold tracking-tight focus:outline-none focus:border-primary/50 transition-all" placeholder="0,00" />
-                            </div>
-                            <div className="md:col-span-1">
-                                <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">Preço de venda</label>
-                                <input type="number" step="0.01" name="selling_price" value={form.selling_price} onChange={handleChange} className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-sm text-foreground font-bold tracking-tight focus:outline-none focus:border-primary/50 transition-all" placeholder="0,00" />
-                            </div>
-                            <div className="md:col-span-2 flex flex-col justify-end">
-                                <p className="text-xs font-semibold text-muted-foreground mb-2">Sugestão de Lucro (Markup)</p>
-                                <div className="flex gap-2">
-                                    {[30, 50, 100].map(p => (
-                                        <button
- key={p}
- type="button"
- onClick={() => applyMarkup(p)}
- className="grow py-2 rounded-lg bg-primary/5 border border-primary/10 text-primary text-[13px] font-semibold hover:bg-primary/20 transition-all"
- >
-                                            +{p}%
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div>
-                                <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">Qtd em estoque</label>
-                                <input type="number" step="0.001" name="quantity_in_stock" value={form.quantity_in_stock} onChange={handleChange} className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-bold" />
-                            </div>
-                            <div>
-                                <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">Unidade</label>
-                                <select name="unit" value={form.unit} onChange={handleChange} className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all">
-                                    <option value="un">un</option>
-                                    <option value="pc">pc</option>
-                                    <option value="par">par</option>
-                                    <option value="cx">cx</option>
-                                    <option value="kg">kg</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">Estoque mínimo</label>
-                                <input type="number" step="0.001" name="minimum_quantity" value={form.minimum_quantity} onChange={handleChange} className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all" />
-                            </div>
-                            <div>
-                                <label className="block text-[13px] font-medium text-muted-foreground mb-1.5">Código de barras</label>
-                                <div className="flex gap-2">
-                                    <input name="barcode" value={form.barcode} onChange={handleChange} className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-xs text-foreground focus:outline-none focus:border-primary/50 transition-all font-mono" placeholder="7890000000000..." />
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsScannerOpen(true)}
-                                        className="px-3 rounded-xl bg-primary/10 border border-primary/20 hover:bg-primary/20 text-primary transition-all flex items-center justify-center shrink-0 active:scale-95"
-                                        title="Escanear com a câmera"
-                                    >
-                                        <QrCode className="w-5 h-5" />
-                                    </button>
-                                </div>
-                            </div>
+            <form onSubmit={handleSubmit} className="max-w-2xl mx-auto px-4 pt-4 pb-16 space-y-5">
+                <Group>
+                    <div className="flex items-center gap-3 px-4 py-3">
+                        <label className="relative w-20 h-20 shrink-0 rounded-xl bg-foreground/[0.05] border border-dashed border-border flex items-center justify-center overflow-hidden cursor-pointer focus-within:ring-2 focus-within:ring-primary/50">
+                            {image ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={image} alt="Foto do produto" width={80} height={80} className="w-full h-full object-cover" />
+                            ) : (
+                                <Camera aria-hidden className="w-6 h-6 text-muted-foreground" />
+                            )}
+                            <input type="file" accept="image/*" className="sr-only" aria-label={image ? 'Trocar foto do produto' : 'Escolher foto do produto'} onChange={e => setPhoto(e.target.files?.[0] || null)} />
+                        </label>
+                        <div className="min-w-0 text-[13px] text-muted-foreground">
+                            <p className="text-[15px] text-foreground">{image ? 'Toque na foto para trocar' : 'Foto do produto'}</p>
+                            <p>No computador, também dá para colar uma imagem (Ctrl+V).</p>
                         </div>
                     </div>
-                </div>
+                    <Field label="Nome" htmlFor="pf-name">
+                        <TextInput id="pf-name" required list="pf-name-suggestions" value={form.name} onChange={e => set('name', e.target.value)} placeholder="Ex.: Tela iPhone 11 Incell" data-autofocus={!productId || undefined} />
+                        <datalist id="pf-name-suggestions">{PRODUCT_SUGGESTIONS.map(n => <option key={n} value={n} />)}</datalist>
+                    </Field>
+                    <Field label="Categoria" htmlFor="pf-category" hint={isAddingCategory ? 'Salvando categoria…' : undefined}>
+                        <TextInput id="pf-category" list="pf-category-list" value={form.category} onChange={e => set('category', e.target.value)} placeholder="Ex.: Peças" />
+                        <datalist id="pf-category-list">{categories.map(c => <option key={c} value={c} />)}</datalist>
+                    </Field>
+                    <Field label="Descrição" htmlFor="pf-desc">
+                        <TextArea id="pf-desc" rows={2} value={form.description} onChange={e => set('description', e.target.value)} placeholder="Opcional" />
+                    </Field>
+                </Group>
+
+                <Group title="Preço" footer={selling > 0 ? <>Lucro de <span className="tabular-nums">{formatCurrency(profit)}</span> · margem de <span className="tabular-nums">{margin.toFixed(1).replace('.', ',')}%</span></> : undefined}>
+                    <div className="grid grid-cols-2 divide-x divide-border/60">
+                        <Field label="Custo (R$)" htmlFor="pf-cost"><TextInput id="pf-cost" inputMode="decimal" value={form.cost_price} onChange={e => set('cost_price', decimal(e.target.value))} placeholder="0,00" className="tabular-nums" /></Field>
+                        <Field label="Venda (R$)" htmlFor="pf-sell"><TextInput id="pf-sell" inputMode="decimal" value={form.selling_price} onChange={e => set('selling_price', decimal(e.target.value))} placeholder="0,00" className="tabular-nums" /></Field>
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-3">
+                        <span className="text-[15px] text-muted-foreground mr-auto">Venda = custo +</span>
+                        {[30, 50, 100].map(p => (
+                            <button key={p} type="button" onClick={() => applyMarkup(p)} className="h-9 px-3.5 rounded-full bg-foreground/[0.06] text-[15px] font-medium tabular-nums hover:bg-foreground/[0.1] transition-colors">
+                                {p}%
+                            </button>
+                        ))}
+                    </div>
+                </Group>
+
+                <Group title="Estoque">
+                    <div className="grid grid-cols-2 divide-x divide-border/60">
+                        <Field label="Quantidade" htmlFor="pf-qty"><TextInput id="pf-qty" inputMode="decimal" value={form.quantity_in_stock} onChange={e => set('quantity_in_stock', decimal(e.target.value))} className="tabular-nums" /></Field>
+                        <Field label="Avisar abaixo de" htmlFor="pf-min"><TextInput id="pf-min" inputMode="decimal" value={form.minimum_quantity} onChange={e => set('minimum_quantity', decimal(e.target.value))} className="tabular-nums" /></Field>
+                    </div>
+                    <SelectRow
+                        id="pf-unit"
+                        label="Unidade"
+                        value={form.unit}
+                        onChange={v => set('unit', v || 'un')}
+                        options={[{ value: 'un', label: 'Unidade (un)' }, { value: 'pc', label: 'Peça (pc)' }, { value: 'par', label: 'Par' }, { value: 'cx', label: 'Caixa (cx)' }, { value: 'kg', label: 'Quilo (kg)' }]}
+                    />
+                </Group>
+
+                <Group title="Códigos">
+                    <Field label="SKU / código interno" htmlFor="pf-sku"><TextInput id="pf-sku" spellCheck={false} value={form.sku} onChange={e => set('sku', e.target.value)} placeholder="TELA-IP11-INC" className="font-mono" /></Field>
+                    <div className="flex items-center gap-2 pr-2">
+                        <Field label="Código de barras" htmlFor="pf-barcode" className="flex-1">
+                            <TextInput id="pf-barcode" inputMode="numeric" spellCheck={false} value={form.barcode} onChange={e => set('barcode', e.target.value)} placeholder="7890000000000" className="font-mono" />
+                        </Field>
+                        <button type="button" onClick={() => setIsScannerOpen(true)} aria-label="Ler código de barras com a câmera" className="w-11 h-11 shrink-0 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/15 transition-colors">
+                            <ScanBarcode aria-hidden className="w-5 h-5" />
+                        </button>
+                    </div>
+                </Group>
 
                 <BarcodeScannerModal
                     isOpen={isScannerOpen}
                     onClose={() => setIsScannerOpen(false)}
-                    onScan={(code) => {
-                        setForm(p => ({
-                            ...p,
-                            barcode: code,
-                            sku: p.sku ? p.sku : code
-                        }))
-                    }}
-                    title="Escanear Código do Produto"
+                    onScan={(code) => setForm(p => ({ ...p, barcode: code, sku: p.sku ? p.sku : code }))}
+                    title="Ler código do produto"
                 />
 
-                <div className="flex flex-col sm:flex-row items-center gap-4">
-                    <button type="submit" disabled={isPending || isUploading} className="bg-primary w-full sm:flex-1 disabled:opacity-50 text-white p-4 rounded-xl font-semibold text-[13px] transition-all active:scale-95 flex items-center justify-center gap-2">
-                        {(isPending || isUploading) ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                        {(isPending || isUploading) ? 'PROCESSANDO...' : (productId ? 'SALVAR ALTERAÇÕES' : 'CADASTRAR PRODUTO')}
-                    </button>
-                    <button type="button" onClick={() => router.back()} className="w-full sm:w-auto px-10 py-4 rounded-xl border border-border bg-card text-foreground/40 font-semibold text-[13px] hover:bg-muted hover:text-foreground transition-all flex items-center justify-center gap-2">
-                        <X className="w-4 h-4" />
-                        ABORTAR
-                    </button>
+                <div className="flex gap-2">
+                    <SecondaryButton onClick={() => router.back()}>Cancelar</SecondaryButton>
+                    <PrimaryButton type="submit" className={cn('flex-1')} disabled={saving}>
+                        {saving && <Loader2 aria-hidden className="w-5 h-5 animate-spin" />}
+                        {saving ? 'Salvando…' : productId ? 'Salvar' : 'Cadastrar produto'}
+                    </PrimaryButton>
                 </div>
             </form>
         </div>

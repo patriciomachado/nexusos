@@ -9,8 +9,8 @@ export const appointmentSchema = z.object({
   technician_id: z.string().uuid('Técnico inválido'),
   scheduled_date: z.string().datetime({ message: 'Data e hora inválidas' }),
   notes: z.string().optional(),
-  status: z.enum(['scheduled', 'in_progress', 'completed', 'cancelled']).default('scheduled'),
-  service_order_id: z.string().uuid('Ordem de serviço inválida').optional()
+  status: z.enum(['scheduled', 'confirmed', 'in_progress', 'completed', 'cancelled']).default('scheduled'),
+  service_order_id: z.string().uuid('Ordem de serviço inválida').nullable().optional()
 })
 
 // Customer Schema
