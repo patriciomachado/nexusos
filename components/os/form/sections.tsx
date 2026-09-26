@@ -7,6 +7,7 @@ import { cn, getLocalDateTimePickerValue } from '@/lib/utils'
 import CustomerPicker from './CustomerPicker'
 import DeviceLockInput from './DeviceLockInput'
 import ItemsEditor from './ItemsEditor'
+import PriceCalculator from './PriceCalculator'
 import { brl, Chips, Field, Group, moneyText, parseMoney, SelectRow, SwitchRow, TextArea, TextInput } from '@/components/ui/form'
 import { DEVICE_TYPES, PRIORITY_OPTIONS, STATUS_OPTIONS, type InventoryOption, type OSFormState, type Option, type SideKey } from './state'
 
@@ -235,6 +236,9 @@ export function BudgetSection({ state, inventory }: { state: OSFormState; invent
                 <h3 className="px-4 text-[13px] font-medium text-muted-foreground">Peças e serviços</h3>
                 <ItemsEditor items={items} onChange={setItems} inventory={inventory} />
                 <p className="px-4 text-[13px] text-muted-foreground">Pode deixar em branco e orçar depois do diagnóstico.</p>
+                <div className="pt-2">
+                    <PriceCalculator items={items} onChange={setItems} hint={[v.title, v.problem_description].join(' ')} />
+                </div>
             </section>
             {items.length > 0 && (
                 <Group>
