@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import {
-    Banknote, Bell, Blocks, Building2, ChevronRight, Clock, CreditCard, Database, Download, FileText, Landmark, MessageCircle,
+    Banknote, Bell, BellRing, Blocks, Building2, ChevronRight, Clock, CreditCard, Database, Download, FileText, Landmark, MessageCircle,
     Smartphone, Sparkles, Store, Upload, UserCheck, Users, Wallet, Wand2,
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
@@ -83,6 +83,7 @@ export default async function SettingsPage() {
                         </SettingsSection>
 
                         <SettingsSection title="Sistema">
+                            <SettingsRow href="/settings/notificacoes" icon={BellRing} color="bg-red-500" label="Notificações" detail="Lembretes no celular, câmera e microfone" />
                             <SettingsRow href="/settings/modulos" icon={Blocks} color="bg-purple-500" label="Módulos" detail="Ligar e desligar partes do app" value={offCount ? `${offCount} desligado${offCount > 1 ? 's' : ''}` : undefined} />
                             <SettingsRow href="/dashboard?configurar=1" icon={Wand2} color="bg-fuchsia-500" label="Assistente de configuração" />
                             <SettingsRow href="/settings/tela" icon={Smartphone} color="bg-zinc-600" label="Diagnóstico da tela" detail="Quando o app aparece cortado no celular" />
@@ -92,6 +93,7 @@ export default async function SettingsPage() {
                     <>
                         <SettingsSection>
                             <SettingsRow href="/team?tab=clock" icon={Clock} color="bg-slate-500" label="Meu ponto" />
+                            <SettingsRow href="/settings/notificacoes" icon={BellRing} color="bg-red-500" label="Notificações" detail="Lembretes no celular, câmera e microfone" />
                             {stores.length > 1 && <SettingsRow href="/settings/lojas" icon={Store} color="bg-indigo-500" label="Trocar de loja" value={`${stores.length} lojas`} />}
                             {role === 'manager' && <SettingsRow href="/settings/exportar" icon={Database} color="bg-blue-600" label="Exportar planilhas" />}
                             {role === 'manager' && <SettingsRow href="/contas" icon={Banknote} color="bg-teal-600" label="Contas a pagar e receber" />}
