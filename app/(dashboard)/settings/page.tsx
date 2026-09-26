@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import {
-    Banknote, Bell, Building2, ChevronRight, Clock, CreditCard, Database, Download, FileText, Landmark, MessageCircle,
+    Banknote, Bell, Blocks, Building2, ChevronRight, Clock, CreditCard, Database, Download, FileText, Landmark, MessageCircle,
     Smartphone, Sparkles, Store, Upload, UserCheck, Users, Wallet, Wand2,
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
@@ -11,6 +11,7 @@ import { isOwner } from '@/lib/cash/server'
 import { getCompanyPlan } from '@/lib/plan-server'
 import { PLANS } from '@/lib/plans'
 import { listStores } from '@/lib/stores/server'
+import { offModules } from '@/lib/modules'
 
 /** Settings hub in the iPhone "Ajustes" layout: every setting of the store in one list. */
 export default async function SettingsPage() {
@@ -20,10 +21,12 @@ export default async function SettingsPage() {
     const owner = isOwner(role)
 
     const [{ data: company }, plan, stores] = await Promise.all([
-        db.from('companies').select('name, logo_url, city, state, parent_company_id').eq('id', companyId).single(),
+        db.from('companies').select('name, logo_url, city, state, parent_company_id, settings').eq('id', companyId).single(),
         getCompanyPlan(db, companyId),
         listStores(db, userId, companyId, role).catch(() => []),
     ])
+
+    const offCount = offModules(company?.settings).length
 
     return (
         <div className="min-h-full bg-background">
@@ -80,6 +83,7 @@ export default async function SettingsPage() {
                         </SettingsSection>
 
                         <SettingsSection title="Sistema">
+                            <SettingsRow href="/settings/modulos" icon={Blocks} color="bg-purple-500" label="Módulos" detail="Ligar e desligar partes do app" value={offCount ? `${offCount} desligado${offCount > 1 ? 's' : ''}` : undefined} />
                             <SettingsRow href="/dashboard?configurar=1" icon={Wand2} color="bg-fuchsia-500" label="Assistente de configuração" />
                             <SettingsRow href="/settings/tela" icon={Smartphone} color="bg-zinc-600" label="Diagnóstico da tela" detail="Quando o app aparece cortado no celular" />
                         </SettingsSection>

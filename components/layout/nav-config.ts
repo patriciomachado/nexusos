@@ -62,12 +62,17 @@ export function safeRoleOf(userRole?: UserRole | string): string {
     return userRole && VALID_ROLES.includes(userRole) ? userRole : 'attendant'
 }
 
-/** Menu for a role; `hidden` are pages the owner turned off for it (Equipe → Permissões). */
-export function visibleGroups(role: string, hidden: string[] = []): NavGroup[] {
+/**
+ * Menu for a role. `hidden` are pages the owner turned off for that role
+ * (Equipe → Permissões); `off` are modules turned off for the whole store
+ * (Configurações → Módulos), hidden from everyone, owner included.
+ */
+export function visibleGroups(role: string, hidden: string[] = [], off: string[] = []): NavGroup[] {
     return navGroups
         .map(group => ({
             ...group,
             items: group.items.filter(item => {
+                if (off.includes(item.href)) return false
                 if (hidden.includes(item.href) && role !== 'admin' && role !== 'owner') return false
                 // Attendants only see OS, PDV, the agenda and their own register.
                 if (role === 'attendant') return ['/service-orders', '/pdv', '/agenda', '/cash-register', '/team'].includes(item.href)
@@ -89,6 +94,18 @@ export const ROLE_LABELS: Record<string, string> = {
     cashier: 'Caixa',
     attendant: 'Atendente',
     talento: 'Talento',
+}
+
+/** Modules the owner can turn off for the whole store (Configurações → Módulos). */
+export function toggleableModules() {
+    return navGroups
+        .map(g => ({ title: g.title, items: g.items.filter(i => !['/dashboard', '/settings'].includes(i.href)) }))
+        .filter(g => g.items.length > 0)
+}
+
+/** The module a path belongs to, when that module is turned off. */
+export function offModuleFor(pathname: string | null, off: string[]) {
+    return navGroups.flatMap(g => g.items).find(i => off.includes(i.href) && isActivePath(pathname, i.href)) ?? null
 }
 
 /** Pages the owner can hide per role (everything except the owner's own tools). */
