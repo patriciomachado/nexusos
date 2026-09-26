@@ -327,22 +327,6 @@
     bottom: calc(-1 * var(--ios-gap, 0px)) !important;
   }
 
-  /* iOS 18 installed app: fixed elements are laid out and clipped to a box
-     59pt (the status bar) shorter than the screen, while 100vh is the whole
-     screen. A transformed body becomes the containing block of every fixed
-     element, so they are laid out in the body (100vh tall) instead. */
-  html.ios-gap.ios-body,
-  html.ios-gap.ios-body body {
-    height: 100vh;
-    overflow: hidden;
-  }
-  html.ios-gap.ios-body body {
-    transform: translateZ(0);
-  }
-  html.ios-gap.ios-body .ios-fill {
-    bottom: 0 !important;
-  }
-
   /* Installed app on a phone/tablet: the app frame is as tall as the whole
      screen (largest viewport), even when iOS reports a shorter one. */
   @media (display-mode: standalone) and (pointer: coarse) {
