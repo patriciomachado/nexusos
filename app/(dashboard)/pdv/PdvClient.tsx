@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import { CheckCircle2, ChevronRight, History, Loader2, Minus, Plus, Printer, ScanLine, Search, ShoppingBag, Star, Trash2, Undo2, UserRound, X } from 'lucide-react'
+import { CheckCircle2, ChevronRight, History, Loader2, Minus, Package, Plus, Printer, ScanLine, Search, ShoppingBag, Star, Trash2, Undo2, UserRound, X } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Sheet from '@/components/tasks/Sheet'
 import Segmented from '@/components/ui/Segmented'
@@ -28,6 +28,20 @@ interface Product {
     barcode?: string | null
     sku?: string | null
     category?: string | null
+    image_url?: string | null
+}
+
+/** Product photo, or a box icon when it has none. */
+function Thumb({ p, size = 44 }: { p: Product; size?: number }) {
+    const style = { width: size, height: size }
+    return p.image_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={p.image_url} alt="" width={size} height={size} loading="lazy" style={style} className="rounded-xl object-cover shrink-0 bg-foreground/[0.05]" />
+    ) : (
+        <span style={style} className="rounded-xl shrink-0 bg-foreground/[0.06] text-muted-foreground flex items-center justify-center">
+            <Package aria-hidden className="w-5 h-5" />
+        </span>
+    )
 }
 interface Line { product: Product; qty: number }
 interface Method { id: string; name: string; code: string }
@@ -172,7 +186,8 @@ export default function PdvClient({ companyId, role }: { companyId: string; role
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                 {favorites.map(p => (
                                     <button key={p.id} type="button" onClick={() => add(p)} className="relative rounded-2xl bg-card border border-border/60 p-3 text-left active:scale-[0.98] transition-transform min-h-[76px]">
-                                        <span className="block text-[15px] font-medium leading-snug line-clamp-2">{p.name}</span>
+                                        <Thumb p={p} size={40} />
+                                        <span className="block mt-2 text-[15px] font-medium leading-snug line-clamp-2">{p.name}</span>
                                         <span className="block mt-1 text-[15px] font-semibold tabular-nums text-primary">{brl(num(p.selling_price))}</span>
                                         {qtyOf(p.id) > 0 && <span className="absolute top-2 right-2 min-w-[22px] h-[22px] px-1 rounded-full bg-primary text-primary-foreground text-[12px] font-semibold flex items-center justify-center">{qtyOf(p.id)}</span>}
                                     </button>
@@ -190,6 +205,7 @@ export default function PdvClient({ companyId, role }: { companyId: string; role
                                 return (
                                     <li key={p.id}>
                                         <button type="button" onClick={() => add(p)} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/[0.02] active:bg-foreground/[0.04]">
+                                            <Thumb p={p} />
                                             <span className="flex-1 min-w-0">
                                                 <span className="block text-[16px] font-medium truncate">{p.name}</span>
                                                 <span className={cn('block text-[13px]', stock <= 0 ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground')}>{stock <= 0 ? 'Sem estoque' : `${stock} em estoque`}{p.category ? ` · ${p.category}` : ''}</span>
@@ -310,6 +326,7 @@ function CartPanel(p: {
             <ul className="divide-y divide-border/60">
                 {p.cart.map(l => (
                     <li key={l.product.id} className="flex items-center gap-3 px-4 py-3">
+                        <Thumb p={l.product} size={40} />
                         <span className="flex-1 min-w-0">
                             <span className="block text-[15px] font-medium truncate">{l.product.name}</span>
                             <span className="block text-[13px] text-muted-foreground tabular-nums">{brl(num(l.product.selling_price))} · {brl(l.qty * num(l.product.selling_price))}</span>
