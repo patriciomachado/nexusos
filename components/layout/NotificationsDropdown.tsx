@@ -13,7 +13,7 @@ import type { Notification } from '@/types'
 const ENTITY_META: Record<string, { icon: React.ComponentType<{ className?: string }>; tint: string; href: (n: Notification) => string }> = {
     service_order: { icon: ClipboardList, tint: 'bg-blue-500', href: n => `/service-orders/${n.related_entity_id}` },
     low_stock: { icon: Package, tint: 'bg-orange-500', href: () => '/inventory?filter=low_stock' },
-    appointments_tomorrow: { icon: Calendar, tint: 'bg-purple-500', href: () => '/appointments' },
+    appointments_tomorrow: { icon: Calendar, tint: 'bg-purple-500', href: () => '/agenda' },
     pending_payments: { icon: DollarSign, tint: 'bg-green-500', href: () => '/reports' },
     task: { icon: ListChecks, tint: 'bg-red-500', href: n => `/tarefas?task=${n.related_entity_id}` },
     routine: { icon: ListChecks, tint: 'bg-orange-500', href: () => '/tarefas' },

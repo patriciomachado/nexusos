@@ -10,6 +10,8 @@ export interface Automations {
     review: boolean
     review_days: number
     review_text: string
+    appointment_reminder: boolean
+    appointment_text: string
 }
 
 export const DEFAULT_AUTOMATIONS: Automations = {
@@ -18,6 +20,8 @@ export const DEFAULT_AUTOMATIONS: Automations = {
     review: false,
     review_days: 2,
     review_text: 'Oi, {nome}! Tudo certo com o seu {aparelho}? Se puder, conta pra gente como foi o atendimento da {loja} no Google, ajuda muito: {link}',
+    appointment_reminder: false,
+    appointment_text: 'Olá, {nome}! Passando para lembrar do seu horário na {loja}: {data} às {hora}.{servico} Se precisar remarcar, é só responder aqui.',
 }
 
 export function normalizeAutomations(raw: unknown): Automations {
@@ -28,6 +32,8 @@ export function normalizeAutomations(raw: unknown): Automations {
         review: !!r.review,
         review_days: Math.min(Math.max(Math.round(Number(r.review_days) || 2), 1), 30),
         review_text: typeof r.review_text === 'string' && r.review_text.trim() ? r.review_text.slice(0, 600) : DEFAULT_AUTOMATIONS.review_text,
+        appointment_reminder: !!r.appointment_reminder,
+        appointment_text: typeof r.appointment_text === 'string' && r.appointment_text.trim() ? r.appointment_text.slice(0, 600) : DEFAULT_AUTOMATIONS.appointment_text,
     }
 }
 

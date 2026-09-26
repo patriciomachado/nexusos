@@ -24,6 +24,14 @@ const STATUS: { value: string; label: string }[] = [
     { value: 'completed', label: 'Concluído' },
 ]
 
+const DURATIONS = [
+    { value: '30', label: '30 min' },
+    { value: '60', label: '1 h' },
+    { value: '90', label: '1 h 30' },
+    { value: '120', label: '2 h' },
+    { value: '240', label: 'Meio período' },
+]
+
 const pad = (n: number) => String(n).padStart(2, '0')
 const localDate = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 const localTime = (d: Date) => `${pad(d.getHours())}:${pad(d.getMinutes())}`
@@ -34,7 +42,10 @@ function initialWhen(appointment?: { scheduled_date?: string }, initialDate?: Da
         const dt = new Date(appointment.scheduled_date)
         return { date: localDate(dt), time: localTime(dt) }
     }
-    return { date: localDate(initialDate ?? now), time: localTime(now) }
+    // Today: the next full hour. Another day: 9h.
+    const day = localDate(initialDate ?? now)
+    const nextHour = new Date(now); nextHour.setMinutes(0, 0, 0); nextHour.setHours(now.getHours() + 1)
+    return { date: day, time: day === localDate(now) ? localTime(nextHour) : '09:00' }
 }
 
 export default function AppointmentForm({
@@ -52,6 +63,13 @@ export default function AppointmentForm({
     const [technicianId, setTechnicianId] = useState(appointment?.technician_id || '')
     const [serviceOrderId, setServiceOrderId] = useState(appointment?.service_order_id || '')
     const [notes, setNotes] = useState(appointment?.notes || '')
+    const [title, setTitle] = useState(appointment?.title || '')
+    const [address, setAddress] = useState(appointment?.location_address || '')
+    const [duration, setDuration] = useState<string>(() => {
+        if (!appointment?.scheduled_end_date) return '60'
+        const min = Math.round((+new Date(appointment.scheduled_end_date) - +new Date(appointment.scheduled_date)) / 60000)
+        return DURATIONS.some(d => d.value === String(min)) ? String(min) : '60'
+    })
     const [when] = useState(() => initialWhen(appointment, initialDate))
     const [date, setDate] = useState(when.date)
     const [time, setTime] = useState(when.time)
@@ -78,18 +96,22 @@ export default function AppointmentForm({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!customerId || !technicianId) {
+        if (!customerId) {
             setInvalid(true)
-            toast.error(!customerId ? 'Escolha o cliente' : 'Escolha o técnico')
+            toast.error('Escolha o cliente')
             return
         }
         setLoading(true)
+        const start = new Date(`${date}T${time}`)
         const payload = {
             id: appointment?.id,
             customer_id: customerId,
-            technician_id: technicianId,
+            technician_id: technicianId || null,
             service_order_id: serviceOrderId || null,
-            scheduled_date: new Date(`${date}T${time}`).toISOString(),
+            title: title.trim() || null,
+            scheduled_date: start.toISOString(),
+            scheduled_end_date: new Date(+start + Number(duration) * 60000).toISOString(),
+            location_address: address.trim() || null,
             status,
             notes
         }
@@ -100,12 +122,15 @@ export default function AppointmentForm({
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             })
-            if (!res.ok) throw new Error()
+            if (!res.ok) {
+                const d = await res.json().catch(() => ({}))
+                throw new Error(typeof d.error === 'string' ? d.error : 'Não foi possível salvar o agendamento. Confira a conexão e tente de novo.')
+            }
             toast.success(appointment ? 'Agendamento atualizado' : 'Agendamento criado')
             onSuccess?.()
             onClose()
-        } catch {
-            toast.error('Não foi possível salvar o agendamento. Confira a conexão e tente de novo.')
+        } catch (err) {
+            toast.error((err as Error).message)
         } finally {
             setLoading(false)
         }
@@ -128,11 +153,15 @@ export default function AppointmentForm({
                     label="Técnico"
                     options={technicians}
                     value={technicianId}
-                    onChange={id => { setTechnicianId(id); setInvalid(false) }}
+                    onChange={setTechnicianId}
+                    placeholder="Nenhum"
                     searchPlaceholder="Buscar técnico"
                     emptyText="Nenhum técnico cadastrado ainda."
-                    invalid={invalid && !technicianId}
+                    optional
                 />
+                <Field label="Serviço" htmlFor="ap-title">
+                    <TextInput id="ap-title" value={title} onChange={e => setTitle(e.target.value)} placeholder="Ex.: Troca de tela, orçamento, retirada…" />
+                </Field>
             </Group>
 
             <Group>
@@ -140,6 +169,12 @@ export default function AppointmentForm({
                     <Field label="Data" htmlFor="ap-date"><TextInput id="ap-date" type="date" required value={date} onChange={e => setDate(e.target.value)} /></Field>
                     <Field label="Hora" htmlFor="ap-time"><TextInput id="ap-time" type="time" required value={time} onChange={e => setTime(e.target.value)} /></Field>
                 </div>
+                <div className="p-3">
+                    <Chips ariaLabel="Duração" options={DURATIONS} value={duration} onChange={setDuration} />
+                </div>
+                <Field label="Endereço" htmlFor="ap-address" hint="Só para visita ou busca na casa do cliente.">
+                    <TextInput id="ap-address" value={address} onChange={e => setAddress(e.target.value)} placeholder="Opcional" autoComplete="off" />
+                </Field>
             </Group>
 
             <Group title="Situação">

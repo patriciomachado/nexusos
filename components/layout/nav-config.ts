@@ -1,7 +1,7 @@
 import {
     LayoutDashboard, ClipboardList, Calendar, Users,
     Package, BarChart3, Settings, Zap,
-    Wallet, ReceiptText, HeartHandshake, Users2, Wrench, Smartphone, ListChecks, Sparkles,
+    Wallet, ReceiptText, HeartHandshake, Users2, Wrench, Smartphone, ListChecks, Sparkles, CalendarClock,
 } from 'lucide-react'
 import type { UserRole } from '@/types'
 
@@ -28,6 +28,7 @@ export const navGroups: NavGroup[] = [
             { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'], tint: 'bg-indigo-500' },
             { href: '/tarefas', label: 'Tarefas', icon: ListChecks, roles: ['admin', 'owner'], tint: 'bg-red-500', badge: 'tasks' },
             { href: '/appointments', label: 'Mesa / Fluxo', icon: Calendar, roles: ['admin', 'manager'], tint: 'bg-orange-500' },
+            { href: '/agenda', label: 'Agenda', icon: CalendarClock, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'], tint: 'bg-rose-500' },
             { href: '/service-orders', label: 'Ordens de Serviço', icon: ClipboardList, roles: ['admin', 'manager', 'technician', 'attendant', 'talento'], tint: 'bg-blue-500' },
             { href: '/pdv', label: 'Vendas / PDV', icon: Zap, roles: ['admin', 'manager', 'cashier', 'attendant', 'talento'], tint: 'bg-green-500' },
             { href: '/devices', label: 'Venda de Aparelhos', icon: Smartphone, roles: ['admin', 'manager', 'cashier', 'attendant', 'talento'], tint: 'bg-cyan-500' },
@@ -68,8 +69,8 @@ export function visibleGroups(role: string, hidden: string[] = []): NavGroup[] {
             ...group,
             items: group.items.filter(item => {
                 if (hidden.includes(item.href) && role !== 'admin' && role !== 'owner') return false
-                // Attendants only see OS, PDV and their own register.
-                if (role === 'attendant') return ['/service-orders', '/pdv', '/cash-register', '/team'].includes(item.href)
+                // Attendants only see OS, PDV, the agenda and their own register.
+                if (role === 'attendant') return ['/service-orders', '/pdv', '/agenda', '/cash-register', '/team'].includes(item.href)
                 return item.roles.includes(role)
             }),
         }))

@@ -3,6 +3,7 @@ import { timingSafeEqual } from 'crypto'
 import { createAdminClient } from '@/lib/supabase'
 import { dateStringInZone, DEFAULT_TIMEZONE, addDays } from '@/lib/tasks/dates'
 import { fill, normalizeAutomations, readyChannel, sendOnce, waPhone } from '@/lib/customers/messages'
+import { remindAppointment } from '@/lib/appointments/reminder'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
     let sent = 0
     for (const c of companies ?? []) {
         const auto = normalizeAutomations((c.settings as Record<string, unknown> | null)?.automations)
-        if (!auto.birthday && !auto.review) continue
+        if (!auto.birthday && !auto.review && !auto.appointment_reminder) continue
         const alice = await readyChannel(db, c.id)
         if (!alice) continue
 
@@ -54,6 +55,21 @@ export async function GET(req: NextRequest) {
                 const phone = waPhone(cu?.phone)
                 if (!phone || !o.customer_id) continue
                 const r = await sendOnce(db, alice, { companyId: c.id, customerId: o.customer_id, phone, kind: 'review', ref: o.id, text: fill(auto.review_text, { nome: (cu?.name ?? '').split(' ')[0], loja: c.name ?? '', aparelho: o.equipment_description || o.title || 'aparelho', link: c.google_review_url }) })
+                if (r.sent) sent++
+            }
+        }
+
+        // Agenda: tomorrow's appointments get a reminder on WhatsApp.
+        if (auto.appointment_reminder) {
+            const tomorrow = addDays(today, 1)
+            const { data: appts } = await db.from('appointments')
+                .select('id, scheduled_date, title, customer_id, status, customers(name, phone)')
+                .eq('company_id', c.id).not('customer_id', 'is', null)
+                .in('status', ['scheduled', 'confirmed'])
+                .gte('scheduled_date', `${tomorrow}T00:00:00-03:00`).lt('scheduled_date', `${addDays(tomorrow, 1)}T00:00:00-03:00`)
+                .limit(100)
+            for (const a of appts ?? []) {
+                const r = await remindAppointment(db, c.id, a)
                 if (r.sent) sent++
             }
         }
