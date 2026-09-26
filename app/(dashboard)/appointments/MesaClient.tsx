@@ -183,7 +183,7 @@ export default function MesaClient({ orders: initial, technicians, myTechnicianI
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <label className="flex-1 flex items-center gap-2 h-11 px-3 rounded-xl bg-foreground/[0.06]">
+                            <label className="flex-1 flex items-center gap-2 h-11 px-3 rounded-xl bg-foreground/[0.06] focus-within:ring-2 focus-within:ring-primary/40">
                                 <Search className="w-[18px] h-[18px] text-muted-foreground shrink-0" />
                                 <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar OS, aparelho ou cliente" className="flex-1 min-w-0 bg-transparent text-[17px] outline-none" />
                             </label>
@@ -263,7 +263,7 @@ export default function MesaClient({ orders: initial, technicians, myTechnicianI
                             <Row label="Etapa" value={`${stageOf(selected.status).label} · há ${ageLabel(daysSince(selected.stage_since))}`} tone={level(selected)} />
                             {selected.total > 0 && <Row label="Valor" value={brl(selected.total)} />}
                             <label className="flex items-center justify-between gap-3 px-4 min-h-[48px]">
-                                <span className="text-[17px]">Técnico</span>
+                                <span className="text-[17px] focus-within:bg-foreground/[0.03] transition-colors">Técnico</span>
                                 <select
                                     value={selected.technician_id ?? ''}
                                     onChange={e => assign(selected, e.target.value)}

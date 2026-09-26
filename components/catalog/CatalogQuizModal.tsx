@@ -137,7 +137,7 @@ export default function CatalogQuizModal({
 
                         <button 
                             onClick={onClose}
-                            className="p-1.5 hover:bg-slate-800 rounded-xl transition-all text-slate-400 hover:text-white"
+                            className="p-1.5 hover:bg-slate-800 rounded-xl transition text-slate-400 hover:text-white"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -151,7 +151,7 @@ export default function CatalogQuizModal({
                         </div>
                         <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
                             <div 
-                                className="h-full transition-all duration-500 rounded-full" 
+                                className="h-full transition-[width] duration-500 rounded-full" 
                                 style={{ 
                                     width: step === 1 ? '50%' : step === 2 ? '85%' : '100%',
                                     backgroundColor: themePrimary,
@@ -178,7 +178,7 @@ export default function CatalogQuizModal({
                             <button
                                 onClick={() => setHasTradeIn(true)}
                                 className={cn(
-                                    "p-3 rounded-2xl border-2 text-left transition-all flex items-center gap-3",
+                                    "p-3 rounded-2xl border-2 text-left transition flex items-center gap-3",
                                     hasTradeIn === true ? "bg-slate-900 border-emerald-400" : "bg-[#111622] border-slate-800 hover:border-slate-700"
                                 )}
                                 style={hasTradeIn === true ? { borderColor: themePrimary } : {}}
@@ -198,7 +198,7 @@ export default function CatalogQuizModal({
                                     setSelectedTradeIn(null)
                                 }}
                                 className={cn(
-                                    "p-3 rounded-2xl border-2 text-left transition-all flex items-center gap-3",
+                                    "p-3 rounded-2xl border-2 text-left transition flex items-center gap-3",
                                     hasTradeIn === false ? "bg-slate-900 border-emerald-400" : "bg-[#111622] border-slate-800 hover:border-slate-700"
                                 )}
                                 style={hasTradeIn === false ? { borderColor: themePrimary } : {}}
@@ -228,7 +228,7 @@ export default function CatalogQuizModal({
                                                 key={item.id}
                                                 onClick={() => setSelectedTradeIn(item)}
                                                 className={cn(
-                                                    "p-2 rounded-xl border text-left flex items-center gap-2 transition-all",
+                                                    "p-2 rounded-xl border text-left flex items-center gap-2 transition",
                                                     isSel ? "bg-slate-800 border-emerald-400 scale-[1.02]" : "bg-[#111622] border-slate-800/80 hover:border-slate-700"
                                                 )}
                                                 style={isSel ? { borderColor: themePrimary } : {}}
@@ -257,7 +257,7 @@ export default function CatalogQuizModal({
                             <button
  disabled={hasTradeIn === null || (hasTradeIn && !selectedTradeIn)}
  onClick={() => setStep(2)}
- className="px-6 py-2.5 text-black font-black rounded-xl text-xs transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
+ className="px-6 py-2.5 text-black font-black rounded-xl text-xs transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
  style={{ backgroundColor: themePrimary }}
  >
                                 Avançar para Etapa 2
@@ -287,7 +287,7 @@ export default function CatalogQuizModal({
                                         key={b.id}
                                         onClick={() => setSelectedBudget(b.id)}
                                         className={cn(
-                                            "p-3.5 rounded-2xl border-2 text-left transition-all flex items-center justify-between gap-3",
+                                            "p-3.5 rounded-2xl border-2 text-left transition flex items-center justify-between gap-3",
                                             isSel ? "bg-slate-900 border-emerald-400 shadow-lg" : "bg-[#111622] border-slate-800 hover:border-slate-700"
                                         )}
                                         style={isSel ? { borderColor: themePrimary } : {}}
@@ -327,7 +327,7 @@ export default function CatalogQuizModal({
                             <button
  disabled={!selectedBudget}
  onClick={() => setStep(3)}
- className="px-6 py-2.5 text-black font-black rounded-xl text-xs transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg animate-pulse"
+ className="px-6 py-2.5 text-black font-black rounded-xl text-xs transition disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg animate-pulse"
  style={{ backgroundColor: themePrimary }}
  >
                                 Desbloquear Match Final
@@ -418,7 +418,7 @@ export default function CatalogQuizModal({
                         <div className="space-y-2 pt-1 border-t border-slate-800/80">
                             <button
  onClick={sendWhatsAppOffer}
- className="w-full py-3.5 text-black font-black rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-xl hover:scale-[1.01] active:scale-95 animate-pulse"
+ className="w-full py-3.5 text-black font-black rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-xl hover:scale-[1.01] active:scale-95 animate-pulse"
  style={{ backgroundColor: themePrimary }}
  >
                                 <MessageSquare className="w-4 h-4 fill-current" />

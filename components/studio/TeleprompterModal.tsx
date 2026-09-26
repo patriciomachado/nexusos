@@ -67,7 +67,7 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                     <button 
                         onClick={() => setIsMirrored(!isMirrored)}
                         className={cn(
-                            "p-2.5 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-bold",
+                            "p-2.5 rounded-xl border transition flex items-center gap-1.5 text-xs font-bold",
                             isMirrored ? "bg-primary text-primary-foreground border-primary" : "bg-white/5 border-border/60 text-white/70 hover:bg-foreground/[0.05]"
                         )}
                         title="Espelhar texto (câmera frontal)"
@@ -84,7 +84,7 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
  key={size}
  onClick={() => setFontSize(size)}
  className={cn(
- "px-2.5 py-1 text-xs font-bold rounded-lg transition-all",
+ "px-2.5 py-1 text-xs font-bold rounded-lg transition",
  fontSize === size ? "bg-primary text-primary-foreground" : "text-white/60 hover:text-white"
  )}
  >
@@ -110,7 +110,7 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                     {/* Close */}
                     <button 
                         onClick={onClose}
-                        className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl transition-all text-white ml-2"
+                        className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl transition text-white ml-2"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -162,7 +162,7 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
             <div className="p-4 border-t border-border/60 bg-black/60 flex items-center justify-center gap-4 shrink-0">
                 <button
                     onClick={resetScroll}
-                    className="p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-all text-white/80 flex items-center gap-2 font-bold text-sm"
+                    className="p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition text-white/80 flex items-center gap-2 font-bold text-sm"
                 >
                     <RotateCcw className="w-5 h-5" />
                     Reiniciar
@@ -171,7 +171,7 @@ export default function TeleprompterModal({ isOpen, onClose, script }: Telepromp
                 <button
  onClick={() => setIsPlaying(!isPlaying)}
  className={cn(
- "px-8 py-4 rounded-2xl font-black text-base flex items-center gap-3 transition-all active:scale-95",
+ "px-8 py-4 rounded-2xl font-black text-base flex items-center gap-3 transition active:scale-95",
  isPlaying 
  ? "bg-amber-500 text-black hover:bg-amber-400" 
  : "bg-primary text-primary-foreground hover:bg-primary/90"

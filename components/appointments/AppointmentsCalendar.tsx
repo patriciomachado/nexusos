@@ -165,7 +165,7 @@ export default function AppointmentsCalendar({
                                             openAppointment(a)
                                         }}
                                         className={cn(
-                                            "px-2 py-1 rounded-lg text-xs font-semibold tracking-tighter truncate border transition-all duration-300 cursor-pointer",
+                                            "px-2 py-1 rounded-lg text-xs font-semibold tracking-tighter truncate border transition duration-300 cursor-pointer",
                                             a.status === 'scheduled' ? "bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500/20" :
                                                 a.status === 'confirmed' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20" :
                                                     a.status === 'completed' ? "bg-purple-500/10 border-purple-500/20 text-purple-400 hover:bg-purple-500/20" :
@@ -181,7 +181,7 @@ export default function AppointmentsCalendar({
                                     e.stopPropagation()
                                     handleDayClick(dStr)
                                 }}
-                                className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-muted/20 opacity-0 group-hover:opacity-100 transition-all hover:bg-primary hover:text-white"
+                                className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-muted/20 opacity-0 group-hover:opacity-100 transition hover:bg-primary hover:text-white"
                             >
                                 <Plus className="w-3 h-3" />
                             </button>
@@ -218,7 +218,7 @@ export default function AppointmentsCalendar({
                                     <div
                                         key={a.id}
                                         onClick={() => openAppointment(a)}
-                                        className="p-3 rounded-xl border border-border/60 bg-foreground/[0.03] cursor-pointer hover:bg-foreground/[0.05] transition-all duration-300"
+                                        className="p-3 rounded-xl border border-border/60 bg-foreground/[0.03] cursor-pointer hover:bg-foreground/[0.05] transition duration-300"
                                     >
                                         <div className="text-[11px] font-semibold text-primary mb-1">
                                             {new Date(a.scheduled_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
@@ -245,7 +245,7 @@ export default function AppointmentsCalendar({
                         <div
                             key={a.id}
                             onClick={() => openAppointment(a)}
-                            className="p-6 rounded-2xl border border-border/60 bg-foreground/[0.03] cursor-pointer transition-all duration-300 flex items-center justify-between"
+                            className="p-6 rounded-2xl border border-border/60 bg-foreground/[0.03] cursor-pointer transition duration-300 flex items-center justify-between"
                         >
                             <div className="flex items-center gap-6">
                                 <div className="text-xl font-black text-primary">
@@ -304,7 +304,7 @@ export default function AppointmentsCalendar({
  key={v}
  onClick={() => setView(v)}
  className={cn(
- "px-5 py-2 rounded-xl text-[13px] font-semibold transition-all",
+ "px-5 py-2 rounded-xl text-[13px] font-semibold transition",
  view === v ? "bg-primary text-white" : "text-muted-foreground hover:text-foreground"
  )}
  >
@@ -319,7 +319,7 @@ export default function AppointmentsCalendar({
  setSelectedDateInModal(null)
  setIsCreateModalOpen(true)
  }}
- className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground active:scale-95 transition-all font-semibold text-[13px]"
+ className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-primary-foreground active:scale-95 transition font-semibold text-[13px]"
  >
                         <Plus className="w-4 h-4" />
                         <span>Novo Agendamento</span>
@@ -353,7 +353,7 @@ export default function AppointmentsCalendar({
                             <div
                                 key={a.id}
                                 onClick={() => openAppointment(a)}
-                                className="relative pl-6 border-l-2 border-primary/30 py-3 group cursor-pointer hover:border-primary transition-all duration-300 rounded-r-2xl hover:bg-foreground/[0.05]"
+                                className="relative pl-6 border-l-2 border-primary/30 py-3 group cursor-pointer hover:border-primary transition duration-300 rounded-r-2xl hover:bg-foreground/[0.05]"
                                 suppressHydrationWarning
                             >
                                 <div className="absolute left-[-5px] top-4 w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(99,102,241,0.5)] group-hover:scale-125 transition-transform" suppressHydrationWarning />
@@ -375,7 +375,7 @@ export default function AppointmentsCalendar({
                     </div>
 
                     <div className="mt-8 pt-8 border-t border-border/20" suppressHydrationWarning>
-                        <div className="glass-premium rounded-2xl p-6 bg-primary/5 border-primary/20 hover:border-primary/40 transition-all cursor-default group" suppressHydrationWarning>
+                        <div className="glass-premium rounded-2xl p-6 bg-primary/5 border-primary/20 hover:border-primary/40 transition cursor-default group" suppressHydrationWarning>
                             <div className="flex items-center justify-between mb-4" suppressHydrationWarning>
                                 <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center group-hover:rotate-6 transition-transform" suppressHydrationWarning>
                                     <TrendingUp className="w-5 h-5 text-white" suppressHydrationWarning />

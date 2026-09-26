@@ -31,7 +31,7 @@ export function TaskCheckbox({ priority, checked, onToggle, label }: { priority:
             className="w-11 h-11 -m-2.5 flex items-center justify-center shrink-0 group/check"
         >
             <span className={cn(
-                'w-[22px] h-[22px] rounded-full border-[1.75px] flex items-center justify-center transition-all duration-200',
+                'w-[22px] h-[22px] rounded-full border-[1.75px] flex items-center justify-center transition duration-200',
                 checked ? `${meta.color} border-transparent scale-95` : cn(meta.ring, priority === 1 ? 'bg-red-500/10' : priority === 2 ? 'bg-orange-500/10' : 'group-hover/check:bg-foreground/[0.04]')
             )}>
                 <Check className={cn('w-3.5 h-3.5 text-white transition-opacity', checked ? 'opacity-100' : 'opacity-0')} strokeWidth={3} />

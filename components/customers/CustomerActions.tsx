@@ -55,9 +55,9 @@ export default function CustomerActions({
                 <button
                     onClick={() => setShowDeleteConfirm(true)}
                     disabled={isPending}
-                    className="w-full p-1 rounded-2xl bg-rose-500/10 border border-rose-500/20 group/del hover:bg-rose-500/20 transition-all cursor-pointer"
+                    className="w-full p-1 rounded-2xl bg-rose-500/10 border border-rose-500/20 group/del hover:bg-rose-500/20 transition cursor-pointer"
                 >
-                    <div className="w-full py-4 rounded-2xl bg-card/40 text-rose-500 font-semibold text-xs group-hover/del:text-rose-400 transition-all text-center flex items-center justify-center gap-2">
+                    <div className="w-full py-4 rounded-2xl bg-card/40 text-rose-500 font-semibold text-xs group-hover/del:text-rose-400 transition text-center flex items-center justify-center gap-2">
                         {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                         Excluir Cliente
                     </div>

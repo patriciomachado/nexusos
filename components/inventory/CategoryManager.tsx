@@ -107,7 +107,7 @@ export default function CategoryManager({ onClose }: CategoryManagerProps) {
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2.5 hover:bg-foreground/[0.05] rounded-xl transition-all text-muted-foreground hover:text-foreground active:scale-90"
+                        className="p-2.5 hover:bg-foreground/[0.05] rounded-xl transition text-muted-foreground hover:text-foreground active:scale-90"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -120,12 +120,12 @@ export default function CategoryManager({ onClose }: CategoryManagerProps) {
                             value={newCategory}
                             onChange={(e) => setNewCategory(e.target.value)}
                             placeholder="Nova categoria..."
-                            className="flex-1 bg-background/50 border border-border/60 rounded-2xl px-5 py-4 text-xs font-medium focus:outline-none focus:border-primary/50 transition-all placeholder:opacity-30"
+                            className="flex-1 bg-background/50 border border-border/60 rounded-2xl px-5 py-4 text-xs font-medium focus:outline-none focus:border-primary/50 transition placeholder:opacity-30"
                         />
                         <button
                             type="submit"
                             disabled={isAdding || !newCategory.trim()}
-                            className="px-5 bg-primary text-primary-foreground rounded-2xl active:scale-95 transition-all disabled:opacity-50"
+                            className="px-5 bg-primary text-primary-foreground rounded-2xl active:scale-95 transition disabled:opacity-50"
                         >
                             {isAdding ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
                         </button>
@@ -141,12 +141,12 @@ export default function CategoryManager({ onClose }: CategoryManagerProps) {
                     ) : categories.length > 0 ? (
                         <div className="grid gap-3">
                             {categories.map((cat) => (
-                                <div key={cat.id} className="flex items-center justify-between p-5 rounded-2xl bg-foreground/[0.03] border border-border/60 group hover:border-primary/20 hover:bg-foreground/[0.05] transition-all">
+                                <div key={cat.id} className="flex items-center justify-between p-5 rounded-2xl bg-foreground/[0.03] border border-border/60 group hover:border-primary/20 hover:bg-foreground/[0.05] transition">
                                     <span className="text-xs font-semibold text-foreground/80 tracking-tight">{cat.name}</span>
                                     <button
                                         onClick={() => setConfirmDeleteId(cat.id)}
                                         disabled={deletingId === cat.id}
-                                        className="p-3 text-rose-500/40 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all opacity-0 group-hover:opacity-100 disabled:opacity-100"
+                                        className="p-3 text-rose-500/40 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition opacity-0 group-hover:opacity-100 disabled:opacity-100"
                                     >
                                         {deletingId === cat.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                                     </button>

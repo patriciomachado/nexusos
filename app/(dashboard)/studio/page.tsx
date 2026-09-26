@@ -323,7 +323,7 @@ function StudioContent() {
                             <button
                                 onClick={() => setActiveTab('generate')}
                                 className={cn(
-                                    "flex-1 md:flex-none px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
+                                    "flex-1 md:flex-none px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2",
                                     activeTab === 'generate' ? "bg-primary text-primary-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
@@ -334,7 +334,7 @@ function StudioContent() {
                             <button
                                 onClick={() => setActiveTab('calendar')}
                                 className={cn(
-                                    "flex-1 md:flex-none px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
+                                    "flex-1 md:flex-none px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2",
                                     activeTab === 'calendar' ? "bg-primary text-primary-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
@@ -345,7 +345,7 @@ function StudioContent() {
                             <button
                                 onClick={() => setActiveTab('library')}
                                 className={cn(
-                                    "flex-1 md:flex-none px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
+                                    "flex-1 md:flex-none px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2",
                                     activeTab === 'library' ? "bg-primary text-primary-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
@@ -356,7 +356,7 @@ function StudioContent() {
                             <button
                                 onClick={() => setActiveTab('banners')}
                                 className={cn(
-                                    "flex-1 md:flex-none px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
+                                    "flex-1 md:flex-none px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2",
                                     activeTab === 'banners' ? "bg-primary text-primary-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
@@ -400,7 +400,7 @@ function StudioContent() {
                                             onChange={e => setTopic(e.target.value)}
                                             placeholder="Ex: Troca de vidro de iPhone 13, Limpeza de Notebook esquentando, ou Alerta de celular molhado na praia..."
                                             rows={3}
-                                            className="w-full bg-background border border-border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none font-medium"
+                                            className="w-full bg-background border border-border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-primary/20 outline-none transition resize-none font-medium"
                                         />
                                     </div>
 
@@ -410,7 +410,7 @@ function StudioContent() {
                                             <select
                                                 value={category}
                                                 onChange={e => setCategory(e.target.value)}
-                                                className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                                                className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                             >
                                                 <option value="Geral">Geral</option>
                                                 <option value="Tela e Vidro">Tela e Vidro</option>
@@ -426,7 +426,7 @@ function StudioContent() {
                                             <select
                                                 value={tone}
                                                 onChange={e => setTone(e.target.value)}
-                                                className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                                                className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                             >
                                                 <option value="viral">Viral & Curioso</option>
                                                 <option value="educativo">Educativo & Técnico</option>
@@ -439,7 +439,7 @@ function StudioContent() {
                                     <button
  onClick={() => handleGenerate()}
  disabled={isGenerating}
- className="w-full py-4 bg-primary text-primary-foreground rounded-2xl text-xs font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+ className="w-full py-4 bg-primary text-primary-foreground rounded-2xl text-xs font-semibold hover:bg-primary/90 transition flex items-center justify-center gap-2 disabled:opacity-50"
  >
                                         {isGenerating ? (
                                             <>
@@ -470,7 +470,7 @@ function StudioContent() {
                                         <div className="flex flex-wrap items-center gap-2">
                                             <button
                                                 onClick={() => handleCreateBannerFromScript(currentOutput)}
-                                                className="px-3.5 py-2 bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                                                className="px-3.5 py-2 bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5"
                                             >
                                                 <ImageIcon className="w-4 h-4" />
                                                 Criar Banner
@@ -478,7 +478,7 @@ function StudioContent() {
 
                                             <button
  onClick={() => openTeleprompter(currentOutput)}
- className="px-4 py-2 bg-amber-500 text-black rounded-xl text-xs font-semibold hover:bg-amber-400 transition-all flex items-center gap-1.5 shadow-md"
+ className="px-4 py-2 bg-amber-500 text-black rounded-xl text-xs font-semibold hover:bg-amber-400 transition flex items-center gap-1.5 shadow-md"
  >
                                                 <Play className="w-4 h-4 fill-current" />
                                                 Teleprompter
@@ -487,7 +487,7 @@ function StudioContent() {
                                             <button
  onClick={handleSaveScript}
  disabled={isSaving}
- className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-semibold hover:bg-primary/90 transition-all flex items-center gap-1.5 disabled:opacity-50"
+ className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-semibold hover:bg-primary/90 transition flex items-center gap-1.5 disabled:opacity-50"
  >
                                                 <Copy className="w-4 h-4" />
                                                 Salvar
@@ -596,7 +596,7 @@ function StudioContent() {
                                 {/* Filters */}
                                 <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                                     {/* Mês Selector */}
-                                    <div className="flex items-center gap-2 bg-background border border-border px-3 py-2 rounded-xl text-xs">
+                                    <div className="flex items-center gap-2 bg-background border border-border px-3 py-2 rounded-xl text-xs focus-within:ring-2 focus-within:ring-primary/40">
                                         <Filter className="w-4 h-4 text-muted-foreground" />
                                         <select
                                             value={selectedMonth}
@@ -611,7 +611,7 @@ function StudioContent() {
                                     </div>
 
                                     {/* Categoria Selector */}
-                                    <div className="flex items-center gap-2 bg-background border border-border px-3 py-2 rounded-xl text-xs">
+                                    <div className="flex items-center gap-2 bg-background border border-border px-3 py-2 rounded-xl text-xs focus-within:ring-2 focus-within:ring-primary/40">
                                         <select
                                             value={selectedCategory}
                                             onChange={e => setSelectedCategory(e.target.value)}
@@ -636,7 +636,7 @@ function StudioContent() {
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {WEEKLY_CONTENT_IDEAS.map((idea, idx) => (
-                                    <div key={idx} className="bg-card/80 border border-border rounded-2xl p-4 space-y-3 flex flex-col justify-between hover:border-primary/40 transition-all">
+                                    <div key={idx} className="bg-card/80 border border-border rounded-2xl p-4 space-y-3 flex flex-col justify-between hover:border-primary/40 transition">
                                         <div>
                                             <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-md">
                                                 {idea.type}
@@ -650,7 +650,7 @@ function StudioContent() {
  setActiveTab('generate')
  handleGenerate(idea.title)
  }}
- className="w-full py-2 bg-primary text-primary-foreground rounded-xl text-xs font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 mt-2"
+ className="w-full py-2 bg-primary text-primary-foreground rounded-xl text-xs font-semibold hover:bg-primary/90 transition flex items-center justify-center gap-2 mt-2"
  >
                                             <Wand2 className="w-3.5 h-3.5" />
                                             Criar com Claude AI
@@ -668,7 +668,7 @@ function StudioContent() {
                                 </div>
                             ) : (
                                 filteredEvents.map(event => (
-                                    <div key={event.id} className="bg-card border border-border rounded-2xl p-5 space-y-4 flex flex-col justify-between group hover:border-primary/50 transition-all shadow-md">
+                                    <div key={event.id} className="bg-card border border-border rounded-2xl p-5 space-y-4 flex flex-col justify-between group hover:border-primary/50 transition shadow-md">
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
                                                 <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-lg">
@@ -685,7 +685,7 @@ function StudioContent() {
                                         <div className="pt-3 border-t border-border/50">
                                             <button
  onClick={() => handleSelectSeasonalEvent(event)}
- className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl text-xs font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+ className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl text-xs font-semibold hover:bg-primary/90 transition flex items-center justify-center gap-2"
  >
                                                 <Wand2 className="w-4 h-4" />
                                                 ✨ Criar Conteúdo com Claude AI
@@ -720,7 +720,7 @@ function StudioContent() {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {savedScripts.map(script => (
-                                    <div key={script.id} className="bg-card border border-border rounded-2xl p-5 space-y-4 flex flex-col justify-between group hover:border-primary/40 transition-all shadow-md">
+                                    <div key={script.id} className="bg-card border border-border rounded-2xl p-5 space-y-4 flex flex-col justify-between group hover:border-primary/40 transition shadow-md">
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
                                                 <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-md">
@@ -739,7 +739,7 @@ function StudioContent() {
                                         <div className="flex items-center gap-2 pt-2 border-t border-border">
                                             <button
                                                 onClick={() => handleCreateBannerFromScript(script)}
-                                                className="px-3 py-2 bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1"
+                                                className="px-3 py-2 bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-white rounded-xl text-xs font-bold transition flex items-center gap-1"
                                                 title="Criar Banner"
                                             >
                                                 <ImageIcon className="w-3.5 h-3.5" />
@@ -748,7 +748,7 @@ function StudioContent() {
 
                                             <button
                                                 onClick={() => openTeleprompter(script)}
-                                                className="flex-1 py-2 bg-amber-500 text-black rounded-xl text-xs font-bold hover:bg-amber-400 transition-all flex items-center justify-center gap-1.5"
+                                                className="flex-1 py-2 bg-amber-500 text-black rounded-xl text-xs font-bold hover:bg-amber-400 transition flex items-center justify-center gap-1.5"
                                             >
                                                 <Play className="w-3.5 h-3.5 fill-current" />
                                                 Teleprompter
@@ -756,7 +756,7 @@ function StudioContent() {
 
                                             <button
                                                 onClick={() => copyToClipboard(script.instagram_caption || '', script.id)}
-                                                className="py-2 px-3 bg-muted hover:bg-muted/80 rounded-xl text-xs font-bold transition-all flex items-center gap-1"
+                                                className="py-2 px-3 bg-muted hover:bg-muted/80 rounded-xl text-xs font-bold transition flex items-center gap-1"
                                                 title="Copiar Legenda"
                                             >
                                                 <Copy className="w-3.5 h-3.5" />
@@ -790,7 +790,7 @@ function StudioContent() {
                                         <button
                                             onClick={() => setBannerAspect('1:1')}
                                             className={cn(
-                                                "p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all",
+                                                "p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition",
                                                 bannerAspect === '1:1' ? "bg-purple-500/10 border-purple-500 text-purple-300" : "bg-background border-border text-muted-foreground hover:text-foreground"
                                             )}
                                         >
@@ -801,7 +801,7 @@ function StudioContent() {
                                         <button
                                             onClick={() => setBannerAspect('9:16')}
                                             className={cn(
-                                                "p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all",
+                                                "p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition",
                                                 bannerAspect === '9:16' ? "bg-purple-500/10 border-purple-500 text-purple-300" : "bg-background border-border text-muted-foreground hover:text-foreground"
                                             )}
                                         >
@@ -812,7 +812,7 @@ function StudioContent() {
                                         <button
                                             onClick={() => setBannerAspect('16:9')}
                                             className={cn(
-                                                "p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition-all",
+                                                "p-3 rounded-2xl border text-xs font-bold flex flex-col items-center gap-1.5 transition",
                                                 bannerAspect === '16:9' ? "bg-purple-500/10 border-purple-500 text-purple-300" : "bg-background border-border text-muted-foreground hover:text-foreground"
                                             )}
                                         >
@@ -834,7 +834,7 @@ function StudioContent() {
                                                     setBannerSecondaryColor(preset.secondary)
                                                 }}
                                                 className={cn(
-                                                    "px-3 py-2 rounded-xl border text-xs font-bold flex items-center gap-2 transition-all",
+                                                    "px-3 py-2 rounded-xl border text-xs font-bold flex items-center gap-2 transition",
                                                     bannerPrimaryColor === preset.primary ? "border-primary bg-primary/10 text-foreground" : "border-border bg-background text-muted-foreground"
                                                 )}
                                             >
@@ -865,7 +865,7 @@ function StudioContent() {
                                     <select
                                         value={bannerStyle}
                                         onChange={e => setBannerStyle(e.target.value)}
-                                        className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                                        className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                     >
                                         <option value="bancada_8k">📸 Fotografia 8K de Bancada (Técnico Trabalhando)</option>
                                         <option value="render_3d">💎 Render 3D Futurista com Neon & Vidro</option>
@@ -883,7 +883,7 @@ function StudioContent() {
                                             value={bannerTitle}
                                             onChange={e => setBannerTitle(e.target.value)}
                                             placeholder="Ex: TROCA DE TELA EM 45 MIN"
-                                            className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                                            className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                         />
                                     </div>
 
@@ -894,7 +894,7 @@ function StudioContent() {
                                             value={bannerSubtitle}
                                             onChange={e => setBannerSubtitle(e.target.value)}
                                             placeholder="Ex: Com Película Grátis e 6 Meses de Garantia"
-                                            className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                                            className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-xs font-bold outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                         />
                                     </div>
                                 </div>
@@ -914,7 +914,7 @@ function StudioContent() {
 
                                 {/* Mockup Visual Card */}
                                 <div 
-                                    className="p-6 rounded-2xl border space-y-4 relative overflow-hidden transition-all flex flex-col justify-between min-h-[260px]"
+                                    className="p-6 rounded-2xl border space-y-4 relative overflow-hidden transition flex flex-col justify-between min-h-[260px]"
                                     style={{
                                         borderColor: bannerPrimaryColor,
                                         background: `linear-gradient(135deg, ${bannerPrimaryColor}25 0%, #090D16 100%)`
@@ -954,7 +954,7 @@ function StudioContent() {
                                             </span>
                                             <button
                                                 onClick={() => copyToClipboard(generateDynamicPrompt('chatgpt'), 'prompt_chatgpt')}
-                                                className="px-3 py-1.5 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1"
+                                                className="px-3 py-1.5 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500 hover:text-white rounded-xl text-xs font-bold transition flex items-center gap-1"
                                             >
                                                 <Copy className="w-3.5 h-3.5" />
                                                 Copiar Prompt ChatGPT
@@ -973,7 +973,7 @@ function StudioContent() {
                                             </span>
                                             <button
                                                 onClick={() => copyToClipboard(generateDynamicPrompt('nanobanana'), 'prompt_nano')}
-                                                className="px-3 py-1.5 bg-amber-500/20 text-amber-300 hover:bg-amber-500 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1"
+                                                className="px-3 py-1.5 bg-amber-500/20 text-amber-300 hover:bg-amber-500 hover:text-white rounded-xl text-xs font-bold transition flex items-center gap-1"
                                             >
                                                 <Copy className="w-3.5 h-3.5" />
                                                 Copiar Prompt Nano Banana

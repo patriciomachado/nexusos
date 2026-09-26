@@ -34,7 +34,7 @@ export default function StudioDashboardWidget() {
 
                 <Link
  href="/studio"
- className="px-4 py-2.5 bg-primary text-black rounded-2xl text-xs font-black hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 group shrink-0"
+ className="px-4 py-2.5 bg-primary text-black rounded-2xl text-xs font-black hover:bg-primary/90 transition shadow-lg shadow-primary/20 flex items-center gap-2 group shrink-0"
  >
                     <Wand2 className="w-4 h-4" />
                     Abrir Nexus Studio

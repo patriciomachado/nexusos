@@ -198,7 +198,7 @@ export default function Catalog3DExperience({
                             <div className="grid grid-cols-3 gap-1 p-1 bg-slate-900/80 rounded-2xl border border-slate-800">
                                 <button
                                     onClick={() => setConditionFilter('todos')}
-                                    className={`py-1.5 text-[11px] font-bold rounded-xl transition-all ${
+                                    className={`py-1.5 text-[11px] font-bold rounded-xl transition ${
                                         conditionFilter === 'todos' ? 'bg-cyan-500 text-black font-black shadow-md' : 'text-slate-400 hover:text-white'
                                     }`}
                                 >
@@ -206,7 +206,7 @@ export default function Catalog3DExperience({
                                 </button>
                                 <button
                                     onClick={() => setConditionFilter('novos')}
-                                    className={`py-1.5 text-[11px] font-bold rounded-xl transition-all ${
+                                    className={`py-1.5 text-[11px] font-bold rounded-xl transition ${
                                         conditionFilter === 'novos' ? 'bg-cyan-500 text-black font-black shadow-md' : 'text-slate-400 hover:text-white'
                                     }`}
                                 >
@@ -214,7 +214,7 @@ export default function Catalog3DExperience({
                                 </button>
                                 <button
                                     onClick={() => setConditionFilter('seminovos')}
-                                    className={`py-1.5 text-[11px] font-bold rounded-xl transition-all ${
+                                    className={`py-1.5 text-[11px] font-bold rounded-xl transition ${
                                         conditionFilter === 'seminovos' ? 'bg-cyan-500 text-black font-black shadow-md' : 'text-slate-400 hover:text-white'
                                     }`}
                                 >
@@ -242,7 +242,7 @@ export default function Catalog3DExperience({
                                                 setSelectedDeviceIndex(realIdx)
                                                 setActivePhotoIndex(0)
                                             }}
-                                            className={`w-full text-left p-3 rounded-2xl text-xs font-bold transition-all border ${
+                                            className={`w-full text-left p-3 rounded-2xl text-xs font-bold transition border ${
                                                 isSelected
                                                     ? 'bg-cyan-500/20 border-cyan-400 text-white shadow-lg'
                                                     : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white'
@@ -278,7 +278,7 @@ export default function Catalog3DExperience({
                             <div className="space-y-2">
                                 <div
                                     onClick={() => setIsPhotoModalOpen(true)}
-                                    className="relative w-full h-36 sm:h-44 bg-[#070b14] rounded-2xl overflow-hidden border border-slate-800 group cursor-pointer hover:border-cyan-500/50 transition-all flex items-center justify-center p-2"
+                                    className="relative w-full h-36 sm:h-44 bg-[#070b14] rounded-2xl overflow-hidden border border-slate-800 group cursor-pointer hover:border-cyan-500/50 transition flex items-center justify-center p-2"
                                 >
                                     <img
                                         src={currentDevice.images[activePhotoIndex] || currentDevice.images[0]}
@@ -301,7 +301,7 @@ export default function Catalog3DExperience({
                                             <button
                                                 key={i}
                                                 onClick={() => setActivePhotoIndex(i)}
-                                                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border-2 shrink-0 transition-all p-0.5 bg-black ${
+                                                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border-2 shrink-0 transition p-0.5 bg-black ${
                                                     activePhotoIndex === i ? 'border-cyan-400 scale-105 shadow-md shadow-cyan-500/20' : 'border-slate-800 opacity-60 hover:opacity-100'
                                                 }`}
                                             >
@@ -362,7 +362,7 @@ export default function Catalog3DExperience({
                         {onOpenTradeIn && (
                             <button
                                 onClick={() => onOpenTradeIn(currentDevice)}
-                                className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold rounded-2xl text-xs flex items-center justify-center gap-2 border border-cyan-500/30 transition-all"
+                                className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold rounded-2xl text-xs flex items-center justify-center gap-2 border border-cyan-500/30 transition"
                             >
                                 <RefreshCw className="w-4 h-4" />
                                 Calcular valor do meu seminovo na troca
@@ -385,7 +385,7 @@ export default function Catalog3DExperience({
                         </p>
                         <button
  onClick={openWhatsApp}
- className="w-full py-5 bg-emerald-400 hover:bg-emerald-300 text-black font-black rounded-2xl text-sm md:text-base transition-all shadow-[0_0_30px_rgba(52,211,153,0.8)] hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
+ className="w-full py-5 bg-emerald-400 hover:bg-emerald-300 text-black font-black rounded-2xl text-sm md:text-base transition shadow-[0_0_30px_rgba(52,211,153,0.8)] hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
  >
                             <MessageSquare className="w-6 h-6 fill-current" />
                             RESGATAR NO WHATSAPP AGORA ➔
@@ -407,7 +407,7 @@ export default function Catalog3DExperience({
                         </div>
                         <button
                             onClick={() => setIsPhotoModalOpen(false)}
-                            className="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white rounded-2xl transition-all shadow-lg"
+                            className="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white rounded-2xl transition shadow-lg"
                         >
                             <X className="w-6 h-6" />
                         </button>
@@ -418,7 +418,7 @@ export default function Catalog3DExperience({
                         {currentDevice.images.length > 1 && (
                             <button
                                 onClick={() => setActivePhotoIndex((prev) => (prev > 0 ? prev - 1 : currentDevice.images!.length - 1))}
-                                className="absolute left-2 z-10 p-3 bg-black/80 hover:bg-black text-white rounded-2xl border border-slate-800 backdrop-blur-md transition-all shadow-2xl hover:scale-110"
+                                className="absolute left-2 z-10 p-3 bg-black/80 hover:bg-black text-white rounded-2xl border border-slate-800 backdrop-blur-md transition shadow-2xl hover:scale-110"
                             >
                                 <ChevronLeft className="w-6 h-6 text-cyan-400" />
                             </button>
@@ -435,7 +435,7 @@ export default function Catalog3DExperience({
                         {currentDevice.images.length > 1 && (
                             <button
                                 onClick={() => setActivePhotoIndex((prev) => (prev < currentDevice.images!.length - 1 ? prev + 1 : 0))}
-                                className="absolute right-2 z-10 p-3 bg-black/80 hover:bg-black text-white rounded-2xl border border-slate-800 backdrop-blur-md transition-all shadow-2xl hover:scale-110"
+                                className="absolute right-2 z-10 p-3 bg-black/80 hover:bg-black text-white rounded-2xl border border-slate-800 backdrop-blur-md transition shadow-2xl hover:scale-110"
                             >
                                 <ChevronRight className="w-6 h-6 text-cyan-400" />
                             </button>
@@ -449,7 +449,7 @@ export default function Catalog3DExperience({
                                 <button
                                     key={idx}
                                     onClick={() => setActivePhotoIndex(idx)}
-                                    className={`w-14 h-14 rounded-2xl overflow-hidden border-2 transition-all p-1 bg-black shrink-0 ${
+                                    className={`w-14 h-14 rounded-2xl overflow-hidden border-2 transition p-1 bg-black shrink-0 ${
                                         activePhotoIndex === idx ? 'border-cyan-400 scale-105 shadow-lg shadow-cyan-500/30' : 'border-slate-800 opacity-50 hover:opacity-100'
                                     }`}
                                 >

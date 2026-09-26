@@ -163,7 +163,7 @@ export default function PecasClient({
                         <div
                             key={card.label}
                             className={cn(
-                                'rounded-2xl border p-5 flex flex-col gap-3 transition-all duration-300 group',
+                                'rounded-2xl border p-5 flex flex-col gap-3 transition duration-300 group',
                                 style.gradient, style.border
                             )}
                         >
@@ -216,7 +216,7 @@ export default function PecasClient({
                                     </div>
                                     <div className="h-1.5 bg-foreground/[0.03] rounded-full overflow-hidden">
                                         <div
-                                            className="h-full rounded-full transition-all duration-700"
+                                            className="h-full rounded-full transition-[width] duration-700"
                                             style={{ width: `${(part.totalQty / maxQty) * 100}%` }}
                                         />
                                     </div>
@@ -263,7 +263,7 @@ export default function PecasClient({
                                     </div>
                                     <div className="h-1.5 bg-foreground/[0.03] rounded-full overflow-hidden">
                                         <div
-                                            className="h-full rounded-full transition-all duration-700"
+                                            className="h-full rounded-full transition-[width] duration-700"
                                             style={{ width: `${Math.max(4, (part.totalQty / maxQty) * 100)}%` }}
                                         />
                                     </div>
@@ -315,7 +315,7 @@ export default function PecasClient({
                                     </div>
                                     <div className="h-1.5 bg-foreground/[0.03] rounded-full overflow-hidden">
                                         <div
-                                            className="h-full rounded-full transition-all duration-700"
+                                            className="h-full rounded-full transition-[width] duration-700"
                                             style={{ width: `${pct}%` }}
                                         />
                                     </div>

@@ -78,7 +78,7 @@ export default async function InventoryPage({
 
                 {/* KPI Section - Premium Style */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                    <div className="relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-3xl glass-premium bg-card/65 border border-border/40 transition-all duration-300">
+                    <div className="relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-3xl glass-premium bg-card/65 border border-border/40 transition duration-300">
                         <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
                             <Package className="w-16 h-16 sm:w-20 sm:h-20 text-primary" />
                         </div>
@@ -97,7 +97,7 @@ export default async function InventoryPage({
                         </div>
                     </div>
 
-                    <div className="relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-3xl glass-premium bg-card/65 border border-border/40 transition-all duration-300">
+                    <div className="relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-3xl glass-premium bg-card/65 border border-border/40 transition duration-300">
                         <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
                             <Boxes className="w-16 h-16 sm:w-20 sm:h-20 text-indigo-400" />
                         </div>
@@ -114,7 +114,7 @@ export default async function InventoryPage({
                     </div>
 
                     <div className={cn(
-                        "relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-3xl border transition-all duration-300",
+                        "relative group overflow-hidden p-5 sm:p-8 rounded-2xl sm:rounded-3xl border transition duration-300",
                         lowStockItems.length > 0 ? "bg-rose-500/10 border-rose-500/20" : "glass-premium bg-card/65 border-border/40"
                     )}>
                         <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -143,13 +143,13 @@ export default async function InventoryPage({
                     <div className="relative flex-1 w-full md:max-w-md group">
                         <SearchInput
                             placeholder="Pesquisar nome, SKU ou código..."
-                            className="w-full bg-muted/30 border border-border/40 rounded-xl sm:rounded-2xl pl-11 pr-4 py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-primary/30 transition-all placeholder:opacity-40 h-11 sm:h-14"
+                            className="w-full bg-muted/30 border border-border/40 rounded-xl sm:rounded-2xl pl-11 pr-4 py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-primary/30 transition placeholder:opacity-40 h-11 sm:h-14"
                         />
                     </div>
 
                     <div className="flex items-center gap-3 w-full md:w-auto justify-between sm:justify-end">
                         <CategoryManagerWrapper />
-                        <button className="h-11 sm:h-14 flex items-center gap-2 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/40 text-[13px] sm:text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-all">
+                        <button className="h-11 sm:h-14 flex items-center gap-2 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-muted/30 border border-border/40 text-[13px] sm:text-[11px] font-semibold text-muted-foreground hover:text-foreground transition">
                             <Filter className="w-4 h-4" />
                             <span>Filtros</span>
                         </button>
@@ -255,7 +255,7 @@ export default async function InventoryPage({
                                         <tr key={item.id} className="group hover:bg-muted/20 transition-colors">
                                             <td className="p-6">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-muted/40 border border-border/40 overflow-hidden flex-shrink-0 relative group-hover:scale-105 transition-all duration-300 shadow-inner">
+                                                    <div className="w-12 h-12 rounded-2xl bg-muted/40 border border-border/40 overflow-hidden flex-shrink-0 relative group-hover:scale-105 transition duration-300 shadow-inner">
                                                         {item.image_url ? (
                                                             <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                                                         ) : (
@@ -313,10 +313,10 @@ export default async function InventoryPage({
                                                 <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <Link
                                                         href={`/inventory/${item.id}/edit`}
-                                                        className="p-3 rounded-xl bg-muted/40 hover:bg-primary hover:text-primary-foreground transition-all group/edit relative"
+                                                        className="p-3 rounded-xl bg-muted/40 hover:bg-primary hover:text-primary-foreground transition group/edit relative"
                                                     >
                                                         <Edit className="w-4 h-4" />
-                                                        <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-popover text-xs font-semibold rounded-lg opacity-0 group-hover/edit:opacity-100 transition-all pointer-events-none border border-border">Editar</span>
+                                                        <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-popover text-xs font-semibold rounded-lg opacity-0 group-hover/edit:opacity-100 transition pointer-events-none border border-border">Editar</span>
                                                     </Link>
                                                     <InventoryActions itemId={item.id} companyId={user?.company_id} />
                                                 </div>
@@ -333,7 +333,7 @@ export default async function InventoryPage({
                                             <p className="text-muted-foreground text-sm mt-2 mb-10 max-w-xs mx-auto">Sua vitrine de peças e insumos aparecerá aqui após o cadastro.</p>
                                             <Link
  href="/inventory/new"
- className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-2xl font-semibold text-xs transition-all"
+ className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 rounded-2xl font-semibold text-xs transition"
  >
                                                 <Plus className="w-5 h-5" />
                                                 Cadastrar Produto

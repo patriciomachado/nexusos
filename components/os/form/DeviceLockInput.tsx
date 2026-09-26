@@ -109,7 +109,7 @@ export default function DeviceLockInput({ value, onChange }: { value: DeviceLock
                 ]}
             />
             {mode === 'pin' && (
-                <div className="rounded-2xl bg-card border border-border/60 px-4 py-3">
+                <div className="rounded-2xl bg-card border border-border/60 px-4 py-3 focus-within:ring-2 focus-within:ring-primary/40">
                     <label htmlFor="os-lock-pin" className="block text-[13px] text-muted-foreground mb-1">Senha do aparelho</label>
                     <div className="flex items-center gap-2">
                         <input

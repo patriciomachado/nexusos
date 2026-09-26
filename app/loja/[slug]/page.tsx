@@ -278,7 +278,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setViewMode(viewMode === '3d' ? '2d' : '3d')}
-                            className="px-3.5 py-2 rounded-2xl text-xs font-mono font-black border border-cyan-500/40 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 transition-all shadow-md flex items-center gap-1.5"
+                            className="px-3.5 py-2 rounded-2xl text-xs font-mono font-black border border-cyan-500/40 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 transition shadow-md flex items-center gap-1.5"
                         >
                             <Zap className="w-3.5 h-3.5 fill-current" />
                             {viewMode === '3d' ? 'MODO 2D' : 'MODO 3D'}
@@ -287,7 +287,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                         {companyPhone && (
                             <button
  onClick={() => openWhatsAppInterest('Atendimento Geral', 0)}
- className="px-4 py-2 text-black font-black rounded-2xl text-xs transition-all flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
+ className="px-4 py-2 text-black font-black rounded-2xl text-xs transition flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
  style={{ backgroundColor: theme.primary }}
  >
                                 <MessageSquare className="w-4 h-4 fill-current" />
@@ -371,7 +371,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                         </div>
                         <button
  onClick={() => setIsQuizOpen(true)}
- className="w-full sm:w-auto px-5 py-3 text-black font-black rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-lg hover:scale-105 active:scale-95 shrink-0 animate-pulse"
+ className="w-full sm:w-auto px-5 py-3 text-black font-black rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg hover:scale-105 active:scale-95 shrink-0 animate-pulse"
  style={{ backgroundColor: theme.primary }}
  >
                             <Sparkles className="w-4 h-4 fill-current" />
@@ -391,7 +391,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 placeholder="Buscar modelo de celular..."
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
-                                className="w-full border border-slate-700/80 rounded-2xl pl-10 pr-4 py-2.5 text-xs font-bold text-white outline-none transition-all placeholder:text-slate-500"
+                                className="w-full border border-slate-700/80 rounded-2xl pl-10 pr-4 py-2.5 text-xs font-bold text-white outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition placeholder:text-slate-500"
                                 style={{ backgroundColor: theme.background }}
                             />
                         </div>
@@ -401,7 +401,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                             <button
                                 onClick={() => setActiveTab('devices')}
                                 className={cn(
-                                    "flex-1 md:flex-initial px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
+                                    "flex-1 md:flex-initial px-5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2",
                                     activeTab === 'devices' ? "text-black font-black shadow-lg" : "text-slate-400 hover:text-white"
                                 )}
                                 style={activeTab === 'devices' ? { backgroundColor: theme.primary } : {}}
@@ -413,7 +413,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                             <button
                                 onClick={() => setActiveTab('accessories')}
                                 className={cn(
-                                    "flex-1 md:flex-initial px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
+                                    "flex-1 md:flex-initial px-5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2",
                                     activeTab === 'accessories' ? "text-black font-black shadow-lg" : "text-slate-400 hover:text-white"
                                 )}
                                 style={activeTab === 'accessories' ? { backgroundColor: theme.primary } : {}}
@@ -435,7 +435,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                         key={brand}
                                         onClick={() => setSelectedBrand(brand)}
                                         className={cn(
-                                            "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border",
+                                            "px-3.5 py-1.5 rounded-xl text-xs font-bold transition border",
                                             selectedBrand === brand
                                                 ? "border-emerald-500 text-white"
                                                 : "border-slate-800 text-slate-400 hover:text-white"
@@ -453,7 +453,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 <select
                                     value={priceRange}
                                     onChange={e => setPriceRange(e.target.value as any)}
-                                    className="border border-slate-800 text-slate-300 font-bold text-xs rounded-xl px-3 py-1.5 outline-none cursor-pointer"
+                                    className="border border-slate-800 text-slate-300 font-bold text-xs rounded-xl px-3 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-primary/40 cursor-pointer"
                                     style={{ backgroundColor: theme.background }}
                                 >
                                     <option value="todos">Qualquer Preço</option>
@@ -483,12 +483,12 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 return (
                                     <div
                                         key={device.id}
-                                        className="border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl flex flex-col justify-between transition-all group hover:-translate-y-1 hover:shadow-2xl"
+                                        className="border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl flex flex-col justify-between transition group hover:-translate-y-1 hover:shadow-2xl"
                                         style={{ backgroundColor: theme.card_bg }}
                                     >
                                         <div className="space-y-3">
                                             {/* Photo Preview / Thumb Header */}
-                                            <div className="relative w-full h-48 bg-black/40 rounded-2xl overflow-hidden border border-slate-800/80 flex items-center justify-center transition-all">
+                                            <div className="relative w-full h-48 bg-black/40 rounded-2xl overflow-hidden border border-slate-800/80 flex items-center justify-center transition">
                                                 <img
                                                     src={mainPhoto}
                                                     alt={device.model}
@@ -517,7 +517,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                                             setSelectedDeviceModal(device)
                                                             setActivePhotoIndex(0)
                                                         }}
-                                                        className="absolute bottom-3 right-3 px-3 py-1.5 bg-black/80 hover:bg-black text-white rounded-xl text-[11px] font-bold backdrop-blur-md border border-slate-700 transition-all flex items-center gap-1.5 shadow-lg"
+                                                        className="absolute bottom-3 right-3 px-3 py-1.5 bg-black/80 hover:bg-black text-white rounded-xl text-[11px] font-bold backdrop-blur-md border border-slate-700 transition flex items-center gap-1.5 shadow-lg"
                                                     >
                                                         <Eye className="w-3.5 h-3.5" style={{ color: theme.primary }} />
                                                         {photos.length} {photos.length === 1 ? 'Foto' : 'Fotos'}
@@ -570,7 +570,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                         <div className="space-y-2 pt-2">
                                             <button
  onClick={() => openWhatsAppInterest(`${device.brand} ${device.model} ${device.storage || ''}`, device.cash_price, `Bateria ${device.battery_health}%`)}
- className="w-full py-3 text-black font-black rounded-2xl text-xs transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95 hover:opacity-90"
+ className="w-full py-3 text-black font-black rounded-2xl text-xs transition flex items-center justify-center gap-2 shadow-lg active:scale-95 hover:opacity-90"
  style={{ backgroundColor: theme.primary }}
  >
                                                 <MessageSquare className="w-4 h-4 fill-current" />
@@ -582,7 +582,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                                     setSelectedTradeInDevice(device)
                                                     setIsTradeInModalOpen(true)
                                                 }}
-                                                className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border border-slate-800"
+                                                className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-800"
                                                 style={{ borderColor: `${theme.primary}40`, color: theme.primary }}
                                             >
                                                 <RefreshCw className="w-3.5 h-3.5" />
@@ -616,7 +616,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
                                     <button
                                         onClick={() => openWhatsAppInterest(item.name, item.sale_price)}
-                                        className="w-full py-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-black rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+                                        className="w-full py-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-black rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5"
                                     >
                                         <MessageSquare className="w-3.5 h-3.5" />
                                         Quero Comprar
@@ -664,7 +664,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 </h3>
                                 <p className="text-xs text-slate-400 font-semibold">{selectedDeviceModal.storage} • {selectedDeviceModal.color}</p>
                             </div>
-                            <button onClick={() => setSelectedDeviceModal(null)} className="p-2 hover:bg-slate-800 rounded-xl transition-all">
+                            <button onClick={() => setSelectedDeviceModal(null)} className="p-2 hover:bg-slate-800 rounded-xl transition">
                                 <X className="w-5 h-5 text-slate-400" />
                             </button>
                         </div>
@@ -687,7 +687,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                             key={idx}
                                             onClick={() => setActivePhotoIndex(idx)}
                                             className={cn(
-                                                "w-12 h-12 rounded-xl overflow-hidden border-2 transition-all",
+                                                "w-12 h-12 rounded-xl overflow-hidden border-2 transition",
                                                 activePhotoIndex === idx ? "border-emerald-400 scale-105" : "border-slate-800 opacity-60"
                                             )}
                                         >
@@ -708,7 +708,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
  openWhatsAppInterest(`${selectedDeviceModal.brand} ${selectedDeviceModal.model}`, selectedDeviceModal.cash_price)
  setSelectedDeviceModal(null)
  }}
- className="px-5 py-2.5 bg-emerald-500 text-black font-black rounded-xl text-xs hover:bg-emerald-400 transition-all flex items-center gap-1.5"
+ className="px-5 py-2.5 bg-emerald-500 text-black font-black rounded-xl text-xs hover:bg-emerald-400 transition flex items-center gap-1.5"
  >
                                 <MessageSquare className="w-4 h-4 fill-current" />
                                 Enviar Mensagem

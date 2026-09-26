@@ -66,7 +66,7 @@ export default function InventoryActions({ itemId, companyId }: { itemId: string
             <button
                 ref={triggerRef}
                 onClick={() => setOpen(!open)}
-                className="p-2 rounded-xl hover:bg-foreground/[0.05] text-white/40 hover:text-white transition-all ring-1 ring-white/0 hover:ring-white/10"
+                className="p-2 rounded-xl hover:bg-foreground/[0.05] text-white/40 hover:text-white transition ring-1 ring-white/0 hover:ring-white/10"
             >
                 <MoreVertical className="w-4 h-4" />
             </button>
@@ -86,7 +86,7 @@ export default function InventoryActions({ itemId, companyId }: { itemId: string
                         <div className="p-1.5 space-y-0.5">
                             <button
  onClick={() => { setOpen(false); router.push(`/inventory/${itemId}/edit`) }}
- className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-white/60 hover:text-white hover:bg-foreground/[0.05] rounded-xl transition-all"
+ className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-white/60 hover:text-white hover:bg-foreground/[0.05] rounded-xl transition"
  >
                                 <Edit className="w-3.5 h-3.5 text-indigo-400" />
                                 Editar Registro
@@ -96,14 +96,14 @@ export default function InventoryActions({ itemId, companyId }: { itemId: string
 
                             <button
  onClick={() => { setOpen(false); setAdjusting(true); setAdjustType('add') }}
- className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-white/60 hover:text-white hover:bg-foreground/[0.05] rounded-xl transition-all"
+ className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-white/60 hover:text-white hover:bg-foreground/[0.05] rounded-xl transition"
  >
                                 <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
                                 Entrada de Estoque
                             </button>
                             <button
  onClick={() => { setOpen(false); setAdjusting(true); setAdjustType('remove') }}
- className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-white/60 hover:text-white hover:bg-foreground/[0.05] rounded-xl transition-all"
+ className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-white/60 hover:text-white hover:bg-foreground/[0.05] rounded-xl transition"
  >
                                 <ArrowDownRight className="w-3.5 h-3.5 text-orange-400" />
                                 Saída de Estoque
@@ -113,7 +113,7 @@ export default function InventoryActions({ itemId, companyId }: { itemId: string
 
                             <button
  onClick={() => { setOpen(false); setIsDeleting(true) }}
- className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-red-400/60 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
+ className="w-full flex items-center gap-3 px-3 py-2 text-[13px] font-semibold text-red-400/60 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition"
  >
                                 <Trash2 className="w-3.5 h-3.5" />
                                 Excluir Produto
@@ -144,7 +144,7 @@ export default function InventoryActions({ itemId, companyId }: { itemId: string
                                     step="0.001"
                                     value={adjustQty}
                                     onChange={e => setAdjustQty(e.target.value)}
-                                    className="w-full bg-background/50 border border-border/60 rounded-2xl px-5 py-4 text-sm font-semibold text-center focus:outline-none focus:border-primary/50 transition-all placeholder:opacity-30"
+                                    className="w-full bg-background/50 border border-border/60 rounded-2xl px-5 py-4 text-sm font-semibold text-center focus:outline-none focus:border-primary/50 transition placeholder:opacity-30"
                                     placeholder="0.000"
                                     autoFocus
                                 />
@@ -153,7 +153,7 @@ export default function InventoryActions({ itemId, companyId }: { itemId: string
                             <div className="grid grid-cols-2 gap-4">
                                 <button
  onClick={() => setAdjusting(false)}
- className="h-14 rounded-2xl bg-muted/30 border border-border/60 text-[13px] font-semibold text-muted-foreground hover:bg-foreground/[0.05] transition-all"
+ className="h-14 rounded-2xl bg-muted/30 border border-border/60 text-[13px] font-semibold text-muted-foreground hover:bg-foreground/[0.05] transition"
  >
                                     Cancelar
                                 </button>
@@ -161,7 +161,7 @@ export default function InventoryActions({ itemId, companyId }: { itemId: string
  onClick={handleAdjust}
  disabled={isPending || !adjustQty}
  className={cn(
- "h-14 rounded-2xl text-[13px] font-semibold transition-all active:scale-95 disabled:opacity-50",
+ "h-14 rounded-2xl text-[13px] font-semibold transition active:scale-95 disabled:opacity-50",
  adjustType === 'add' ? "bg-emerald-500 text-white" : "bg-orange-500 text-white"
  )}
  >
@@ -172,7 +172,7 @@ export default function InventoryActions({ itemId, companyId }: { itemId: string
 
                         <button
                             onClick={() => setAdjusting(false)}
-                            className="absolute top-6 right-6 p-2 hover:bg-foreground/[0.05] rounded-xl transition-all text-muted-foreground hover:text-foreground"
+                            className="absolute top-6 right-6 p-2 hover:bg-foreground/[0.05] rounded-xl transition text-muted-foreground hover:text-foreground"
                         >
                             <X className="w-5 h-5" />
                         </button>
