@@ -46,6 +46,7 @@ export default function ScreenDiagnosticsPage() {
     const [rows, setRows] = useState<Row[]>([])
     const [marks, setMarks] = useState({ screen: 0, fixed: 0, visual: 0 })
     const [fixOff, setFixOff] = useState(false)
+    const [bodyOff, setBodyOff] = useState(false)
     const [mounted, setMounted] = useState(false)
 
     const run = useCallback(() => {
@@ -69,6 +70,8 @@ export default function ScreenDiagnosticsPage() {
             ['Área segura', `topo ${env.top} · base ${env.bottom}`],
             ['Rolagem da janela', String(Math.round(window.scrollY))],
             ['Correção (--ios-gap)', root.classList.contains('ios-gap') ? root.style.getPropertyValue('--ios-gap') || 'sim' : 'não'],
+            ['Modo corpo', root.classList.contains('ios-body') ? 'ligado' : 'desligado'],
+            ['Tag apple-capable', document.querySelector('meta[name="apple-mobile-web-app-capable"]') ? 'sim' : 'não'],
             ['Faltando embaixo', `${screenH - fb} px`],
         ])
     }, [])
@@ -76,7 +79,10 @@ export default function ScreenDiagnosticsPage() {
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true)
-        try { setFixOff(localStorage.getItem('nexus_iosfix_off') === '1') } catch { /* ignore */ }
+        try {
+            setFixOff(localStorage.getItem('nexus_iosfix_off') === '1')
+            setBodyOff(localStorage.getItem('nexus_iosfix_body') === '0')
+        } catch { /* ignore */ }
         run()
         const t = setInterval(run, 1000)
         return () => clearInterval(t)
@@ -95,6 +101,12 @@ export default function ScreenDiagnosticsPage() {
     const toggleFix = (off: boolean) => {
         setFixOff(off)
         try { localStorage.setItem('nexus_iosfix_off', off ? '1' : '0') } catch { /* ignore */ }
+        window.dispatchEvent(new Event('resize'))
+    }
+
+    const toggleBody = (off: boolean) => {
+        setBodyOff(off)
+        try { localStorage.setItem('nexus_iosfix_body', off ? '0' : '1') } catch { /* ignore */ }
         window.dispatchEvent(new Event('resize'))
     }
 
@@ -118,6 +130,7 @@ export default function ScreenDiagnosticsPage() {
                 </Group>
                 <Group>
                     <SwitchRow label="Desligar a correção automática" description="Para comparar: tire um print com e sem." checked={fixOff} onChange={toggleFix} />
+                    <SwitchRow label="Desligar o modo corpo" description="A correção nova. Se a linha vermelha sumir ao ligar isto, o modo corpo é o que resolve." checked={bodyOff} onChange={toggleBody} />
                 </Group>
                 <div className="flex gap-3">
                     <SecondaryButton className="flex-1" onClick={() => { window.scrollTo(0, 0); run() }}>Medir de novo</SecondaryButton>
