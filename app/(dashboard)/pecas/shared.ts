@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-export interface Supplier { id: string; name: string; phone: string | null; notes: string | null; bought?: number; spent?: number; orders?: number; defects?: number; loss?: number; defect_rate?: number | null }
+export interface Supplier { id: string; name: string; phone: string | null; notes: string | null; site_url?: string | null; bought?: number; spent?: number; orders?: number; defects?: number; loss?: number; defect_rate?: number | null }
 export interface Part {
     id: string; name: string; sku: string | null; barcode: string | null; category: string | null
     device_model: string | null; part_quality: string | null; location: string | null
@@ -12,8 +12,9 @@ export interface Part {
 }
 
 export const QUALITIES = [
-    { value: 'original', label: 'Original' },
+    { value: 'original', label: 'Genuína (Original)' },
     { value: 'premium', label: 'Premium' },
+    { value: 'standard', label: 'Standard' },
     { value: 'paralela', label: 'Paralela' },
     { value: 'recondicionada', label: 'Recondicionada' },
     { value: 'outra', label: 'Outra' },

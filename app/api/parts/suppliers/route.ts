@@ -9,7 +9,7 @@ export async function GET() {
     const g = await partsContext(); if ('error' in g) return g.error
     const { db, companyId } = g.ctx
     const [{ data: suppliers }, { data: orders }, { data: defects }] = await Promise.all([
-        db.from('suppliers').select('id, name, phone, notes, created_at').eq('company_id', companyId).eq('is_active', true).order('name'),
+        db.from('suppliers').select('id, name, phone, notes, site_url, created_at').eq('company_id', companyId).eq('is_active', true).order('name'),
         db.from('part_orders').select('supplier_id, total, part_order_items(quantity)').eq('company_id', companyId).eq('status', 'recebido').limit(5000),
         db.from('part_defects').select('supplier_id, quantity, resolution, cost').eq('company_id', companyId).limit(5000),
     ])
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     const { db, companyId } = g.ctx
     const parsed = supplierSchema.safeParse(await req.json().catch(() => ({})))
     if (!parsed.success) return bad(firstIssue(parsed.error))
-    const { data, error } = await db.from('suppliers').insert({ ...parsed.data, company_id: companyId }).select('id, name, phone, notes').single()
+    const { data, error } = await db.from('suppliers').insert({ ...parsed.data, company_id: companyId }).select('id, name, phone, notes, site_url').single()
     if (error) return bad(error.message, 500)
     return NextResponse.json({ supplier: data }, { status: 201 })
 }

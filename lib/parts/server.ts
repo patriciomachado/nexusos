@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { getContext, forbiddenResponse, unauthorizedResponse } from '@/lib/security'
 import { isManager } from '@/lib/cash/server'
 
-export const PART_QUALITIES = ['original', 'premium', 'paralela', 'recondicionada', 'outra'] as const
+export const PART_QUALITIES = ['original', 'premium', 'standard', 'paralela', 'recondicionada', 'outra'] as const
 
 /** Context for the parts screens: managers only (stock, costs and suppliers). */
 export async function partsContext() {
@@ -44,6 +44,7 @@ export const supplierSchema = z.object({
     name: z.string().trim().min(2, 'Informe o nome do fornecedor').max(160),
     phone: optText(40),
     notes: optText(500),
+    site_url: z.string().trim().url('Endereço inválido').max(300).optional().nullable().or(z.literal('').transform(() => null)),
 })
 
 export const priceSchema = z.object({
@@ -56,9 +57,15 @@ export const priceSchema = z.object({
 })
 
 export const DEFAULT_PART_MARGIN = 80
+export const DEFAULT_LABOR_MIN = 0
 
-/** Price to charge: part cost marked up by the store margin, plus labor, rounded up to R$ 5. */
-export function suggestedPrice(partCost: number, labor: number, marginPct: number) {
-    const raw = partCost * (1 + marginPct / 100) + labor
+/**
+ * Price to charge: part cost, plus mão de obra, plus a flat labor item, rounded
+ * up to R$ 5. Mão de obra is the store's margin on the part (e.g. 100% = cobra
+ * o dobro do custo da peça), but never below `minLabor` — assim uma peça
+ * barata ainda garante o mínimo cobrado pela loja.
+ */
+export function suggestedPrice(partCost: number, labor: number, marginPct: number, minLabor = DEFAULT_LABOR_MIN) {
+    const raw = partCost + Math.max(partCost * (marginPct / 100), minLabor) + labor
     return raw > 0 ? Math.ceil(raw / 5) * 5 : 0
 }

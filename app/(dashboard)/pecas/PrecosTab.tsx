@@ -14,15 +14,15 @@ interface Price {
 }
 
 const normalize = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
-const suggest = (cost: number, labor: number, margin: number) => { const raw = cost * (1 + margin / 100) + labor; return raw > 0 ? Math.ceil(raw / 5) * 5 : 0 }
+const suggest = (cost: number, labor: number, margin: number, laborMin = 0) => { const raw = cost + Math.max(cost * (margin / 100), laborMin) + labor; return raw > 0 ? Math.ceil(raw / 5) * 5 : 0 }
 
 /** Price table by device and service; the OS fills the value from here. */
 export default function PrecosTab() {
-    const { data, reload } = useData<{ prices: Price[]; margin: number }>('/api/parts/prices')
+    const { data, reload } = useData<{ prices: Price[]; margin: number; laborMin: number }>('/api/parts/prices')
     const { data: partsData } = useData<{ parts: Part[] }>('/api/parts')
     const [query, setQuery] = useState('')
     const [editing, setEditing] = useState<Price | 'new' | null>(null)
-    const [margin, setMargin] = useState<string | null>(null)
+    const [margin, setMargin] = useState<{ margin_pct: string; labor_min: string } | null>(null)
 
     const groups = useMemo(() => {
         const q = normalize(query.trim())
@@ -37,9 +37,11 @@ export default function PrecosTab() {
     }, [data, query])
 
     const saveMargin = async () => {
-        const v = Number((margin ?? '').replace(',', '.'))
-        if (!Number.isFinite(v) || v < 0) return toast.error('Margem inválida')
-        try { await send('/api/parts/prices', 'PUT', { margin_pct: v }); toast.success('Margem salva'); setMargin(null); reload() } catch (e) { toast.error((e as Error).message) }
+        const margin_pct = Number((margin?.margin_pct ?? '').replace(',', '.'))
+        const labor_min = Number((margin?.labor_min ?? '').replace(',', '.'))
+        if (!Number.isFinite(margin_pct) || margin_pct < 0) return toast.error('Margem inválida')
+        if (!Number.isFinite(labor_min) || labor_min < 0) return toast.error('Mão de obra mínima inválida')
+        try { await send('/api/parts/prices', 'PUT', { margin_pct, labor_min }); toast.success('Salvo'); setMargin(null); reload() } catch (e) { toast.error((e as Error).message) }
     }
     const outdated = (data?.prices ?? []).filter(p => p.part && p.suggested > 0 && p.price < p.suggested).length
 
@@ -54,14 +56,15 @@ export default function PrecosTab() {
             </div>
 
             {data && (
-                <Group footer={`Preço sugerido = custo da peça + ${data.margin}% + mão de obra, arredondado para cima de R$ 5 em R$ 5.`}>
+                <Group footer={`Preço sugerido = custo da peça + mão de obra (${data.margin}% do custo da peça, ou ${brl(data.laborMin)} no mínimo) + mão de obra fixa, arredondado para cima de R$ 5 em R$ 5.`}>
                     {margin === null ? (
-                        <button type="button" onClick={() => setMargin(String(data.margin))} className="w-full flex items-center justify-between px-4 min-h-[52px] text-left">
-                            <span className="text-[17px]">Margem sobre a peça</span><span className="text-[17px] text-muted-foreground">{data.margin}%</span>
+                        <button type="button" onClick={() => setMargin({ margin_pct: String(data.margin), labor_min: moneyText(data.laborMin) })} className="w-full flex items-center justify-between px-4 min-h-[52px] text-left">
+                            <span className="text-[17px]">Margem e mão de obra mínima</span><span className="text-[17px] text-muted-foreground">{data.margin}% · {brl(data.laborMin)}</span>
                         </button>
                     ) : (
                         <div className="flex items-end gap-2 px-4 py-3">
-                            <Field label="Margem sobre a peça (%)" htmlFor="pr-margin" className="px-0 py-0 flex-1"><TextInput id="pr-margin" inputMode="decimal" value={margin} onChange={e => setMargin(e.target.value)} /></Field>
+                            <Field label="Margem sobre a peça (%)" htmlFor="pr-margin" className="px-0 py-0 flex-1"><TextInput id="pr-margin" inputMode="decimal" value={margin.margin_pct} onChange={e => setMargin(m => ({ ...m!, margin_pct: e.target.value }))} /></Field>
+                            <Field label="Mão de obra mínima (R$)" htmlFor="pr-labor-min" className="px-0 py-0 flex-1"><TextInput id="pr-labor-min" inputMode="decimal" value={margin.labor_min} onChange={e => setMargin(m => ({ ...m!, labor_min: e.target.value }))} /></Field>
                             <PrimaryButton onClick={saveMargin} className="h-10 px-4 text-[15px]">Salvar</PrimaryButton>
                         </div>
                     )}
@@ -94,22 +97,22 @@ export default function PrecosTab() {
                     </section>
                 ))}
 
-            <PriceForm open={!!editing} price={editing === 'new' ? null : editing} parts={partsData?.parts ?? []} margin={data?.margin ?? 80} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); reload() }} />
+            <PriceForm open={!!editing} price={editing === 'new' ? null : editing} parts={partsData?.parts ?? []} margin={data?.margin ?? 80} laborMin={data?.laborMin ?? 0} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); reload() }} />
         </div>
     )
 }
 
-function PriceForm({ open, price, parts, margin, onClose, onSaved }: { open: boolean; price: Price | null; parts: Part[]; margin: number; onClose: () => void; onSaved: () => void }) {
+function PriceForm({ open, price, parts, margin, laborMin, onClose, onSaved }: { open: boolean; price: Price | null; parts: Part[]; margin: number; laborMin: number; onClose: () => void; onSaved: () => void }) {
     const [f, setF] = useState({ device_model: '', service: '', part_item_id: '', labor: '', price: '' })
     const [saving, setSaving] = useState(false)
     useEffect(() => {
         if (!open) return
-         
+
         setF(price ? { device_model: price.device_model, service: price.service, part_item_id: price.part_item_id ?? '', labor: moneyText(price.labor_price), price: moneyText(price.price) } : { device_model: '', service: '', part_item_id: '', labor: '', price: '' })
     }, [open, price])
     const set = (k: keyof typeof f, v: string) => setF(p => ({ ...p, [k]: v }))
     const part = parts.find(p => p.id === f.part_item_id)
-    const sug = suggest(Number(part?.cost_price) || 0, parseMoney(f.labor), margin)
+    const sug = suggest(Number(part?.cost_price) || 0, parseMoney(f.labor), margin, laborMin)
     // Parts for this device first.
     const options = useMemo(() => {
         const m = normalize(f.device_model)
@@ -147,7 +150,7 @@ function PriceForm({ open, price, parts, margin, onClose, onSaved }: { open: boo
                     <Field label="Serviço" htmlFor="pf-service"><TextInput id="pf-service" value={f.service} onChange={e => set('service', e.target.value)} placeholder="Ex.: Troca de tela, Troca de bateria" /></Field>
                     <SelectRow id="pf-part" label="Peça" value={f.part_item_id} onChange={v => set('part_item_id', v)} placeholder="Sem peça" options={options} />
                 </Group>
-                <Group footer={sug > 0 ? <>Sugerido: <button type="button" onClick={() => set('price', moneyText(sug))} className="text-primary font-medium">{brl(sug)}</button> (peça {brl(Number(part?.cost_price) || 0)} + {margin}% + mão de obra)</> : undefined}>
+                <Group footer={sug > 0 ? <>Sugerido: <button type="button" onClick={() => set('price', moneyText(sug))} className="text-primary font-medium">{brl(sug)}</button> (peça {brl(Number(part?.cost_price) || 0)} + mão de obra {brl(Math.max((Number(part?.cost_price) || 0) * (margin / 100), laborMin))})</> : undefined}>
                     <div className="grid grid-cols-2 divide-x divide-border/60">
                         <Field label="Mão de obra (R$)" htmlFor="pf-labor"><TextInput id="pf-labor" inputMode="decimal" value={f.labor} onChange={e => set('labor', e.target.value)} placeholder="0,00" /></Field>
                         <Field label="Preço ao cliente (R$)" htmlFor="pf-price"><TextInput id="pf-price" inputMode="decimal" value={f.price} onChange={e => set('price', e.target.value)} placeholder={sug ? moneyText(sug) : '0,00'} /></Field>

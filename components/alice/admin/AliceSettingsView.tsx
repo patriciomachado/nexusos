@@ -26,6 +26,7 @@ export interface SettingsPayload {
         whatsapp_gateway_token_set: boolean
         whatsapp_gateway_client_token_set: boolean
         whatsapp_webhook_ready: boolean
+        auto_quote_parts: boolean
     }
     usage: number
     environment: { ai: boolean; model: string; whatsappModel?: string; transcription: boolean; whatsappWebhook: boolean; webhookUrl: string; qrServer?: boolean }
@@ -149,6 +150,18 @@ export default function AliceSettingsView({ data, onSaved, onReload }: { data: S
                         </p>
                     </div>
                     <Toggle checked={settings.whatsapp_enabled} busy={busy === 'wa'} disabled={!waReady} onChange={v => apply('wa', { whatsapp_enabled: v }, v ? 'A Alice vai responder no WhatsApp' : 'WhatsApp pausado')} label="Alice responde no WhatsApp" />
+                </div>
+
+                <div className="border-t border-border/60 px-5 py-4 flex items-center justify-between gap-4">
+                    <div className="min-w-0">
+                        <p className="text-[15px] font-medium">Cotar peças automaticamente</p>
+                        <p className="text-[13px] text-muted-foreground">
+                            {settings.auto_quote_parts
+                                ? 'Se o cliente perguntar o preço de um reparo (ex.: troca de tela) e o aparelho já estiver na tabela de Peças, a Alice manda o valor na hora.'
+                                : 'Desligado: a Alice calcula o valor e avisa a loja para confirmar e enviar — nada é respondido ao cliente sem você olhar antes.'}
+                        </p>
+                    </div>
+                    <Toggle checked={settings.auto_quote_parts} busy={busy === 'auto_quote'} onChange={v => apply('auto_quote', { auto_quote_parts: v }, v ? 'Alice vai cotar peças direto no WhatsApp' : 'Alice vai avisar a loja antes de cotar')} label="Cotar peças automaticamente" />
                 </div>
 
                 <div className="border-t border-border/60 px-5 py-4 space-y-4">
