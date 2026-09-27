@@ -7,6 +7,7 @@ import {
 import { ADMIN_ROLES, appUrl } from '../config'
 import { collectAlerts } from '@/lib/tasks/alerts'
 import { addDays } from '@/lib/tasks/dates'
+import { searchNovaPecasWithPrices } from '@/lib/parts/novapecas'
 
 const MANAGERS = [...ADMIN_ROLES, 'manager']
 
@@ -549,6 +550,23 @@ const consultarAparelhos = defineRead({
     },
 })
 
+const consultarPrecoFornecedor = defineRead({
+    name: 'consultar_preco_fornecedor',
+    label: 'Consultando preço no site do fornecedor',
+    description: 'Consulta ao vivo, no site da NovaPeças (novapecascell.com.br), o preço de uma peça pelo nome/aparelho (ex.: "tela iphone 13"). Não é o custo já cadastrado no sistema — é o preço atual no site do fornecedor, útil pra decidir se vale atualizar o custo cadastrado.',
+    roles: MANAGERS,
+    schema: z.object({ busca: z.string().min(2).max(80).describe('Nome da peça e aparelho, ex.: "tela iphone 13", "bateria moto g30"') }),
+    async run(ctx, i) {
+        try {
+            const results = await searchNovaPecasWithPrices(i.busca)
+            if (!results.length) return { encontrado: false }
+            return { encontrado: true, resultados: results.map(r => ({ produto: r.title, preco: r.price != null ? brl(r.price) : null })) }
+        } catch {
+            throw new ToolError('Não consegui consultar o site do fornecedor agora. Tente de novo em instantes.')
+        }
+    },
+})
+
 const listarServicos = defineRead({
     name: 'listar_servicos',
     label: 'Consultando serviços',
@@ -666,7 +684,7 @@ const criarTarefa = defineWrite({
 export const STAFF_TOOLS: AnyTool[] = [
     buscarClientes, verCliente, cadastrarCliente, atualizarCliente,
     buscarOrdens, verOrdem, criarOrdem, atualizarStatus, anotarOrdem, atribuirTecnico,
-    agenda, agendar, listarTecnicos, consultarEstoque, consultarAparelhos, listarServicos,
+    agenda, agendar, listarTecnicos, consultarEstoque, consultarAparelhos, consultarPrecoFornecedor, listarServicos,
     pendencias, resumoFinanceiro, minhasTarefas, criarTarefa,
 ]
 
