@@ -63,6 +63,8 @@ export interface AliceSettings {
     whatsapp_gateway_client_token: string | null
     whatsapp_webhook_secret: string | null
     monthly_limit: number
+    /** Cliente pergunta o preço de uma peça (ex.: troca de tela) e há valor cadastrado: manda direto, sem esperar confirmação da loja. */
+    auto_quote_parts: boolean
     updated_at?: string
     /** The company's plan does not include Alice (Essencial). */
     plan_blocked?: boolean
@@ -86,6 +88,7 @@ export const DEFAULT_SETTINGS: Omit<AliceSettings, 'company_id'> = {
     whatsapp_display_phone: null,
     whatsapp_verified_name: null,
     monthly_limit: 1500,
+    auto_quote_parts: false,
 }
 
 export async function loadSettings(db: SupabaseClient, companyId: string): Promise<AliceSettings> {

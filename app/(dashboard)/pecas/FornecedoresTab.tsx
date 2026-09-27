@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Loader2, MessageCircle, Plus, Trash2 } from 'lucide-react'
+import { ExternalLink, Loader2, MessageCircle, Plus, Trash2 } from 'lucide-react'
 import Sheet from '@/components/tasks/Sheet'
 import { Field, Group, PrimaryButton, SecondaryButton, TextArea, TextInput, brl } from '@/components/ui/form'
 import { cn } from '@/lib/utils'
@@ -39,6 +39,9 @@ export default function FornecedoresTab({ suppliers, onChanged }: { suppliers: S
                                     </span>
                                 )}
                             </button>
+                            {s.site_url && (
+                                <a href={s.site_url} target="_blank" rel="noreferrer" aria-label={`Site de ${s.name}`} className="w-10 h-10 rounded-full bg-foreground/[0.06] flex items-center justify-center shrink-0"><ExternalLink className="w-5 h-5" /></a>
+                            )}
                             {s.phone && (
                                 <a href={waLink(s.phone, `Olá, ${s.name}!`)} target="_blank" rel="noreferrer" aria-label={`WhatsApp de ${s.name}`} className="w-10 h-10 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0"><MessageCircle className="w-5 h-5" /></a>
                             )}
@@ -52,19 +55,19 @@ export default function FornecedoresTab({ suppliers, onChanged }: { suppliers: S
 }
 
 function SupplierForm({ open, supplier, onClose, onSaved }: { open: boolean; supplier: Supplier | null; onClose: () => void; onSaved: () => void }) {
-    const [f, setF] = useState({ name: '', phone: '', notes: '' })
+    const [f, setF] = useState({ name: '', phone: '', notes: '', site_url: '' })
     const [saving, setSaving] = useState(false)
     useEffect(() => {
         if (!open) return
-         
-        setF({ name: supplier?.name ?? '', phone: supplier?.phone ?? '', notes: supplier?.notes ?? '' })
+
+        setF({ name: supplier?.name ?? '', phone: supplier?.phone ?? '', notes: supplier?.notes ?? '', site_url: supplier?.site_url ?? '' })
     }, [open, supplier])
 
     const save = async () => {
         if (f.name.trim().length < 2) return toast.error('Informe o nome.')
         setSaving(true)
         try {
-            await send(supplier ? `/api/parts/suppliers/${supplier.id}` : '/api/parts/suppliers', supplier ? 'PATCH' : 'POST', { name: f.name.trim(), phone: f.phone.trim() || null, notes: f.notes.trim() || null })
+            await send(supplier ? `/api/parts/suppliers/${supplier.id}` : '/api/parts/suppliers', supplier ? 'PATCH' : 'POST', { name: f.name.trim(), phone: f.phone.trim() || null, notes: f.notes.trim() || null, site_url: f.site_url.trim() || null })
             toast.success('Fornecedor salvo')
             onSaved()
         } catch (e) { toast.error((e as Error).message) } finally { setSaving(false) }
@@ -86,6 +89,7 @@ function SupplierForm({ open, supplier, onClose, onSaved }: { open: boolean; sup
                 <Group>
                     <Field label="Nome" htmlFor="sp-name"><TextInput id="sp-name" value={f.name} onChange={e => setF(p => ({ ...p, name: e.target.value }))} placeholder="Ex.: Distribuidora Cell" /></Field>
                     <Field label="WhatsApp" htmlFor="sp-phone" hint="Os pedidos vão prontos para esse número."><TextInput id="sp-phone" type="tel" inputMode="tel" value={f.phone} onChange={e => setF(p => ({ ...p, phone: e.target.value }))} placeholder="(11) 98888-7777" /></Field>
+                    <Field label="Site do catálogo" htmlFor="sp-site" hint="Link direto para conferir o preço das peças na hora de atualizar."><TextInput id="sp-site" type="url" value={f.site_url} onChange={e => setF(p => ({ ...p, site_url: e.target.value }))} placeholder="https://…" /></Field>
                     <Field label="Observações" htmlFor="sp-notes"><TextArea id="sp-notes" rows={2} value={f.notes} onChange={e => setF(p => ({ ...p, notes: e.target.value }))} placeholder="Prazo de entrega, garantia, forma de pagamento…" /></Field>
                 </Group>
             </div>

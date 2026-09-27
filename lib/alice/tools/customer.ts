@@ -138,6 +138,42 @@ async function notifyStore(ctx: ToolContext, title: string, detail: string, prio
     }).catch(err => console.error('[alice] push failed:', err))
 }
 
+const TIER_LABELS: Record<string, string> = { original: 'Genuína', premium: 'Premium', standard: 'Standard', paralela: 'Paralela', recondicionada: 'Recondicionada' }
+
+const cotarPeca = defineCustomer({
+    name: 'cotar_peca',
+    label: 'Consultando preço de peça',
+    description: 'Consulta os preços já cadastrados na tabela de Peças para um aparelho e um serviço (ex.: troca de tela, troca de bateria). Quando a loja tem mais de uma opção de qualidade para a mesma peça (Genuína, Premium, Standard), traz todas. Use isso antes de registrar_pedido quando o cliente perguntar quanto custa um reparo.',
+    schema: z.object({
+        aparelho: z.string().min(2).max(80).describe('Marca e modelo do aparelho, como o cliente descreveu'),
+        servico: z.string().min(2).max(60).describe('Serviço, ex.: "troca de tela", "troca de bateria"'),
+    }),
+    async run(ctx, { aparelho, servico }) {
+        const [{ data: rows }, { data: aliceSettings }] = await Promise.all([
+            ctx.db.from('repair_prices')
+                .select('device_model, service, price, inventory_items(part_quality)')
+                .eq('company_id', ctx.companyId)
+                .ilike('device_model', `%${cleanSearch(aparelho)}%`)
+                .ilike('service', `%${cleanSearch(servico)}%`)
+                .limit(10),
+            ctx.db.from('alice_settings').select('auto_quote_parts').eq('company_id', ctx.companyId).maybeSingle(),
+        ])
+        if (!rows?.length) return { encontrado: false, instrucao: 'Nada cadastrado para esse aparelho/serviço. Use registrar_pedido para a loja preparar o orçamento.' }
+
+        const opcoes = rows.map(r => {
+            const part = (Array.isArray(r.inventory_items) ? r.inventory_items[0] : r.inventory_items) as { part_quality?: string | null } | null
+            const quality = part?.part_quality ?? null
+            return { aparelho: r.device_model, servico: r.service, tipo: quality ? (TIER_LABELS[quality] ?? quality) : null, valor: brl(Number(r.price) || 0) }
+        })
+
+        if (aliceSettings?.auto_quote_parts) {
+            return { encontrado: true, pode_informar_ao_cliente: true, opcoes, instrucao: 'Informe esses valores ao cliente como "a partir de", deixando claro que o valor final é confirmado na avaliação técnica na loja.' }
+        }
+        await notifyStore(ctx, `Orçamento calculado: ${servico} · ${aparelho}`, opcoes.map(o => `${o.tipo ? o.tipo + ': ' : ''}${o.valor}`).join(' / '), 2)
+        return { encontrado: true, pode_informar_ao_cliente: false, instrucao: 'Não informe nenhum valor. Diga ao cliente que a loja já está com o orçamento calculado e vai confirmar e enviar em instantes.' }
+    },
+})
+
 const chamarAtendente = defineCustomer({
     name: 'chamar_atendente',
     label: 'Chamando um atendente',
@@ -170,4 +206,4 @@ const registrarPedido = defineCustomer({
     },
 })
 
-export const CUSTOMER_TOOLS: AnyTool[] = [minhasOrdens, infoLoja, aparelhosAVenda, chamarAtendente, registrarPedido]
+export const CUSTOMER_TOOLS: AnyTool[] = [minhasOrdens, infoLoja, aparelhosAVenda, cotarPeca, chamarAtendente, registrarPedido]

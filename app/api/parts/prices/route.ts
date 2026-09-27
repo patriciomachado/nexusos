@@ -23,9 +23,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ id: data.id }, { status: 201 })
 }
 
-const marginSchema = z.object({ margin_pct: z.coerce.number().min(0, 'Margem inválida').max(1000, 'Margem inválida') })
+const marginSchema = z.object({
+    margin_pct: z.coerce.number().min(0, 'Margem inválida').max(1000, 'Margem inválida'),
+    labor_min: z.coerce.number().min(0, 'Valor inválido').max(100_000, 'Valor inválido').optional(),
+})
 
-/** Store margin on parts used for the suggested prices. */
+/** Store margin (and minimum mão de obra) on parts used for the suggested prices. */
 export async function PUT(req: NextRequest) {
     const g = await partsContext(); if ('error' in g) return g.error
     const { db, companyId } = g.ctx
@@ -33,7 +36,7 @@ export async function PUT(req: NextRequest) {
     if (!parsed.success) return bad(firstIssue(parsed.error))
     const { data } = await db.from('companies').select('settings').eq('id', companyId).single()
     const settings = (data?.settings ?? {}) as Record<string, unknown>
-    const parts = { ...((settings.parts ?? {}) as Record<string, unknown>), margin_pct: parsed.data.margin_pct }
+    const parts = { ...((settings.parts ?? {}) as Record<string, unknown>), margin_pct: parsed.data.margin_pct, ...(parsed.data.labor_min != null ? { labor_min: parsed.data.labor_min } : {}) }
     const { error } = await db.from('companies').update({ settings: { ...settings, parts } }).eq('id', companyId)
     if (error) return bad(error.message, 500)
     return NextResponse.json({ success: true })

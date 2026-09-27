@@ -42,6 +42,7 @@ const putSchema = z.object({
     whatsapp_gateway_instance: z.string().trim().regex(/^[\w.-]{1,120}$/, 'Nome/ID da instância inválido').nullable().optional().or(z.literal('').transform(() => null)),
     whatsapp_gateway_token: z.string().trim().min(4).max(500).nullable().optional(),
     whatsapp_gateway_client_token: z.string().trim().min(4).max(500).nullable().optional(),
+    auto_quote_parts: z.boolean().optional(),
 })
 
 export async function PUT(req: NextRequest) {
