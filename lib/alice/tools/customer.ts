@@ -4,7 +4,7 @@ import { OS_STATUS_LABELS, brl, cleanSearch, formatDate, formatDateTime, todayIn
 import { appUrl, ADMIN_ROLES } from '../config'
 import { formatWhatsApp } from '../phone'
 import { pushToCompany } from '@/lib/tasks/reminders'
-import { createPartQuote } from '@/lib/parts/quotes'
+import { createPartQuote, findQuoteOptions } from '@/lib/parts/quotes'
 
 /**
  * Tools for the WhatsApp agent. None of them takes an id from the model:
@@ -139,8 +139,6 @@ async function notifyStore(ctx: ToolContext, title: string, detail: string, prio
     }).catch(err => console.error('[alice] push failed:', err))
 }
 
-const TIER_LABELS: Record<string, string> = { original: 'Genuína', premium: 'Premium', standard: 'Standard', paralela: 'Paralela', recondicionada: 'Recondicionada' }
-
 const cotarPeca = defineCustomer({
     name: 'cotar_peca',
     label: 'Consultando preço de peça',
@@ -150,23 +148,13 @@ const cotarPeca = defineCustomer({
         servico: z.string().min(2).max(60).describe('Serviço, ex.: "troca de tela", "troca de bateria"'),
     }),
     async run(ctx, { aparelho, servico }) {
-        const [{ data: rows }, { data: aliceSettings }] = await Promise.all([
-            ctx.db.from('repair_prices')
-                .select('device_model, service, price, inventory_items(part_quality)')
-                .eq('company_id', ctx.companyId)
-                .ilike('device_model', `%${cleanSearch(aparelho)}%`)
-                .ilike('service', `%${cleanSearch(servico)}%`)
-                .limit(10),
+        const [found, { data: aliceSettings }] = await Promise.all([
+            findQuoteOptions(ctx.db, ctx.companyId, aparelho, servico),
             ctx.db.from('alice_settings').select('auto_quote_parts').eq('company_id', ctx.companyId).maybeSingle(),
         ])
-        if (!rows?.length) return { encontrado: false, instrucao: 'Nada cadastrado para esse aparelho/serviço. Use registrar_pedido para a loja preparar o orçamento.' }
+        if (!found) return { encontrado: false, instrucao: 'Nada cadastrado para esse aparelho/serviço. Use registrar_pedido para a loja preparar o orçamento.' }
 
-        const deviceModel = rows[0].device_model
-        const opcoesNum = rows.map(r => {
-            const part = (Array.isArray(r.inventory_items) ? r.inventory_items[0] : r.inventory_items) as { part_quality?: string | null } | null
-            const quality = part?.part_quality ?? null
-            return { tipo: quality ? (TIER_LABELS[quality] ?? quality) : null, valor: Number(r.price) || 0 }
-        })
+        const { deviceModel, options: opcoesNum } = found
         const opcoes = opcoesNum.map(o => ({ tipo: o.tipo, valor: brl(o.valor) }))
         const token = await createPartQuote(ctx.db, ctx.companyId, {
             deviceModel, service: servico, options: opcoesNum,
