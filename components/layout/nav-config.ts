@@ -1,7 +1,7 @@
 import {
     LayoutDashboard, ClipboardList, Calendar, Users,
     Package, BarChart3, Settings, Zap,
-    Wallet, ReceiptText, HeartHandshake, Users2, Wrench, Smartphone, ListChecks, Sparkles,
+    Wallet, HeartHandshake, Users2, Wrench, Smartphone, ListChecks, Sparkles,
 } from 'lucide-react'
 import type { UserRole } from '@/types'
 
@@ -47,7 +47,6 @@ export const navGroups: NavGroup[] = [
         items: [
             { href: '/alice', label: 'Alice (IA)', icon: Sparkles, roles: ['admin', 'owner'], tint: 'bg-violet-500' },
             { href: '/cash-register', label: 'Caixa', icon: Wallet, roles: ['admin', 'owner', 'manager', 'cashier', 'technician', 'attendant', 'talento'], tint: 'bg-green-500' },
-            { href: '/contas', label: 'Contas a pagar e receber', icon: ReceiptText, roles: ['admin', 'owner', 'manager'], tint: 'bg-sky-500' },
             { href: '/team', label: 'Equipe e ponto', icon: Users2, roles: ['admin', 'owner', 'manager', 'cashier', 'technician', 'attendant', 'talento'], tint: 'bg-purple-500' },
             { href: '/reports', label: 'Relatórios', icon: BarChart3, roles: ['admin', 'manager'], tint: 'bg-indigo-500' },
             { href: '/settings', label: 'Configurações', icon: Settings, roles: ['admin', 'owner', 'manager', 'cashier', 'technician', 'attendant', 'talento'], tint: 'bg-zinc-500' },
