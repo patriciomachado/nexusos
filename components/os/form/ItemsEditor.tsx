@@ -1,11 +1,11 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Minus, Package, Plus, Search, Wrench } from 'lucide-react'
+import { ListChecks, Minus, Package, Plus, Search, Wrench } from 'lucide-react'
 import Sheet from '@/components/tasks/Sheet'
 import { cn } from '@/lib/utils'
 import { brl, moneyText, parseMoney, TextInput } from '@/components/ui/form'
-import type { InventoryOption, OSItem } from './state'
+import type { InventoryOption, OSItem, PriceOption } from './state'
 
 const normalize = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 const newKey = () => `item-${Math.random().toString(36).slice(2)}-${Date.now()}`
@@ -30,8 +30,10 @@ type Draft = { key: string | null; inventory_item_id: string | null; name: strin
  * Parts and services on the order: a plain list with the total per line.
  * Tap a line to change it; add from stock or type a free item.
  */
-export default function ItemsEditor({ items, onChange, inventory }: { items: OSItem[]; onChange: (items: OSItem[]) => void; inventory: InventoryOption[] }) {
+export default function ItemsEditor({ items, onChange, inventory, prices = [], device = '' }: { items: OSItem[]; onChange: (items: OSItem[]) => void; inventory: InventoryOption[]; prices?: PriceOption[]; device?: string }) {
     const [picking, setPicking] = useState(false)
+    const [pricing, setPricing] = useState(false)
+    const [priceQuery, setPriceQuery] = useState('')
     const [query, setQuery] = useState('')
     const [draft, setDraft] = useState<Draft | null>(null)
 
@@ -39,6 +41,32 @@ export default function ItemsEditor({ items, onChange, inventory }: { items: OSI
         const q = normalize(query.trim())
         return (q ? inventory.filter(i => normalize(`${i.name} ${i.category ?? ''}`).includes(q)) : inventory).slice(0, 50)
     }, [inventory, query])
+
+    // Price table: rows for this device first, then the rest.
+    const priceResults = useMemo(() => {
+        const q = normalize(priceQuery.trim())
+        const dev = normalize(device.trim())
+        const words = dev.split(/\s+/).filter(w => w.length > 1)
+        const score = (p: PriceOption) => { const m = normalize(p.device_model); return words.length && words.every(w => m.includes(w) || normalize(`${p.service}`).includes(w)) ? 2 : words.some(w => m.includes(w)) ? 1 : 0 }
+        return prices
+            .filter(p => !q || normalize(`${p.device_model} ${p.service} ${p.part_name ?? ''}`).includes(q))
+            .map(p => ({ p, s: score(p) }))
+            .sort((a, b) => b.s - a.s || a.p.device_model.localeCompare(b.p.device_model) || a.p.service.localeCompare(b.p.service))
+            .slice(0, 80)
+    }, [prices, priceQuery, device])
+
+    const addFromPrice = (p: PriceOption) => {
+        onChange([...items, {
+            key: newKey(),
+            inventory_item_id: p.part_item_id,
+            item_name: `${p.service} — ${p.device_model}`,
+            quantity: 1,
+            unit_price: p.price,
+            unit_cost: p.part_cost,
+        }])
+        setPricing(false)
+        setPriceQuery('')
+    }
 
     const addFromStock = (inv: InventoryOption) => {
         const existing = items.find(i => i.inventory_item_id === inv.id)
@@ -93,6 +121,11 @@ export default function ItemsEditor({ items, onChange, inventory }: { items: OSI
                     </button>
                 ))}
                 <div className="flex divide-x divide-border/60">
+                    {prices.length > 0 && (
+                        <button type="button" onClick={() => setPricing(true)} className="flex-1 min-h-[52px] px-3 text-[15px] font-medium text-primary inline-flex items-center justify-center gap-1.5">
+                            <ListChecks className="w-[18px] h-[18px]" /> Tabela
+                        </button>
+                    )}
                     <button type="button" onClick={() => setPicking(true)} disabled={!inventory.length} className="flex-1 min-h-[52px] px-3 text-[15px] font-medium text-primary inline-flex items-center justify-center gap-1.5 disabled:opacity-40">
                         <Package className="w-[18px] h-[18px]" /> Do estoque
                     </button>
@@ -122,13 +155,47 @@ export default function ItemsEditor({ items, onChange, inventory }: { items: OSI
                             <button type="button" onClick={() => addFromStock(inv)} className="w-full flex items-center gap-3 px-4 min-h-[56px] py-2 text-left hover:bg-foreground/[0.03]">
                                 <span className="flex-1 min-w-0">
                                     <span className="block text-[17px] leading-snug truncate">{inv.name}</span>
-                                    {inv.category && <span className="block text-[13px] text-muted-foreground truncate">{inv.category}</span>}
+                                    {(inv.device_model || inv.category || inv.quantity_in_stock != null) && (
+                                        <span className={cn('block text-[13px] truncate', inv.kind === 'peca' && Number(inv.quantity_in_stock) <= 0 ? 'text-red-600' : 'text-muted-foreground')}>
+                                            {[inv.kind === 'peca' ? 'Peça' : null, inv.device_model, inv.category, inv.quantity_in_stock != null ? (Number(inv.quantity_in_stock) <= 0 ? 'sem estoque' : `${Number(inv.quantity_in_stock)} em estoque`) : null].filter(Boolean).join(' · ')}
+                                        </span>
+                                    )}
                                 </span>
                                 <span className="text-[15px] tabular-nums text-muted-foreground shrink-0">{brl(Number(inv.selling_price) || 0)}</span>
                             </button>
                         </li>
                     ))}
                     {!results.length && <li className="px-4 py-6 text-center text-[15px] text-muted-foreground">Nada encontrado no estoque.</li>}
+                </ul>
+            </Sheet>
+
+            {/* Price table */}
+            <Sheet open={pricing} onClose={() => { setPricing(false); setPriceQuery('') }} title="Tabela de preços" full>
+                <div className="sticky top-0 bg-card pb-3 z-10">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <input
+                            data-autofocus
+                            value={priceQuery}
+                            onChange={e => setPriceQuery(e.target.value)}
+                            placeholder="Aparelho ou serviço"
+                            className="w-full h-11 rounded-xl bg-foreground/[0.06] pl-9 pr-3 text-[17px] outline-none focus:ring-2 focus:ring-primary/40"
+                        />
+                    </div>
+                </div>
+                <ul className="rounded-xl bg-foreground/[0.03] divide-y divide-border/60 overflow-hidden">
+                    {priceResults.map(({ p, s }) => (
+                        <li key={p.id}>
+                            <button type="button" onClick={() => addFromPrice(p)} className="w-full flex items-center gap-3 px-4 min-h-[56px] py-2 text-left hover:bg-foreground/[0.03]">
+                                <span className="flex-1 min-w-0">
+                                    <span className="block text-[17px] leading-snug truncate">{p.service} <span className={cn(s > 0 ? 'text-primary' : 'text-muted-foreground')}>· {p.device_model}</span></span>
+                                    {p.part_name && <span className={cn('block text-[13px] truncate', p.part_stock != null && p.part_stock <= 0 ? 'text-red-600' : 'text-muted-foreground')}>{p.part_name}{p.part_stock != null ? (p.part_stock <= 0 ? ' · sem peça no estoque' : ` · ${p.part_stock} em estoque`) : ''}</span>}
+                                </span>
+                                <span className="text-[15px] font-medium tabular-nums shrink-0">{brl(p.price)}</span>
+                            </button>
+                        </li>
+                    ))}
+                    {!priceResults.length && <li className="px-4 py-6 text-center text-[15px] text-muted-foreground">Nada na tabela para essa busca.</li>}
                 </ul>
             </Sheet>
 

@@ -9,7 +9,7 @@ import Segmented from '@/components/ui/Segmented'
 import { cn } from '@/lib/utils'
 import { BottomBar, PrimaryButton, SecondaryButton } from '@/components/ui/form'
 import { BudgetSection, ClientSection, DeliverySection, DeviceSection, LockSection, ProblemSection } from './sections'
-import { saveOS, useOSForm, type InventoryOption, type Option, type OSFormState } from './state'
+import { saveOS, useOSForm, type InventoryOption, type Option, type OSFormState, type PriceOption } from './state'
 
 const STEPS = [
     { id: 'cliente', title: 'Cliente', subtitle: 'De quem é o aparelho' },
@@ -26,6 +26,7 @@ interface Props {
     customers: Option[]
     technicians: Option[]
     inventory: InventoryOption[]
+    prices?: PriceOption[]
     companyId: string
 }
 
@@ -108,7 +109,7 @@ export default function OSWizard(props: Props) {
     return <WizardBody key={round} {...props} mode={mode} onModeChange={changeMode} onAnother={() => { setRound(r => r + 1); scrollTop() }} />
 }
 
-function WizardBody({ customers: initialCustomers, technicians, inventory, companyId, mode, onModeChange, onAnother }: Props & { mode: Mode; onModeChange: (m: Mode) => void; onAnother: () => void }) {
+function WizardBody({ customers: initialCustomers, technicians, inventory, prices, companyId, mode, onModeChange, onAnother }: Props & { mode: Mode; onModeChange: (m: Mode) => void; onAnother: () => void }) {
     const router = useRouter()
     const state = useOSForm()
     const [customers, setCustomers] = useState(initialCustomers)
@@ -222,7 +223,7 @@ function WizardBody({ customers: initialCustomers, technicians, inventory, compa
                                             </button>
                                         ))}
                                     </div>
-                                    <BudgetSection state={state} inventory={inventory} />
+                                    <BudgetSection state={state} inventory={inventory} prices={prices} />
                                     <DeliverySection state={state} />
                                 </div>
                             )}

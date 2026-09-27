@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
 
             stockUpdates.push({
                 id: item.inventory_item_id,
-                new_stock: Number(stockItem.quantity_in_stock) - Number(item.quantity)
+                new_stock: Number(stockItem.quantity_in_stock) - Number(item.quantity),
             })
         }
 

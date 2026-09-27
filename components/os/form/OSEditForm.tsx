@@ -6,18 +6,19 @@ import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import { BottomBar, PrimaryButton, SecondaryButton } from '@/components/ui/form'
 import { BudgetSection, ClientSection, DeliverySection, DeviceSection, LockSection, ProblemSection } from './sections'
-import { saveOS, useOSForm, type InventoryOption, type Option } from './state'
+import { saveOS, useOSForm, type InventoryOption, type Option, type PriceOption } from './state'
 
 function Heading({ children }: { children: React.ReactNode }) {
     return <h2 className="text-[22px] font-semibold tracking-tight px-1 pt-2">{children}</h2>
 }
 
 /** Edit an order: the same sections as the wizard, all on one page. */
-export default function OSEditForm({ order, customers: initialCustomers, technicians, inventory, companyId }: {
+export default function OSEditForm({ order, customers: initialCustomers, technicians, inventory, prices, companyId }: {
     order: Record<string, unknown> & { id: string }
     customers: Option[]
     technicians: Option[]
     inventory: InventoryOption[]
+    prices?: PriceOption[]
     companyId: string
 }) {
     const router = useRouter()
@@ -53,7 +54,7 @@ export default function OSEditForm({ order, customers: initialCustomers, technic
                 <Heading>Senha do aparelho</Heading>
                 <LockSection state={state} />
                 <Heading>Orçamento e entrega</Heading>
-                <BudgetSection state={state} inventory={inventory} />
+                <BudgetSection state={state} inventory={inventory} prices={prices} />
                 <DeliverySection state={state} />
             </div>
             <BottomBar>

@@ -1,7 +1,7 @@
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-export type MovementKind = 'entrada' | 'saida' | 'ajuste' | 'venda' | 'devolucao' | 'os'
+export type MovementKind = 'entrada' | 'saida' | 'ajuste' | 'venda' | 'devolucao' | 'os' | 'compra' | 'defeito'
 
 /**
  * Writes one line of a product's stock history. Best effort: stock itself is

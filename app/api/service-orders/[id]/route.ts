@@ -1,4 +1,5 @@
 import { insertOrderItems } from '@/lib/os/items'
+import { syncServiceOrderStock } from '@/lib/parts/stock'
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { serviceOrderSchema, idSchema } from '@/lib/validations/schemas'
@@ -150,6 +151,8 @@ export async function PUT(req: NextRequest, { params }: Params) {
             .eq('company_id', companyId)
     }
 
+    await syncServiceOrderStock(db, companyId, id, { userId: ctx.dbUser.id })
+
     return NextResponse.json(data)
 }
 
@@ -173,7 +176,8 @@ export async function DELETE(req: NextRequest, { params }: Params) {
             .eq('company_id', companyId)
             .single()
 
-        // 2. Apagar itens da OS
+        // 2. Devolver as peças ao estoque e apagar itens da OS
+        await syncServiceOrderStock(db, companyId, id, { deleted: true, userId: dbUser.id })
         await db.from('service_order_items').delete().eq('service_order_id', id)
         
         // 3. Apagar histórico e anexos (se existirem, para evitar erro de FK)
