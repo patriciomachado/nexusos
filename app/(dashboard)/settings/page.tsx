@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import {
-    Banknote, Bell, BellRing, Blocks, Building2, Calculator, ChevronRight, Clock, CreditCard, Database, Download, FileText, Landmark, MessageCircle,
-    Smartphone, Sparkles, Store, Upload, UserCheck, Users, Wallet, Wand2,
+    Bell, BellRing, Blocks, Building2, Calculator, ChevronRight, CreditCard, Database, Download, FileText, MessageCircle,
+    Smartphone, Sparkles, Store, Upload, UserCheck, Wallet, Wand2,
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import { SettingsRow, SettingsSection } from '@/components/settings/SettingsList'
@@ -60,7 +60,6 @@ export default async function SettingsPage() {
                             <SettingsRow href="/settings/precos" icon={Calculator} color="bg-amber-500" label="Preços" detail="Custo da hora, lucro e tabela de serviços" />
                             <SettingsRow href="/settings/pagamentos" icon={CreditCard} color="bg-emerald-500" label="Formas de pagamento" />
                             <SettingsRow href="/cash-register?ajustes=1" icon={Wallet} color="bg-green-600" label="Caixa e maquininha" detail="Taxas, limite de sangria, senha do dono e relatório" />
-                            <SettingsRow href="/contas" icon={Landmark} color="bg-teal-600" label="Contas a pagar e receber" />
                         </SettingsSection>
 
                         <SettingsSection title="Documentos">
@@ -68,13 +67,11 @@ export default async function SettingsPage() {
                         </SettingsSection>
 
                         <SettingsSection title="Pessoas">
-                            <SettingsRow href="/team" icon={Users} color="bg-sky-500" label="Equipe" detail="Convites, comissões e metas" />
-                            <SettingsRow href="/team?tab=perms" icon={UserCheck} color="bg-cyan-600" label="Permissões por função" />
-                            <SettingsRow href="/team?tab=clock" icon={Clock} color="bg-slate-500" label="Ponto" />
+                            <SettingsRow href="/team?tab=perms" icon={UserCheck} color="bg-cyan-600" label="Permissões por função" detail="O que cada função vê no menu" />
                         </SettingsSection>
 
                         <SettingsSection title="Clientes e WhatsApp">
-                            <SettingsRow href="/alice" icon={MessageCircle} color="bg-green-500" label="Alice e WhatsApp" detail="Assistente de IA e número conectado" />
+                            <SettingsRow href="/alice?aba=config" icon={MessageCircle} color="bg-green-500" label="Alice e WhatsApp" detail="Quem usa, respostas e número conectado" />
                             <SettingsRow href="/customers?automacoes=1" icon={Bell} color="bg-rose-500" label="Mensagens automáticas" detail="Aniversário, pós-venda e revisão" />
                         </SettingsSection>
 
@@ -93,11 +90,9 @@ export default async function SettingsPage() {
                 ) : (
                     <>
                         <SettingsSection>
-                            <SettingsRow href="/team?tab=clock" icon={Clock} color="bg-slate-500" label="Meu ponto" />
                             <SettingsRow href="/settings/notificacoes" icon={BellRing} color="bg-red-500" label="Notificações" detail="Lembretes no celular, câmera e microfone" />
                             {stores.length > 1 && <SettingsRow href="/settings/lojas" icon={Store} color="bg-indigo-500" label="Trocar de loja" value={`${stores.length} lojas`} />}
                             {role === 'manager' && <SettingsRow href="/settings/exportar" icon={Database} color="bg-blue-600" label="Exportar planilhas" />}
-                            {role === 'manager' && <SettingsRow href="/contas" icon={Banknote} color="bg-teal-600" label="Contas a pagar e receber" />}
                             <SettingsRow href="/settings/tela" icon={Smartphone} color="bg-zinc-600" label="Diagnóstico da tela" />
                         </SettingsSection>
                         <p className="px-4 text-[13px] text-muted-foreground">Os demais ajustes da loja ficam com o dono.</p>
