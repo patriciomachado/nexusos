@@ -79,18 +79,35 @@ function PartForm({ open, part, suppliers, onClose, onSaved }: { open: boolean; 
     const blank = { name: '', device_model: '', part_quality: '' as string, location: '', cost: '', price: '', min: '1', qty: '', supplier_id: '', sku: '' }
     const [f, setF] = useState(blank)
     const [saving, setSaving] = useState(false)
+    const [npResults, setNpResults] = useState<{ title: string; url: string; price: number | null }[] | null>(null)
+    const [npLoading, setNpLoading] = useState(false)
     useEffect(() => {
         if (!open) return
         // Fill the form each time it opens (new or editing).
-         
+
         setF(part ? {
             name: part.name, device_model: part.device_model ?? '', part_quality: part.part_quality ?? '', location: part.location ?? '',
             cost: moneyText(Number(part.cost_price) || 0), price: moneyText(Number(part.selling_price) || 0), min: String(Number(part.minimum_quantity) || 0),
             qty: '', supplier_id: part.supplier_id ?? '', sku: part.sku ?? '',
         } : blank)
+        setNpResults(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, part])
     const set = (k: keyof typeof f, v: string) => setF(p => ({ ...p, [k]: v }))
+
+    const searchPrice = async () => {
+        const q = `${f.name} ${f.device_model}`.trim()
+        if (q.length < 2) return toast.error('Preencha o nome da peça pra buscar.')
+        setNpLoading(true)
+        setNpResults(null)
+        try {
+            const r = await fetch(`/api/parts/novapecas/search?q=${encodeURIComponent(q)}`)
+            const d = await r.json()
+            if (!r.ok) throw new Error(d.error || 'Não foi possível buscar.')
+            setNpResults(d.results)
+        } catch (e) { toast.error((e as Error).message) } finally { setNpLoading(false) }
+    }
+    const applyNpPrice = (price: number) => { set('cost', moneyText(price)); setNpResults(null); toast.success('Custo preenchido com o preço do site') }
 
     const save = async () => {
         if (f.name.trim().length < 2) return toast.error('Informe o nome da peça.')
@@ -121,10 +138,27 @@ function PartForm({ open, part, suppliers, onClose, onSaved }: { open: boolean; 
                     </div>
                     <Field label="Onde fica" htmlFor="pt-loc"><TextInput id="pt-loc" value={f.location} onChange={e => set('location', e.target.value)} placeholder="Ex.: Gaveta A2, Caixa das telas" /></Field>
                 </Group>
-                <Group title="Valores e estoque">
+                <Group title="Valores e estoque" footer="Preço consultado ao vivo no site da NovaPeças (novapecascell.com.br), sem precisar entrar no site.">
                     <div className="grid grid-cols-2 divide-x divide-border/60">
                         <Field label="Custo (R$)" htmlFor="pt-cost"><TextInput id="pt-cost" inputMode="decimal" value={f.cost} onChange={e => set('cost', e.target.value)} placeholder="0,00" /></Field>
                         <Field label="Preço avulso (R$)" htmlFor="pt-price"><TextInput id="pt-price" inputMode="decimal" value={f.price} onChange={e => set('price', e.target.value)} placeholder="0,00" /></Field>
+                    </div>
+                    <div className="px-4 py-3 space-y-2">
+                        <SecondaryButton onClick={searchPrice} disabled={npLoading} className="w-full h-10 text-[15px]">
+                            {npLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />} Consultar preço na NovaPeças
+                        </SecondaryButton>
+                        {npResults && (
+                            npResults.length === 0 ? <p className="text-[13px] text-muted-foreground px-1">Nada encontrado no site pra esse nome.</p> : (
+                                <div className="rounded-xl bg-foreground/[0.04] divide-y divide-border/60 overflow-hidden">
+                                    {npResults.map(r => (
+                                        <button key={r.url} type="button" disabled={r.price == null} onClick={() => applyNpPrice(r.price!)} className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-foreground/[0.05] disabled:opacity-50">
+                                            <span className="flex-1 min-w-0 text-[13px] truncate">{r.title}</span>
+                                            <span className="text-[14px] font-semibold tabular-nums shrink-0">{r.price != null ? brl(r.price) : 'sem preço'}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            )
+                        )}
                     </div>
                     <div className="grid grid-cols-2 divide-x divide-border/60">
                         <Field label="Estoque mínimo" htmlFor="pt-min" hint="Abaixo disso entra na lista de compras."><TextInput id="pt-min" inputMode="numeric" value={f.min} onChange={e => set('min', e.target.value)} /></Field>
