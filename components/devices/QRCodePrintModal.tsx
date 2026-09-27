@@ -28,7 +28,7 @@ export default function QRCodePrintModal({ isOpen, onClose, device }: QRCodePrin
                         <QrCode className="w-5 h-5 text-primary" />
                         <h2 className="text-base font-black">Etiqueta de Vitrine com QR Code</h2>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl transition-all">
+                    <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl transition">
                         <X className="w-5 h-5 text-muted-foreground" />
                     </button>
                 </div>
@@ -47,7 +47,7 @@ export default function QRCodePrintModal({ isOpen, onClose, device }: QRCodePrin
 
                     {/* QR Code Container */}
                     <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200 inline-block mx-auto">
-                        <img
+                        <img width={128} height={128}
                             src={qrCodeApiUrl}
                             alt="QR Code do Aparelho"
                             className="w-32 h-32 mx-auto rounded-lg"
@@ -80,7 +80,7 @@ export default function QRCodePrintModal({ isOpen, onClose, device }: QRCodePrin
                     </button>
                     <button
                         onClick={handlePrint}
-                        className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
+                        className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-wider hover:bg-primary/90 transition shadow-lg shadow-primary/20 flex items-center gap-2"
                     >
                         <Printer className="w-4 h-4" />
                         Imprimir Etiqueta

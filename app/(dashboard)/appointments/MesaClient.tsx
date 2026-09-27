@@ -4,12 +4,10 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { AlertTriangle, ChevronRight, Clock, Loader2, MessageCircle, RefreshCw, Search, UserRound, Wrench } from 'lucide-react'
+import { AlertTriangle, CalendarDays, ChevronRight, Clock, Loader2, MessageCircle, RefreshCw, Search, UserRound, Wrench } from 'lucide-react'
 import Header from '@/components/layout/Header'
-import Segmented from '@/components/ui/Segmented'
 import Sheet from '@/components/tasks/Sheet'
 import { Group, SwitchRow, brl } from '@/components/ui/form'
-import AppointmentsCalendar from '@/components/appointments/AppointmentsCalendar'
 import PayOSModal from '@/components/os/PayOSModal'
 import { cn } from '@/lib/utils'
 
@@ -64,16 +62,12 @@ function level(o: BoardOS): 'ok' | 'warn' | 'late' {
 
 const normalize = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
-export default function MesaClient({ orders: initial, technicians, myTechnicianId, appointments, customers, serviceOrders }: {
+export default function MesaClient({ orders: initial, technicians, myTechnicianId }: {
     orders: BoardOS[]
     technicians: { id: string; name: string }[]
     myTechnicianId: string | null
-    appointments: unknown[]
-    customers: unknown[]
-    serviceOrders: unknown[]
 }) {
     const router = useRouter()
-    const [view, setView] = useState<'board' | 'agenda'>('board')
     const [orders, setOrders] = useState(initial)
     const [who, setWho] = useState<string>('all')
     const [lateOnly, setLateOnly] = useState(false)
@@ -160,18 +154,15 @@ export default function MesaClient({ orders: initial, technicians, myTechnicianI
             <Header title="Mesa" />
             <div className="max-w-[1600px] mx-auto px-4 lg:px-8 pt-4 pb-10 space-y-4">
                 <div className="flex items-center justify-between gap-3">
-                    <Segmented ariaLabel="Ver" value={view} onChange={setView} options={[{ value: 'board', label: 'Quadro' }, { value: 'agenda', label: 'Agenda' }]} />
+                    <Link href="/agenda" className="h-9 px-3.5 rounded-full bg-foreground/[0.06] hover:bg-foreground/[0.1] text-[15px] font-medium inline-flex items-center gap-1.5 transition-colors">
+                        <CalendarDays aria-hidden className="w-[18px] h-[18px]" /> Agenda
+                    </Link>
                     <button type="button" onClick={() => router.refresh()} aria-label="Atualizar" className="w-10 h-10 rounded-full bg-foreground/[0.06] hover:bg-foreground/[0.1] flex items-center justify-center">
                         <RefreshCw className="w-[18px] h-[18px]" />
                     </button>
                 </div>
 
-                {view === 'agenda' ? (
-                    <div className="rounded-2xl bg-card border border-border/60 p-2">
-                        <AppointmentsCalendar initialAppointments={appointments as never[]} customers={customers as never[]} technicians={technicians} serviceOrders={serviceOrders as never[]} />
-                    </div>
-                ) : (
-                    <>
+                <>
                         {/* Who + attention */}
                         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4">
                             <Pill on={who === 'all'} onClick={() => setWho('all')}>Todas</Pill>
@@ -183,7 +174,7 @@ export default function MesaClient({ orders: initial, technicians, myTechnicianI
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <label className="flex-1 flex items-center gap-2 h-11 px-3 rounded-xl bg-foreground/[0.06]">
+                            <label className="flex-1 flex items-center gap-2 h-11 px-3 rounded-xl bg-foreground/[0.06] focus-within:ring-2 focus-within:ring-primary/40">
                                 <Search className="w-[18px] h-[18px] text-muted-foreground shrink-0" />
                                 <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar OS, aparelho ou cliente" className="flex-1 min-w-0 bg-transparent text-[17px] outline-none" />
                             </label>
@@ -250,8 +241,7 @@ export default function MesaClient({ orders: initial, technicians, myTechnicianI
                                 )
                             })}
                         </div>
-                    </>
-                )}
+                </>
             </div>
 
             {selected && (
@@ -263,7 +253,7 @@ export default function MesaClient({ orders: initial, technicians, myTechnicianI
                             <Row label="Etapa" value={`${stageOf(selected.status).label} · há ${ageLabel(daysSince(selected.stage_since))}`} tone={level(selected)} />
                             {selected.total > 0 && <Row label="Valor" value={brl(selected.total)} />}
                             <label className="flex items-center justify-between gap-3 px-4 min-h-[48px]">
-                                <span className="text-[17px]">Técnico</span>
+                                <span className="text-[17px] focus-within:bg-foreground/[0.03] transition-colors">Técnico</span>
                                 <select
                                     value={selected.technician_id ?? ''}
                                     onChange={e => assign(selected, e.target.value)}

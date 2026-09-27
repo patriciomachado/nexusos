@@ -486,7 +486,7 @@ const agendar = defineWrite({
             notes: i.observacoes ?? null,
         }).select('id').single()
         if (error || !data) throw new ToolError('Não foi possível criar o agendamento.')
-        return { message: `Agendado: ${c.name} em ${formatDate(i.data)} às ${i.hora} com ${tech.name}.`, href: '/appointments' }
+        return { message: `Agendado: ${c.name} em ${formatDate(i.data)} às ${i.hora} com ${tech.name}.`, href: '/agenda' }
     },
 })
 

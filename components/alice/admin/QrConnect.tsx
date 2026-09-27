@@ -5,6 +5,7 @@ import { AlertTriangle, CheckCircle2, ChevronDown, Loader2, QrCode, RefreshCw, S
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import Segmented from '@/components/ui/Segmented'
+import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 
 interface Props {
     provider: 'evolution' | 'zapi'
@@ -98,8 +99,9 @@ export default function QrConnect(p: Props) {
         }
     }
 
+    const [confirmDisconnect, setConfirmDisconnect] = useState(false)
     const disconnect = async () => {
-        if (!confirm('Desconectar o WhatsApp da Alice? Para voltar, é preciso ler o QR Code de novo.')) return
+        setConfirmDisconnect(false)
         setLoading(true)
         try {
             setSt(await call('POST', { action: 'disconnect' }))
@@ -128,6 +130,14 @@ export default function QrConnect(p: Props) {
 
     return (
         <div className="space-y-4">
+            <PremiumConfirmDialog
+                isOpen={confirmDisconnect}
+                title="Desconectar o WhatsApp?"
+                description="A Alice para de responder. Para voltar, é preciso ler o QR Code de novo."
+                confirmLabel="Desconectar"
+                onConfirm={disconnect}
+                onCancel={() => setConfirmDisconnect(false)}
+            />
             {connected ? (
                 <div className="rounded-xl bg-green-500/10 px-4 py-3 flex items-center gap-3">
                     <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400 shrink-0" />
@@ -135,12 +145,12 @@ export default function QrConnect(p: Props) {
                         <p className="text-[15px] font-semibold">Conectado</p>
                         <p className="text-[13px] text-muted-foreground truncate">{[st?.name ?? p.connectedName, p.connectedPhone ?? phone].filter(Boolean).join(' · ') || 'Número da loja'}</p>
                     </div>
-                    <button type="button" onClick={disconnect} disabled={loading} className="h-9 px-3 rounded-full text-[14px] text-red-600 dark:text-red-400 hover:bg-red-500/10 disabled:opacity-50">Desconectar</button>
+                    <button type="button" onClick={() => setConfirmDisconnect(true)} disabled={loading} className="h-9 px-3 rounded-full text-[14px] text-red-600 dark:text-red-400 hover:bg-red-500/10 disabled:opacity-50">Desconectar</button>
                 </div>
             ) : st?.state === 'qr' && st.qr ? (
                 <div className="rounded-xl bg-foreground/[0.03] p-4 flex flex-col sm:flex-row items-center gap-5">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={st.qr} alt="QR Code para conectar o WhatsApp" className="w-56 h-56 rounded-lg bg-white p-2 shrink-0" />
+                    <img width={224} height={224} src={st.qr} alt="QR Code para conectar o WhatsApp" className="w-56 h-56 rounded-lg bg-white p-2 shrink-0" />
                     <ol className="text-[14px] text-muted-foreground space-y-1.5 list-decimal pl-5">
                         <li>No celular da loja, abra o <b className="text-foreground">WhatsApp</b>.</li>
                         <li>Toque em <b className="text-foreground">Configurações</b> (iPhone) ou <b className="text-foreground">⋮</b> (Android) → <b className="text-foreground">Dispositivos conectados</b>.</li>

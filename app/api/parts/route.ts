@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     }).select(FIELDS).single()
     if (error || !data) return bad(error?.message ?? 'Não foi possível cadastrar', 500)
     if (initial > 0) {
-        await moveStock(db, companyId, { itemId: data.id, quantity: initial, reason: 'inicial', unitCost: parsed.data.cost_price, userId: dbUser.id, notes: 'Estoque inicial' })
+        await moveStock(db, companyId, { itemId: data.id, quantity: initial, reason: 'entrada', unitCost: parsed.data.cost_price, userId: dbUser.id, notes: 'Estoque inicial' })
         data.quantity_in_stock = initial
     }
     return NextResponse.json({ part: data }, { status: 201 })

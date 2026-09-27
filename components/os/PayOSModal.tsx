@@ -112,7 +112,7 @@ export default function PayOSModal({
                                     key={m.id}
                                     onClick={() => setPaymentMethodId(m.id)}
                                     className={cn(
-                                        "flex items-center justify-between p-3.5 rounded-2xl border transition-all text-sm font-bold",
+                                        "flex items-center justify-between p-3.5 rounded-2xl border transition text-sm font-bold",
                                         paymentMethodId === m.id
                                             ? "bg-primary/10 border-primary text-primary"
                                             : "bg-muted/20 border-border hover:border-muted-foreground/30 text-foreground/80 focus:text-foreground hover:text-foreground"
@@ -136,14 +136,14 @@ export default function PayOSModal({
                     <div className="flex gap-3 pt-2">
                         <button
  onClick={onClose}
- className="flex-1 py-3.5 rounded-2xl font-bold text-xs text-muted-foreground hover:bg-muted transition-all active:scale-95"
+ className="flex-1 py-3.5 rounded-2xl font-bold text-xs text-muted-foreground hover:bg-muted transition active:scale-95"
  >
                             Cancelar
                         </button>
                         <button
  onClick={handleConfirm}
  disabled={loading}
- className="flex-[2] py-3.5 rounded-2xl bg-foreground text-background font-semibold text-xs transition-all active:scale-95 flex items-center justify-center gap-3 hover:bg-foreground/90 disabled:opacity-50"
+ className="flex-[2] py-3.5 rounded-2xl bg-foreground text-background font-semibold text-xs transition active:scale-95 flex items-center justify-center gap-3 hover:bg-foreground/90 disabled:opacity-50"
  >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <DollarSign className="w-4 h-4" />}
                             Confirmar Pagamento

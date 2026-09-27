@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logMovement } from '@/lib/inventory/movements'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { saleSchema } from '@/lib/validations/schemas'
 import { findOpenRegister, isManager, isOwner, loadCashSettings, verifyPin } from '@/lib/cash/server'
@@ -89,7 +90,6 @@ export async function POST(req: NextRequest) {
             stockUpdates.push({
                 id: item.inventory_item_id,
                 new_stock: Number(stockItem.quantity_in_stock) - Number(item.quantity),
-                quantity: Number(item.quantity),
             })
         }
 
@@ -217,8 +217,10 @@ export async function POST(req: NextRequest) {
                 })
                 .eq('id', updateData.id)
                 .eq('company_id', companyId)
-            // Stock history (Peças → movimentações); ignored before the parts migration.
-            await db.from('stock_movements').insert({ company_id: companyId, inventory_item_id: updateData.id, quantity: -updateData.quantity, reason: 'venda', source_type: 'sale', source_id: sale.id, user_id: dbUser.id })
+            await logMovement(db, {
+                companyId, itemId: updateData.id, quantity: -Number(insertData.quantity), balance: updateData.new_stock,
+                kind: 'venda', reason: `Venda ${sale.id.slice(0, 8)}`, unitCost: insertData.unit_cost, refId: sale.id, userId: dbUser.id,
+            })
         }
 
         // Update total cost on sale header

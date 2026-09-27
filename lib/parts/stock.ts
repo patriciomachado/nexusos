@@ -1,19 +1,19 @@
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
-
-export type MovementReason = 'os' | 'compra' | 'ajuste' | 'defeito' | 'venda' | 'devolucao' | 'inicial'
+import { logMovement, type MovementKind } from '@/lib/inventory/movements'
 
 /**
- * Moves stock and records why. quantity > 0 enters, < 0 leaves. Stock may go
- * negative (a part used before its purchase was registered) so nothing is
- * silently lost; the screens show it in red.
+ * Moves stock and records why, using the same inventory_movements ledger as
+ * Produtos (lib/inventory/movements.ts). quantity > 0 enters, < 0 leaves.
+ * Stock may go negative (a part used before its purchase was registered) so
+ * nothing is silently lost; the screens show it in red.
  */
 export async function moveStock(db: SupabaseClient, companyId: string, m: {
     itemId: string
     quantity: number
-    reason: MovementReason
-    sourceType?: string
-    sourceId?: string | null
+    reason: MovementKind
+    /** Ties the movement to what caused it (an OS, a purchase, a defect), stored as ref_id. */
+    refId?: string | null
     unitCost?: number | null
     notes?: string | null
     userId?: string | null
@@ -24,26 +24,19 @@ export async function moveStock(db: SupabaseClient, companyId: string, m: {
     const next = Math.round((Number(item.quantity_in_stock) + m.quantity) * 1000) / 1000
     const { error } = await db.from('inventory_items').update({ quantity_in_stock: next }).eq('id', m.itemId).eq('company_id', companyId)
     if (error) return error.message
-    await db.from('stock_movements').insert({
-        company_id: companyId,
-        inventory_item_id: m.itemId,
-        quantity: m.quantity,
-        reason: m.reason,
-        source_type: m.sourceType ?? null,
-        source_id: m.sourceId ?? null,
-        unit_cost: m.unitCost ?? null,
-        notes: m.notes ?? null,
-        user_id: m.userId ?? null,
+    await logMovement(db, {
+        companyId, itemId: m.itemId, quantity: m.quantity, balance: next, kind: m.reason,
+        reason: m.notes ?? null, unitCost: m.unitCost ?? null, refId: m.refId ?? null, userId: m.userId ?? null,
     })
     return null
 }
 
 /**
  * Makes the stock match the parts on a service order. Compares what the OS
- * uses now with what was already taken out for it and moves only the
- * difference, so it can run after every save, status change or delete.
- * Cancelled or deleted orders give everything back. Orders created before
- * stock tracking existed are left alone.
+ * uses now with what was already taken out for it (kind 'os', ref_id = OS id)
+ * and moves only the difference, so it can run after every save, status
+ * change or delete. Cancelled or deleted orders give everything back. Orders
+ * created before stock tracking existed are left alone.
  */
 export async function syncServiceOrderStock(db: SupabaseClient, companyId: string, osId: string, opts: { deleted?: boolean; userId?: string | null } = {}) {
     const { data: os, error } = await db.from('service_orders').select('status, stock_tracked, order_number').eq('id', osId).eq('company_id', companyId).maybeSingle()
@@ -58,9 +51,12 @@ export async function syncServiceOrderStock(db: SupabaseClient, companyId: strin
         }
     }
 
-    const { data: moves } = await db.from('stock_movements').select('inventory_item_id, quantity').eq('company_id', companyId).eq('source_type', 'service_order').eq('source_id', osId)
+    // Both takes (kind 'os') and give-backs (kind 'devolucao') for this order
+    // share ref_id = osId, so netting every movement tied to it gives what's
+    // still out, regardless of how many times this has run before.
+    const { data: moves } = await db.from('inventory_movements').select('item_id, quantity').eq('company_id', companyId).eq('ref_id', osId)
     const taken = new Map<string, number>()
-    for (const mv of moves ?? []) taken.set(mv.inventory_item_id, (taken.get(mv.inventory_item_id) ?? 0) - Number(mv.quantity))
+    for (const mv of moves ?? []) taken.set(mv.item_id, (taken.get(mv.item_id) ?? 0) - Number(mv.quantity))
 
     for (const id of new Set([...wanted.keys(), ...taken.keys()])) {
         const diff = (wanted.get(id) ?? 0) - (taken.get(id) ?? 0)
@@ -69,8 +65,7 @@ export async function syncServiceOrderStock(db: SupabaseClient, companyId: strin
             itemId: id,
             quantity: -diff,
             reason: diff > 0 ? 'os' : 'devolucao',
-            sourceType: 'service_order',
-            sourceId: osId,
+            refId: osId,
             notes: `OS ${os.order_number ?? ''}`.trim(),
             userId: opts.userId,
         })

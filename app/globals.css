@@ -104,6 +104,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   /* systemBackground / secondarySystemBackground / tertiarySystemBackground */
   --background: 0 0% 0%;
   --foreground: 240 11% 96%;
@@ -327,14 +328,6 @@
     bottom: calc(-1 * var(--ios-gap, 0px)) !important;
   }
 
-  /* Installed app on a phone/tablet: the app frame is as tall as the whole
-     screen (largest viewport), even when iOS reports a shorter one. */
-  @media (display-mode: standalone) and (pointer: coarse) {
-    .app-frame {
-      min-height: calc(100lvh - env(safe-area-inset-top));
-    }
-  }
-
   /* Content-layer card: solid surface, hairline border (no glass in content). */
   .glass-premium {
     @apply bg-card border border-border/70 shadow-sm;
@@ -391,6 +384,8 @@
 }
 
 html {
+  color-scheme: light;
+  -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
   overflow-x: hidden;
   max-width: 100vw;
@@ -408,6 +403,11 @@ body {
   overflow-x: hidden;
   max-width: 100vw;
   width: 100%;
+}
+
+/* No double-tap zoom delay on controls. */
+a, button, input, select, textarea, label, [role="button"] {
+  touch-action: manipulation;
 }
 
 /* Minimal overlay scrollbar */

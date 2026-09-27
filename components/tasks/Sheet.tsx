@@ -93,7 +93,7 @@ export default function Sheet({ open, onClose, title, subtitle, children, footer
                         aria-label="Fechar"
                         className="w-8 h-8 shrink-0 rounded-full bg-foreground/[0.07] hover:bg-foreground/[0.12] flex items-center justify-center text-muted-foreground transition-colors"
                     >
-                        <X className="w-4 h-4" strokeWidth={2.5} />
+                        <X aria-hidden className="w-4 h-4" strokeWidth={2.5} />
                     </button>
                 </div>
                 <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-4">

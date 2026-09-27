@@ -2,185 +2,118 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import Header from '@/components/layout/Header'
 import { toast } from 'sonner'
-import { X, Plus, User, Mail, Phone, DollarSign, Percent, Award, Cpu, Save } from 'lucide-react'
-import { PremiumInput } from '@/components/ui/PremiumInput'
+import { Loader2, Plus, X } from 'lucide-react'
+import Header from '@/components/layout/Header'
+import { Field, Group, PrimaryButton, SecondaryButton, TextInput } from '@/components/ui/form'
 
-export default function TechnicianForm({ initial }: { initial?: any }) {
+interface TechnicianInitial {
+    id?: string
+    name?: string
+    email?: string
+    phone?: string
+    hourly_rate?: number | string
+    commission_type?: string
+    commission_value?: number | string
+    specialties?: string[]
+}
+
+export default function TechnicianForm({ initial }: { initial?: TechnicianInitial }) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [form, setForm] = useState({
         name: initial?.name || '',
         email: initial?.email || '',
         phone: initial?.phone || '',
-        hourly_rate: initial?.hourly_rate || '',
+        hourly_rate: String(initial?.hourly_rate ?? ''),
         commission_type: initial?.commission_type || 'percentage',
-        commission_value: initial?.commission_value || '',
+        commission_value: String(initial?.commission_value ?? ''),
     })
     const [specialties, setSpecialties] = useState<string[]>(initial?.specialties || [])
     const [newSpecialty, setNewSpecialty] = useState('')
+    const set = (key: keyof typeof form, value: string) => setForm(p => ({ ...p, [key]: value }))
+    const num = (v: string) => parseFloat(v.replace(',', '.')) || 0
 
     function addSpecialty() {
-        if (newSpecialty.trim() && !specialties.includes(newSpecialty.trim())) {
-            setSpecialties(p => [...p, newSpecialty.trim()])
-            setNewSpecialty('')
-        }
+        const s = newSpecialty.trim()
+        if (s && !specialties.includes(s)) setSpecialties(p => [...p, s])
+        setNewSpecialty('')
     }
 
-    async function handleSubmit(e: React.FormEvent) {
+    function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
+        if (!form.name.trim()) { toast.error('Informe o nome do técnico'); return }
         startTransition(async () => {
             const url = initial?.id ? `/api/technicians/${initial.id}` : '/api/technicians'
-            const method = initial?.id ? 'PUT' : 'POST'
             const res = await fetch(url, {
-                method,
+                method: initial?.id ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...form, specialties, hourly_rate: parseFloat(form.hourly_rate) || 0, commission_value: parseFloat(form.commission_value) || 0 }),
+                body: JSON.stringify({ ...form, name: form.name.trim(), specialties, hourly_rate: num(form.hourly_rate), commission_value: num(form.commission_value) }),
             })
-            const data = await res.json()
+            const data = await res.json().catch(() => ({}))
             if (res.ok) {
-                toast.success(initial?.id ? 'Especialista atualizado!' : 'Especialista cadastrado!')
+                toast.success(initial?.id ? 'Técnico atualizado' : 'Técnico cadastrado')
                 router.push('/technicians')
             } else {
-                toast.error(data.error || 'Erro ao salvar especialista')
+                toast.error(typeof data.error === 'string' ? data.error : 'Não foi possível salvar. Confira os campos e tente de novo.')
             }
         })
     }
 
     return (
-        <div className="animate-fade-in pb-20">
-            <Header title={initial?.id ? 'Perfil do Especialista' : 'Novo Especialista Técnico'} />
+        <div className="min-h-full bg-background">
+            <Header title={initial?.id ? 'Editar técnico' : 'Novo técnico'} />
+            <form onSubmit={handleSubmit} className="max-w-2xl mx-auto px-4 pt-4 pb-16 space-y-5">
+                <Group>
+                    <Field label="Nome" htmlFor="tf-name"><TextInput id="tf-name" required value={form.name} onChange={e => set('name', e.target.value)} placeholder="Nome completo" autoComplete="name" data-autofocus /></Field>
+                    <Field label="WhatsApp" htmlFor="tf-phone"><TextInput id="tf-phone" type="tel" inputMode="tel" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="(11) 99999-9999" /></Field>
+                    <Field label="E-mail" htmlFor="tf-email"><TextInput id="tf-email" type="email" inputMode="email" spellCheck={false} value={form.email} onChange={e => set('email', e.target.value)} placeholder="opcional" /></Field>
+                </Group>
 
-            <form onSubmit={handleSubmit} className="p-6 max-w-4xl mx-auto space-y-12 mt-8">
-                <div className="bg-[#0a0a0f]/40 border border-border/60 rounded-2xl p-10 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 blur-[120px] rounded-full transition-all group-hover:bg-indigo-500/10" />
-
-                    <div className="relative z-10 space-y-8">
-                        <div className="flex items-center gap-4 border-b border-border/60 pb-6">
-                            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-                                <Award className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h2 className="text-xl font-black text-white tracking-tight">Dados do Técnico</h2>
-                                <p className="text-xs text-white/30 font-bold mt-1">Especialidades e Remuneração</p>
-                            </div>
-                        </div>
-
-                        <div className="grid sm:grid-cols-2 gap-8">
-                            <div className="sm:col-span-2">
-                                <label className="block text-[13px] font-medium text-white/30 mb-3">Nome do profissional *</label>
-                                <PremiumInput
-                                    required
-                                    value={form.name}
-                                    onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                                    icon={<User className="w-4 h-4" />}
-                                    placeholder="Nome completo do técnico"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[13px] font-medium text-white/30 mb-3">E-mail corporativo</label>
-                                <PremiumInput
-                                    type="email"
-                                    value={form.email}
-                                    onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                                    icon={<Mail className="w-4 h-4" />}
-                                    placeholder="tecnico@nexusos.com"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[13px] font-medium text-white/30 mb-3">WhatsApp / celular</label>
-                                <PremiumInput
-                                    type="tel"
-                                    value={form.phone}
-                                    onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-                                    icon={<Phone className="w-4 h-4" />}
-                                    placeholder="(11) 99999-9999"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[13px] font-medium text-white/30 mb-3">Valor/hora técnica (R$)</label>
-                                <PremiumInput
-                                    type="number"
-                                    step="0.01"
-                                    value={form.hourly_rate}
-                                    onChange={e => setForm(p => ({ ...p, hourly_rate: e.target.value }))}
-                                    icon={<DollarSign className="w-4 h-4" />}
-                                    placeholder="0.00"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[13px] font-medium text-white/30 mb-3">Comissão sobre serviço (%)</label>
-                                <PremiumInput
-                                    type="number"
-                                    step="0.1"
-                                    value={form.commission_value}
-                                    onChange={e => setForm(p => ({ ...p, commission_value: e.target.value }))}
-                                    icon={<Percent className="w-4 h-4" />}
-                                    placeholder="Ex: 10"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Specialties */}
-                        <div>
-                            <label className="block text-[13px] font-medium text-white/30 mb-3">Especialidades técnicas</label>
-                            <div className="flex gap-3 mb-4">
-                                <PremiumInput
-                                    value={newSpecialty}
-                                    onChange={e => setNewSpecialty(e.target.value)}
-                                    onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSpecialty())}
-                                    placeholder="Ex: Reparo em Placa, Troca de Vidro, Reballing..."
-                                    icon={<Cpu className="w-4 h-4" />}
-                                    className="flex-1"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={addSpecialty}
-                                    className="px-6 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500 hover:text-white transition-all"
-                                >
-                                    <Plus className="w-5 h-5" />
-                                </button>
-                            </div>
-                            {specialties.length > 0 && (
-                                <div className="flex flex-wrap gap-2 pt-2">
-                                    {specialties.map(s => (
-                                        <span key={s} className="flex items-center gap-2 pl-4 pr-2 py-2 rounded-xl bg-white/5 border border-border/60 text-white/70 text-xs font-semibold group hover:border-indigo-500/30 hover:text-indigo-400 transition-all">
-                                            {s}
-                                            <button
-                                                type="button"
-                                                onClick={() => setSpecialties(p => p.filter(x => x !== s))}
-                                                className="p-1 rounded-md hover:bg-rose-500/20 hover:text-rose-400 transition-colors"
-                                            >
-                                                <X className="w-3 h-3" />
-                                            </button>
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                <Group title="Remuneração">
+                    <div className="grid grid-cols-2 divide-x divide-border/60">
+                        <Field label="Valor/hora (R$)" htmlFor="tf-rate"><TextInput id="tf-rate" inputMode="decimal" value={form.hourly_rate} onChange={e => set('hourly_rate', e.target.value.replace(/[^\d.,]/g, ''))} placeholder="0,00" /></Field>
+                        <Field label="Comissão (%)" htmlFor="tf-comm"><TextInput id="tf-comm" inputMode="decimal" value={form.commission_value} onChange={e => set('commission_value', e.target.value.replace(/[^\d.,]/g, ''))} placeholder="Ex.: 10" /></Field>
                     </div>
-                </div>
+                </Group>
 
-                <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
-                    <button
- type="submit"
- disabled={isPending}
- className="bg-primary w-full sm:flex-1 disabled:opacity-50 text-white p-5 rounded-2xl font-semibold text-xs transition-all active:scale-95 flex items-center justify-center gap-3"
- >
-                        {isPending ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
-                        {isPending ? 'PROCESSANDO...' : 'SALVAR CADASTRO'}
-                    </button>
-                    <button
- type="button"
- onClick={() => router.back()}
- className="w-full sm:w-auto px-10 py-5 rounded-2xl border border-border/60 bg-white/[0.02] text-white/40 font-semibold text-xs hover:bg-foreground/[0.05] hover:text-white transition-all flex items-center justify-center gap-2"
- >
-                        CANCELAR
-                    </button>
+                <Group title="Especialidades" footer="Ex.: reparo em placa, troca de vidro, reballing.">
+                    <div className="flex items-center gap-2 pr-2">
+                        <Field label="Nova especialidade" htmlFor="tf-spec" className="flex-1">
+                            <TextInput
+                                id="tf-spec"
+                                value={newSpecialty}
+                                onChange={e => setNewSpecialty(e.target.value)}
+                                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSpecialty() } }}
+                                placeholder="Digite e toque em +"
+                            />
+                        </Field>
+                        <button type="button" onClick={addSpecialty} aria-label="Adicionar especialidade" className="w-11 h-11 shrink-0 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/15 transition-colors">
+                            <Plus aria-hidden className="w-5 h-5" />
+                        </button>
+                    </div>
+                    {specialties.length > 0 && (
+                        <div className="flex flex-wrap gap-2 p-3">
+                            {specialties.map(s => (
+                                <span key={s} className="inline-flex items-center gap-1 h-9 pl-3.5 pr-1 rounded-full bg-foreground/[0.06] text-[15px] max-w-full">
+                                    <span className="truncate">{s}</span>
+                                    <button type="button" onClick={() => setSpecialties(p => p.filter(x => x !== s))} aria-label={`Remover ${s}`} className="w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground hover:bg-foreground/[0.08] transition-colors">
+                                        <X aria-hidden className="w-4 h-4" />
+                                    </button>
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                </Group>
+
+                <div className="flex gap-2">
+                    <SecondaryButton onClick={() => router.back()}>Cancelar</SecondaryButton>
+                    <PrimaryButton type="submit" className="flex-1" disabled={isPending}>
+                        {isPending && <Loader2 aria-hidden className="w-5 h-5 animate-spin" />}
+                        {initial?.id ? 'Salvar' : 'Cadastrar técnico'}
+                    </PrimaryButton>
                 </div>
             </form>
         </div>
     )
 }
-

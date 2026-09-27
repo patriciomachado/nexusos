@@ -15,6 +15,8 @@ export interface Plan {
     maxUsers: number | null
     /** Alice replies per month (app + WhatsApp). */
     aliceReplies: number
+    /** Studio texts written by AI per month (art and ready-made texts don't count). */
+    studioAiTexts: number
     features: Feature[]
 }
 
@@ -26,6 +28,7 @@ export const PLANS: Record<PlanId, Plan> = {
         tagline: 'Para organizar a loja e ter controle do dia a dia.',
         maxUsers: 2,
         aliceReplies: 0,
+        studioAiTexts: 0,
         features: [],
     },
     pro: {
@@ -35,13 +38,14 @@ export const PLANS: Record<PlanId, Plan> = {
         tagline: 'Para crescer com equipe, IA e vendas online.',
         maxUsers: null,
         aliceReplies: 1500,
+        studioAiTexts: 50,
         features: ['alice', 'studio', 'catalog', 'reports_full', 'post_sales_contact', 'unlimited_users', 'multi_store'],
     },
 }
 
 export const FEATURE_INFO: Record<Feature, { title: string; description: string }> = {
     alice: { title: 'Alice, assistente de IA', description: 'Consulta e age no sistema por texto ou voz e atende seus clientes no WhatsApp.' },
-    studio: { title: 'Studio de conteúdo', description: 'Roteiros e artes para redes sociais gerados a partir dos seus serviços.' },
+    studio: { title: 'Studio de conteúdo', description: 'Artes, legendas e roteiros para redes sociais a partir dos seus serviços e aparelhos.' },
     catalog: { title: 'Catálogo online', description: 'Sua vitrine de aparelhos e produtos com link próprio para compartilhar.' },
     reports_full: { title: 'Relatórios completos', description: 'DRE, meta do mês, funil de OS, desempenho por técnico e clientes.' },
     post_sales_contact: { title: 'Pós-venda ativo', description: 'Lista de quem contatar depois da entrega, com mensagem pronta no WhatsApp.' },
@@ -60,7 +64,7 @@ export const PLAN_ROWS: { label: string; essencial: boolean | string; pro: boole
     { label: 'Alice (IA no app e no WhatsApp)', essencial: false, pro: 'Até 1.500 respostas/mês' },
     { label: 'Pós-venda com contato pelo WhatsApp', essencial: false, pro: true },
     { label: 'Catálogo online', essencial: false, pro: true },
-    { label: 'Studio de conteúdo', essencial: false, pro: true },
+    { label: 'Studio de conteúdo', essencial: false, pro: 'Artes e textos prontos + 50 textos com IA/mês' },
     { label: 'Lojas e filiais', essencial: false, pro: true },
 ]
 

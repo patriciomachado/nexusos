@@ -55,6 +55,6 @@ export async function POST(req: NextRequest) {
         quantity: d.quantity, reason: d.reason || null, cost: Math.round(Number(part.cost_price || 0) * d.quantity * 100) / 100, created_by: dbUser.id,
     }).select('id').single()
     if (error || !data) return bad(error?.message ?? 'Não foi possível registrar', 500)
-    if (d.take_from_stock) await moveStock(db, companyId, { itemId: d.inventory_item_id, quantity: -d.quantity, reason: 'defeito', sourceType: 'part_defect', sourceId: data.id, userId: dbUser.id, notes: d.reason || 'Peça com defeito' })
+    if (d.take_from_stock) await moveStock(db, companyId, { itemId: d.inventory_item_id, quantity: -d.quantity, reason: 'defeito', refId: data.id, userId: dbUser.id, notes: d.reason || 'Peça com defeito' })
     return NextResponse.json({ id: data.id }, { status: 201 })
 }

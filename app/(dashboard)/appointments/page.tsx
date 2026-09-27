@@ -17,7 +17,7 @@ export default async function MesaPage() {
 
     // Board: everything in progress plus what was delivered in the last 7 days.
     const weekAgo = daysAgoIso(7)
-    const [{ data: active }, { data: delivered }, { data: technicians }, { data: appointments }, { data: customers }, { data: allOs }] = await Promise.all([
+    const [{ data: active }, { data: delivered }, { data: technicians }] = await Promise.all([
         db.from('service_orders')
             .select('id, order_number, title, equipment_description, status, priority, created_at, updated_at, final_cost, estimated_cost, technician_id, customers(name, phone), technicians(name)')
             .eq('company_id', companyId).in('status', ACTIVE).order('created_at', { ascending: false }).limit(500),
@@ -25,9 +25,6 @@ export default async function MesaPage() {
             .select('id, order_number, title, equipment_description, status, priority, created_at, updated_at, final_cost, estimated_cost, technician_id, customers(name, phone), technicians(name)')
             .eq('company_id', companyId).eq('status', 'faturada').gte('updated_at', weekAgo).order('updated_at', { ascending: false }).limit(60),
         db.from('technicians').select('id, name, user_id').eq('company_id', companyId).eq('is_active', true).order('name'),
-        db.from('appointments').select('*, technicians(name), customers(name), service_orders(id, title, order_number)').eq('company_id', companyId).order('scheduled_date'),
-        db.from('customers').select('id, name, phone').eq('company_id', companyId).order('name'),
-        db.from('service_orders').select('id, title, order_number').eq('company_id', companyId).order('order_number', { ascending: false }).limit(300),
     ])
 
     const orders = [...(active ?? []), ...(delivered ?? [])]
@@ -67,9 +64,6 @@ export default async function MesaPage() {
             orders={board}
             technicians={(technicians ?? []).map(t => ({ id: t.id, name: t.name }))}
             myTechnicianId={myTech}
-            appointments={appointments ?? []}
-            customers={customers ?? []}
-            serviceOrders={allOs ?? []}
         />
     )
 }

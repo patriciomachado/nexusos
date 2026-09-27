@@ -3,15 +3,14 @@
 import { useEffect } from 'react'
 
 /**
- * iPhone/iPad, app installed on the home screen: iOS sometimes lays out
- * fixed elements in a viewport shorter than the screen, so everything pinned
- * to the bottom (the app frame, action bars, sheets, the menu) stops short
- * and leaves a strip. Measure the missing height and expose it as --ios-gap;
- * elements with the `ios-fill` class stretch down by that much.
+ * iPhone/iPad, app installed on the home screen: if iOS lays out fixed
+ * elements in a box shorter than the app's window, everything pinned to the
+ * bottom (the app frame, action bars, sheets, the menu) stops short. Measure
+ * the missing height and expose it as --ios-gap; elements with the `ios-fill`
+ * class stretch down by that much.
  *
  * The height is read from a `position: fixed; inset: 0` probe, which is
- * exactly the box the app frame gets, because window.innerHeight can report
- * the full screen while fixed elements still end short.
+ * exactly the box the app frame gets.
  */
 export default function IOSViewportFix() {
     useEffect(() => {
@@ -33,10 +32,12 @@ export default function IOSViewportFix() {
             let off = false
             try { off = localStorage.getItem('nexus_iosfix_off') === '1' } catch { /* ignore */ }
             const rect = probe.getBoundingClientRect()
-            const landscape = window.innerWidth > window.innerHeight
-            // screen.* is in portrait terms on iOS.
-            const screenH = landscape ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height)
-            const gap = Math.round(screenH - rect.bottom)
+            // Compare with the app's own window, never with the screen: below
+            // the opaque status bar the window is 59pt shorter than the screen
+            // by design, and when iOS makes the window itself short nothing is
+            // drawn below it. Either way stretching would push the bottom bars
+            // and sheet buttons out of sight.
+            const gap = Math.round(window.innerHeight - rect.bottom)
             if (!off && gap > 0 && gap <= 200) {
                 root.style.setProperty('--ios-gap', `${gap}px`)
                 root.classList.add('ios-gap')
@@ -46,6 +47,7 @@ export default function IOSViewportFix() {
             }
         }
         const later = () => { setTimeout(measure, 350); setTimeout(measure, 1000) }
+
         // iOS 26 can leave the page shifted after the keyboard closes; the app
         // itself never scrolls the window, so put it back at the top.
         const afterKeyboard = () => {

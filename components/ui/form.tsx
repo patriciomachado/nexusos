@@ -42,7 +42,7 @@ export function Field({ label, htmlFor, hint, children, className }: {
     className?: string
 }) {
     return (
-        <div className={cn('px-4 py-3 min-w-0', className)}>
+        <div className={cn('px-4 py-3 min-w-0 transition-colors focus-within:bg-foreground/[0.03]', className)}>
             <label htmlFor={htmlFor} className="block text-[13px] text-muted-foreground mb-1">{label}</label>
             {children}
             {hint && <p className="text-[12px] text-muted-foreground mt-1">{hint}</p>}
@@ -54,6 +54,7 @@ export const TextInput = forwardRef<HTMLInputElement, React.InputHTMLAttributes<
     return (
         <input
             ref={ref}
+            autoComplete="off"
             {...props}
             className={cn('w-full min-w-0 bg-transparent text-[17px] leading-snug text-foreground placeholder:text-muted-foreground/60 outline-none', className)}
         />
@@ -86,7 +87,7 @@ export function SelectRow({ label, value, onChange, options, placeholder = 'Sele
             <span className="text-[17px] text-foreground shrink-0">{label}</span>
             <span className={cn('flex items-center gap-1 min-w-0 text-[17px]', current ? 'text-muted-foreground' : 'text-muted-foreground/60')}>
                 <span className="truncate">{current?.label ?? placeholder}</span>
-                <ChevronRight className="w-4 h-4 shrink-0 opacity-60" />
+                <ChevronRight aria-hidden className="w-4 h-4 shrink-0 opacity-60" />
             </span>
             <select
                 id={id}
@@ -116,7 +117,7 @@ export function ButtonRow({ label, value, onClick, icon, placeholder, danger }: 
             <span className={cn('text-[17px] shrink-0', danger ? 'text-red-600 dark:text-red-400' : 'text-foreground')}>{label}</span>
             <span className="ml-auto flex items-center gap-1 min-w-0 text-[17px] text-muted-foreground">
                 <span className={cn('truncate', !value && 'text-muted-foreground/60')}>{value || placeholder}</span>
-                <ChevronRight className="w-4 h-4 shrink-0 opacity-60" />
+                <ChevronRight aria-hidden className="w-4 h-4 shrink-0 opacity-60" />
             </span>
         </button>
     )
@@ -181,7 +182,7 @@ export function PrimaryButton({ className, children, ...props }: React.ButtonHTM
         <button
             type="button"
             {...props}
-            className={cn('h-12 px-6 rounded-full bg-primary text-primary-foreground text-[17px] font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50 transition-opacity', className)}
+            className={cn('h-12 px-6 rounded-full bg-primary text-primary-foreground text-[17px] font-semibold inline-flex items-center justify-center gap-2 hover:opacity-90 active:opacity-80 disabled:opacity-50 transition-opacity', className)}
         >
             {children}
         </button>
@@ -193,7 +194,7 @@ export function SecondaryButton({ className, children, ...props }: React.ButtonH
         <button
             type="button"
             {...props}
-            className={cn('h-12 px-5 rounded-full bg-foreground/[0.07] text-foreground text-[17px] font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-50', className)}
+            className={cn('h-12 px-5 rounded-full bg-foreground/[0.07] text-foreground text-[17px] font-medium inline-flex items-center justify-center gap-1.5 hover:bg-foreground/[0.1] active:bg-foreground/[0.13] disabled:opacity-50 transition-colors', className)}
         >
             {children}
         </button>

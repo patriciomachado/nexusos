@@ -20,9 +20,10 @@ export const QUALITIES = [
 ] as const
 export const qualityLabel = (q?: string | null) => QUALITIES.find(x => x.value === q)?.label ?? (q ? q : '')
 
+// Kinds from lib/inventory/movements.ts (shared ledger with Produtos).
 export const REASONS: Record<string, string> = {
     os: 'Usada em OS', devolucao: 'Voltou da OS', compra: 'Compra recebida', ajuste: 'Ajuste manual',
-    defeito: 'Defeito', venda: 'Venda', inicial: 'Estoque inicial',
+    defeito: 'Defeito', venda: 'Venda', entrada: 'Entrada', saida: 'Saída',
 }
 
 export const qty = (n: number) => (Number.isInteger(Number(n)) ? String(Number(n)) : Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 2 }))

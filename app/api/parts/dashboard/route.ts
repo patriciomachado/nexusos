@@ -17,7 +17,7 @@ export async function GET() {
 
     const [{ data: parts }, { data: moves }, { data: orders }, { count: pendingDefects }] = await Promise.all([
         db.from('inventory_items').select('id, name, device_model, quantity_in_stock, minimum_quantity, cost_price, created_at').eq('company_id', companyId).eq('kind', 'peca').eq('is_active', true).limit(3000),
-        db.from('stock_movements').select('inventory_item_id, quantity, reason, created_at').eq('company_id', companyId).in('reason', ['os', 'venda', 'devolucao']).gte('created_at', since90).limit(20000),
+        db.from('inventory_movements').select('item_id, quantity, kind, created_at').eq('company_id', companyId).in('kind', ['os', 'venda', 'devolucao']).gte('created_at', since90).limit(20000),
         db.from('part_orders').select('status, total').eq('company_id', companyId).in('status', ['aberto', 'enviado']),
         db.from('part_defects').select('id', { count: 'exact', head: true }).eq('company_id', companyId).eq('resolution', 'pendente'),
     ])
@@ -27,11 +27,11 @@ export async function GET() {
     // Units out (net of OS give-backs) in 30 and 90 days, and last time each part left.
     const out30 = new Map<string, number>(), out90 = new Map<string, number>(), lastOut = new Map<string, number>()
     for (const m of moves ?? []) {
-        if (!ids.has(m.inventory_item_id)) continue
+        if (!ids.has(m.item_id)) continue
         const q = -Number(m.quantity)
-        out90.set(m.inventory_item_id, (out90.get(m.inventory_item_id) ?? 0) + q)
-        if (m.created_at >= since30) out30.set(m.inventory_item_id, (out30.get(m.inventory_item_id) ?? 0) + q)
-        if (q > 0) lastOut.set(m.inventory_item_id, Math.max(lastOut.get(m.inventory_item_id) ?? 0, new Date(m.created_at).getTime()))
+        out90.set(m.item_id, (out90.get(m.item_id) ?? 0) + q)
+        if (m.created_at >= since30) out30.set(m.item_id, (out30.get(m.item_id) ?? 0) + q)
+        if (q > 0) lastOut.set(m.item_id, Math.max(lastOut.get(m.item_id) ?? 0, new Date(m.created_at).getTime()))
     }
 
     // Profit per part on orders of the last 30 days.

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getContext } from '@/lib/security'
+import { isOwner } from '@/lib/cash/server'
 import Header from '@/components/layout/Header'
 import PostSalesClient, { type Rating, type Delivered } from '@/components/post-sales/PostSalesClient'
 
@@ -13,7 +14,8 @@ function daysAgo(days: number) {
 
 const one = <T,>(v: T | T[] | null | undefined): T | null => (Array.isArray(v) ? v[0] ?? null : v ?? null)
 
-export default async function PostSalesPage() {
+export default async function PostSalesPage({ searchParams }: { searchParams: Promise<{ tab?: string; google?: string }> }) {
+    const { tab, google } = await searchParams
     const ctx = await getContext()
     if (!ctx) redirect('/entrar')
     if (!['admin', 'owner', 'manager'].includes(ctx.role)) redirect('/dashboard')
@@ -80,6 +82,9 @@ export default async function PostSalesPage() {
                 delivered={delivered}
                 storeName={String(companyRes.data?.name ?? 'nossa loja')}
                 googleReviewUrl={(companyRes.data?.google_review_url as string | null) || null}
+                owner={isOwner(ctx.role)}
+                initialTab={tab}
+                googleFlash={google}
             />
         </div>
     )

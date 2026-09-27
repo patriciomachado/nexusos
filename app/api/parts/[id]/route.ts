@@ -12,7 +12,7 @@ export async function GET(_req: NextRequest, { params }: P) {
     const { data: part } = await db.from('inventory_items').select('*, suppliers(name, phone)').eq('id', id).eq('company_id', companyId).maybeSingle()
     if (!part) return bad('Peça não encontrada', 404)
     const [{ data: movements }, { data: quotes }, { data: defects }] = await Promise.all([
-        db.from('stock_movements').select('id, quantity, reason, notes, unit_cost, source_type, source_id, created_at, users(full_name)').eq('company_id', companyId).eq('inventory_item_id', id).order('created_at', { ascending: false }).limit(40),
+        db.from('inventory_movements').select('id, quantity, kind, reason, unit_cost, ref_id, created_at, users(full_name)').eq('company_id', companyId).eq('item_id', id).order('created_at', { ascending: false }).limit(40),
         db.from('supplier_prices').select('id, price, source, created_at, supplier_id, suppliers(name, phone)').eq('company_id', companyId).eq('inventory_item_id', id).order('created_at', { ascending: false }).limit(60),
         db.from('part_defects').select('id, quantity, reason, resolution, created_at, suppliers(name)').eq('company_id', companyId).eq('inventory_item_id', id).order('created_at', { ascending: false }).limit(20),
     ])

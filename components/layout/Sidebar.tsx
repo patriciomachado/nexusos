@@ -17,7 +17,7 @@ const MODES = [
     { id: 'closed', icon: PanelLeftClose, label: 'Sempre fechado' },
 ] as const
 
-export default function Sidebar({ userRole = 'attendant', hidden = [] }: { userRole?: UserRole; hidden?: string[] }) {
+export default function Sidebar({ userRole = 'attendant', hidden = [], off = [] }: { userRole?: UserRole; hidden?: string[]; off?: string[] }) {
     const pathname = usePathname()
     const store = useAppStore()
     const [mounted, setMounted] = useState(false)
@@ -27,7 +27,7 @@ export default function Sidebar({ userRole = 'attendant', hidden = [] }: { userR
     const fetchTaskSummary = useTaskStore(s => s.fetchSummary)
 
     const role = safeRoleOf(userRole)
-    const groups = visibleGroups(role, hidden)
+    const groups = visibleGroups(role, hidden, off)
     const showsTasks = groups.some(g => g.items.some(i => i.badge === 'tasks'))
 
     useEffect(() => {
@@ -75,7 +75,7 @@ export default function Sidebar({ userRole = 'attendant', hidden = [] }: { userR
             <div className="h-16 flex items-center gap-3 px-4 shrink-0" suppressHydrationWarning>
                 <div className="w-10 h-10 rounded-xl bg-white shadow-sm ring-1 ring-black/5 flex items-center justify-center overflow-hidden shrink-0 p-1">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <img width={400} height={400}
                         src={company?.logo_url || '/logo.png'}
                         alt={company?.name || 'NexusOS'}
                         className="w-full h-full object-contain"

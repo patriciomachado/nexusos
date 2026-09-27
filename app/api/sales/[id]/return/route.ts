@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logMovement } from '@/lib/inventory/movements'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { idSchema } from '@/lib/validations/schemas'
 import { findOpenRegister, isManager } from '@/lib/cash/server'
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             const { data: inv } = await db.from('inventory_items').select('quantity_in_stock').eq('id', it.inventory_item_id).eq('company_id', companyId).maybeSingle()
             if (inv) {
                 await db.from('inventory_items').update({ quantity_in_stock: Number(inv.quantity_in_stock) + qty }).eq('id', it.inventory_item_id).eq('company_id', companyId)
-                await db.from('stock_movements').insert({ company_id: companyId, inventory_item_id: it.inventory_item_id, quantity: qty, reason: 'devolucao', source_type: 'sale', source_id: id, user_id: dbUser.id })
+                await logMovement(db, { companyId, itemId: it.inventory_item_id, quantity: qty, balance: Number(inv.quantity_in_stock) + qty, kind: 'devolucao', reason: body.reason || 'Devolução de venda', refId: id, userId: dbUser.id })
             }
         }
     }

@@ -22,7 +22,7 @@ export async function PATCH(req: NextRequest, { params }: P) {
         .eq('id', id).eq('company_id', companyId).eq('resolution', 'pendente').select('inventory_item_id, quantity').maybeSingle()
     if (!d) return bad('Defeito não encontrado ou já resolvido', 404)
     if (parsed.data.resolution === 'trocada') {
-        await moveStock(db, companyId, { itemId: d.inventory_item_id, quantity: Number(d.quantity), reason: 'defeito', sourceType: 'part_defect', sourceId: id, userId: dbUser.id, notes: 'Troca do fornecedor' })
+        await moveStock(db, companyId, { itemId: d.inventory_item_id, quantity: Number(d.quantity), reason: 'defeito', refId: id, userId: dbUser.id, notes: 'Troca do fornecedor' })
     }
     return NextResponse.json({ success: true })
 }

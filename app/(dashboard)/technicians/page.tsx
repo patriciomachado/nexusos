@@ -49,7 +49,7 @@ export default async function TechniciansPage() {
                             <Link
                                 key={t.id}
                                 href={`/technicians/${t.id}`}
-                                className="group relative p-6 rounded-2xl bg-card border border-border hover:border-orange-500/30 transition-all hover:-translate-y-1 overflow-hidden"
+                                className="group relative p-6 rounded-2xl bg-card border border-border hover:border-orange-500/30 transition hover:-translate-y-1 overflow-hidden"
                             >
                                 {/* Glow effect */}
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 blur-[50px] rounded-full group-hover:bg-orange-500/10 transition-colors" />
@@ -126,7 +126,7 @@ export default async function TechniciansPage() {
                         <p className="text-foreground/50 text-lg max-w-md mx-auto mb-10">Sua equipe ainda não possui profissionais cadastrados no sistema.</p>
                         <Link
                             href="/technicians/new"
-                            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-foreground px-8 py-4 rounded-xl font-bold transition-all"
+                            className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-400 text-foreground px-8 py-4 rounded-xl font-bold transition"
                         >
                             <Plus className="w-5 h-5" />
                             Cadastrar Primeiro Técnico

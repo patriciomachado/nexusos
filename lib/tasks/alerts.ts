@@ -133,7 +133,7 @@ export async function collectAlerts(db: SupabaseClient, companyId: string, today
                     module: 'appointments',
                     title: a.title || (customer ? `Atendimento: ${customer}` : 'Agendamento'),
                     detail: `${relativeDayLabel(day, today)} às ${localTime(a.scheduled_date)}${customer && a.title ? ` · ${customer}` : ''}${a.status === 'scheduled' ? ' · não confirmado' : ''}`,
-                    href: '/appointments',
+                    href: '/agenda',
                     severity: day === today ? 'high' : 'low',
                     date: day,
                     time: localTime(a.scheduled_date),

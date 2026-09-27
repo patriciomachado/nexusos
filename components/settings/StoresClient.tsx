@@ -64,7 +64,7 @@ export default function StoresClient() {
                     <button key={s.id} type="button" onClick={() => switchTo(s)} disabled={!!switching} className="w-full flex items-center gap-3 px-3 py-2.5 min-h-[60px] text-left hover:bg-foreground/[0.02] disabled:opacity-70">
                         {s.logo_url
                             // eslint-disable-next-line @next/next/no-img-element
-                            ? <img src={s.logo_url} alt="" className="w-10 h-10 rounded-full object-contain bg-white border border-border/60" />
+                            ? <img width={40} height={40} src={s.logo_url} alt="" className="w-10 h-10 rounded-full object-contain bg-white border border-border/60" />
                             : <span className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center"><Store className="w-5 h-5" /></span>}
                         <span className="flex-1 min-w-0">
                             <span className="block text-[17px] truncate">{s.name}</span>

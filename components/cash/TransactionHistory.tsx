@@ -202,7 +202,7 @@ export default function TransactionHistory({ registers, onChanged, settings = nu
                         <Segmented className="ml-auto" size="sm" ariaLabel="Tipo" value={type} onChange={setType}
                             options={[{ value: 'all', label: 'Todas' }, { value: 'entry', label: 'Entradas' }, { value: 'exit', label: 'Saídas' }]} />
                     </div>
-                    <label className="flex items-center gap-2 h-11 px-3 rounded-xl bg-foreground/[0.06]">
+                    <label className="flex items-center gap-2 h-11 px-3 rounded-xl bg-foreground/[0.06] focus-within:ring-2 focus-within:ring-primary/40">
                         <Search className="w-[18px] h-[18px] text-muted-foreground shrink-0" />
                         <input
                             type="search"

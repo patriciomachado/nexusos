@@ -109,7 +109,7 @@ export default function CustomersClient({ role, openAutomations }: { role: strin
             <Header title="Clientes" />
             <div className="max-w-4xl mx-auto px-4 lg:px-8 pt-4 pb-16 space-y-4">
                 <div className="flex items-center gap-2">
-                    <label className="flex-1 min-w-0 flex items-center gap-2 h-12 px-3 rounded-xl bg-foreground/[0.06]">
+                    <label className="flex-1 min-w-0 flex items-center gap-2 h-12 px-3 rounded-xl bg-foreground/[0.06] focus-within:ring-2 focus-within:ring-primary/40">
                         <Search className="w-5 h-5 text-muted-foreground shrink-0" />
                         <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Nome, telefone, CPF ou IMEI" className="flex-1 min-w-0 bg-transparent text-[17px] outline-none" />
                         {query && <button type="button" onClick={() => setQuery('')} aria-label="Limpar"><X className="w-4 h-4 text-muted-foreground" /></button>}
@@ -228,7 +228,7 @@ function CampaignSheet({ targets, onClose }: { targets: CustomerRow[]; onClose: 
                 </div>
                 {progress && (
                     <div className="rounded-2xl bg-card border border-border/60 p-4 space-y-2">
-                        <div className="h-2 rounded-full bg-foreground/[0.06] overflow-hidden"><div className="h-full bg-emerald-500 transition-all" style={{ width: `${(progress.done / Math.max(1, withPhone.length)) * 100}%` }} /></div>
+                        <div className="h-2 rounded-full bg-foreground/[0.06] overflow-hidden"><div className="h-full bg-emerald-500 transition-[width]" style={{ width: `${(progress.done / Math.max(1, withPhone.length)) * 100}%` }} /></div>
                         <p className="text-[15px]"><CheckCircle2 className="w-4 h-4 inline text-emerald-600" /> {progress.sent} enviadas{progress.skipped ? ` · ${progress.skipped} puladas` : ''} · {progress.done}/{withPhone.length}</p>
                     </div>
                 )}

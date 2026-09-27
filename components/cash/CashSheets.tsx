@@ -12,7 +12,7 @@ import { type CashTx, cleanDescription, methodName, num, sourceLabel, timeOf } f
 /** Big money field ("R$ 0,00") with the numeric keypad on phones. */
 export function MoneyField({ value, onChange, autoFocus, label }: { value: string; onChange: (v: string) => void; autoFocus?: boolean; label: string }) {
     return (
-        <label className="block rounded-2xl bg-foreground/[0.04] px-4 py-3">
+        <label className="block rounded-2xl bg-foreground/[0.04] px-4 py-3 focus-within:ring-2 focus-within:ring-primary/40">
             <span className="block text-[13px] text-muted-foreground">{label}</span>
             <span className="flex items-baseline gap-2">
                 <span className="text-[22px] font-semibold text-muted-foreground">R$</span>

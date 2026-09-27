@@ -18,6 +18,7 @@ CREATE INDEX IF NOT EXISTS idx_suppliers_company ON suppliers(company_id);
 ALTER TABLE suppliers ENABLE ROW LEVEL SECURITY;
 
 -- Peças ficam no mesmo estoque dos produtos, marcadas como 'peca'.
+-- (location já existe desde 20261002_produtos_agenda.sql.)
 ALTER TABLE inventory_items ADD COLUMN IF NOT EXISTS kind VARCHAR(20) NOT NULL DEFAULT 'produto';
 ALTER TABLE inventory_items ADD COLUMN IF NOT EXISTS device_model VARCHAR(120);
 ALTER TABLE inventory_items ADD COLUMN IF NOT EXISTS part_quality VARCHAR(40);
@@ -44,24 +45,10 @@ CREATE TABLE IF NOT EXISTS supplier_prices (
 CREATE INDEX IF NOT EXISTS idx_supplier_prices_item ON supplier_prices(inventory_item_id, created_at DESC);
 ALTER TABLE supplier_prices ENABLE ROW LEVEL SECURITY;
 
--- Toda entrada e saída de estoque (OS, compra, ajuste, defeito, venda).
-CREATE TABLE IF NOT EXISTS stock_movements (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    inventory_item_id UUID NOT NULL REFERENCES inventory_items(id) ON DELETE CASCADE,
-    quantity NUMERIC(12,3) NOT NULL,
-    reason VARCHAR(20) NOT NULL,
-    source_type VARCHAR(30),
-    source_id UUID,
-    unit_cost NUMERIC(12,2),
-    notes TEXT,
-    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS idx_stock_movements_item ON stock_movements(inventory_item_id, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_stock_movements_source ON stock_movements(source_type, source_id);
-CREATE INDEX IF NOT EXISTS idx_stock_movements_company ON stock_movements(company_id, created_at DESC);
-ALTER TABLE stock_movements ENABLE ROW LEVEL SECURITY;
+-- Entradas e saídas de estoque usam a mesma tabela do módulo Produtos
+-- (inventory_movements, de 20261002_produtos_agenda.sql) via lib/inventory/movements.ts,
+-- em vez de uma tabela própria — assim a ficha de qualquer item, peça ou
+-- produto, mostra um único histórico.
 
 -- OS criadas a partir de agora baixam peças do estoque; as antigas não, para
 -- não descontar de novo o que já foi usado.

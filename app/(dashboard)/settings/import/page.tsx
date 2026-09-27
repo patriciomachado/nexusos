@@ -67,7 +67,7 @@ export default function ImportPage() {
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Clientes Card */}
-                <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition group overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
                         <FileText size={120} />
                     </div>
@@ -97,7 +97,7 @@ export default function ImportPage() {
                 </div>
 
                 {/* Ordens Card */}
-                <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition group overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
                         <Zap size={120} />
                     </div>
@@ -165,7 +165,7 @@ export default function ImportPage() {
 
                     <div className="h-3 w-full bg-muted rounded-full overflow-hidden border border-border p-0.5">
                         <div 
-                            className="h-full rounded-full transition-all duration-500" 
+                            className="h-full rounded-full transition-[width] duration-500" 
                             style={{ width: `${progress}%` }}
                         />
                     </div>
@@ -191,7 +191,7 @@ export default function ImportPage() {
  onClick={handleImport}
  disabled={isImporting || !customerFile || !orderFile}
  className={cn(
- "w-full md:w-auto min-w-[280px] h-16 rounded-2xl font-black text-lg transition-all duration-500 flex items-center justify-center gap-3",
+ "w-full md:w-auto min-w-[280px] h-16 rounded-2xl font-black text-lg transition duration-500 flex items-center justify-center gap-3",
  isImporting 
  ? "bg-muted text-muted-foreground cursor-not-allowed" 
  : "bg-primary text-white active:scale-95"

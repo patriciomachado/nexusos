@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import {
-    Banknote, Bell, Building2, ChevronRight, Clock, CreditCard, Database, Download, FileText, Landmark, MessageCircle,
-    Smartphone, Sparkles, Store, Upload, UserCheck, Users, Wallet, Wand2,
+    Bell, BellRing, Blocks, Building2, Calculator, ChevronRight, CreditCard, Database, Download, FileText, MessageCircle,
+    Smartphone, Sparkles, Store, Upload, UserCheck, Wallet, Wand2,
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import { SettingsRow, SettingsSection } from '@/components/settings/SettingsList'
@@ -11,6 +11,7 @@ import { isOwner } from '@/lib/cash/server'
 import { getCompanyPlan } from '@/lib/plan-server'
 import { PLANS } from '@/lib/plans'
 import { listStores } from '@/lib/stores/server'
+import { offModules } from '@/lib/modules'
 
 /** Settings hub in the iPhone "Ajustes" layout: every setting of the store in one list. */
 export default async function SettingsPage() {
@@ -20,10 +21,12 @@ export default async function SettingsPage() {
     const owner = isOwner(role)
 
     const [{ data: company }, plan, stores] = await Promise.all([
-        db.from('companies').select('name, logo_url, city, state, parent_company_id').eq('id', companyId).single(),
+        db.from('companies').select('name, logo_url, city, state, parent_company_id, settings').eq('id', companyId).single(),
         getCompanyPlan(db, companyId),
         listStores(db, userId, companyId, role).catch(() => []),
     ])
+
+    const offCount = offModules(company?.settings).length
 
     return (
         <div className="min-h-full bg-background">
@@ -32,7 +35,7 @@ export default async function SettingsPage() {
                 <Link href={owner ? '/settings/loja' : '/profile'} className="flex items-center gap-4 rounded-2xl bg-card border border-border/60 p-4 hover:bg-foreground/[0.02] transition-colors">
                     {company?.logo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={company.logo_url} alt="" className="w-14 h-14 rounded-full object-cover bg-white border border-border/60" />
+                        <img width={56} height={56} src={company.logo_url} alt="" className="w-14 h-14 rounded-full object-cover bg-white border border-border/60" />
                     ) : (
                         <span className="w-14 h-14 rounded-full bg-primary/10 text-primary text-[22px] font-semibold flex items-center justify-center">{company?.name?.charAt(0)?.toUpperCase() ?? 'N'}</span>
                     )}
@@ -54,9 +57,9 @@ export default async function SettingsPage() {
                         </SettingsSection>
 
                         <SettingsSection title="Vendas e dinheiro">
+                            <SettingsRow href="/settings/precos" icon={Calculator} color="bg-amber-500" label="Preços" detail="Custo da hora, lucro e tabela de serviços" />
                             <SettingsRow href="/settings/pagamentos" icon={CreditCard} color="bg-emerald-500" label="Formas de pagamento" />
                             <SettingsRow href="/cash-register?ajustes=1" icon={Wallet} color="bg-green-600" label="Caixa e maquininha" detail="Taxas, limite de sangria, senha do dono e relatório" />
-                            <SettingsRow href="/contas" icon={Landmark} color="bg-teal-600" label="Contas a pagar e receber" />
                         </SettingsSection>
 
                         <SettingsSection title="Documentos">
@@ -64,13 +67,11 @@ export default async function SettingsPage() {
                         </SettingsSection>
 
                         <SettingsSection title="Pessoas">
-                            <SettingsRow href="/team" icon={Users} color="bg-sky-500" label="Equipe" detail="Convites, comissões e metas" />
-                            <SettingsRow href="/team?tab=perms" icon={UserCheck} color="bg-cyan-600" label="Permissões por função" />
-                            <SettingsRow href="/team?tab=clock" icon={Clock} color="bg-slate-500" label="Ponto" />
+                            <SettingsRow href="/team?tab=perms" icon={UserCheck} color="bg-cyan-600" label="Permissões por função" detail="O que cada função vê no menu" />
                         </SettingsSection>
 
                         <SettingsSection title="Clientes e WhatsApp">
-                            <SettingsRow href="/alice" icon={MessageCircle} color="bg-green-500" label="Alice e WhatsApp" detail="Assistente de IA e número conectado" />
+                            <SettingsRow href="/alice?aba=config" icon={MessageCircle} color="bg-green-500" label="Alice e WhatsApp" detail="Quem usa, respostas e número conectado" />
                             <SettingsRow href="/customers?automacoes=1" icon={Bell} color="bg-rose-500" label="Mensagens automáticas" detail="Aniversário, pós-venda e revisão" />
                         </SettingsSection>
 
@@ -80,6 +81,8 @@ export default async function SettingsPage() {
                         </SettingsSection>
 
                         <SettingsSection title="Sistema">
+                            <SettingsRow href="/settings/notificacoes" icon={BellRing} color="bg-red-500" label="Notificações" detail="Lembretes no celular, câmera e microfone" />
+                            <SettingsRow href="/settings/modulos" icon={Blocks} color="bg-purple-500" label="Módulos" detail="Ligar e desligar partes do app" value={offCount ? `${offCount} desligado${offCount > 1 ? 's' : ''}` : undefined} />
                             <SettingsRow href="/dashboard?configurar=1" icon={Wand2} color="bg-fuchsia-500" label="Assistente de configuração" />
                             <SettingsRow href="/settings/tela" icon={Smartphone} color="bg-zinc-600" label="Diagnóstico da tela" detail="Quando o app aparece cortado no celular" />
                         </SettingsSection>
@@ -87,10 +90,9 @@ export default async function SettingsPage() {
                 ) : (
                     <>
                         <SettingsSection>
-                            <SettingsRow href="/team?tab=clock" icon={Clock} color="bg-slate-500" label="Meu ponto" />
+                            <SettingsRow href="/settings/notificacoes" icon={BellRing} color="bg-red-500" label="Notificações" detail="Lembretes no celular, câmera e microfone" />
                             {stores.length > 1 && <SettingsRow href="/settings/lojas" icon={Store} color="bg-indigo-500" label="Trocar de loja" value={`${stores.length} lojas`} />}
                             {role === 'manager' && <SettingsRow href="/settings/exportar" icon={Database} color="bg-blue-600" label="Exportar planilhas" />}
-                            {role === 'manager' && <SettingsRow href="/contas" icon={Banknote} color="bg-teal-600" label="Contas a pagar e receber" />}
                             <SettingsRow href="/settings/tela" icon={Smartphone} color="bg-zinc-600" label="Diagnóstico da tela" />
                         </SettingsSection>
                         <p className="px-4 text-[13px] text-muted-foreground">Os demais ajustes da loja ficam com o dono.</p>

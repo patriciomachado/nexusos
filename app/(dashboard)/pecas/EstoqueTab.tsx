@@ -140,7 +140,7 @@ function PartForm({ open, part, suppliers, onClose, onSaved }: { open: boolean; 
 
 interface Detail {
     part: Part & { suppliers?: { name: string; phone: string | null } | null }
-    movements: { id: string; quantity: number; reason: string; notes: string | null; created_at: string; users?: { full_name?: string } | null }[]
+    movements: { id: string; quantity: number; kind: string; reason: string | null; created_at: string; users?: { full_name?: string } | null }[]
     quotes: { id: string; price: number; source: string; created_at: string; supplier_id: string; suppliers?: { name: string } | null }[]
     defects: { id: string; quantity: number; reason: string | null; resolution: string; created_at: string }[]
 }
@@ -219,7 +219,7 @@ function PartDetail({ id, suppliers, onClose, onChanged, onEdit }: { id: string 
                             {view.movements.length === 0 ? <p className="px-4 py-3.5 text-[15px] text-muted-foreground">Nenhuma movimentação ainda.</p> : view.movements.map(m => (
                                 <div key={m.id} className="flex items-center gap-3 px-4 py-2.5">
                                     <span className="flex-1 min-w-0">
-                                        <span className="block text-[15px] truncate">{REASONS[m.reason] ?? m.reason}{m.notes ? ` · ${m.notes}` : ''}</span>
+                                        <span className="block text-[15px] truncate">{REASONS[m.kind] ?? m.kind}{m.reason ? ` · ${m.reason}` : ''}</span>
                                         <span className="block text-[12px] text-muted-foreground">{new Date(m.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}{m.users?.full_name ? ` · ${m.users.full_name}` : ''}</span>
                                     </span>
                                     <span className={cn('text-[15px] font-semibold tabular-nums', Number(m.quantity) > 0 ? 'text-emerald-600' : 'text-red-600')}>{Number(m.quantity) > 0 ? '+' : ''}{qty(m.quantity)}</span>

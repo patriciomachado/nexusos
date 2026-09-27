@@ -57,7 +57,7 @@ export async function PATCH(req: NextRequest, { params }: P) {
         if (qty <= 0) continue
         total += qty * cost
         received.push(line.inventory_item_id)
-        await moveStock(db, companyId, { itemId: line.inventory_item_id, quantity: qty, reason: 'compra', sourceType: 'part_order', sourceId: id, unitCost: cost, userId: dbUser.id })
+        await moveStock(db, companyId, { itemId: line.inventory_item_id, quantity: qty, reason: 'compra', refId: id, unitCost: cost, userId: dbUser.id })
         if (cost > 0) {
             await db.from('inventory_items').update({ cost_price: cost }).eq('id', line.inventory_item_id).eq('company_id', companyId)
             if (order.supplier_id) await db.from('supplier_prices').insert({ company_id: companyId, inventory_item_id: line.inventory_item_id, supplier_id: order.supplier_id, price: cost, source: 'compra' })

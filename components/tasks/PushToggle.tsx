@@ -155,12 +155,14 @@ export default function PushToggle({ className }: { className?: string }) {
                             <ol className="list-decimal pl-5 space-y-1.5 text-muted-foreground">
                                 <li>Toque em <strong className="text-foreground">Compartilhar</strong> no Safari.</li>
                                 <li>Escolha <strong className="text-foreground">Adicionar à Tela de Início</strong>.</li>
-                                <li>Abra o NexusOS pelo ícone e volte em Tarefas para ativar.</li>
+                                <li>Abra o NexusOS pelo ícone e volte aqui para ativar.</li>
                             </ol>
                         </>
                     )}
                     {state === 'denied' && (
-                        <p>As notificações estão bloqueadas para este site. Libere nas configurações do navegador (ícone de cadeado ao lado do endereço) e tente de novo.</p>
+                        isIos()
+                            ? <p>As notificações estão bloqueadas. No iPhone, abra <strong>Ajustes → Notificações → Nexus OS</strong>, ligue <strong>Permitir Notificações</strong> e volte aqui.</p>
+                            : <p>As notificações estão bloqueadas para este site. Libere nas configurações do navegador (ícone de cadeado ao lado do endereço) e tente de novo.</p>
                     )}
                     {state === 'server-off' && (
                         <>

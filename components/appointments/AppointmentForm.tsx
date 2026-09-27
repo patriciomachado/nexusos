@@ -1,23 +1,51 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Calendar as CalendarIcon, User, ClipboardList, Clock } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { PremiumInput } from '@/components/ui/PremiumInput'
-import PremiumSelect from '@/components/ui/PremiumSelect'
-import CustomerAutocomplete from '@/components/ui/CustomerAutocomplete'
-import TechnicianAutocomplete from '@/components/ui/TechnicianAutocomplete'
-import ServiceOrderAutocomplete from '@/components/ui/ServiceOrderAutocomplete'
+import { useState } from 'react'
+import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { Chips, Field, Group, PrimaryButton, SecondaryButton, TextArea, TextInput } from '@/components/ui/form'
+import OptionPicker from '@/components/ui/OptionPicker'
 
 interface AppointmentFormProps {
     onClose: () => void
     onSuccess?: () => void
-    customers: any[]
-    technicians: any[]
-    serviceOrders: any[]
+    customers: { id: string; name: string }[]
+    technicians: { id: string; name: string }[]
+    serviceOrders: { id: string; order_number?: number | string; title?: string }[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     appointment?: any // Prop for editing
     initialDate?: Date | null // Prop for pre-filling date
+}
+
+const STATUS: { value: string; label: string }[] = [
+    { value: 'scheduled', label: 'Agendado' },
+    { value: 'confirmed', label: 'Confirmado' },
+    { value: 'in_progress', label: 'Em andamento' },
+    { value: 'completed', label: 'Concluído' },
+]
+
+const DURATIONS = [
+    { value: '30', label: '30 min' },
+    { value: '60', label: '1 h' },
+    { value: '90', label: '1 h 30' },
+    { value: '120', label: '2 h' },
+    { value: '240', label: 'Meio período' },
+]
+
+const pad = (n: number) => String(n).padStart(2, '0')
+const localDate = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+const localTime = (d: Date) => `${pad(d.getHours())}:${pad(d.getMinutes())}`
+
+function initialWhen(appointment?: { scheduled_date?: string }, initialDate?: Date | null) {
+    const now = new Date()
+    if (appointment?.scheduled_date) {
+        const dt = new Date(appointment.scheduled_date)
+        return { date: localDate(dt), time: localTime(dt) }
+    }
+    // Today: the next full hour. Another day: 9h.
+    const day = localDate(initialDate ?? now)
+    const nextHour = new Date(now); nextHour.setMinutes(0, 0, 0); nextHour.setHours(now.getHours() + 1)
+    return { date: day, time: day === localDate(now) ? localTime(nextHour) : '09:00' }
 }
 
 export default function AppointmentForm({
@@ -30,68 +58,60 @@ export default function AppointmentForm({
     initialDate
 }: AppointmentFormProps) {
     const [loading, setLoading] = useState(false)
-    const [status, setStatus] = useState(appointment?.status || 'scheduled')
+    const [status, setStatus] = useState<string>(appointment?.status || 'scheduled')
     const [customerId, setCustomerId] = useState(appointment?.customer_id || '')
     const [technicianId, setTechnicianId] = useState(appointment?.technician_id || '')
     const [serviceOrderId, setServiceOrderId] = useState(appointment?.service_order_id || '')
     const [notes, setNotes] = useState(appointment?.notes || '')
-    const [date, setDate] = useState('')
-    const [time, setTime] = useState('')
+    const [title, setTitle] = useState(appointment?.title || '')
+    const [address, setAddress] = useState(appointment?.location_address || '')
+    const [duration, setDuration] = useState<string>(() => {
+        if (!appointment?.scheduled_end_date) return '60'
+        const min = Math.round((+new Date(appointment.scheduled_end_date) - +new Date(appointment.scheduled_date)) / 60000)
+        return DURATIONS.some(d => d.value === String(min)) ? String(min) : '60'
+    })
+    const [when] = useState(() => initialWhen(appointment, initialDate))
+    const [date, setDate] = useState(when.date)
+    const [time, setTime] = useState(when.time)
     const [customers, setCustomers] = useState(initialCustomers)
-    const [isCreatingCustomer, setIsCreatingCustomer] = useState(false)
+    const [invalid, setInvalid] = useState(false)
 
-    useEffect(() => {
-        if (appointment) {
-            const dt = new Date(appointment.scheduled_date)
-            setDate(dt.toISOString().split('T')[0])
-            setTime(dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
-        } else if (initialDate) {
-            setDate(initialDate.toISOString().split('T')[0])
-            setTime(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
-        } else {
-            const now = new Date()
-            setDate(now.toISOString().split('T')[0])
-            setTime(now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
-        }
-    }, [appointment, initialDate])
-
-    const handleCreateCustomer = async (name: string) => {
-        setIsCreatingCustomer(true)
+    const createCustomer = async (name: string) => {
         try {
             const res = await fetch('/api/customers', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, is_active: true })
             })
-            if (!res.ok) throw new Error('Falha ao criar cliente')
-            const newCustomer = await res.json()
-            setCustomers(prev => [...prev, newCustomer])
-            setCustomerId(newCustomer.id)
-            toast.success('Cliente criado com sucesso!')
-        } catch (error) {
-            toast.error('Erro ao criar cliente')
-        } finally {
-            setIsCreatingCustomer(false)
+            if (!res.ok) throw new Error()
+            const created = await res.json()
+            setCustomers(prev => [...prev, { id: created.id, name: created.name ?? name }])
+            toast.success('Cliente cadastrado')
+            return created.id as string
+        } catch {
+            toast.error('Não foi possível cadastrar o cliente. Tente de novo.')
+            return null
         }
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!customerId) {
-            toast.error('Selecione um cliente')
+            setInvalid(true)
+            toast.error('Escolha o cliente')
             return
         }
         setLoading(true)
-
-        // Combine date and time
-        const scheduled_date = new Date(`${date}T${time}`).toISOString()
-
+        const start = new Date(`${date}T${time}`)
         const payload = {
             id: appointment?.id,
             customer_id: customerId,
             technician_id: technicianId || null,
             service_order_id: serviceOrderId || null,
-            scheduled_date,
+            title: title.trim() || null,
+            scheduled_date: start.toISOString(),
+            scheduled_end_date: new Date(+start + Number(duration) * 60000).toISOString(),
+            location_address: address.trim() || null,
             status,
             notes
         }
@@ -102,123 +122,90 @@ export default function AppointmentForm({
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             })
-
-            if (!res.ok) throw new Error('Erro ao salvar agendamento')
-
-            toast.success(appointment ? 'Agendamento atualizado!' : 'Agendamento criado!')
+            if (!res.ok) {
+                const d = await res.json().catch(() => ({}))
+                throw new Error(typeof d.error === 'string' ? d.error : 'Não foi possível salvar o agendamento. Confira a conexão e tente de novo.')
+            }
+            toast.success(appointment ? 'Agendamento atualizado' : 'Agendamento criado')
             onSuccess?.()
             onClose()
-        } catch (error) {
-            toast.error('Erro ao salvar agendamento')
+        } catch (err) {
+            toast.error((err as Error).message)
         } finally {
             setLoading(false)
         }
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6" suppressHydrationWarning>
-                <div className="space-y-4" suppressHydrationWarning>
-                    <div className="flex items-center gap-2 mb-2" suppressHydrationWarning>
-                        <User className="w-4 h-4 text-primary" />
-                        <h3 className="text-xs font-semibold text-muted-foreground">Informações do Cliente</h3>
-                    </div>
-
-                    <CustomerAutocomplete
-                        customers={customers}
-                        selectedId={customerId}
-                        onSelect={setCustomerId}
-                        onAdd={handleCreateCustomer}
-                        isAdding={isCreatingCustomer}
-                        placeholder="Pesquisar cliente..."
-                        label="Cliente"
-                    />
-
-                    <TechnicianAutocomplete
-                        technicians={technicians}
-                        selectedId={technicianId}
-                        onSelect={setTechnicianId}
-                        label="Técnico Responsável"
-                        placeholder="Pesquisar técnico..."
-                    />
-                </div>
-
-                <div className="space-y-4" suppressHydrationWarning>
-                    <div className="flex items-center gap-2 mb-2" suppressHydrationWarning>
-                        <CalendarIcon className="w-4 h-4 text-primary" />
-                        <h3 className="text-xs font-semibold text-muted-foreground">Data e Horário</h3>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4" suppressHydrationWarning>
-                        <PremiumInput
-                            type="date"
-                            label="Data"
-                            required
-                            value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                        />
-                        <PremiumInput
-                            type="time"
-                            label="Hora"
-                            required
-                            value={time}
-                            onChange={(e) => setTime(e.target.value)}
-                        />
-                    </div>
-                    <PremiumSelect
-                        label="Status Inicial"
-                        selectedId={status}
-                        onSelect={setStatus}
-                        options={[
-                            { id: 'scheduled', name: 'Agendado' },
-                            { id: 'confirmed', name: 'Confirmado' },
-                            { id: 'in_progress', name: 'Em Andamento' },
-                            { id: 'completed', name: 'Concluído' }
-                        ]}
-                    />
-                </div>
-            </div>
-
-            <div className="space-y-4" suppressHydrationWarning>
-                <div className="flex items-center gap-2 mb-2" suppressHydrationWarning>
-                    <ClipboardList className="w-4 h-4 text-primary" />
-                    <h3 className="text-xs font-semibold text-muted-foreground">Detalhes do Serviço</h3>
-                </div>
-
-                <ServiceOrderAutocomplete
-                    serviceOrders={serviceOrders}
-                    selectedId={serviceOrderId}
-                    onSelect={setServiceOrderId}
-                    label="Vincular Ordem de Serviço (Opcional)"
-                    placeholder="Número ou título da OS..."
+        <form onSubmit={handleSubmit} className="space-y-5">
+            <Group>
+                <OptionPicker
+                    label="Cliente"
+                    options={customers}
+                    value={customerId}
+                    onChange={id => { setCustomerId(id); setInvalid(false) }}
+                    searchPlaceholder="Buscar cliente"
+                    emptyText="Nenhum cliente cadastrado ainda."
+                    onCreate={createCustomer}
+                    invalid={invalid && !customerId}
                 />
+                <OptionPicker
+                    label="Técnico"
+                    options={technicians}
+                    value={technicianId}
+                    onChange={setTechnicianId}
+                    placeholder="Nenhum"
+                    searchPlaceholder="Buscar técnico"
+                    emptyText="Nenhum técnico cadastrado ainda."
+                    optional
+                />
+                <Field label="Serviço" htmlFor="ap-title">
+                    <TextInput id="ap-title" value={title} onChange={e => setTitle(e.target.value)} placeholder="Ex.: Troca de tela, orçamento, retirada…" />
+                </Field>
+            </Group>
 
-                <div className="p-4 rounded-2xl bg-foreground/[0.03] border border-border/60 space-y-2" suppressHydrationWarning>
-                    <label className="text-[13px] font-medium text-muted-foreground" suppressHydrationWarning>Observações</label>
-                    <textarea
-                        className="w-full bg-transparent border-none outline-none text-sm min-h-[100px] resize-none text-foreground placeholder-white/10"
-                        placeholder="Instruções adicionais para o técnico..."
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        suppressHydrationWarning
-                    />
+            <Group>
+                <div className="grid grid-cols-2 divide-x divide-border/60">
+                    <Field label="Data" htmlFor="ap-date"><TextInput id="ap-date" type="date" required value={date} onChange={e => setDate(e.target.value)} /></Field>
+                    <Field label="Hora" htmlFor="ap-time"><TextInput id="ap-time" type="time" required value={time} onChange={e => setTime(e.target.value)} /></Field>
                 </div>
-            </div>
+                <div className="p-3">
+                    <Chips ariaLabel="Duração" options={DURATIONS} value={duration} onChange={setDuration} />
+                </div>
+                <Field label="Endereço" htmlFor="ap-address" hint="Só para visita ou busca na casa do cliente.">
+                    <TextInput id="ap-address" value={address} onChange={e => setAddress(e.target.value)} placeholder="Opcional" autoComplete="off" />
+                </Field>
+            </Group>
 
-            <div className="flex justify-end gap-3 pt-6 border-t border-border/60" suppressHydrationWarning>
-                <button
- type="button"
- onClick={onClose}
- className="px-6 py-3 rounded-2xl text-[13px] font-semibold text-muted-foreground hover:text-foreground transition-colors"
- >
-                    Cancelar
-                </button>
-                <button
- type="submit"
- disabled={loading || isCreatingCustomer}
- className="px-8 py-3 rounded-2xl bg-primary text-primary-foreground active:scale-95 transition-all font-semibold text-[13px] disabled:opacity-50"
- >
-                    {loading ? 'Salvando...' : appointment ? 'Salvar Alterações' : 'Confirmar Agendamento'}
-                </button>
+            <Group title="Situação">
+                <div className="p-3">
+                    <Chips ariaLabel="Situação" options={STATUS} value={status} onChange={setStatus} />
+                </div>
+            </Group>
+
+            <Group>
+                <OptionPicker
+                    label="Ordem de serviço"
+                    title="Vincular OS"
+                    options={serviceOrders.map(o => ({ id: o.id, name: `#${o.order_number ?? ''} ${o.title ?? ''}`.trim() }))}
+                    value={serviceOrderId}
+                    onChange={setServiceOrderId}
+                    placeholder="Nenhuma"
+                    searchPlaceholder="Número ou título da OS"
+                    emptyText="Nenhuma OS aberta."
+                    optional
+                />
+                <Field label="Observações" htmlFor="ap-notes">
+                    <TextArea id="ap-notes" rows={3} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Instruções para o técnico…" />
+                </Field>
+            </Group>
+
+            <div className="flex gap-2">
+                <SecondaryButton onClick={onClose}>Cancelar</SecondaryButton>
+                <PrimaryButton type="submit" className="flex-1" disabled={loading}>
+                    {loading && <Loader2 aria-hidden className="w-5 h-5 animate-spin" />}
+                    {appointment ? 'Salvar alterações' : 'Agendar'}
+                </PrimaryButton>
             </div>
         </form>
     )

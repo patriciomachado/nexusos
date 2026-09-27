@@ -219,7 +219,7 @@ export default function SetupAssistant({ company }: { company: SetupCompany }) {
                                 <label className="relative w-20 h-20 rounded-2xl bg-card border border-border/60 overflow-hidden flex items-center justify-center cursor-pointer shrink-0">
                                     {v.logo_url
                                         // eslint-disable-next-line @next/next/no-img-element
-                                        ? <img src={v.logo_url} alt="Logo da loja" className="w-full h-full object-contain p-1.5" />
+                                        ? <img width={400} height={400} src={v.logo_url} alt="Logo da loja" className="w-full h-full object-contain p-1.5" />
                                         : uploading ? <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /> : <Camera className="w-6 h-6 text-muted-foreground" />}
                                     <input type="file" accept="image/*" className="sr-only" onChange={e => uploadLogo(e.target.files?.[0] ?? null)} aria-label="Enviar logo" />
                                 </label>

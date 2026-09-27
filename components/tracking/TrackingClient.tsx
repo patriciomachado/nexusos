@@ -236,7 +236,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                         <button
                             onClick={handleSubmit}
                             disabled={isPending || !termsAccepted || !privacyAccepted}
-                            className="w-full bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-3 group"
+                            className="w-full bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-500/20 transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-3 group"
                         >
                             {isPending ? (
                                 <span className="flex items-center gap-2">

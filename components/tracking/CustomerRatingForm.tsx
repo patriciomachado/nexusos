@@ -112,7 +112,7 @@ export default function CustomerRatingForm({ token }: CustomerRatingFormProps) {
                                 cx="32"
                                 cy="32"
                                 r="28"
-                                className="stroke-indigo-600 dark:stroke-indigo-400 transition-all duration-1000 ease-linear"
+                                className="stroke-indigo-600 dark:stroke-indigo-400 transition duration-1000 ease-linear"
                                 strokeWidth="4"
                                 fill="transparent"
                                 strokeDasharray={176}
@@ -127,7 +127,7 @@ export default function CustomerRatingForm({ token }: CustomerRatingFormProps) {
                 <div className="w-full space-y-3">
                     <a
                         href={reviewUrl}
-                        className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl py-4 px-6 font-black text-sm shadow-[0_4px_25px_rgba(79,70,229,0.35)] transition-all hover:-translate-y-0.5"
+                        className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl py-4 px-6 font-black text-sm shadow-[0_4px_25px_rgba(79,70,229,0.35)] transition hover:-translate-y-0.5"
                     >
                         Avaliar no Google Agora
                         <ExternalLink className="w-4 h-4" />
@@ -165,7 +165,7 @@ export default function CustomerRatingForm({ token }: CustomerRatingFormProps) {
 
                 <button
                     onClick={() => router.refresh()}
-                    className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-2xl py-4 px-6 font-bold text-sm transition-all"
+                    className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-2xl py-4 px-6 font-bold text-sm transition"
                 >
                     Voltar para a Ordem de Serviço
                 </button>
@@ -186,7 +186,7 @@ export default function CustomerRatingForm({ token }: CustomerRatingFormProps) {
                             onClick={() => setRating(star)}
                             onMouseEnter={() => setHoverRating(star)}
                             onMouseLeave={() => setHoverRating(0)}
-                            className={`p-2 rounded-full transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 ${(hoverRating || rating) >= star
+                            className={`p-2 rounded-full transition duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 ${(hoverRating || rating) >= star
                                     ? 'text-yellow-400'
                                     : 'text-slate-300 dark:text-slate-700'
                                 }`}
@@ -201,13 +201,13 @@ export default function CustomerRatingForm({ token }: CustomerRatingFormProps) {
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         placeholder="Deixe um comentário sobre o seu atendimento (opcional)"
-                        className="w-full bg-white dark:bg-[#0a0a0f] border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all resize-none h-24"
+                        className="w-full bg-white dark:bg-[#0a0a0f] border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition resize-none h-24"
                     />
 
                     <button
                         type="submit"
                         disabled={rating === 0 || isLoading}
-                        className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl py-3.5 px-6 font-bold text-sm shadow-[0_4px_20px_rgba(79,70,229,0.3)] transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5"
+                        className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl py-3.5 px-6 font-bold text-sm shadow-[0_4px_20px_rgba(79,70,229,0.3)] transition disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5"
                     >
                         {isLoading ? (
                             <Loader2 className="w-5 h-5 animate-spin" />

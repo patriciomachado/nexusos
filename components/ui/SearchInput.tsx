@@ -13,7 +13,7 @@ interface SearchInputProps {
 }
 
 export default function SearchInput({
-    placeholder = "Pesquisar...",
+    placeholder = "Pesquisar…",
     className = "w-full h-10 bg-foreground/[0.06] border border-transparent rounded-xl pl-10 pr-3 md:text-[15px] text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:bg-card focus:border-primary focus:ring-4 focus:ring-primary/15 transition-colors",
     value,
     onChange,
@@ -62,9 +62,11 @@ export default function SearchInput({
 
     return (
         <div className="relative w-full group">
-            <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${isPending ? 'text-primary animate-pulse' : 'text-muted-foreground group-focus-within:text-primary'}`} />
+            <Search aria-hidden className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${isPending ? 'text-primary animate-pulse' : 'text-muted-foreground group-focus-within:text-primary'}`} />
             <input
-                type="text"
+                type="search"
+                aria-label={placeholder.replace(/…$/, '')}
+                autoComplete="off"
                 placeholder={placeholder}
                 value={value !== undefined ? value : searchTerm}
                 onChange={onChange || ((e) => setSearchTerm(e.target.value))}
