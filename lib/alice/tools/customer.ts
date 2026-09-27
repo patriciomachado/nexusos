@@ -4,6 +4,7 @@ import { OS_STATUS_LABELS, brl, cleanSearch, formatDate, formatDateTime, todayIn
 import { appUrl, ADMIN_ROLES } from '../config'
 import { formatWhatsApp } from '../phone'
 import { pushToCompany } from '@/lib/tasks/reminders'
+import { createPartQuote } from '@/lib/parts/quotes'
 
 /**
  * Tools for the WhatsApp agent. None of them takes an id from the model:
@@ -160,17 +161,26 @@ const cotarPeca = defineCustomer({
         ])
         if (!rows?.length) return { encontrado: false, instrucao: 'Nada cadastrado para esse aparelho/serviço. Use registrar_pedido para a loja preparar o orçamento.' }
 
-        const opcoes = rows.map(r => {
+        const deviceModel = rows[0].device_model
+        const opcoesNum = rows.map(r => {
             const part = (Array.isArray(r.inventory_items) ? r.inventory_items[0] : r.inventory_items) as { part_quality?: string | null } | null
             const quality = part?.part_quality ?? null
-            return { aparelho: r.device_model, servico: r.service, tipo: quality ? (TIER_LABELS[quality] ?? quality) : null, valor: brl(Number(r.price) || 0) }
+            return { tipo: quality ? (TIER_LABELS[quality] ?? quality) : null, valor: Number(r.price) || 0 }
         })
+        const opcoes = opcoesNum.map(o => ({ tipo: o.tipo, valor: brl(o.valor) }))
+        const token = await createPartQuote(ctx.db, ctx.companyId, {
+            deviceModel, service: servico, options: opcoesNum,
+            customerName: ctx.customer?.name ?? null, customerPhone: ctx.customer?.phone ?? null,
+        })
+        const link = token ? `${appUrl()}/orcamento/${token}` : null
 
         if (aliceSettings?.auto_quote_parts) {
-            return { encontrado: true, pode_informar_ao_cliente: true, opcoes, instrucao: 'Informe esses valores ao cliente como "a partir de", deixando claro que o valor final é confirmado na avaliação técnica na loja.' }
+            const linhas = opcoesNum.map(o => `• ${o.tipo ? `${o.tipo}: ` : ''}${brl(o.valor)}`).join('\n')
+            const mensagem_sugerida = `Orçamento pra *${servico}* no *${deviceModel}*:\n\n${linhas}\n\nValores a partir de, sujeitos à avaliação técnica na loja.${link ? `\n\nDetalhes: ${link}` : ''}`
+            return { encontrado: true, pode_informar_ao_cliente: true, opcoes, link, mensagem_sugerida, instrucao: 'Mande a mensagem_sugerida ao cliente quase como está (pode ajustar o tom, mas mantenha os valores e o link).' }
         }
-        await notifyStore(ctx, `Orçamento calculado: ${servico} · ${aparelho}`, opcoes.map(o => `${o.tipo ? o.tipo + ': ' : ''}${o.valor}`).join(' / '), 2)
-        return { encontrado: true, pode_informar_ao_cliente: false, instrucao: 'Não informe nenhum valor. Diga ao cliente que a loja já está com o orçamento calculado e vai confirmar e enviar em instantes.' }
+        await notifyStore(ctx, `Orçamento calculado: ${servico} · ${deviceModel}`, `${opcoes.map(o => `${o.tipo ? o.tipo + ': ' : ''}${o.valor}`).join(' / ')}${link ? ` — ${link}` : ''}`, 2)
+        return { encontrado: true, pode_informar_ao_cliente: false, instrucao: 'Não informe nenhum valor nem o link. Diga ao cliente que a loja já está com o orçamento calculado e vai confirmar e enviar em instantes.' }
     },
 })
 
