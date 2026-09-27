@@ -48,6 +48,8 @@ export default async function InventoryPage({
         .select('*')
         .eq('company_id', user?.company_id)
         .eq('is_active', true)
+        // Parts live in Peças e componentes.
+        .neq('kind', 'peca')
 
     if (search) {
         query = query.or(`name.ilike.%${search}%,sku.ilike.%${search}%`)

@@ -7,7 +7,10 @@ import { getLocalDateTimePickerValue } from '@/lib/utils'
 import { buildInternalNotes, parseInternalNotes, type DeviceLock } from '@/lib/os/notes'
 
 export interface Option { id: string; name: string }
-export interface InventoryOption { id: string; name: string; selling_price: number; cost_price?: number | null; category?: string | null }
+export interface InventoryOption { id: string; name: string; selling_price: number; cost_price?: number | null; category?: string | null; kind?: string | null; device_model?: string | null; quantity_in_stock?: number | null }
+
+/** A row of the repair price table (Peças → Preços). */
+export interface PriceOption { id: string; device_model: string; service: string; part_item_id: string | null; price: number; part_cost: number; part_name: string | null; part_stock: number | null }
 
 export interface OSItem {
     key: string

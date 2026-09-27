@@ -8,7 +8,7 @@ import CustomerPicker from './CustomerPicker'
 import DeviceLockInput from './DeviceLockInput'
 import ItemsEditor from './ItemsEditor'
 import { brl, Chips, Field, Group, moneyText, parseMoney, SelectRow, SwitchRow, TextArea, TextInput } from '@/components/ui/form'
-import { DEVICE_TYPES, PRIORITY_OPTIONS, STATUS_OPTIONS, type InventoryOption, type OSFormState, type Option, type SideKey } from './state'
+import { DEVICE_TYPES, PRIORITY_OPTIONS, STATUS_OPTIONS, type InventoryOption, type OSFormState, type PriceOption, type Option, type SideKey } from './state'
 
 /* ─── Cliente ──────────────────────────────────────────────────────────── */
 
@@ -227,13 +227,13 @@ function MoneyInput({ id, value, onChange }: { id: string; value: number; onChan
 
 /* ─── Orçamento ────────────────────────────────────────────────────────── */
 
-export function BudgetSection({ state, inventory }: { state: OSFormState; inventory: InventoryOption[] }) {
+export function BudgetSection({ state, inventory, prices }: { state: OSFormState; inventory: InventoryOption[]; prices?: PriceOption[] }) {
     const { values: v, set, items, setItems, totals } = state
     return (
         <div className="space-y-6">
             <section className="space-y-1.5">
                 <h3 className="px-4 text-[13px] font-medium text-muted-foreground">Peças e serviços</h3>
-                <ItemsEditor items={items} onChange={setItems} inventory={inventory} />
+                <ItemsEditor items={items} onChange={setItems} inventory={inventory} prices={prices} device={`${v.title} ${v.equipment_description}`} />
                 <p className="px-4 text-[13px] text-muted-foreground">Pode deixar em branco e orçar depois do diagnóstico.</p>
             </section>
             {items.length > 0 && (

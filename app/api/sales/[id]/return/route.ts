@@ -51,7 +51,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         it.returned_quantity = Number(it.returned_quantity || 0) + qty
         if (it.inventory_item_id) {
             const { data: inv } = await db.from('inventory_items').select('quantity_in_stock').eq('id', it.inventory_item_id).eq('company_id', companyId).maybeSingle()
-            if (inv) await db.from('inventory_items').update({ quantity_in_stock: Number(inv.quantity_in_stock) + qty }).eq('id', it.inventory_item_id).eq('company_id', companyId)
+            if (inv) {
+                await db.from('inventory_items').update({ quantity_in_stock: Number(inv.quantity_in_stock) + qty }).eq('id', it.inventory_item_id).eq('company_id', companyId)
+                await db.from('stock_movements').insert({ company_id: companyId, inventory_item_id: it.inventory_item_id, quantity: qty, reason: 'devolucao', source_type: 'sale', source_id: id, user_id: dbUser.id })
+            }
         }
     }
     refund = Math.round(refund * 100) / 100

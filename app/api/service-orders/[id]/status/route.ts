@@ -1,3 +1,4 @@
+import { syncServiceOrderStock } from '@/lib/parts/stock'
 import { NextRequest, NextResponse } from 'next/server'
 import { findOpenRegister } from '@/lib/cash/server'
 import { notifyReady } from '@/lib/os/notify'
@@ -152,6 +153,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     await db.from('service_orders').update(updateData).eq('id', id).eq('company_id', companyId)
+    // Cancelling gives the parts back; reopening takes them again.
+    await syncServiceOrderStock(db, companyId, id, { userId: ctx.dbUser.id })
 
     // Log history
     await db.from('service_order_history').insert({

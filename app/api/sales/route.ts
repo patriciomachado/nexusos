@@ -88,7 +88,8 @@ export async function POST(req: NextRequest) {
 
             stockUpdates.push({
                 id: item.inventory_item_id,
-                new_stock: Number(stockItem.quantity_in_stock) - Number(item.quantity)
+                new_stock: Number(stockItem.quantity_in_stock) - Number(item.quantity),
+                quantity: Number(item.quantity),
             })
         }
 
@@ -216,6 +217,8 @@ export async function POST(req: NextRequest) {
                 })
                 .eq('id', updateData.id)
                 .eq('company_id', companyId)
+            // Stock history (Peças → movimentações); ignored before the parts migration.
+            await db.from('stock_movements').insert({ company_id: companyId, inventory_item_id: updateData.id, quantity: -updateData.quantity, reason: 'venda', source_type: 'sale', source_id: sale.id, user_id: dbUser.id })
         }
 
         // Update total cost on sale header

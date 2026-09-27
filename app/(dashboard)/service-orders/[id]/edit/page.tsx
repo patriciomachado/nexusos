@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { createAdminClient } from '@/lib/supabase'
+import { loadItemOptions } from '@/lib/os/options'
 import { notFound } from 'next/navigation'
 import Header from '@/components/layout/Header'
 import OSEditForm from '@/components/os/form/OSEditForm'
@@ -28,12 +29,12 @@ export default async function EditServiceOrderPage({ params }: { params: Promise
     const [
         { data: customers },
         { data: technicians },
-        { data: inventoryItems },
+        { inventory: inventoryItems, prices },
         { data: osItems }
     ] = await Promise.all([
         db.from('customers').select('id, name').eq('company_id', companyId).eq('is_active', true).order('name'),
         db.from('technicians').select('id, name').eq('company_id', companyId).eq('is_active', true).order('name'),
-        db.from('inventory_items').select('id, name, selling_price, cost_price, category').eq('company_id', companyId).eq('is_active', true).order('name'),
+        loadItemOptions(db, companyId),
         db.from('service_order_items').select('*').eq('service_order_id', id)
     ])
 
@@ -45,6 +46,7 @@ export default async function EditServiceOrderPage({ params }: { params: Promise
                 customers={customers || []}
                 technicians={technicians || []}
                 inventory={inventoryItems || []}
+                prices={prices}
                 companyId={companyId}
             />
         </div>
