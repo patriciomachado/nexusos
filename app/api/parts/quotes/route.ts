@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { bad, firstIssue, partsContext } from '@/lib/parts/server'
-import { createPartQuote, findQuoteOptions } from '@/lib/parts/quotes'
+import { buildQuoteMessage, createPartQuote, findQuoteOptions } from '@/lib/parts/quotes'
 import { appUrl } from '@/lib/alice/config'
 
 const schema = z.object({
@@ -19,5 +19,6 @@ export async function POST(req: NextRequest) {
     if (!found) return bad('Nenhum preço cadastrado pra esse aparelho e serviço', 404)
     const token = await createPartQuote(db, companyId, { deviceModel: found.deviceModel, service: parsed.data.service, options: found.options })
     if (!token) return bad('Não foi possível gerar o link agora', 500)
-    return NextResponse.json({ url: `${appUrl()}/orcamento/${token}` })
+    const url = `${appUrl()}/orcamento/${token}`
+    return NextResponse.json({ url, message: buildQuoteMessage(found.deviceModel, parsed.data.service, found.options, url) })
 }

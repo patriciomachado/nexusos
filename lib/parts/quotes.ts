@@ -1,7 +1,7 @@
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { randomBytes } from 'crypto'
-import { cleanSearch } from '@/lib/alice/tools/helpers'
+import { brl, cleanSearch } from '@/lib/alice/tools/helpers'
 
 export interface PartQuoteOption { tipo: string | null; valor: number }
 
@@ -51,4 +51,10 @@ export async function createPartQuote(db: SupabaseClient, companyId: string, inp
     })
     if (error) { console.error('[part_quotes] create failed:', error); return null }
     return token
+}
+
+/** Texto pronto pra mandar no WhatsApp: as opções cotadas + o link do orçamento. */
+export function buildQuoteMessage(deviceModel: string, service: string, options: PartQuoteOption[], link: string) {
+    const linhas = options.map(o => `• ${o.tipo ? `${o.tipo}: ` : ''}${brl(o.valor)}`).join('\n')
+    return `Orçamento pra *${service}* no *${deviceModel}*:\n\n${linhas}\n\nValores a partir de, sujeitos à avaliação técnica na loja.\n\nDetalhes: ${link}`
 }
