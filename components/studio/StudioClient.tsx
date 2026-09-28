@@ -2,12 +2,14 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { CalendarDays, ChevronRight, ClipboardList, Loader2, Palette, Plus, Smartphone, Sparkles, Wrench } from 'lucide-react'
+import { CalendarDays, ChevronRight, ClipboardList, Flame, Loader2, Palette, Plus, Smartphone, Sparkles, Wrench } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import { Group, PrimaryButton, TextInput, brl } from '@/components/ui/form'
+import { localDateString } from '@/lib/tasks/dates'
 import { upcomingEvents } from '@/lib/studio/events'
 import type { Brand } from '@/lib/studio/brand'
 import type { Source } from '@/lib/studio/sources'
+import { publishStreak } from '@/lib/studio/streak'
 import { cn } from '@/lib/utils'
 import Composer from './Composer'
 import BrandSheet from './BrandSheet'
@@ -34,6 +36,7 @@ export interface SavedPost {
     scheduled_for: string | null
     art: Record<string, unknown> | null
     created_at: string
+    published_at: string | null
 }
 export interface AiQuota { used: number; limit: number; configured: boolean }
 
@@ -75,6 +78,9 @@ export default function StudioClient({ brand: initialBrand, orders, devices, ini
     const [filter, setFilter] = useState<'todos' | SavedPost['status']>('todos')
 
     const events = useMemo(() => upcomingEvents(new Date(), 12), [])
+    const today = useMemo(() => localDateString(), [])
+    const publishedDays = useMemo(() => new Set(posts.filter(p => p.published_at).map(p => p.published_at!.slice(0, 10))), [posts])
+    const streak = publishStreak(publishedDays, today)
 
     /** Seasonal and manual sources are built right here; OS and devices come with their photos from the server. */
     const openSource = async (ref: SourceRef, post?: SavedPost) => {
@@ -153,6 +159,8 @@ export default function StudioClient({ brand: initialBrand, orders, devices, ini
                         <Palette aria-hidden className="w-5 h-5" />
                     </button>
                 </div>
+
+                {streak > 0 && <StreakBanner streak={streak} publishedToday={publishedDays.has(today)} />}
 
                 {tab === 'criar' && (
                     <>
@@ -263,6 +271,18 @@ export default function StudioClient({ brand: initialBrand, orders, devices, ini
             </div>
 
             <BrandSheet open={brandOpen} onClose={() => setBrandOpen(false)} brand={brand} canEdit={canEditBrand} onSaved={setBrand} />
+        </div>
+    )
+}
+
+function StreakBanner({ streak, publishedToday }: { streak: number; publishedToday: boolean }) {
+    return (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-orange-500/[0.08] text-[13px]">
+            <Flame aria-hidden className="w-4 h-4 text-orange-600 dark:text-orange-400 shrink-0" />
+            <span className="flex-1 min-w-0 text-muted-foreground">
+                <b className="text-foreground tabular-nums">{streak}</b> dia{streak > 1 ? 's' : ''} seguido{streak > 1 ? 's' : ''} publicando conteúdo.{' '}
+                {publishedToday ? 'Continue assim! 🔥' : 'Publique algo hoje para manter a sequência.'}
+            </span>
         </div>
     )
 }

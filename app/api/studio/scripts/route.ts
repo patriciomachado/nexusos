@@ -42,9 +42,12 @@ export async function POST(req: NextRequest) {
     if (!ctx) return error
     const body = await req.json().catch(() => ({})) as Record<string, unknown>
     const sourceType = typeof body.source_type === 'string' && SOURCES.includes(body.source_type) ? body.source_type : 'manual'
+    const patch = fields(body)
     const { data, error: dbError } = await ctx.db.from('studio_scripts').insert({
         title: 'Post',
-        ...fields(body),
+        ...patch,
+        // First time a post is saved already "publicado": mark today as a publish day for the streak.
+        published_at: patch.status === 'publicado' ? new Date().toISOString() : null,
         company_id: ctx.companyId,
         user_id: ctx.dbUser.id,
         source_type: sourceType,
@@ -60,8 +63,15 @@ export async function PATCH(req: NextRequest) {
     if (!ctx) return error
     const body = await req.json().catch(() => ({})) as Record<string, unknown>
     if (typeof body.id !== 'string') return NextResponse.json({ error: 'ID é obrigatório' }, { status: 400 })
+    const patch = fields(body)
+    // Streak base: the day a post first becomes "publicado", not the (possibly later-edited) scheduled date.
+    if (patch.status === 'publicado') {
+        const { data: current } = await ctx.db.from('studio_scripts').select('published_at')
+            .eq('id', body.id).eq('company_id', ctx.companyId).maybeSingle()
+        if (current && !current.published_at) patch.published_at = new Date().toISOString()
+    }
     const { data, error: dbError } = await ctx.db.from('studio_scripts')
-        .update({ ...fields(body), updated_at: new Date().toISOString() })
+        .update({ ...patch, updated_at: new Date().toISOString() })
         .eq('id', body.id).eq('company_id', ctx.companyId).select().maybeSingle()
     if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
     if (!data) return NextResponse.json({ error: 'Post não encontrado' }, { status: 404 })

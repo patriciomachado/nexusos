@@ -2,14 +2,16 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { Check, ChevronLeft, Copy, Download, Loader2, MessageCircle, Play, Share2, Sparkles, Trash2 } from 'lucide-react'
+import { Check, ChevronLeft, Copy, Download, Loader2, MessageCircle, Play, Share2, Sparkles, Trash2, Wand2 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 import { BottomBar, Chips, Field, Group, PrimaryButton, SecondaryButton, TextArea, TextInput, brl } from '@/components/ui/form'
 import { FORMATS, TEMPLATES, canvasBlob, renderArt, type ArtFormat, type ArtTemplate } from '@/lib/studio/art'
 import type { Brand } from '@/lib/studio/brand'
+import { buildCanvaPrompt } from '@/lib/studio/canvaPrompt'
 import { CHANNELS, artLines, readyTexts, sourceTitle, type Channel, type Source, type Texts } from '@/lib/studio/sources'
 import { cn } from '@/lib/utils'
+import CanvaPromptSheet from './CanvaPromptSheet'
 import { POST_STATUS, type AiQuota, type SavedPost } from './StudioClient'
 import Teleprompter from './Teleprompter'
 
@@ -81,6 +83,7 @@ export default function Composer({ source, post, brand, ai, onAi, onSaved, onDel
     const [saving, setSaving] = useState(false)
     const [copied, setCopied] = useState(false)
     const [prompter, setPrompter] = useState(false)
+    const [canvaOpen, setCanvaOpen] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const [drawing, setDrawing] = useState(true)
@@ -103,6 +106,17 @@ export default function Composer({ source, post, brand, ai, onAi, onSaved, onDel
         return () => { cancelled = true; clearTimeout(t) }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [art, brand, photos.join('|')])
+
+    const canvaPrompt = useMemo(() => buildCanvaPrompt({
+        template: art.template,
+        format: art.format,
+        brand,
+        headline: art.headline,
+        subline: art.subline,
+        price: art.price,
+        priceNote: art.priceNote,
+        photoCount: photos.length,
+    }), [art, brand, photos.length])
 
     const imageFile = async () => {
         const canvas = canvasRef.current
@@ -228,6 +242,9 @@ export default function Composer({ source, post, brand, ai, onAi, onSaved, onDel
                             <PrimaryButton onClick={share} className="flex-1 h-11 text-[15px]"><Share2 aria-hidden className="w-4 h-4" /> Compartilhar</PrimaryButton>
                             <SecondaryButton onClick={download} className="h-11 text-[15px]"><Download aria-hidden className="w-4 h-4" /> Baixar</SecondaryButton>
                         </div>
+                        <SecondaryButton onClick={() => setCanvaOpen(true)} className="w-full h-11 text-[15px]">
+                            <Wand2 aria-hidden className="w-4 h-4" /> Quero uma arte mais elaborada (Canva)
+                        </SecondaryButton>
                         <Chips ariaLabel="Formato" options={FORMATS.map(f => ({ value: f.id, label: f.label }))} value={art.format} onChange={format => set({ format })} />
                         <Chips ariaLabel="Modelo da arte" options={TEMPLATES.map(t => ({ value: t.id, label: t.label }))} value={art.template} onChange={template => set({ template })} />
                         {art.template === 'antes_depois' && photos.length < 2 && (
@@ -327,6 +344,7 @@ export default function Composer({ source, post, brand, ai, onAi, onSaved, onDel
             </div>
 
             <Teleprompter open={prompter} onClose={() => setPrompter(false)} title={title} text={texts.roteiro} />
+            <CanvaPromptSheet open={canvaOpen} onClose={() => setCanvaOpen(false)} prompt={canvaPrompt} />
             <PremiumConfirmDialog
                 isOpen={confirmDelete}
                 onCancel={() => setConfirmDelete(false)}
