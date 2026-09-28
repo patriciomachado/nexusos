@@ -15,7 +15,7 @@ export const TIER_INFO: Record<string, { short: string; bullets: string[] }> = {
     },
     Premium: {
         short: 'excelente custo-benefício, construção premium',
-        bullets: ['Matéria-prima de qualidade', 'Construção com aro diferenciado', 'Qualidade superior ao padrão premium do mercado'],
+        bullets: ['Matéria-prima de qualidade', 'Construção com aro diferenciado', 'Boa resposta de toque, sem travamentos', 'Cores e brilho próximos do original', 'Boa durabilidade no dia a dia'],
     },
     Standard: {
         short: 'entrada, ótimo custo-benefício, com toque um pouco abaixo do original',
