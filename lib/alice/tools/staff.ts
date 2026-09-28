@@ -8,6 +8,9 @@ import { ADMIN_ROLES, appUrl } from '../config'
 import { collectAlerts } from '@/lib/tasks/alerts'
 import { addDays } from '@/lib/tasks/dates'
 import { searchNovaPecasWithPrices } from '@/lib/parts/novapecas'
+import { buildQuoteMessage, createPartQuote, findQuoteOptions, sortQuoteOptions } from '@/lib/parts/quotes'
+import { createFunnelEntry } from '@/lib/funnel/entries'
+import { readyChannel, sendOnce, waPhone } from '@/lib/customers/messages'
 
 const MANAGERS = [...ADMIN_ROLES, 'manager']
 
@@ -411,6 +414,84 @@ const atribuirTecnico = defineWrite({
     },
 })
 
+// ─── Orçamentos e funil ──────────────────────────────────────────────────────
+
+const criarOrcamento = defineWrite({
+    name: 'criar_orcamento',
+    label: 'Preparando orçamento',
+    description: 'Prepara um orçamento para um cliente (ou um lead novo, sem cadastro) para um aparelho e serviço. Busca o preço já cadastrado na tabela de Peças; se não achar, use o valor informado por quem pediu. Só é criado depois que o usuário confirmar no cartão. Depois de confirmado, o orçamento entra no Funil de vendas (estágio "Orçamento enviado") e, se pedido, o link é enviado ao WhatsApp do cliente.',
+    schema: z.object({
+        cliente_id: z.string().optional().describe('id retornado por buscar_clientes. Se o cliente não tiver cadastro, use lead_nome (e lead_telefone se tiver).'),
+        lead_nome: z.string().max(120).optional().describe('Nome do lead, quando não há cliente_id'),
+        lead_telefone: z.string().max(30).optional(),
+        aparelho: z.string().min(2).max(120).describe('Marca e modelo do aparelho'),
+        servico: z.string().min(2).max(80).describe('Ex.: "troca de tela", "troca de bateria"'),
+        valor: z.number().min(0).max(1_000_000).optional().describe('Informe se o preço não estiver cadastrado na tabela de Peças'),
+        observacoes: z.string().max(500).optional(),
+        enviar_ao_cliente: z.boolean().optional().describe('Se true, manda o link do orçamento pro WhatsApp do cliente após confirmado (precisa de cliente cadastrado com telefone)'),
+    }),
+    async preview(ctx, i) {
+        if (!i.cliente_id && !i.lead_nome) throw new ToolError('Informe o cliente (use buscar_clientes) ou o nome do lead.')
+        const customer = i.cliente_id ? await findCustomer(ctx, i.cliente_id) : null
+        const found = await findQuoteOptions(ctx.db, ctx.companyId, i.aparelho, i.servico)
+        const options = found?.options.length ? sortQuoteOptions(found.options) : i.valor != null ? [{ tipo: null, valor: i.valor }] : null
+        if (!options) throw new ToolError('Não achei preço cadastrado para esse aparelho/serviço na tabela de Peças. Informe um valor.')
+        const willSend = !!i.enviar_ao_cliente && !!(customer?.phone || i.lead_telefone)
+        return {
+            title: `Orçamento: ${i.servico} — ${found?.deviceModel ?? i.aparelho}`,
+            lines: [
+                `Cliente: ${customer?.name ?? i.lead_nome}`,
+                ...options.map(o => `${o.tipo ? o.tipo + ': ' : 'Valor: '}${brl(o.valor)}`),
+                i.observacoes && `Obs.: ${i.observacoes}`,
+                willSend ? 'O link vai ser enviado ao WhatsApp do cliente.' : null,
+            ].filter(Boolean) as string[],
+        }
+    },
+    async execute(ctx, i) {
+        const customer = i.cliente_id ? await findCustomer(ctx, i.cliente_id) : null
+        const found = await findQuoteOptions(ctx.db, ctx.companyId, i.aparelho, i.servico)
+        const options = sortQuoteOptions(found?.options.length ? found.options : i.valor != null ? [{ tipo: null, valor: i.valor }] : [])
+        if (!options.length) throw new ToolError('Não foi possível montar o orçamento.')
+        const deviceModel = found?.deviceModel ?? i.aparelho
+        const token = await createPartQuote(ctx.db, ctx.companyId, {
+            deviceModel, service: i.servico, options,
+            customerName: customer?.name ?? i.lead_nome ?? null,
+            customerPhone: customer?.phone ?? i.lead_telefone ?? null,
+        })
+        if (!token) throw new ToolError('Não foi possível gerar o orçamento agora.')
+        const link = `${appUrl()}/orcamento/${token}`
+        const { data: quoteRow } = await ctx.db.from('part_quotes').select('id').eq('token', token).eq('company_id', ctx.companyId).single()
+
+        await createFunnelEntry(ctx.db, {
+            companyId: ctx.companyId,
+            title: `${i.servico} — ${deviceModel}`,
+            customerId: customer?.id ?? null,
+            leadName: customer ? null : i.lead_nome ?? null,
+            leadPhone: customer ? null : i.lead_telefone ?? null,
+            stage: 'orcamento',
+            valueEstimate: options[0]?.valor ?? 0,
+            source: 'alice',
+            quoteId: quoteRow?.id ?? null,
+            notes: i.observacoes ?? null,
+            createdBy: ctx.user?.id ?? null,
+        })
+
+        let note = ''
+        const phone = waPhone(customer?.phone ?? i.lead_telefone)
+        if (i.enviar_ao_cliente && phone) {
+            const alice = await readyChannel(ctx.db, ctx.companyId)
+            if (!alice) note = ' O WhatsApp da loja não está conectado; envie o link manualmente.'
+            else if (!customer) note = ' O lead ainda não tem cadastro de cliente; envie o link manualmente.'
+            else {
+                const text = buildQuoteMessage(deviceModel, i.servico, options, link)
+                const r = await sendOnce(ctx.db, alice, { companyId: ctx.companyId, customerId: customer.id, phone, kind: 'quote', ref: token, text, userId: ctx.user?.id ?? null })
+                note = r.sent ? ' Mandei o link para o WhatsApp do cliente.' : ' Não consegui mandar pelo WhatsApp agora — envie o link manualmente.'
+            }
+        }
+        return { message: `Orçamento criado e adicionado ao Funil.${note}`, href: '/funil', data: { link } }
+    },
+})
+
 // ─── Agenda, equipe e catálogo ───────────────────────────────────────────────
 
 const agenda = defineRead({
@@ -684,6 +765,7 @@ const criarTarefa = defineWrite({
 export const STAFF_TOOLS: AnyTool[] = [
     buscarClientes, verCliente, cadastrarCliente, atualizarCliente,
     buscarOrdens, verOrdem, criarOrdem, atualizarStatus, anotarOrdem, atribuirTecnico,
+    criarOrcamento,
     agenda, agendar, listarTecnicos, consultarEstoque, consultarAparelhos, consultarPrecoFornecedor, listarServicos,
     pendencias, resumoFinanceiro, minhasTarefas, criarTarefa,
 ]
