@@ -36,9 +36,9 @@ export interface NovaPecasResult extends NovaPecasProduct { price: number | null
  */
 const DROP_WORDS = new Set(['de', 'da', 'do', 'das', 'dos', 'para', 'com', 'em', 'no', 'na', 'a', 'o', 'as', 'os', 'e', 'troca', 'trocar', 'reparo', 'conserto', 'manutencao', 'manutenção', 'substituicao', 'substituição', 'substituir'])
 
-// "Tela" é como a loja fala; no catálogo do fornecedor a peça é listada como "frontal"
-// (em qualquer marca — WEFIX, WK, TELA PRIME —, "frontal" é a palavra que sempre aparece).
-const SYNONYMS: Record<string, string> = { tela: 'frontal', telas: 'frontal' }
+// "Tela"/"display" é como a loja fala; no catálogo do fornecedor a peça é
+// sempre listada como "frontal" (em qualquer marca — WEFIX, WK, TELA PRIME).
+const SYNONYMS: Record<string, string> = { tela: 'frontal', telas: 'frontal', display: 'frontal', displays: 'frontal' }
 
 function searchTerm(query: string) {
     const words = query.trim().split(/\s+/)
@@ -75,8 +75,8 @@ export async function searchNovaPecas(query: string, limit = 8): Promise<NovaPec
     const re = /<div class="nome[^"]*">\s*<a href="(https:\/\/novapecascell\.com\.br\/produto\/[^"]+)">([^<]+)<\/a>/g
     const wantedVariant = detectVariant(query)
     const numbers = numberTokens(query)
-    // Quem procurou "tela" quer a peça, não a câmera frontal — essas sempre começam o nome com "Frontal".
-    const wantsScreen = /\btelas?\b/i.test(query)
+    // Quem procurou "tela"/"display" quer a peça, não a câmera frontal — essas sempre começam o nome com "Frontal".
+    const wantsScreen = /\b(telas?|displays?)\b/i.test(query)
     const seen = new Set<string>()
     const out: NovaPecasProduct[] = []
     for (const m of html.matchAll(re)) {

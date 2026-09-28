@@ -101,10 +101,10 @@ export default function QuickQuoteSheet({ open, onClose }: { open: boolean; onCl
                                 {results.map(r => {
                                     const already = selected.some(s => s.url === r.url)
                                     return (
-                                        <button key={r.url} type="button" disabled={r.price == null || already} onClick={() => add(r)} className="w-full flex items-center gap-2 px-4 py-2.5 text-left hover:bg-foreground/[0.03] disabled:opacity-40">
-                                            <span className="flex-1 min-w-0 text-[13px] truncate">{r.title}</span>
+                                        <button key={r.url} type="button" disabled={r.price == null || already} onClick={() => add(r)} className="w-full flex items-start gap-2 px-4 py-2.5 text-left hover:bg-foreground/[0.03] disabled:opacity-40">
+                                            <span className="flex-1 min-w-0 text-[13px] break-words">{r.title}</span>
                                             <span className="text-[14px] font-semibold tabular-nums shrink-0">{r.price != null ? brl(r.price) : 'sem preço'}</span>
-                                            {!already && r.price != null && <Plus className="w-4 h-4 text-primary shrink-0" />}
+                                            {!already && r.price != null && <Plus className="w-4 h-4 text-primary shrink-0 mt-0.5" />}
                                         </button>
                                     )
                                 })}
@@ -118,8 +118,8 @@ export default function QuickQuoteSheet({ open, onClose }: { open: boolean; onCl
                         <div className="divide-y divide-border/60">
                             {selected.map(s => (
                                 <div key={s.url} className="px-4 py-3 space-y-2">
-                                    <div className="flex items-center gap-2">
-                                        <span className="flex-1 min-w-0 text-[13px] text-muted-foreground truncate">{s.title}</span>
+                                    <div className="flex items-start gap-2">
+                                        <span className="flex-1 min-w-0 text-[13px] text-muted-foreground break-words">{s.title}</span>
                                         <button type="button" onClick={() => remove(s.url)} aria-label="Remover" className="text-red-600 shrink-0"><Trash2 className="w-4 h-4" /></button>
                                     </div>
                                     <Chips ariaLabel="Qualidade" value={s.tipo} onChange={v => update(s.url, { tipo: v })} options={TIERS} />
