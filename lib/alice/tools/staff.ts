@@ -8,7 +8,9 @@ import { ADMIN_ROLES, appUrl } from '../config'
 import { collectAlerts } from '@/lib/tasks/alerts'
 import { addDays } from '@/lib/tasks/dates'
 import { searchNovaPecasWithPrices } from '@/lib/parts/novapecas'
-import { buildQuoteMessage, createPartQuote, findQuoteOptions, sortQuoteOptions } from '@/lib/parts/quotes'
+import { buildQuoteMessage, createPartQuote, findQuoteOptions, sortQuoteOptions, type PartQuoteOption } from '@/lib/parts/quotes'
+import { loadPartMargin } from '@/lib/parts/prices'
+import { suggestedPrice } from '@/lib/parts/server'
 import { createFunnelEntry } from '@/lib/funnel/entries'
 import { readyChannel, sendOnce, waPhone } from '@/lib/customers/messages'
 
@@ -416,10 +418,35 @@ const atribuirTecnico = defineWrite({
 
 // ─── Orçamentos e funil ──────────────────────────────────────────────────────
 
+interface ResolvedQuote { options: PartQuoteOption[]; deviceModel: string; fonte: 'cadastro' | 'informado' | 'fornecedor'; custoFornecedor?: number; produtoFornecedor?: string }
+
+/**
+ * Preço pra um orçamento, na ordem: tabela de Peças cadastrada → valor que a
+ * pessoa informou → consulta ao vivo no fornecedor (só gerente/admin, porque
+ * expõe custo) com a margem da loja aplicada, igual a tela de Peças calcula.
+ */
+async function resolveOrcamentoOptions(ctx: ToolContext, aparelho: string, servico: string, valor?: number): Promise<ResolvedQuote> {
+    const found = await findQuoteOptions(ctx.db, ctx.companyId, aparelho, servico)
+    if (found?.options.length) return { options: sortQuoteOptions(found.options), deviceModel: found.deviceModel, fonte: 'cadastro' }
+    if (valor != null) return { options: [{ tipo: null, valor }], deviceModel: aparelho, fonte: 'informado' }
+    if (MANAGERS.includes(ctx.user?.role ?? '')) {
+        try {
+            const results = await searchNovaPecasWithPrices(`${servico} ${aparelho}`)
+            const best = results.find(r => r.price != null)
+            if (best?.price != null) {
+                const { margin, laborMin } = await loadPartMargin(ctx.db, ctx.companyId)
+                const sugerido = suggestedPrice(best.price, 0, margin, laborMin)
+                return { options: [{ tipo: null, valor: sugerido }], deviceModel: aparelho, fonte: 'fornecedor', custoFornecedor: best.price, produtoFornecedor: best.title }
+            }
+        } catch { /* fornecedor fora do ar: cai no erro abaixo, como se não tivesse achado nada */ }
+    }
+    throw new ToolError('Não achei preço cadastrado nem no fornecedor para esse aparelho/serviço. Informe um valor.')
+}
+
 const criarOrcamento = defineWrite({
     name: 'criar_orcamento',
     label: 'Preparando orçamento',
-    description: 'Prepara um orçamento para um cliente (ou um lead novo, sem cadastro) para um aparelho e serviço. Busca o preço já cadastrado na tabela de Peças; se não achar, use o valor informado por quem pediu. Só é criado depois que o usuário confirmar no cartão. Depois de confirmado, o orçamento entra no Funil de vendas (estágio "Orçamento enviado") e, se pedido, o link é enviado ao WhatsApp do cliente.',
+    description: 'Prepara um orçamento para um cliente (ou um lead novo, sem cadastro) para um aparelho e serviço. Busca o preço já cadastrado na tabela de Peças; se não achar e quem pediu for gerente ou administrador, consulta ao vivo o preço no fornecedor (NovaPeças) e aplica a margem da loja para sugerir o valor; senão, use o valor informado por quem pediu. Só é criado depois que o usuário confirmar no cartão — a prévia sempre mostra de onde veio o valor. Depois de confirmado, o orçamento entra no Funil de vendas (estágio "Orçamento enviado") e, se pedido, o link é enviado ao WhatsApp do cliente.',
     schema: z.object({
         cliente_id: z.string().optional().describe('id retornado por buscar_clientes. Se o cliente não tiver cadastro, use lead_nome (e lead_telefone se tiver).'),
         lead_nome: z.string().max(120).optional().describe('Nome do lead, quando não há cliente_id'),
@@ -433,15 +460,14 @@ const criarOrcamento = defineWrite({
     async preview(ctx, i) {
         if (!i.cliente_id && !i.lead_nome) throw new ToolError('Informe o cliente (use buscar_clientes) ou o nome do lead.')
         const customer = i.cliente_id ? await findCustomer(ctx, i.cliente_id) : null
-        const found = await findQuoteOptions(ctx.db, ctx.companyId, i.aparelho, i.servico)
-        const options = found?.options.length ? sortQuoteOptions(found.options) : i.valor != null ? [{ tipo: null, valor: i.valor }] : null
-        if (!options) throw new ToolError('Não achei preço cadastrado para esse aparelho/serviço na tabela de Peças. Informe um valor.')
+        const { options, deviceModel, fonte, custoFornecedor, produtoFornecedor } = await resolveOrcamentoOptions(ctx, i.aparelho, i.servico, i.valor)
         const willSend = !!i.enviar_ao_cliente && !!(customer?.phone || i.lead_telefone)
         return {
-            title: `Orçamento: ${i.servico} — ${found?.deviceModel ?? i.aparelho}`,
+            title: `Orçamento: ${i.servico} — ${deviceModel}`,
             lines: [
                 `Cliente: ${customer?.name ?? i.lead_nome}`,
                 ...options.map(o => `${o.tipo ? o.tipo + ': ' : 'Valor: '}${brl(o.valor)}`),
+                fonte === 'fornecedor' ? `Sem cadastro na loja — sugerido com base no fornecedor (${produtoFornecedor}, custo ${brl(custoFornecedor ?? 0)}) + margem da loja.` : null,
                 i.observacoes && `Obs.: ${i.observacoes}`,
                 willSend ? 'O link vai ser enviado ao WhatsApp do cliente.' : null,
             ].filter(Boolean) as string[],
@@ -449,10 +475,7 @@ const criarOrcamento = defineWrite({
     },
     async execute(ctx, i) {
         const customer = i.cliente_id ? await findCustomer(ctx, i.cliente_id) : null
-        const found = await findQuoteOptions(ctx.db, ctx.companyId, i.aparelho, i.servico)
-        const options = sortQuoteOptions(found?.options.length ? found.options : i.valor != null ? [{ tipo: null, valor: i.valor }] : [])
-        if (!options.length) throw new ToolError('Não foi possível montar o orçamento.')
-        const deviceModel = found?.deviceModel ?? i.aparelho
+        const { options, deviceModel } = await resolveOrcamentoOptions(ctx, i.aparelho, i.servico, i.valor)
         const token = await createPartQuote(ctx.db, ctx.companyId, {
             deviceModel, service: i.servico, options,
             customerName: customer?.name ?? i.lead_nome ?? null,
