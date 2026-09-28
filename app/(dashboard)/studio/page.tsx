@@ -23,7 +23,7 @@ export default async function StudioPage({ searchParams }: { searchParams: Promi
         // Photos of devices are stored inline and can be large: the list gets no photos, the editor loads them.
         db.from('devices').select('id, brand, model, storage, condition, battery_health, cash_price, installment_price, warranty_months, technical_passport, status')
             .eq('company_id', companyId).eq('status', 'disponivel').order('created_at', { ascending: false }).limit(30),
-        db.from('studio_scripts').select('id, title, source_type, source_id, instagram_caption, whatsapp_text, google_post, body_script, status, scheduled_for, art, created_at')
+        db.from('studio_scripts').select('id, title, source_type, source_id, instagram_caption, whatsapp_text, google_post, body_script, status, scheduled_for, art, created_at, published_at')
             .eq('company_id', companyId).order('created_at', { ascending: false }).limit(200),
         studioUsage(db, companyId),
         studioLimit(db, companyId),
