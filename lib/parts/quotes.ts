@@ -113,6 +113,13 @@ export async function markQuoteConverted(db: SupabaseClient, companyId: string, 
     await db.from('tasks').update({ status: 'done', completed_at: new Date().toISOString() }).eq('company_id', companyId).eq('source_key', `quote:${quoteId}`)
 }
 
+/** Apaga o orçamento e cancela o lembrete pendente dele, se ainda não disparou. */
+export async function deletePartQuote(db: SupabaseClient, companyId: string, quoteId: string) {
+    await db.from('tasks').update({ status: 'done', completed_at: new Date().toISOString() }).eq('company_id', companyId).eq('source_key', `quote:${quoteId}`).eq('status', 'open')
+    const { error } = await db.from('part_quotes').delete().eq('id', quoteId).eq('company_id', companyId)
+    return !error
+}
+
 /** Texto pra cutucar o cliente sobre um orçamento parado, com o valor mais em conta cotado. */
 export function buildFollowUpMessage(deviceModel: string, service: string, options: PartQuoteOption[], link: string) {
     const cheapest = options.reduce((min, o) => (o.valor < min.valor ? o : min), options[0])

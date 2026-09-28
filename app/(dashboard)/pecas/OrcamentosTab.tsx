@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Copy, Link2, Loader2, MessageCircle } from 'lucide-react'
+import { Copy, Link2, Loader2, MessageCircle, Trash2 } from 'lucide-react'
 import Sheet from '@/components/tasks/Sheet'
+import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 import { Field, PrimaryButton, SecondaryButton, TextInput, brl } from '@/components/ui/form'
 import { cn } from '@/lib/utils'
 import { send, useData } from './shared'
@@ -26,8 +27,21 @@ const STATUS: Record<Quote['status'], { label: string; className: string }> = {
 export default function OrcamentosTab() {
     const { data, reload } = useData<{ quotes: Quote[]; stats: Stats }>('/api/parts/quotes')
     const [converting, setConverting] = useState<Quote | null>(null)
+    const [deleting, setDeleting] = useState<Quote | null>(null)
+    const [removing, setRemoving] = useState(false)
 
     const stats = data?.stats
+
+    const confirmDelete = async () => {
+        if (!deleting) return
+        setRemoving(true)
+        try {
+            await send(`/api/parts/quotes/${deleting.id}`, 'DELETE')
+            toast.success('Orçamento apagado')
+            setDeleting(null)
+            reload()
+        } catch (e) { toast.error((e as Error).message) } finally { setRemoving(false) }
+    }
 
     return (
         <div className="space-y-4">
@@ -53,8 +67,11 @@ export default function OrcamentosTab() {
                                     <span className="block text-[16px] font-medium truncate">{q.device_model}</span>
                                     <span className="block text-[13px] text-muted-foreground truncate">{q.service} · {new Date(q.created_at).toLocaleDateString('pt-BR')}</span>
                                 </span>
-                                <span className={cn('h-6 px-2.5 rounded-full text-[12px] font-semibold inline-flex items-center shrink-0', STATUS[q.status].className)}>
-                                    {q.status === 'convertido' && q.order_number ? q.order_number : STATUS[q.status].label}
+                                <span className="flex items-center gap-2 shrink-0">
+                                    <span className={cn('h-6 px-2.5 rounded-full text-[12px] font-semibold inline-flex items-center', STATUS[q.status].className)}>
+                                        {q.status === 'convertido' && q.order_number ? q.order_number : STATUS[q.status].label}
+                                    </span>
+                                    <button type="button" onClick={() => setDeleting(q)} aria-label="Apagar orçamento" className="text-muted-foreground hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                                 </span>
                             </div>
                             <p className="text-[13px] text-muted-foreground">
@@ -77,6 +94,15 @@ export default function OrcamentosTab() {
             )}
 
             <ConvertSheet quote={converting} onClose={() => setConverting(null)} onDone={() => { setConverting(null); reload() }} />
+            <PremiumConfirmDialog
+                isOpen={!!deleting}
+                title="Apagar orçamento?"
+                description={deleting ? `${deleting.device_model} · ${deleting.service}. O link deixa de funcionar e o lembrete pendente é cancelado.` : ''}
+                confirmLabel={removing ? 'Apagando…' : 'Apagar'}
+                variant="danger"
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleting(null)}
+            />
         </div>
     )
 }
