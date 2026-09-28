@@ -38,12 +38,14 @@ export default function QuickQuoteSheet({ open, onClose }: { open: boolean; onCl
     const [results, setResults] = useState<SearchResult[] | null>(null)
     const [selected, setSelected] = useState<Selected[]>([])
     const [pricing, setPricing] = useState<{ margin: number; laborMin: number } | null>(null)
+    const [nome, setNome] = useState('')
+    const [telefone, setTelefone] = useState('')
     const [generating, setGenerating] = useState(false)
-    const [quote, setQuote] = useState<{ message: string } | null>(null)
+    const [quote, setQuote] = useState<{ message: string; whatsapp_url?: string } | null>(null)
 
     useEffect(() => {
         if (!open) return
-        setAparelho(''); setServico('Troca de tela'); setResults(null); setSelected([]); setQuote(null)
+        setAparelho(''); setServico('Troca de tela'); setResults(null); setSelected([]); setQuote(null); setNome(''); setTelefone('')
         fetch('/api/parts/prices').then(r => r.ok ? r.json() : null).then(d => d && setPricing({ margin: d.margin, laborMin: d.laborMin })).catch(() => {})
     }, [open])
 
@@ -72,7 +74,11 @@ export default function QuickQuoteSheet({ open, onClose }: { open: boolean; onCl
         if (!selected.length) return toast.error('Escolha ao menos uma opção de peça.')
         setGenerating(true)
         try {
-            const body = { device_model: aparelho.trim(), service: servico.trim(), options: selected.map(s => ({ tipo: s.tipo || null, valor: parseMoney(s.priceText) })) }
+            const body = {
+                device_model: aparelho.trim(), service: servico.trim(),
+                options: selected.map(s => ({ tipo: s.tipo || null, valor: parseMoney(s.priceText) })),
+                customer_name: nome.trim() || null, customer_phone: telefone.trim() || null,
+            }
             const r = await fetch('/api/parts/quotes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
             const d = await r.json()
             if (!r.ok) throw new Error(d.error || 'Não foi possível gerar o orçamento.')
@@ -91,6 +97,13 @@ export default function QuickQuoteSheet({ open, onClose }: { open: boolean; onCl
                         <SecondaryButton onClick={search} disabled={searching} className="w-full h-10 text-[15px]">
                             {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />} Buscar na NovaPeças
                         </SecondaryButton>
+                    </div>
+                </Group>
+
+                <Group title="Cliente (opcional)" footer="Preenchendo o telefone, o botão de WhatsApp já abre a conversa direto com essa pessoa.">
+                    <div className="grid grid-cols-2 divide-x divide-border/60">
+                        <Field label="Nome" htmlFor="qq-nome"><TextInput id="qq-nome" value={nome} onChange={e => setNome(e.target.value)} placeholder="Opcional" /></Field>
+                        <Field label="WhatsApp" htmlFor="qq-telefone"><TextInput id="qq-telefone" type="tel" inputMode="tel" value={telefone} onChange={e => setTelefone(e.target.value)} placeholder="(11) 98888-7777" /></Field>
                     </div>
                 </Group>
 
@@ -136,7 +149,7 @@ export default function QuickQuoteSheet({ open, onClose }: { open: boolean; onCl
                     </PrimaryButton>
                 )}
 
-                {quote && <QuotePreview message={quote.message} />}
+                {quote && <QuotePreview message={quote.message} whatsappUrl={quote.whatsapp_url} />}
             </div>
         </Sheet>
     )

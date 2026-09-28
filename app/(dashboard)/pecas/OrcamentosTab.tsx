@@ -14,7 +14,8 @@ interface Option { tipo: string | null; valor: number }
 interface Quote {
     id: string; device_model: string; service: string; options: Option[]
     valid_until: string; created_at: string; status: 'aberto' | 'convertido' | 'vencido'
-    order_number: string | null; link: string; follow_up_message: string | null
+    order_number: string | null; link: string; follow_up_message: string | null; follow_up_whatsapp_url: string | null
+    customer_name: string | null; customer_phone: string | null
 }
 interface Stats { total: number; converted: number; open: number; expired: number; rate: number | null }
 
@@ -65,7 +66,7 @@ export default function OrcamentosTab() {
                         <div key={q.id} className="px-4 py-3 space-y-2">
                             <div className="flex items-start justify-between gap-3">
                                 <span className="min-w-0">
-                                    <span className="block text-[16px] font-medium truncate">{q.device_model}</span>
+                                    <span className="block text-[16px] font-medium truncate">{q.device_model}{q.customer_name ? ` · ${q.customer_name}` : ''}</span>
                                     <span className="block text-[13px] text-muted-foreground truncate">{q.service} · {new Date(q.created_at).toLocaleDateString('pt-BR')}</span>
                                 </span>
                                 <span className="flex items-center gap-2 shrink-0">
@@ -87,7 +88,7 @@ export default function OrcamentosTab() {
                                         <SecondaryButton onClick={() => { navigator.clipboard?.writeText(q.follow_up_message ?? ''); toast.success('Lembrete copiado') }} className="flex-1 h-9 text-[13px]">
                                             <Copy className="w-3.5 h-3.5" /> Copiar lembrete
                                         </SecondaryButton>
-                                        <a href={`https://wa.me/?text=${encodeURIComponent(q.follow_up_message ?? '')}`} target="_blank" rel="noreferrer" className="flex-1 h-9 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 text-[13px] font-medium flex items-center justify-center gap-1.5">
+                                        <a href={q.follow_up_whatsapp_url ?? `https://wa.me/?text=${encodeURIComponent(q.follow_up_message ?? '')}`} target="_blank" rel="noreferrer" className="flex-1 h-9 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 text-[13px] font-medium flex items-center justify-center gap-1.5">
                                             <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
                                         </a>
                                         <SecondaryButton onClick={() => setConverting(q)} className="h-9 px-3 text-[13px]"><Link2 className="w-3.5 h-3.5" /></SecondaryButton>
