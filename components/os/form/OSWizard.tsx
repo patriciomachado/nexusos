@@ -123,6 +123,14 @@ function WizardBody({ customers: initialCustomers, technicians, inventory, price
     const [quoteId, setQuoteId] = useState<string | null>(initialQuote?.id ?? null)
     const v = state.values
 
+    /** Substitui (não empilha) o item vindo do orçamento, caso a pessoa mude de ideia sobre qual opção usar. */
+    const addItemFromQuote = (name: string, price: number) => {
+        state.setItems(items => [
+            ...items.filter(i => !i.key.startsWith('quote-')),
+            { key: `quote-${Date.now()}`, inventory_item_id: null, item_name: name, quantity: 1, unit_price: price, unit_cost: 0 },
+        ])
+    }
+
     const problemOf = (i: number) => {
         if (i === 0 && !v.customer_id) return 'Escolha o cliente para continuar'
         if (i === 1 && !v.title.trim()) return 'Informe o tipo de aparelho'
@@ -230,7 +238,7 @@ function WizardBody({ customers: initialCustomers, technicians, inventory, price
                                             </button>
                                         ))}
                                     </div>
-                                    <QuoteLinkField value={quoteId} onChange={setQuoteId} />
+                                    <QuoteLinkField value={quoteId} onChange={setQuoteId} onAddItem={addItemFromQuote} />
                                     <BudgetSection state={state} inventory={inventory} prices={prices} />
                                     <DeliverySection state={state} />
                                 </div>
