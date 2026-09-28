@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { CheckCircle2, MessageCircle, ShieldCheck, Smartphone } from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase'
 import { digitsOnly } from '@/lib/alice/phone'
+import { TIER_INFO } from '@/lib/parts/quotes'
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -72,12 +73,26 @@ export default async function OrcamentoPage({ params }: { params: Promise<{ toke
                     </div>
                 ) : (
                     <div className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12121a] shadow-sm divide-y divide-slate-100 dark:divide-white/5 overflow-hidden">
-                        {options.map((o, i) => (
-                            <div key={i} className="flex items-center justify-between gap-3 px-6 py-4">
-                                <span className="text-[16px] font-medium">{o.tipo ?? quote.service}</span>
-                                <span className="text-[20px] font-bold tabular-nums">{brl(o.valor)}</span>
-                            </div>
-                        ))}
+                        {options.map((o, i) => {
+                            const info = o.tipo ? TIER_INFO[o.tipo] : null
+                            return (
+                                <div key={i} className="px-6 py-4 space-y-2">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <span className="text-[16px] font-medium">{o.tipo ?? quote.service}</span>
+                                        <span className="text-[20px] font-bold tabular-nums">{brl(o.valor)}</span>
+                                    </div>
+                                    {info && (
+                                        <ul className="space-y-1">
+                                            {info.bullets.map(b => (
+                                                <li key={b} className="flex items-start gap-1.5 text-[13px] text-slate-500 dark:text-slate-400">
+                                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" /> {b}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            )
+                        })}
                     </div>
                 )}
 
