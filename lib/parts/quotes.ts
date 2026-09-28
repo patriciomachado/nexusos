@@ -18,8 +18,15 @@ export const TIER_INFO: Record<string, { short: string; bullets: string[] }> = {
         bullets: ['Matéria-prima de qualidade', 'Construção com aro diferenciado', 'Qualidade superior ao padrão premium do mercado'],
     },
     Standard: {
-        short: 'linha de entrada, ótimo custo-benefício',
-        bullets: ['Preço acessível', 'Qualidade superior ao padrão Original China', 'Garantia diferenciada', 'Matéria-prima de alta qualidade'],
+        short: 'entrada, ótimo custo-benefício, com toque e imagem um pouco abaixo do original',
+        bullets: [
+            'Preço acessível',
+            'Consome um pouco mais de energia que a tela original',
+            'Sensibilidade de toque um pouco menor',
+            'Qualidade de imagem abaixo do original (mais perceptível em aparelhos com tela LED)',
+            'Qualidade superior ao padrão Original China',
+            'Garantia diferenciada',
+        ],
     },
 }
 
