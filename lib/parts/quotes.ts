@@ -7,6 +7,22 @@ export interface PartQuoteOption { tipo: string | null; valor: number }
 
 export const TIER_LABELS: Record<string, string> = { original: 'Genuína', premium: 'Premium', standard: 'Standard', paralela: 'Paralela', recondicionada: 'Recondicionada' }
 
+/** O que diferencia cada linha de peça — usado na mensagem (resumo) e na página do orçamento (lista completa). */
+export const TIER_INFO: Record<string, { short: string; bullets: string[] }> = {
+    Genuína: {
+        short: 'original, construção superior, até 1 ano de garantia',
+        bullets: ['Matéria-prima de alta qualidade', 'Construção com aro diferenciado', 'Display o mais próximo possível do original', 'Componentes inclusos', 'Até 1 ano de garantia'],
+    },
+    Premium: {
+        short: 'excelente custo-benefício, construção premium',
+        bullets: ['Matéria-prima de qualidade', 'Construção com aro diferenciado', 'Qualidade superior ao padrão premium do mercado'],
+    },
+    Standard: {
+        short: 'linha de entrada, ótimo custo-benefício',
+        bullets: ['Preço acessível', 'Qualidade superior ao padrão Original China', 'Garantia diferenciada', 'Matéria-prima de alta qualidade'],
+    },
+}
+
 function genToken() {
     return randomBytes(9).toString('base64url')
 }
@@ -53,8 +69,11 @@ export async function createPartQuote(db: SupabaseClient, companyId: string, inp
     return token
 }
 
-/** Texto pronto pra mandar no WhatsApp: as opções cotadas + o link do orçamento. */
+/** Texto pronto pra mandar no WhatsApp: as opções cotadas (com a diferença entre elas) + o link do orçamento. */
 export function buildQuoteMessage(deviceModel: string, service: string, options: PartQuoteOption[], link: string) {
-    const linhas = options.map(o => `• ${o.tipo ? `${o.tipo}: ` : ''}${brl(o.valor)}`).join('\n')
+    const linhas = options.map(o => {
+        const info = o.tipo ? TIER_INFO[o.tipo] : null
+        return `• *${o.tipo ?? service}*${info ? ` (${info.short})` : ''}: ${brl(o.valor)}`
+    }).join('\n')
     return `Orçamento pra *${service}* no *${deviceModel}*:\n\n${linhas}\n\nValores a partir de, sujeitos à avaliação técnica na loja.\n\nDetalhes: ${link}`
 }
