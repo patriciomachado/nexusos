@@ -13,20 +13,32 @@ export const TIER_LABELS: Record<string, string> = { original: 'Genuína', premi
 export const TIER_INFO: Record<string, { short: string; bullets: string[] }> = {
     Genuína: {
         short: 'original, construção superior, até 1 ano de garantia',
-        bullets: ['Matéria-prima de alta qualidade', 'Construção com aro diferenciado', 'Display o mais próximo possível do original', 'Componentes inclusos', 'Até 1 ano de garantia'],
+        bullets: [
+            'Matéria-prima de alta qualidade, direto da linha original',
+            'Aro reforçado e encaixe perfeito no aparelho',
+            'Tela e cores o mais fiel possível ao original',
+            'Já vem com todos os componentes inclusos',
+            'Garantia estendida de até 1 ano',
+        ],
     },
     Premium: {
         short: 'excelente custo-benefício, construção premium',
-        bullets: ['Matéria-prima de qualidade', 'Construção com aro diferenciado', 'Boa resposta de toque, sem travamentos', 'Cores e brilho próximos do original', 'Boa durabilidade no dia a dia'],
+        bullets: [
+            'Matéria-prima de boa qualidade',
+            'Aro reforçado, como a linha Genuína',
+            'Toque preciso, sem travar',
+            'Cores e brilho bem próximos do original',
+            'Aguenta bem o uso do dia a dia',
+        ],
     },
     Standard: {
         short: 'entrada, ótimo custo-benefício, com toque um pouco abaixo do original',
         bullets: [
-            'Preço acessível',
-            'Sensibilidade de toque um pouco menor',
-            'Em aparelhos com tela LED: consome mais energia e a imagem fica com qualidade abaixo do original',
-            'Qualidade superior ao padrão Original China',
-            'Garantia diferenciada',
+            'O preço mais em conta da loja',
+            'Toque um pouco menos sensível que as outras linhas',
+            'Em aparelhos com tela LED: consome um pouco mais de bateria e a imagem fica levemente abaixo do original',
+            'Mesmo assim, acima do "Original China" comum no mercado',
+            'Garantia diferenciada de fábrica',
         ],
     },
 }

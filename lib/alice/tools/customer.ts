@@ -4,7 +4,7 @@ import { OS_STATUS_LABELS, brl, cleanSearch, formatDate, formatDateTime, todayIn
 import { appUrl, ADMIN_ROLES } from '../config'
 import { formatWhatsApp } from '../phone'
 import { pushToCompany } from '@/lib/tasks/reminders'
-import { buildQuoteMessage, createPartQuote, findQuoteOptions } from '@/lib/parts/quotes'
+import { buildQuoteMessage, createPartQuote, findQuoteOptions, sortQuoteOptions } from '@/lib/parts/quotes'
 
 /**
  * Tools for the WhatsApp agent. None of them takes an id from the model:
@@ -154,7 +154,8 @@ const cotarPeca = defineCustomer({
         ])
         if (!found) return { encontrado: false, instrucao: 'Nada cadastrado para esse aparelho/serviço. Use registrar_pedido para a loja preparar o orçamento.' }
 
-        const { deviceModel, options: opcoesNum } = found
+        const { deviceModel } = found
+        const opcoesNum = sortQuoteOptions(found.options)
         const opcoes = opcoesNum.map(o => ({ tipo: o.tipo, valor: brl(o.valor) }))
         const token = await createPartQuote(ctx.db, ctx.companyId, {
             deviceModel, service: servico, options: opcoesNum,
