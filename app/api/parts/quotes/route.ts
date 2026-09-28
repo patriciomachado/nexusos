@@ -24,7 +24,7 @@ export async function GET() {
         return {
             id: r.id, device_model: r.device_model, service: r.service, options, valid_until: r.valid_until, created_at: r.created_at,
             status, order_number: order?.order_number ?? null, link,
-            follow_up_message: status === 'aberto' ? buildFollowUpMessage(r.device_model, r.service, options, link) : null,
+            follow_up_message: status === 'aberto' ? buildFollowUpMessage(r.device_model, r.service, link) : null,
         }
     })
     return NextResponse.json({ quotes, stats: computeQuoteStats(rows.map(r => ({ id: r.id, device_model: r.device_model, service: r.service, options: r.options as PartQuoteOption[], valid_until: r.valid_until, created_at: r.created_at, service_order_id: r.service_order_id }))) })

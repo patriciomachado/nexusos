@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { toast } from 'sonner'
-import { Copy, Link2, Loader2, MessageCircle, Trash2 } from 'lucide-react'
+import { ClipboardPlus, Copy, Link2, Loader2, MessageCircle, Trash2 } from 'lucide-react'
 import Sheet from '@/components/tasks/Sheet'
 import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 import { Field, PrimaryButton, SecondaryButton, TextInput, brl } from '@/components/ui/form'
@@ -78,14 +79,19 @@ export default function OrcamentosTab() {
                                 {q.options.map(o => `${o.tipo ?? q.service}: ${brl(o.valor)}`).join(' · ')}
                             </p>
                             {q.status === 'aberto' && (
-                                <div className="flex gap-2 pt-1">
-                                    <SecondaryButton onClick={() => { navigator.clipboard?.writeText(q.follow_up_message ?? ''); toast.success('Lembrete copiado') }} className="flex-1 h-9 text-[13px]">
-                                        <Copy className="w-3.5 h-3.5" /> Copiar lembrete
-                                    </SecondaryButton>
-                                    <a href={`https://wa.me/?text=${encodeURIComponent(q.follow_up_message ?? '')}`} target="_blank" rel="noreferrer" className="flex-1 h-9 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 text-[13px] font-medium flex items-center justify-center gap-1.5">
-                                        <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
-                                    </a>
-                                    <SecondaryButton onClick={() => setConverting(q)} className="h-9 px-3 text-[13px]"><Link2 className="w-3.5 h-3.5" /></SecondaryButton>
+                                <div className="space-y-2 pt-1">
+                                    <Link href={`/service-orders/new?quote_id=${q.id}`} className="w-full h-9 rounded-full bg-primary text-primary-foreground text-[13px] font-semibold flex items-center justify-center gap-1.5">
+                                        <ClipboardPlus className="w-3.5 h-3.5" /> Criar OS a partir deste orçamento
+                                    </Link>
+                                    <div className="flex gap-2">
+                                        <SecondaryButton onClick={() => { navigator.clipboard?.writeText(q.follow_up_message ?? ''); toast.success('Lembrete copiado') }} className="flex-1 h-9 text-[13px]">
+                                            <Copy className="w-3.5 h-3.5" /> Copiar lembrete
+                                        </SecondaryButton>
+                                        <a href={`https://wa.me/?text=${encodeURIComponent(q.follow_up_message ?? '')}`} target="_blank" rel="noreferrer" className="flex-1 h-9 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 text-[13px] font-medium flex items-center justify-center gap-1.5">
+                                            <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
+                                        </a>
+                                        <SecondaryButton onClick={() => setConverting(q)} className="h-9 px-3 text-[13px]"><Link2 className="w-3.5 h-3.5" /></SecondaryButton>
+                                    </div>
                                 </div>
                             )}
                         </div>
