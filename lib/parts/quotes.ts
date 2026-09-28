@@ -62,7 +62,7 @@ export async function findQuoteOptions(db: SupabaseClient, companyId: string, de
 }
 
 /** Horas até lembrar a loja de um orçamento que ainda não virou OS — serviço rápido, então o lembrete é rápido também. */
-const REMINDER_HOURS = 4
+const REMINDER_HOURS = 2
 
 /** Tarefa (com lembrete) avisando que o orçamento ainda não virou OS. Cancelada quando o orçamento é vinculado a uma OS. */
 async function scheduleFollowUp(db: SupabaseClient, companyId: string, quoteId: string, deviceModel: string, service: string, link: string) {
