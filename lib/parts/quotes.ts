@@ -15,19 +15,27 @@ export const TIER_INFO: Record<string, { short: string; bullets: string[] }> = {
     },
     Premium: {
         short: 'excelente custo-benefício, construção premium',
-        bullets: ['Matéria-prima de qualidade', 'Construção com aro diferenciado', 'Qualidade superior ao padrão premium do mercado'],
+        bullets: ['Matéria-prima de qualidade', 'Construção com aro diferenciado', 'Boa resposta de toque, sem travamentos', 'Cores e brilho próximos do original', 'Boa durabilidade no dia a dia'],
     },
     Standard: {
-        short: 'entrada, ótimo custo-benefício, com toque e imagem um pouco abaixo do original',
+        short: 'entrada, ótimo custo-benefício, com toque um pouco abaixo do original',
         bullets: [
             'Preço acessível',
-            'Consome um pouco mais de energia que a tela original',
             'Sensibilidade de toque um pouco menor',
-            'Qualidade de imagem abaixo do original (mais perceptível em aparelhos com tela LED)',
+            'Em aparelhos com tela LED: consome mais energia e a imagem fica com qualidade abaixo do original',
             'Qualidade superior ao padrão Original China',
             'Garantia diferenciada',
         ],
     },
+}
+
+// Sempre a mais cara primeiro: Genuína, depois Premium, depois Standard.
+const TIER_ORDER = ['Genuína', 'Premium', 'Standard']
+
+/** Ordena as opções do orçamento: Genuína → Premium → Standard, e por preço (maior primeiro) dentro do resto. */
+export function sortQuoteOptions(options: PartQuoteOption[]): PartQuoteOption[] {
+    const rank = (o: PartQuoteOption) => { const i = o.tipo ? TIER_ORDER.indexOf(o.tipo) : -1; return i === -1 ? TIER_ORDER.length : i }
+    return [...options].sort((a, b) => rank(a) - rank(b) || b.valor - a.valor)
 }
 
 function genToken() {
@@ -67,7 +75,7 @@ export async function createPartQuote(db: SupabaseClient, companyId: string, inp
         token,
         device_model: input.deviceModel,
         service: input.service,
-        options: input.options,
+        options: sortQuoteOptions(input.options),
         customer_name: input.customerName ?? null,
         customer_phone: input.customerPhone ?? null,
         valid_until: validUntil,
@@ -80,7 +88,7 @@ export async function createPartQuote(db: SupabaseClient, companyId: string, inp
 export function buildQuoteMessage(deviceModel: string, service: string, options: PartQuoteOption[], link: string) {
     const linhas = options.map(o => {
         const info = o.tipo ? TIER_INFO[o.tipo] : null
-        return `• *${o.tipo ?? service}*${info ? ` (${info.short})` : ''}: ${brl(o.valor)}`
+        return `• ${o.tipo ?? service}${info ? ` (${info.short})` : ''}: ${brl(o.valor)}`
     }).join('\n')
-    return `Orçamento pra *${service}* no *${deviceModel}*:\n\n${linhas}\n\nValores a partir de, sujeitos à avaliação técnica na loja.\n\nDetalhes: ${link}`
+    return `Orçamento pra ${service} no ${deviceModel}:\n\n${linhas}\n\nValores a partir de, sujeitos à avaliação técnica na loja.\n\nDetalhes: ${link}`
 }
