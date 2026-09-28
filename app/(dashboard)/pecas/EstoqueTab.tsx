@@ -151,8 +151,8 @@ function PartForm({ open, part, suppliers, onClose, onSaved }: { open: boolean; 
                             npResults.length === 0 ? <p className="text-[13px] text-muted-foreground px-1">Nada encontrado no site pra esse nome.</p> : (
                                 <div className="rounded-xl bg-foreground/[0.04] divide-y divide-border/60 overflow-hidden">
                                     {npResults.map(r => (
-                                        <button key={r.url} type="button" disabled={r.price == null} onClick={() => applyNpPrice(r.price!)} className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-foreground/[0.05] disabled:opacity-50">
-                                            <span className="flex-1 min-w-0 text-[13px] truncate">{r.title}</span>
+                                        <button key={r.url} type="button" disabled={r.price == null} onClick={() => applyNpPrice(r.price!)} className="w-full flex items-start gap-2 px-3 py-2.5 text-left hover:bg-foreground/[0.05] disabled:opacity-50">
+                                            <span className="flex-1 min-w-0 text-[13px] break-words">{r.title}</span>
                                             <span className="text-[14px] font-semibold tabular-nums shrink-0">{r.price != null ? brl(r.price) : 'sem preço'}</span>
                                         </button>
                                     ))}
