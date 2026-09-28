@@ -1,7 +1,7 @@
 import {
     LayoutDashboard, ClipboardList, Calendar, Users,
     Package, BarChart3, Settings, Zap,
-    Wallet, HeartHandshake, Users2, Wrench, Smartphone, ListChecks, Sparkles, CalendarClock, Clapperboard,
+    Wallet, HeartHandshake, Users2, Wrench, Smartphone, ListChecks, Sparkles, CalendarClock, Clapperboard, Filter,
 } from 'lucide-react'
 import type { UserRole } from '@/types'
 
@@ -38,6 +38,7 @@ export const navGroups: NavGroup[] = [
         title: 'Clientes e estoque',
         items: [
             { href: '/customers', label: 'Clientes', icon: Users, roles: ['admin', 'manager', 'technician', 'cashier', 'talento'], tint: 'bg-blue-500' },
+            { href: '/funil', label: 'Funil de Vendas', icon: Filter, roles: ['admin', 'owner', 'manager'], tint: 'bg-amber-500' },
             { href: '/pecas', label: 'Peças', icon: Wrench, roles: ['admin', 'manager'], tint: 'bg-teal-500' },
             { href: '/inventory', label: 'Produtos', icon: Package, roles: ['admin', 'manager'], tint: 'bg-orange-500' },
             { href: '/post-sales', label: 'Pós-Venda', icon: HeartHandshake, roles: ['admin', 'manager'], tint: 'bg-pink-500' },

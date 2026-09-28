@@ -9,9 +9,9 @@ export interface ToolContext {
     companyId: string
     channel: Channel
     conversationId: string
-    /** App user talking to Alice (channel 'app'). */
+    /** App user talking to Alice (channel 'app'), or a trusted number talking on WhatsApp (channel 'whatsapp'). */
     user?: { id: string; role: string; name: string | null }
-    /** WhatsApp customer (channel 'whatsapp'): tools only see this person's data. */
+    /** WhatsApp customer (channel 'whatsapp', no `user`): tools only see this person's data. */
     customer?: { phone: string; name: string | null; customerIds: string[] }
 }
 

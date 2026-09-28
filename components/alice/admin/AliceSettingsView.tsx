@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import RegisterNumber from './RegisterNumber'
 import QrConnect from './QrConnect'
+import TrustedNumber from './TrustedNumber'
 import Segmented from '@/components/ui/Segmented'
 
 export interface SettingsPayload {
@@ -263,6 +264,8 @@ export default function AliceSettingsView({ data, onSaved, onReload }: { data: S
                     </div>
                 </div>
             </section>
+
+            <TrustedNumber />
 
             <section className="lg:col-span-2 rounded-2xl bg-card border border-border/60 px-5 py-4 flex gap-3">
                 <Mic className="w-5 h-5 text-primary shrink-0 mt-0.5" />

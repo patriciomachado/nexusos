@@ -7,6 +7,7 @@ import { channelDownload, channelMarkRead, channelReady, channelSend } from './c
 import type { InboundMessage } from './gateway'
 import { transcribe, transcriptionConfigured, audioFilename } from './transcribe'
 import { digitsOnly, formatWhatsApp, phoneKey, samePhone } from './phone'
+import { findTrustedStaff } from './trusted'
 import { pushToCompany } from '@/lib/tasks/reminders'
 
 /** Wait for a burst of messages ("oi" / "tudo bem?" / "meu celular...") to finish before answering once. */
@@ -72,8 +73,10 @@ export async function handleIncoming(db: SupabaseClient, settings: AliceSettings
     const companyId = settings.company_id
     const phone = digitsOnly(msg.from)
 
-    const customers = await findCustomers(db, companyId, phone)
-    const knownName = customers[0]?.name ?? null
+    // A store admin/manager's own WhatsApp, registered in Alice → Configurações: talks to Alice as staff, not a customer.
+    const trusted = await findTrustedStaff(db, companyId, phone)
+    const customers = trusted ? [] : await findCustomers(db, companyId, phone)
+    const knownName = trusted?.name ?? customers[0]?.name ?? null
     const conv = await conversationFor(db, companyId, phone, knownName ?? msg.profileName, customers[0]?.id ?? null)
     const who = conv.customer_name || knownName || msg.profileName || formatWhatsApp(phone)
 
@@ -148,7 +151,9 @@ export async function handleIncoming(db: SupabaseClient, settings: AliceSettings
                 companyId,
                 channel: 'whatsapp',
                 conversationId: conv.id,
-                customer: { phone, name: who, customerIds: customers.map(c => c.id) },
+                ...(trusted
+                    ? { user: trusted }
+                    : { customer: { phone, name: who, customerIds: customers.map(c => c.id) } }),
             },
             storeName: company?.name ?? 'a loja',
         })

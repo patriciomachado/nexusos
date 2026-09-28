@@ -12,6 +12,8 @@ const isPublicRoute = createRouteMatcher([
     '/track(.*)',
     '/api/track(.*)',
     '/orcamento(.*)',
+    '/lead(.*)',
+    '/api/lead(.*)',
     '/privacidade(.*)',
     '/termos(.*)',
     // Scheduler calls; the route checks CRON_SECRET itself.
