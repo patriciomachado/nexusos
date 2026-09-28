@@ -4,7 +4,7 @@ import { OS_STATUS_LABELS, brl, cleanSearch, formatDate, formatDateTime, todayIn
 import { appUrl, ADMIN_ROLES } from '../config'
 import { formatWhatsApp } from '../phone'
 import { pushToCompany } from '@/lib/tasks/reminders'
-import { createPartQuote, findQuoteOptions } from '@/lib/parts/quotes'
+import { buildQuoteMessage, createPartQuote, findQuoteOptions } from '@/lib/parts/quotes'
 
 /**
  * Tools for the WhatsApp agent. None of them takes an id from the model:
@@ -163,8 +163,7 @@ const cotarPeca = defineCustomer({
         const link = token ? `${appUrl()}/orcamento/${token}` : null
 
         if (aliceSettings?.auto_quote_parts) {
-            const linhas = opcoesNum.map(o => `• ${o.tipo ? `${o.tipo}: ` : ''}${brl(o.valor)}`).join('\n')
-            const mensagem_sugerida = `Orçamento pra *${servico}* no *${deviceModel}*:\n\n${linhas}\n\nValores a partir de, sujeitos à avaliação técnica na loja.${link ? `\n\nDetalhes: ${link}` : ''}`
+            const mensagem_sugerida = buildQuoteMessage(deviceModel, servico, opcoesNum, link ?? '')
             return { encontrado: true, pode_informar_ao_cliente: true, opcoes, link, mensagem_sugerida, instrucao: 'Mande a mensagem_sugerida ao cliente quase como está (pode ajustar o tom, mas mantenha os valores e o link).' }
         }
         await notifyStore(ctx, `Orçamento calculado: ${servico} · ${deviceModel}`, `${opcoes.map(o => `${o.tipo ? o.tipo + ': ' : ''}${o.valor}`).join(' / ')}${link ? ` — ${link}` : ''}`, 2)

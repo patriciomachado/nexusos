@@ -537,7 +537,7 @@ export default function TrackingClient({ os, company, token, hasRated, ratingDat
                                     {os.signature_url ? 'Aceito e Assinado' : 'Aceito pelo Cliente'}
                                 </div>
                             </div>
-                            <div className="text-sm text-slate-600 dark:text-slate-400/80 leading-relaxed font-medium bg-slate-50 dark:bg-white/[0.02] p-6 rounded-2xl border border-slate-200/50 dark:border-white/5 whitespace-pre-line">
+                            <div className="text-sm text-slate-600 dark:text-slate-400/80 leading-relaxed font-medium bg-slate-50 dark:bg-white/[0.02] p-6 rounded-2xl border border-slate-200/50 dark:border-white/5 whitespace-pre-line max-h-60 overflow-y-auto">
                                 {company.warranty_terms}
                             </div>
                             

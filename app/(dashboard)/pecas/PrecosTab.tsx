@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { Copy, Link2, Loader2, MessageCircle, Plus, Search, Trash2 } from 'lucide-react'
+import { Link2, Loader2, Plus, Search, Trash2 } from 'lucide-react'
 import Sheet from '@/components/tasks/Sheet'
 import { Field, Group, PrimaryButton, SecondaryButton, SelectRow, TextInput, brl, moneyText, parseMoney } from '@/components/ui/form'
+import QuotePreview from '@/components/pecas/QuotePreview'
 import { cn } from '@/lib/utils'
-import { partTitle, qty, send, useData, waLink, type Part } from './shared'
+import { partTitle, qty, send, useData, type Part } from './shared'
 
 interface Price {
     id: string; device_model: string; service: string; part_item_id: string | null; labor_price: number; price: number; notes: string | null
@@ -105,20 +106,20 @@ export default function PrecosTab() {
 function PriceForm({ open, price, parts, margin, laborMin, onClose, onSaved }: { open: boolean; price: Price | null; parts: Part[]; margin: number; laborMin: number; onClose: () => void; onSaved: () => void }) {
     const [f, setF] = useState({ device_model: '', service: '', part_item_id: '', labor: '', price: '' })
     const [saving, setSaving] = useState(false)
-    const [quoteUrl, setQuoteUrl] = useState<string | null>(null)
+    const [quote, setQuote] = useState<{ url: string; message: string } | null>(null)
     const [generating, setGenerating] = useState(false)
     useEffect(() => {
         if (!open) return
 
         setF(price ? { device_model: price.device_model, service: price.service, part_item_id: price.part_item_id ?? '', labor: moneyText(price.labor_price), price: moneyText(price.price) } : { device_model: '', service: '', part_item_id: '', labor: '', price: '' })
-        setQuoteUrl(null)
+        setQuote(null)
     }, [open, price])
 
     const generateQuote = async () => {
         setGenerating(true)
         try {
-            const d = await send<{ url: string }>('/api/parts/quotes', 'POST', { device_model: f.device_model.trim(), service: f.service.trim() })
-            setQuoteUrl(d.url)
+            const d = await send<{ url: string; message: string }>('/api/parts/quotes', 'POST', { device_model: f.device_model.trim(), service: f.service.trim() })
+            setQuote(d)
         } catch (e) { toast.error((e as Error).message) } finally { setGenerating(false) }
     }
     const set = (k: keyof typeof f, v: string) => setF(p => ({ ...p, [k]: v }))
@@ -174,15 +175,7 @@ function PriceForm({ open, price, parts, margin, laborMin, onClose, onSaved }: {
                             <SecondaryButton onClick={generateQuote} disabled={generating} className="w-full h-10 text-[15px]">
                                 {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />} Gerar link de orçamento
                             </SecondaryButton>
-                            {quoteUrl && (
-                                <div className="rounded-xl bg-foreground/[0.04] p-3 space-y-2">
-                                    <p className="text-[13px] font-mono truncate">{quoteUrl}</p>
-                                    <div className="flex gap-2">
-                                        <SecondaryButton onClick={() => { navigator.clipboard?.writeText(quoteUrl); toast.success('Link copiado') }} className="flex-1 h-9 text-[14px]"><Copy className="w-3.5 h-3.5" /> Copiar</SecondaryButton>
-                                        <a href={waLink(null, quoteUrl)} target="_blank" rel="noreferrer" className="flex-1 h-9 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 text-[14px] font-medium flex items-center justify-center gap-1.5"><MessageCircle className="w-3.5 h-3.5" /> WhatsApp</a>
-                                    </div>
-                                </div>
-                            )}
+                            {quote && <QuotePreview message={quote.message} />}
                         </div>
                     </Group>
                 )}

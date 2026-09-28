@@ -98,7 +98,7 @@ export default async function OrcamentoPage({ params }: { params: Promise<{ toke
                 {company?.warranty_terms && (
                     <div className="rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/5 p-4 flex gap-2.5">
                         <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                        <p className="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed">{company.warranty_terms}</p>
+                        <p className="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line max-h-40 overflow-y-auto">{company.warranty_terms}</p>
                     </div>
                 )}
 
