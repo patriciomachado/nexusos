@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { bad, firstIssue, partsContext } from '@/lib/parts/server'
-import { buildFollowUpMessage, buildQuoteMessage, computeQuoteStats, createPartQuote, findQuoteOptions, type PartQuoteOption } from '@/lib/parts/quotes'
+import { buildFollowUpMessage, buildQuoteMessage, computeQuoteStats, createPartQuote, findQuoteOptions, sortQuoteOptions, type PartQuoteOption } from '@/lib/parts/quotes'
 import { appUrl } from '@/lib/alice/config'
 import { digitsOnly } from '@/lib/alice/phone'
 
@@ -25,7 +25,7 @@ export async function GET() {
     const rows = data ?? []
     const now = Date.now()
     const quotes = rows.map(r => {
-        const options = (r.options as PartQuoteOption[]) ?? []
+        const options = sortQuoteOptions((r.options as PartQuoteOption[]) ?? [])
         const link = `${appUrl()}/orcamento/${r.token}`
         const order = Array.isArray(r.service_orders) ? r.service_orders[0] : r.service_orders
         const status = r.service_order_id ? 'convertido' : new Date(r.valid_until).getTime() < now ? 'vencido' : 'aberto'
@@ -59,10 +59,12 @@ export async function POST(req: NextRequest) {
     const { device_model, service, options: given, customer_name, customer_phone } = parsed.data
     const found = given ? { deviceModel: device_model, options: given } : await findQuoteOptions(db, companyId, device_model, service)
     if (!found) return bad('Nenhum preço cadastrado pra esse aparelho e serviço', 404)
-    const { deviceModel, options } = found
+    const { deviceModel, options: rawOptions } = found
+    const options = sortQuoteOptions(rawOptions)
 
     const token = await createPartQuote(db, companyId, { deviceModel, service, options, customerName: customer_name || null, customerPhone: customer_phone || null })
     if (!token) return bad('Não foi possível gerar o link agora', 500)
     const url = `${appUrl()}/orcamento/${token}`
-    return NextResponse.json({ url, message: buildQuoteMessage(deviceModel, service, options, url), whatsapp_url: waLink(customer_phone || null, buildQuoteMessage(deviceModel, service, options, url)) })
+    const message = buildQuoteMessage(deviceModel, service, options, url)
+    return NextResponse.json({ url, message, whatsapp_url: waLink(customer_phone || null, message) })
 }
