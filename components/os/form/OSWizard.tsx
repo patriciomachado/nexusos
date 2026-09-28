@@ -9,6 +9,7 @@ import Segmented from '@/components/ui/Segmented'
 import { cn } from '@/lib/utils'
 import { BottomBar, PrimaryButton, SecondaryButton } from '@/components/ui/form'
 import { BudgetSection, ClientSection, DeliverySection, DeviceSection, LockSection, ProblemSection } from './sections'
+import QuoteLinkField from './QuoteLinkField'
 import { saveOS, useOSForm, type InventoryOption, type Option, type OSFormState, type PriceOption } from './state'
 
 const STEPS = [
@@ -117,6 +118,7 @@ function WizardBody({ customers: initialCustomers, technicians, inventory, price
     const [tried, setTried] = useState<Record<number, boolean>>({})
     const [saving, setSaving] = useState(false)
     const [created, setCreated] = useState<{ id: string; number?: string } | null>(null)
+    const [quoteId, setQuoteId] = useState<string | null>(null)
     const v = state.values
 
     const problemOf = (i: number) => {
@@ -148,6 +150,9 @@ function WizardBody({ customers: initialCustomers, technicians, inventory, price
         setSaving(true)
         try {
             const row = await saveOS(state, companyId)
+            if (quoteId && row.order_number) {
+                fetch(`/api/parts/quotes/${quoteId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order_number: row.order_number }) }).catch(() => {})
+            }
             setCreated({ id: row.id, number: row.order_number })
             scrollTop()
             router.refresh()
@@ -223,6 +228,7 @@ function WizardBody({ customers: initialCustomers, technicians, inventory, price
                                             </button>
                                         ))}
                                     </div>
+                                    <QuoteLinkField value={quoteId} onChange={setQuoteId} />
                                     <BudgetSection state={state} inventory={inventory} prices={prices} />
                                     <DeliverySection state={state} />
                                 </div>
