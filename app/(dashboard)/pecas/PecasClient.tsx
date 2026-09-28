@@ -10,12 +10,14 @@ import ComprarTab from './ComprarTab'
 import PrecosTab from './PrecosTab'
 import FornecedoresTab from './FornecedoresTab'
 import DefeitosTab from './DefeitosTab'
+import OrcamentosTab from './OrcamentosTab'
 
 const TABS = [
     { value: 'painel', label: 'Painel' },
     { value: 'estoque', label: 'Estoque' },
     { value: 'comprar', label: 'Comprar' },
     { value: 'precos', label: 'Preços' },
+    { value: 'orcamentos', label: 'Orçamentos' },
     { value: 'fornecedores', label: 'Fornecedores' },
     { value: 'defeitos', label: 'Defeitos' },
 ] as const
@@ -47,6 +49,7 @@ export default function PecasClient({ initialTab }: { initialTab?: string }) {
                 {tab === 'estoque' && <EstoqueTab suppliers={suppliers} />}
                 {tab === 'comprar' && <ComprarTab suppliers={suppliers} />}
                 {tab === 'precos' && <PrecosTab />}
+                {tab === 'orcamentos' && <OrcamentosTab />}
                 {tab === 'fornecedores' && <FornecedoresTab suppliers={sup?.suppliers ?? null} onChanged={reloadSuppliers} />}
                 {tab === 'defeitos' && <DefeitosTab suppliers={suppliers} />}
             </div>

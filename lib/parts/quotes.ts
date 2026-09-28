@@ -2,6 +2,8 @@ import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { randomBytes } from 'crypto'
 import { brl, cleanSearch } from '@/lib/alice/tools/helpers'
+import { appUrl } from '@/lib/alice/config'
+import { DEFAULT_TIMEZONE, dateStringInZone, timeInZone } from '@/lib/tasks/dates'
 
 export interface PartQuoteOption { tipo: string | null; valor: number }
 
@@ -59,6 +61,26 @@ export async function findQuoteOptions(db: SupabaseClient, companyId: string, de
     return { deviceModel: rows[0].device_model, options }
 }
 
+/** Horas até lembrar a loja de um orçamento que ainda não virou OS — serviço rápido, então o lembrete é rápido também. */
+const REMINDER_HOURS = 2
+
+/** Tarefa (com lembrete) avisando que o orçamento ainda não virou OS. Cancelada quando o orçamento é vinculado a uma OS. */
+async function scheduleFollowUp(db: SupabaseClient, companyId: string, quoteId: string, deviceModel: string, service: string, link: string) {
+    const remindAt = new Date(Date.now() + REMINDER_HOURS * 3_600_000)
+    const { data: task, error } = await db.from('tasks').insert({
+        company_id: companyId,
+        title: `Orçamento em aberto: ${service} · ${deviceModel}`,
+        notes: `Ainda não virou OS. Vale mandar um lembrete pro cliente.\n\n${link}`,
+        priority: 2,
+        do_date: dateStringInZone(DEFAULT_TIMEZONE, remindAt),
+        do_time: timeInZone(DEFAULT_TIMEZONE, remindAt),
+        source_key: `quote:${quoteId}`,
+        source_href: '/pecas?tab=orcamentos',
+    }).select('id').single()
+    if (error || !task) { console.error('[part_quotes] follow-up task failed:', error); return }
+    await db.from('task_reminders').insert({ company_id: companyId, task_id: task.id, remind_at: remindAt.toISOString() })
+}
+
 /** Grava as opções cotadas pra um aparelho/serviço com um token público, pra virar um link de orçamento. */
 export async function createPartQuote(db: SupabaseClient, companyId: string, input: {
     deviceModel: string
@@ -70,7 +92,7 @@ export async function createPartQuote(db: SupabaseClient, companyId: string, inp
 }): Promise<string | null> {
     const token = genToken()
     const validUntil = new Date(Date.now() + (input.validDays ?? 7) * 86_400_000).toISOString()
-    const { error } = await db.from('part_quotes').insert({
+    const { data, error } = await db.from('part_quotes').insert({
         company_id: companyId,
         token,
         device_model: input.deviceModel,
@@ -79,9 +101,37 @@ export async function createPartQuote(db: SupabaseClient, companyId: string, inp
         customer_name: input.customerName ?? null,
         customer_phone: input.customerPhone ?? null,
         valid_until: validUntil,
-    })
-    if (error) { console.error('[part_quotes] create failed:', error); return null }
+    }).select('id').single()
+    if (error || !data) { console.error('[part_quotes] create failed:', error); return null }
+    await scheduleFollowUp(db, companyId, data.id, input.deviceModel, input.service, `${appUrl()}/orcamento/${token}`)
     return token
+}
+
+/** Vincula o orçamento à OS que ele virou, e cancela o lembrete de orçamento parado. */
+export async function markQuoteConverted(db: SupabaseClient, companyId: string, quoteId: string, serviceOrderId: string) {
+    await db.from('part_quotes').update({ service_order_id: serviceOrderId }).eq('id', quoteId).eq('company_id', companyId)
+    await db.from('tasks').update({ status: 'done', completed_at: new Date().toISOString() }).eq('company_id', companyId).eq('source_key', `quote:${quoteId}`)
+}
+
+/** Texto pra cutucar o cliente sobre um orçamento parado, com o valor mais em conta cotado. */
+export function buildFollowUpMessage(deviceModel: string, service: string, options: PartQuoteOption[], link: string) {
+    const cheapest = options.reduce((min, o) => (o.valor < min.valor ? o : min), options[0])
+    return `Oi! Vi que seu orçamento de ${service} pro ${deviceModel} ainda tá em aberto, a partir de ${brl(cheapest?.valor ?? 0)}. Nosso atendimento é rápido — posso confirmar aí pra você? ${link}`
+}
+
+export interface QuoteRow { id: string; device_model: string; service: string; options: PartQuoteOption[]; valid_until: string; created_at: string; service_order_id: string | null }
+
+/** Total, convertidos em OS, em aberto e vencidos sem confirmar. */
+export function computeQuoteStats(rows: QuoteRow[]) {
+    const now = Date.now()
+    let converted = 0, open = 0, expired = 0
+    for (const r of rows) {
+        if (r.service_order_id) converted++
+        else if (new Date(r.valid_until).getTime() < now) expired++
+        else open++
+    }
+    const total = rows.length
+    return { total, converted, open, expired, rate: total > 0 ? converted / total : null }
 }
 
 /** Texto pronto pra mandar no WhatsApp: as opções cotadas (com a diferença entre elas) + o link do orçamento. */
