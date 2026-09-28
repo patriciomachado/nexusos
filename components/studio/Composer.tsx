@@ -1,37 +1,36 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { Check, ChevronLeft, Copy, Download, Loader2, MessageCircle, Play, Share2, Sparkles, Trash2, Wand2 } from 'lucide-react'
+import { Check, ChevronLeft, Copy, Loader2, MessageCircle, Play, Sparkles, Trash2 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 import { BottomBar, Chips, Field, Group, PrimaryButton, SecondaryButton, TextArea, TextInput, brl } from '@/components/ui/form'
-import { FORMATS, TEMPLATES, canvasBlob, renderArt, type ArtFormat, type ArtTemplate } from '@/lib/studio/art'
 import type { Brand } from '@/lib/studio/brand'
-import { buildCanvaPrompt } from '@/lib/studio/canvaPrompt'
+import { buildImagePrompt, buildVideoPrompt, FORMATS, TEMPLATES, type PostFormat, type PostTemplate } from '@/lib/studio/prompt'
 import { CHANNELS, artLines, readyTexts, sourceTitle, type Channel, type Source, type Texts } from '@/lib/studio/sources'
 import { cn } from '@/lib/utils'
-import CanvaPromptSheet from './CanvaPromptSheet'
+import PromptPanel from './PromptPanel'
 import { POST_STATUS, type AiQuota, type SavedPost } from './StudioClient'
 import Teleprompter from './Teleprompter'
 
-interface ArtState {
-    template: ArtTemplate
-    format: ArtFormat
+interface PromptState {
+    template: PostTemplate
+    format: PostFormat
     headline: string
     subline: string
     price: string
     priceNote: string
-    /** Photos left out of the art. */
+    /** Photos left out of the prompt. */
     hidden: string[]
 }
 
 const photosOf = (s: Source) => (s.type === 'os' || s.type === 'device' ? s.photos : [])
 
-function initialArt(source: Source, saved?: Record<string, unknown> | null): ArtState {
+function initialPromptState(source: Source, saved?: Record<string, unknown> | null): PromptState {
     const lines = artLines(source)
     const photos = photosOf(source)
-    const base: ArtState = {
+    const base: PromptState = {
         template: source.type === 'device' ? 'aparelho' : source.type === 'os' && photos.length >= 2 ? 'antes_depois' : 'destaque',
         format: 'feed',
         headline: source.type === 'os' && photos.length >= 2 ? `Antes e depois: ${lines.headline}` : lines.headline,
@@ -41,10 +40,10 @@ function initialArt(source: Source, saved?: Record<string, unknown> | null): Art
         hidden: [],
     }
     if (!saved) return base
-    const pick = <K extends keyof ArtState>(k: K) => (typeof saved[k] === typeof base[k] ? saved[k] as ArtState[K] : base[k])
+    const pick = <K extends keyof PromptState>(k: K) => (typeof saved[k] === typeof base[k] ? saved[k] as PromptState[K] : base[k])
     return {
-        template: TEMPLATES.some(t => t.id === saved.template) ? saved.template as ArtTemplate : base.template,
-        format: FORMATS.some(f => f.id === saved.format) ? saved.format as ArtFormat : base.format,
+        template: TEMPLATES.some(t => t.id === saved.template) ? saved.template as PostTemplate : base.template,
+        format: FORMATS.some(f => f.id === saved.format) ? saved.format as PostFormat : base.format,
         headline: pick('headline'), subline: pick('subline'), price: pick('price'), priceNote: pick('priceNote'),
         hidden: Array.isArray(saved.hidden) ? (saved.hidden as unknown[]).filter((x): x is string => typeof x === 'string') : [],
     }
@@ -54,8 +53,6 @@ function initialArt(source: Source, saved?: Record<string, unknown> | null): Art
 function sourceRef(s: Source) {
     return s.type === 'manual' ? { type: s.type, topic: s.topic } : { type: s.type, id: s.id }
 }
-
-const slug = (t: string) => t.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'post'
 
 export default function Composer({ source, post, brand, ai, onAi, onSaved, onDeleted, onClose }: {
     source: Source
@@ -74,7 +71,7 @@ export default function Composer({ source, post, brand, ai, onAi, onSaved, onDel
         google: post.google_post ?? ready.google,
         roteiro: post.body_script ?? ready.roteiro,
     } : ready)
-    const [art, setArt] = useState<ArtState>(() => initialArt(source, post?.art))
+    const [meta, setMeta] = useState<PromptState>(() => initialPromptState(source, post?.art))
     const [channel, setChannel] = useState<Channel>('instagram')
     const [status, setStatus] = useState<SavedPost['status']>(post?.status ?? 'ideia')
     const [scheduledFor, setScheduledFor] = useState(post?.scheduled_for?.slice(0, 10) ?? '')
@@ -83,70 +80,25 @@ export default function Composer({ source, post, brand, ai, onAi, onSaved, onDel
     const [saving, setSaving] = useState(false)
     const [copied, setCopied] = useState(false)
     const [prompter, setPrompter] = useState(false)
-    const [canvaOpen, setCanvaOpen] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
-    const canvasRef = useRef<HTMLCanvasElement>(null)
-    const [drawing, setDrawing] = useState(true)
 
     const allPhotos = photosOf(source)
-    const photos = allPhotos.filter(p => !art.hidden.includes(p))
+    const photos = allPhotos.filter(p => !meta.hidden.includes(p))
     const title = post?.title ?? sourceTitle(source)
-    const set = (patch: Partial<ArtState>) => setArt(a => ({ ...a, ...patch }))
+    const set = (patch: Partial<PromptState>) => setMeta(m => ({ ...m, ...patch }))
 
-    // Redraw shortly after the last change (typing the headline shouldn't redraw on every key).
-    useEffect(() => {
-        const canvas = canvasRef.current
-        if (!canvas) return
-        let cancelled = false
-        setDrawing(true)
-        const t = setTimeout(async () => {
-            await renderArt(canvas, { ...art, brand, photos })
-            if (!cancelled) setDrawing(false)
-        }, 180)
-        return () => { cancelled = true; clearTimeout(t) }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [art, brand, photos.join('|')])
-
-    const canvaPrompt = useMemo(() => buildCanvaPrompt({
-        template: art.template,
-        format: art.format,
+    const promptInput = useMemo(() => ({
+        template: meta.template,
+        format: meta.format,
         brand,
-        headline: art.headline,
-        subline: art.subline,
-        price: art.price,
-        priceNote: art.priceNote,
+        headline: meta.headline,
+        subline: meta.subline,
+        price: meta.price,
+        priceNote: meta.priceNote,
         photoCount: photos.length,
-    }), [art, brand, photos.length])
-
-    const imageFile = async () => {
-        const canvas = canvasRef.current
-        const blob = canvas ? await canvasBlob(canvas) : null
-        return blob ? new File([blob], `${slug(title)}-${art.format}.png`, { type: 'image/png' }) : null
-    }
-
-    const download = async () => {
-        const file = await imageFile()
-        if (!file) return toast.error('Não foi possível gerar a imagem')
-        const url = URL.createObjectURL(file)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = file.name
-        a.click()
-        setTimeout(() => URL.revokeObjectURL(url), 1000)
-    }
-
-    const share = async () => {
-        const file = await imageFile()
-        if (!file) return toast.error('Não foi possível gerar a imagem')
-        const data = { files: [file], text: channel === 'roteiro' ? undefined : texts[channel] }
-        if (navigator.canShare?.(data)) {
-            try { await navigator.share(data) } catch { /* cancelled */ }
-        } else {
-            await download()
-            await copy()
-            toast.success('Imagem baixada e texto copiado')
-        }
-    }
+    }), [meta, brand, photos.length])
+    const imagePrompt = useMemo(() => buildImagePrompt(promptInput), [promptInput])
+    const videoPrompt = useMemo(() => buildVideoPrompt(promptInput), [promptInput])
 
     const copy = async () => {
         try {
@@ -190,7 +142,7 @@ export default function Composer({ source, post, brand, ai, onAi, onSaved, onDel
                 ...texts,
                 status: patch?.status ?? status,
                 scheduled_for: scheduledFor || null,
-                art: { template: art.template, format: art.format, headline: art.headline, subline: art.subline, price: art.price, priceNote: art.priceNote, hidden: art.hidden.filter(h => h.startsWith('http')), topic: source.type === 'manual' ? source.topic : undefined },
+                art: { template: meta.template, format: meta.format, headline: meta.headline, subline: meta.subline, price: meta.price, priceNote: meta.priceNote, hidden: meta.hidden.filter(h => h.startsWith('http')), topic: source.type === 'manual' ? source.topic : undefined },
             }
             const res = await fetch('/api/studio/scripts', { method: post ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
             const data = await res.json().catch(() => ({}))
@@ -232,31 +184,22 @@ export default function Composer({ source, post, brand, ai, onAi, onSaved, onDel
                 </div>
 
                 <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
-                    {/* Art */}
+                    {/* Prompt para IA de imagem/vídeo */}
                     <section className="space-y-3 lg:sticky lg:top-20">
-                        <div className="relative rounded-2xl overflow-hidden border border-border/60 bg-foreground/[0.04] flex items-center justify-center">
-                            <canvas ref={canvasRef} className={cn('w-full h-auto max-h-[62dvh] object-contain', art.format === 'story' && 'w-auto mx-auto')} aria-label="Prévia da arte" />
-                            {drawing && <Loader2 aria-hidden className="absolute top-3 right-3 w-5 h-5 animate-spin text-white drop-shadow" />}
-                        </div>
-                        <div className="flex gap-2">
-                            <PrimaryButton onClick={share} className="flex-1 h-11 text-[15px]"><Share2 aria-hidden className="w-4 h-4" /> Compartilhar</PrimaryButton>
-                            <SecondaryButton onClick={download} className="h-11 text-[15px]"><Download aria-hidden className="w-4 h-4" /> Baixar</SecondaryButton>
-                        </div>
-                        <SecondaryButton onClick={() => setCanvaOpen(true)} className="w-full h-11 text-[15px]">
-                            <Wand2 aria-hidden className="w-4 h-4" /> Quero uma arte mais elaborada (Canva)
-                        </SecondaryButton>
-                        <Chips ariaLabel="Formato" options={FORMATS.map(f => ({ value: f.id, label: f.label }))} value={art.format} onChange={format => set({ format })} />
-                        <Chips ariaLabel="Modelo da arte" options={TEMPLATES.map(t => ({ value: t.id, label: t.label }))} value={art.template} onChange={template => set({ template })} />
-                        {art.template === 'antes_depois' && photos.length < 2 && (
+                        <PromptPanel imagePrompt={imagePrompt} videoPrompt={videoPrompt} />
+
+                        <Chips ariaLabel="Formato" options={FORMATS.map(f => ({ value: f.id, label: f.label }))} value={meta.format} onChange={format => set({ format })} />
+                        <Chips ariaLabel="Estilo do post" options={TEMPLATES.map(t => ({ value: t.id, label: t.label }))} value={meta.template} onChange={template => set({ template })} />
+                        {meta.template === 'antes_depois' && photos.length < 2 && (
                             <p className="text-[13px] text-muted-foreground px-1">Antes e depois precisa de 2 fotos: a primeira é o antes e a última, o depois.</p>
                         )}
 
                         {allPhotos.length > 0 && (
-                            <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1" aria-label="Fotos da arte">
+                            <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1" aria-label="Fotos de referência para a IA">
                                 {allPhotos.map((p, i) => {
-                                    const on = !art.hidden.includes(p)
+                                    const on = !meta.hidden.includes(p)
                                     return (
-                                        <button key={i} type="button" aria-pressed={on} aria-label={`Foto ${i + 1}${on ? ', na arte' : ', fora da arte'}`} onClick={() => set({ hidden: on ? [...art.hidden, p] : art.hidden.filter(h => h !== p) })} className={cn('relative w-16 h-16 shrink-0 rounded-xl overflow-hidden border-2 transition', on ? 'border-primary' : 'border-transparent opacity-40')}>
+                                        <button key={i} type="button" aria-pressed={on} aria-label={`Foto ${i + 1}${on ? ', incluída no prompt' : ', fora do prompt'}`} onClick={() => set({ hidden: on ? [...meta.hidden, p] : meta.hidden.filter(h => h !== p) })} className={cn('relative w-16 h-16 shrink-0 rounded-xl overflow-hidden border-2 transition', on ? 'border-primary' : 'border-transparent opacity-40')}>
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img src={p} alt="" className="w-full h-full object-cover" />
                                             {on && <span className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center"><Check aria-hidden className="w-3 h-3" strokeWidth={3} /></span>}
@@ -267,12 +210,12 @@ export default function Composer({ source, post, brand, ai, onAi, onSaved, onDel
                         )}
 
                         <Group>
-                            <Field label="Título da arte" htmlFor="art-headline"><TextInput id="art-headline" value={art.headline} onChange={e => set({ headline: e.target.value })} maxLength={90} /></Field>
-                            <Field label="Linha de apoio" htmlFor="art-subline"><TextInput id="art-subline" value={art.subline} onChange={e => set({ subline: e.target.value })} maxLength={140} /></Field>
-                            {(art.template === 'aparelho' || art.price) && (
+                            <Field label="Título do post" htmlFor="prompt-headline"><TextInput id="prompt-headline" value={meta.headline} onChange={e => set({ headline: e.target.value })} maxLength={90} /></Field>
+                            <Field label="Linha de apoio" htmlFor="prompt-subline"><TextInput id="prompt-subline" value={meta.subline} onChange={e => set({ subline: e.target.value })} maxLength={140} /></Field>
+                            {(meta.template === 'aparelho' || meta.price) && (
                                 <>
-                                    <Field label="Preço em destaque" htmlFor="art-price"><TextInput id="art-price" value={art.price} onChange={e => set({ price: e.target.value })} maxLength={30} placeholder="R$ 1.999" /></Field>
-                                    <Field label="Abaixo do preço" htmlFor="art-note"><TextInput id="art-note" value={art.priceNote} onChange={e => set({ priceNote: e.target.value })} maxLength={60} placeholder="ou 10x no cartão" /></Field>
+                                    <Field label="Preço em destaque" htmlFor="prompt-price"><TextInput id="prompt-price" value={meta.price} onChange={e => set({ price: e.target.value })} maxLength={30} placeholder="R$ 1.999" /></Field>
+                                    <Field label="Abaixo do preço" htmlFor="prompt-note"><TextInput id="prompt-note" value={meta.priceNote} onChange={e => set({ priceNote: e.target.value })} maxLength={60} placeholder="ou 10x no cartão" /></Field>
                                 </>
                             )}
                         </Group>
@@ -344,7 +287,6 @@ export default function Composer({ source, post, brand, ai, onAi, onSaved, onDel
             </div>
 
             <Teleprompter open={prompter} onClose={() => setPrompter(false)} title={title} text={texts.roteiro} />
-            <CanvaPromptSheet open={canvaOpen} onClose={() => setCanvaOpen(false)} prompt={canvaPrompt} />
             <PremiumConfirmDialog
                 isOpen={confirmDelete}
                 onCancel={() => setConfirmDelete(false)}
