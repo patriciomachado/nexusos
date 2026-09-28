@@ -46,5 +46,5 @@ export default async function FunilPage() {
         assignee_name: one(r.users as Assignee | Assignee[] | null)?.full_name ?? null,
     }))
 
-    return <FunilClient entries={entries} customers={customers ?? []} />
+    return <FunilClient entries={entries} customers={customers ?? []} companyId={companyId} />
 }

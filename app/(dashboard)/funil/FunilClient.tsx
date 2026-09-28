@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Clock, ExternalLink, MessageCircle, Plus, Search, Trash2, UserRound } from 'lucide-react'
+import { Check, Clock, Copy, ExternalLink, Link2, MessageCircle, Plus, Search, Trash2, UserRound } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Sheet from '@/components/tasks/Sheet'
 import { Group, Field, TextInput, TextArea, SelectRow, brl, moneyText, parseMoney } from '@/components/ui/form'
@@ -54,13 +54,14 @@ function waNumber(phone: string) {
     return d.startsWith('55') && d.length >= 12 ? d : `55${d}`
 }
 
-export default function FunilClient({ entries: initial, customers }: { entries: FunnelEntry[]; customers: CustomerOption[] }) {
+export default function FunilClient({ entries: initial, customers, companyId }: { entries: FunnelEntry[]; customers: CustomerOption[]; companyId: string }) {
     const router = useRouter()
     const [entries, setEntries] = useState(initial)
     const [query, setQuery] = useState('')
     const [stage, setStage] = useState<FunnelStage>('lead')
     const [selected, setSelected] = useState<FunnelEntry | null>(null)
     const [creating, setCreating] = useState(false)
+    const [sharing, setSharing] = useState(false)
     const [dragId, setDragId] = useState<string | null>(null)
     const [over, setOver] = useState<FunnelStage | null>(null)
     const [busy, setBusy] = useState(false)
@@ -159,6 +160,9 @@ export default function FunilClient({ entries: initial, customers }: { entries: 
                         <Search className="w-[18px] h-[18px] text-muted-foreground shrink-0" />
                         <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar card ou cliente" className="flex-1 min-w-0 bg-transparent text-[17px] outline-none" />
                     </label>
+                    <button type="button" onClick={() => setSharing(true)} className="h-11 px-4 rounded-xl bg-foreground/[0.06] hover:bg-foreground/[0.1] text-[15px] font-medium inline-flex items-center gap-1.5 shrink-0">
+                        <Link2 className="w-[18px] h-[18px]" /> <span className="hidden sm:inline">Captar leads</span>
+                    </button>
                     <button type="button" onClick={() => setCreating(true)} className="h-11 px-4 rounded-xl bg-primary text-primary-foreground text-[15px] font-semibold inline-flex items-center gap-1.5 shrink-0">
                         <Plus className="w-[18px] h-[18px]" /> Novo
                     </button>
@@ -292,6 +296,8 @@ export default function FunilClient({ entries: initial, customers }: { entries: 
                 </Sheet>
             )}
 
+            {sharing && <ShareLeadSheet companyId={companyId} onClose={() => setSharing(false)} />}
+
             {creating && (
                 <NewLeadSheet
                     customers={customers}
@@ -315,6 +321,41 @@ export default function FunilClient({ entries: initial, customers }: { entries: 
                 />
             )}
         </div>
+    )
+}
+
+function ShareLeadSheet({ companyId, onClose }: { companyId: string; onClose: () => void }) {
+    const [copied, setCopied] = useState(false)
+    const url = typeof window !== 'undefined' ? `${window.location.origin}/lead/${companyId}` : ''
+    const qr = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(url)}`
+
+    const copy = async () => {
+        try {
+            await navigator.clipboard.writeText(url)
+            setCopied(true)
+            toast.success('Link copiado')
+            setTimeout(() => setCopied(false), 2000)
+        } catch {
+            toast.error('Não foi possível copiar')
+        }
+    }
+
+    return (
+        <Sheet open onClose={onClose} title="Captar leads">
+            <div className="space-y-5 text-center">
+                <p className="text-[15px] text-muted-foreground">
+                    Compartilhe esse link (ou o QR code) na bio do Instagram, no WhatsApp ou impresso na loja. Quem preencher vira um card novo aqui no funil, com aviso pra você.
+                </p>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={qr} alt="QR code do link de captação" width={220} height={220} className="mx-auto rounded-2xl border border-border/60" />
+                <div className="flex items-center gap-2 rounded-xl bg-foreground/[0.06] px-3 py-2.5">
+                    <span className="flex-1 min-w-0 text-[14px] text-left truncate">{url}</span>
+                    <button type="button" onClick={copy} aria-label="Copiar link" className="w-9 h-9 shrink-0 rounded-full bg-background flex items-center justify-center">
+                        {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                </div>
+            </div>
+        </Sheet>
     )
 }
 
