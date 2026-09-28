@@ -88,7 +88,7 @@ export async function createPartQuote(db: SupabaseClient, companyId: string, inp
 export function buildQuoteMessage(deviceModel: string, service: string, options: PartQuoteOption[], link: string) {
     const linhas = options.map(o => {
         const info = o.tipo ? TIER_INFO[o.tipo] : null
-        return `• *${o.tipo ?? service}*${info ? ` (${info.short})` : ''}: ${brl(o.valor)}`
+        return `• ${o.tipo ?? service}${info ? ` (${info.short})` : ''}: ${brl(o.valor)}`
     }).join('\n')
-    return `Orçamento pra *${service}* no *${deviceModel}*:\n\n${linhas}\n\nValores a partir de, sujeitos à avaliação técnica na loja.\n\nDetalhes: ${link}`
+    return `Orçamento pra ${service} no ${deviceModel}:\n\n${linhas}\n\nValores a partir de, sujeitos à avaliação técnica na loja.\n\nDetalhes: ${link}`
 }
