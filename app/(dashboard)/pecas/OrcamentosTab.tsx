@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { toast } from 'sonner'
-import { Copy, Link2, Loader2, MessageCircle, Trash2 } from 'lucide-react'
+import { ClipboardPlus, Copy, Link2, Loader2, MessageCircle, Trash2 } from 'lucide-react'
 import Sheet from '@/components/tasks/Sheet'
 import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 import { Field, PrimaryButton, SecondaryButton, TextInput, brl } from '@/components/ui/form'
@@ -13,7 +14,8 @@ interface Option { tipo: string | null; valor: number }
 interface Quote {
     id: string; device_model: string; service: string; options: Option[]
     valid_until: string; created_at: string; status: 'aberto' | 'convertido' | 'vencido'
-    order_number: string | null; link: string; follow_up_message: string | null
+    order_number: string | null; link: string; follow_up_message: string | null; follow_up_whatsapp_url: string | null
+    customer_name: string | null; customer_phone: string | null
 }
 interface Stats { total: number; converted: number; open: number; expired: number; rate: number | null }
 
@@ -64,7 +66,7 @@ export default function OrcamentosTab() {
                         <div key={q.id} className="px-4 py-3 space-y-2">
                             <div className="flex items-start justify-between gap-3">
                                 <span className="min-w-0">
-                                    <span className="block text-[16px] font-medium truncate">{q.device_model}</span>
+                                    <span className="block text-[16px] font-medium truncate">{q.device_model}{q.customer_name ? ` · ${q.customer_name}` : ''}</span>
                                     <span className="block text-[13px] text-muted-foreground truncate">{q.service} · {new Date(q.created_at).toLocaleDateString('pt-BR')}</span>
                                 </span>
                                 <span className="flex items-center gap-2 shrink-0">
@@ -78,14 +80,19 @@ export default function OrcamentosTab() {
                                 {q.options.map(o => `${o.tipo ?? q.service}: ${brl(o.valor)}`).join(' · ')}
                             </p>
                             {q.status === 'aberto' && (
-                                <div className="flex gap-2 pt-1">
-                                    <SecondaryButton onClick={() => { navigator.clipboard?.writeText(q.follow_up_message ?? ''); toast.success('Lembrete copiado') }} className="flex-1 h-9 text-[13px]">
-                                        <Copy className="w-3.5 h-3.5" /> Copiar lembrete
-                                    </SecondaryButton>
-                                    <a href={`https://wa.me/?text=${encodeURIComponent(q.follow_up_message ?? '')}`} target="_blank" rel="noreferrer" className="flex-1 h-9 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 text-[13px] font-medium flex items-center justify-center gap-1.5">
-                                        <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
-                                    </a>
-                                    <SecondaryButton onClick={() => setConverting(q)} className="h-9 px-3 text-[13px]"><Link2 className="w-3.5 h-3.5" /></SecondaryButton>
+                                <div className="space-y-2 pt-1">
+                                    <Link href={`/service-orders/new?quote_id=${q.id}`} className="w-full h-9 rounded-full bg-primary text-primary-foreground text-[13px] font-semibold flex items-center justify-center gap-1.5">
+                                        <ClipboardPlus className="w-3.5 h-3.5" /> Criar OS a partir deste orçamento
+                                    </Link>
+                                    <div className="flex gap-2">
+                                        <SecondaryButton onClick={() => { navigator.clipboard?.writeText(q.follow_up_message ?? ''); toast.success('Lembrete copiado') }} className="flex-1 h-9 text-[13px]">
+                                            <Copy className="w-3.5 h-3.5" /> Copiar lembrete
+                                        </SecondaryButton>
+                                        <a href={q.follow_up_whatsapp_url ?? `https://wa.me/?text=${encodeURIComponent(q.follow_up_message ?? '')}`} target="_blank" rel="noreferrer" className="flex-1 h-9 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 text-[13px] font-medium flex items-center justify-center gap-1.5">
+                                            <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
+                                        </a>
+                                        <SecondaryButton onClick={() => setConverting(q)} className="h-9 px-3 text-[13px]"><Link2 className="w-3.5 h-3.5" /></SecondaryButton>
+                                    </div>
                                 </div>
                             )}
                         </div>

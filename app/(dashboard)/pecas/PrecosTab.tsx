@@ -106,19 +106,26 @@ export default function PrecosTab() {
 function PriceForm({ open, price, parts, margin, laborMin, onClose, onSaved }: { open: boolean; price: Price | null; parts: Part[]; margin: number; laborMin: number; onClose: () => void; onSaved: () => void }) {
     const [f, setF] = useState({ device_model: '', service: '', part_item_id: '', labor: '', price: '' })
     const [saving, setSaving] = useState(false)
-    const [quote, setQuote] = useState<{ url: string; message: string } | null>(null)
+    const [quote, setQuote] = useState<{ url: string; message: string; whatsapp_url?: string } | null>(null)
     const [generating, setGenerating] = useState(false)
+    const [customerName, setCustomerName] = useState('')
+    const [customerPhone, setCustomerPhone] = useState('')
     useEffect(() => {
         if (!open) return
 
         setF(price ? { device_model: price.device_model, service: price.service, part_item_id: price.part_item_id ?? '', labor: moneyText(price.labor_price), price: moneyText(price.price) } : { device_model: '', service: '', part_item_id: '', labor: '', price: '' })
         setQuote(null)
+        setCustomerName('')
+        setCustomerPhone('')
     }, [open, price])
 
     const generateQuote = async () => {
         setGenerating(true)
         try {
-            const d = await send<{ url: string; message: string }>('/api/parts/quotes', 'POST', { device_model: f.device_model.trim(), service: f.service.trim() })
+            const d = await send<{ url: string; message: string; whatsapp_url?: string }>('/api/parts/quotes', 'POST', {
+                device_model: f.device_model.trim(), service: f.service.trim(),
+                customer_name: customerName.trim() || null, customer_phone: customerPhone.trim() || null,
+            })
             setQuote(d)
         } catch (e) { toast.error((e as Error).message) } finally { setGenerating(false) }
     }
@@ -171,11 +178,15 @@ function PriceForm({ open, price, parts, margin, laborMin, onClose, onSaved }: {
 
                 {price && (
                     <Group title="Orçamento pro cliente" footer="Junta todas as opções de qualidade desse aparelho e serviço numa página só, pra mandar em vez de digitar o valor.">
+                        <div className="grid grid-cols-2 divide-x divide-border/60">
+                            <Field label="Nome (opcional)" htmlFor="pf-cname"><TextInput id="pf-cname" value={customerName} onChange={e => setCustomerName(e.target.value)} /></Field>
+                            <Field label="WhatsApp (opcional)" htmlFor="pf-cphone"><TextInput id="pf-cphone" type="tel" inputMode="tel" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} placeholder="(11) 98888-7777" /></Field>
+                        </div>
                         <div className="px-4 py-3 space-y-2">
                             <SecondaryButton onClick={generateQuote} disabled={generating} className="w-full h-10 text-[15px]">
                                 {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />} Gerar link de orçamento
                             </SecondaryButton>
-                            {quote && <QuotePreview message={quote.message} />}
+                            {quote && <QuotePreview message={quote.message} whatsappUrl={quote.whatsapp_url} />}
                         </div>
                     </Group>
                 )}

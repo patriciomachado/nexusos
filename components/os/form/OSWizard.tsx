@@ -29,6 +29,8 @@ interface Props {
     inventory: InventoryOption[]
     prices?: PriceOption[]
     companyId: string
+    /** Veio de "Criar OS" num orçamento em aberto: pré-preenche aparelho/defeito e já vincula. */
+    initialQuote?: { id: string; deviceModel: string; service: string } | null
 }
 
 function scrollTop() {
@@ -110,15 +112,15 @@ export default function OSWizard(props: Props) {
     return <WizardBody key={round} {...props} mode={mode} onModeChange={changeMode} onAnother={() => { setRound(r => r + 1); scrollTop() }} />
 }
 
-function WizardBody({ customers: initialCustomers, technicians, inventory, prices, companyId, mode, onModeChange, onAnother }: Props & { mode: Mode; onModeChange: (m: Mode) => void; onAnother: () => void }) {
+function WizardBody({ customers: initialCustomers, technicians, inventory, prices, companyId, initialQuote, mode, onModeChange, onAnother }: Props & { mode: Mode; onModeChange: (m: Mode) => void; onAnother: () => void }) {
     const router = useRouter()
-    const state = useOSForm()
+    const state = useOSForm(initialQuote ? { title: initialQuote.deviceModel, equipment_description: initialQuote.deviceModel, problem_description: initialQuote.service } : undefined)
     const [customers, setCustomers] = useState(initialCustomers)
     const [step, setStep] = useState(0)
     const [tried, setTried] = useState<Record<number, boolean>>({})
     const [saving, setSaving] = useState(false)
     const [created, setCreated] = useState<{ id: string; number?: string } | null>(null)
-    const [quoteId, setQuoteId] = useState<string | null>(null)
+    const [quoteId, setQuoteId] = useState<string | null>(initialQuote?.id ?? null)
     const v = state.values
 
     const problemOf = (i: number) => {
