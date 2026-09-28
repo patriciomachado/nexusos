@@ -4,7 +4,10 @@ import { OS_STATUS_LABELS, brl, cleanSearch, formatDate, formatDateTime, todayIn
 import { appUrl, ADMIN_ROLES } from '../config'
 import { formatWhatsApp } from '../phone'
 import { pushToCompany } from '@/lib/tasks/reminders'
-import { buildQuoteMessage, createPartQuote, findQuoteOptions, sortQuoteOptions } from '@/lib/parts/quotes'
+import { buildQuoteMessage, createPartQuote, findQuoteOptions, sortQuoteOptions, type PartQuoteOption } from '@/lib/parts/quotes'
+import { loadPartMargin } from '@/lib/parts/prices'
+import { suggestedPrice } from '@/lib/parts/server'
+import { searchNovaPecasWithPrices } from '@/lib/parts/novapecas'
 
 /**
  * Tools for the WhatsApp agent. None of them takes an id from the model:
@@ -142,17 +145,30 @@ async function notifyStore(ctx: ToolContext, title: string, detail: string, prio
 const cotarPeca = defineCustomer({
     name: 'cotar_peca',
     label: 'Consultando preço de peça',
-    description: 'Consulta os preços já cadastrados na tabela de Peças para um aparelho e um serviço (ex.: troca de tela, troca de bateria). Quando a loja tem mais de uma opção de qualidade para a mesma peça (Genuína, Premium, Standard), traz todas. Use isso antes de registrar_pedido quando o cliente perguntar quanto custa um reparo.',
+    description: 'Consulta os preços já cadastrados na tabela de Peças para um aparelho e um serviço (ex.: troca de tela, troca de bateria). Quando a loja tem mais de uma opção de qualidade para a mesma peça (Genuína, Premium, Standard), traz todas. Se nada estiver cadastrado e a loja tiver ligado "Cotar peças automaticamente", consulta o preço ao vivo no fornecedor e aplica a margem da loja, pra responder o cliente na hora mesmo sem cadastro. Use isso antes de registrar_pedido quando o cliente perguntar quanto custa um reparo.',
     schema: z.object({
         aparelho: z.string().min(2).max(80).describe('Marca e modelo do aparelho, como o cliente descreveu'),
         servico: z.string().min(2).max(60).describe('Serviço, ex.: "troca de tela", "troca de bateria"'),
     }),
     async run(ctx, { aparelho, servico }) {
-        const [found, { data: aliceSettings }] = await Promise.all([
+        const [foundRow, { data: aliceSettings }] = await Promise.all([
             findQuoteOptions(ctx.db, ctx.companyId, aparelho, servico),
             ctx.db.from('alice_settings').select('auto_quote_parts').eq('company_id', ctx.companyId).maybeSingle(),
         ])
-        if (!found) return { encontrado: false, instrucao: 'Nada cadastrado para esse aparelho/serviço. Use registrar_pedido para a loja preparar o orçamento.' }
+        let found = foundRow
+        // Nada cadastrado, mas a loja confia a Alice a cotar sozinha: tenta o preço ao vivo do fornecedor.
+        if (!found?.options.length && aliceSettings?.auto_quote_parts) {
+            try {
+                const results = await searchNovaPecasWithPrices(`${servico} ${aparelho}`)
+                const best = results.find(r => r.price != null)
+                if (best?.price != null) {
+                    const { margin, laborMin } = await loadPartMargin(ctx.db, ctx.companyId)
+                    const options: PartQuoteOption[] = [{ tipo: null, valor: suggestedPrice(best.price, 0, margin, laborMin) }]
+                    found = { deviceModel: aparelho, options }
+                }
+            } catch { /* fornecedor fora do ar: segue sem cotação, cai no aviso abaixo */ }
+        }
+        if (!found?.options.length) return { encontrado: false, instrucao: 'Nada cadastrado para esse aparelho/serviço. Use registrar_pedido para a loja preparar o orçamento.' }
 
         const { deviceModel } = found
         const opcoesNum = sortQuoteOptions(found.options)
