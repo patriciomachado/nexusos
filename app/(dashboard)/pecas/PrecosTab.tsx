@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { Copy, Link2, Loader2, MessageCircle, Plus, Search, Trash2 } from 'lucide-react'
+import { Link2, Loader2, Plus, Search, Trash2 } from 'lucide-react'
 import Sheet from '@/components/tasks/Sheet'
 import { Field, Group, PrimaryButton, SecondaryButton, SelectRow, TextInput, brl, moneyText, parseMoney } from '@/components/ui/form'
+import QuotePreview from '@/components/pecas/QuotePreview'
 import { cn } from '@/lib/utils'
-import { partTitle, qty, send, useData, waLink, type Part } from './shared'
+import { partTitle, qty, send, useData, type Part } from './shared'
 
 interface Price {
     id: string; device_model: string; service: string; part_item_id: string | null; labor_price: number; price: number; notes: string | null
@@ -174,15 +175,7 @@ function PriceForm({ open, price, parts, margin, laborMin, onClose, onSaved }: {
                             <SecondaryButton onClick={generateQuote} disabled={generating} className="w-full h-10 text-[15px]">
                                 {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />} Gerar link de orçamento
                             </SecondaryButton>
-                            {quote && (
-                                <div className="rounded-xl bg-foreground/[0.04] p-3 space-y-2">
-                                    <p className="text-[13px] whitespace-pre-line">{quote.message}</p>
-                                    <div className="flex gap-2">
-                                        <SecondaryButton onClick={() => { navigator.clipboard?.writeText(quote.message); toast.success('Mensagem copiada') }} className="flex-1 h-9 text-[14px]"><Copy className="w-3.5 h-3.5" /> Copiar mensagem</SecondaryButton>
-                                        <a href={waLink(null, quote.message)} target="_blank" rel="noreferrer" className="flex-1 h-9 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 text-[14px] font-medium flex items-center justify-center gap-1.5"><MessageCircle className="w-3.5 h-3.5" /> WhatsApp</a>
-                                    </div>
-                                </div>
-                            )}
+                            {quote && <QuotePreview message={quote.message} />}
                         </div>
                     </Group>
                 )}
