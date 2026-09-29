@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import Segmented from '@/components/ui/Segmented'
 import { useFeature } from '@/components/plans/PlanProvider'
 import UpgradeCard from '@/components/plans/UpgradeCard'
+import WhatsAppButton from '@/components/alice/WhatsAppButton'
 import GoogleReviews from './GoogleReviews'
 
 export interface Rating {
@@ -41,18 +42,12 @@ const DAY = 86_400_000
 const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
 const CONTACTED_KEY = 'postsales:contacted'
 
+const hasPhone = (phone: string | null) => (phone ?? '').replace(/\D/g, '').length >= 10
 const firstName = (name: string) => name.split(' ')[0]
 const shortDate = (iso: string) => new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
 const ago = (iso: string, now: number) => {
     const d = Math.floor((now - new Date(iso).getTime()) / DAY)
     return d <= 0 ? 'hoje' : d === 1 ? 'ontem' : `há ${d} dias`
-}
-
-function waLink(phone: string | null, text: string) {
-    let d = (phone ?? '').replace(/\D/g, '')
-    if (d.length < 10) return null
-    if (!d.startsWith('55')) d = `55${d}`
-    return `https://wa.me/${d}?text=${encodeURIComponent(text)}`
 }
 
 function Stars({ value, size = 'sm' }: { value: number; size?: 'sm' | 'md' }) {
@@ -156,7 +151,8 @@ export default function PostSalesClient({ ratings, delivered, storeName, googleR
                             title: r.customer_name,
                             line: <><Stars value={r.rating} /> <span className="ml-1">{r.order_number} · {ago(r.created_at, now)}</span></>,
                             quote: r.comment,
-                            href: waLink(r.customer_phone, `Olá ${firstName(r.customer_name)}, aqui é da ${storeName}. Vimos sua avaliação sobre o serviço ${r.order_number} e queremos entender o que aconteceu para resolver. Podemos conversar?`),
+                            phone: hasPhone(r.customer_phone) ? r.customer_phone : null,
+                            text: `Olá ${firstName(r.customer_name)}, aqui é da ${storeName}. Vimos sua avaliação sobre o serviço ${r.order_number} e queremos entender o que aconteceu para resolver. Podemos conversar?`,
                             cta: 'Chamar',
                         }))}
                         contacted={contacted}
@@ -170,7 +166,8 @@ export default function PostSalesClient({ ratings, delivered, storeName, googleR
                             key: `d-${d.id}`,
                             title: d.customer_name,
                             line: <span>{d.order_number} · {d.title} · entregue {ago(d.delivered_at, now)}</span>,
-                            href: d.tracking_token && origin ? waLink(d.customer_phone, `Olá ${firstName(d.customer_name)}! Aqui é da ${storeName}. Obrigado por confiar no nosso serviço (${d.order_number}). Pode nos contar como foi? Leva 10 segundos: ${origin}/tracking/${d.tracking_token}`) : null,
+                            phone: d.tracking_token && origin && hasPhone(d.customer_phone) ? d.customer_phone : null,
+                            text: d.tracking_token && origin ? `Olá ${firstName(d.customer_name)}! Aqui é da ${storeName}. Obrigado por confiar no nosso serviço (${d.order_number}). Pode nos contar como foi? Leva 10 segundos: ${origin}/tracking/${d.tracking_token}` : '',
                             cta: 'Pedir',
                         }))}
                         contacted={contacted}
@@ -185,7 +182,8 @@ export default function PostSalesClient({ ratings, delivered, storeName, googleR
                                 key: `g-${r.id}`,
                                 title: r.customer_name,
                                 line: <><Stars value={5} /> <span className="ml-1">{r.order_number} · {ago(r.created_at, now)}</span></>,
-                                href: waLink(r.customer_phone, `Olá ${firstName(r.customer_name)}! Ficamos muito felizes com sua avaliação 5 estrelas 😊 Se puder, deixe também sua opinião no Google, ajuda muito a ${storeName}: ${googleReviewUrl}`),
+                                phone: hasPhone(r.customer_phone) ? r.customer_phone : null,
+                                text: `Olá ${firstName(r.customer_name)}! Ficamos muito felizes com sua avaliação 5 estrelas 😊 Se puder, deixe também sua opinião no Google, ajuda muito a ${storeName}: ${googleReviewUrl}`,
                                 cta: 'Convidar',
                             }))}
                             contacted={contacted}
@@ -216,7 +214,7 @@ function Kpi({ label, value, extra }: { label: string; value: string; extra: Rea
     )
 }
 
-interface ActionItem { key: string; title: string; line: React.ReactNode; quote?: string | null; href: string | null; cta: string }
+interface ActionItem { key: string; title: string; line: React.ReactNode; quote?: string | null; phone: string | null; text: string; cta: string }
 
 function ActionGroup({ title, hint, empty, items, contacted, onContact }: { title: string; hint: string; empty: string; items: ActionItem[]; contacted: Record<string, number>; onContact: (k: string) => void }) {
     const sorted = [...items].sort((a, b) => Number(!!contacted[a.key]) - Number(!!contacted[b.key]))
@@ -245,11 +243,11 @@ function ActionGroup({ title, hint, empty, items, contacted, onContact }: { titl
                                 </div>
                                 {done ? (
                                     <span className="text-[12px] text-muted-foreground inline-flex items-center gap-1 shrink-0"><Check className="w-3.5 h-3.5" /> Contatado</span>
-                                ) : item.href ? (
-                                    <a href={item.href} target="_blank" rel="noopener noreferrer" onClick={() => onContact(item.key)}
+                                ) : item.phone ? (
+                                    <WhatsAppButton phone={item.phone} text={item.text} customerName={item.title} onClick={() => onContact(item.key)}
                                         className="h-8 px-3 rounded-full bg-green-500/12 text-green-700 dark:text-green-400 text-[13px] font-semibold inline-flex items-center gap-1.5 shrink-0">
                                         <MessageCircle className="w-3.5 h-3.5" /> {item.cta}
-                                    </a>
+                                    </WhatsAppButton>
                                 ) : (
                                     <span className="text-[12px] text-muted-foreground shrink-0">sem telefone</span>
                                 )}

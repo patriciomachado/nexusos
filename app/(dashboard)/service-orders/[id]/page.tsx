@@ -110,7 +110,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                     </p>
                 </div>
 
-                <OSDetailActions os={{ id: os.id, order_number: os.order_number, status: os.status, tracking_token: os.tracking_token, total, customer: customer ? { name: customer.name, phone: customer.phone } : null }} />
+                <OSDetailActions os={{ id: os.id, order_number: os.order_number, status: os.status, tracking_token: os.tracking_token, total, customer_id: os.customer_id ?? null, customer: customer ? { name: customer.name, phone: customer.phone } : null }} />
 
                 <div className="mt-6 grid lg:grid-cols-[minmax(0,1fr)_340px] gap-6 items-start">
                     <div className="space-y-6 min-w-0">

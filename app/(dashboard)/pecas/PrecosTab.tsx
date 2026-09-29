@@ -106,7 +106,7 @@ export default function PrecosTab() {
 function PriceForm({ open, price, parts, margin, laborMin, onClose, onSaved }: { open: boolean; price: Price | null; parts: Part[]; margin: number; laborMin: number; onClose: () => void; onSaved: () => void }) {
     const [f, setF] = useState({ device_model: '', service: '', part_item_id: '', labor: '', price: '' })
     const [saving, setSaving] = useState(false)
-    const [quote, setQuote] = useState<{ url: string; message: string; whatsapp_url?: string } | null>(null)
+    const [quote, setQuote] = useState<{ url: string; message: string } | null>(null)
     const [generating, setGenerating] = useState(false)
     const [customerName, setCustomerName] = useState('')
     const [customerPhone, setCustomerPhone] = useState('')
@@ -122,7 +122,7 @@ function PriceForm({ open, price, parts, margin, laborMin, onClose, onSaved }: {
     const generateQuote = async () => {
         setGenerating(true)
         try {
-            const d = await send<{ url: string; message: string; whatsapp_url?: string }>('/api/parts/quotes', 'POST', {
+            const d = await send<{ url: string; message: string }>('/api/parts/quotes', 'POST', {
                 device_model: f.device_model.trim(), service: f.service.trim(),
                 customer_name: customerName.trim() || null, customer_phone: customerPhone.trim() || null,
             })
@@ -186,7 +186,7 @@ function PriceForm({ open, price, parts, margin, laborMin, onClose, onSaved }: {
                             <SecondaryButton onClick={generateQuote} disabled={generating} className="w-full h-10 text-[15px]">
                                 {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />} Gerar link de orçamento
                             </SecondaryButton>
-                            {quote && <QuotePreview message={quote.message} whatsappUrl={quote.whatsapp_url} />}
+                            {quote && <QuotePreview message={quote.message} phone={customerPhone} customerName={customerName} />}
                         </div>
                     </Group>
                 )}
