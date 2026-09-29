@@ -68,7 +68,7 @@ const patchSchema = z.object({
     title: z.string().trim().min(1).max(120).optional(),
 }).refine(d => d.mode !== undefined || d.title !== undefined, 'Nada para atualizar.')
 
-/** WhatsApp: hand the chat to a person, or back to Alice. App: rename the conversation. */
+/** WhatsApp: hand the chat to a person (or back to Alice), and rename how the customer shows up in the inbox. App: rename the conversation. */
 export async function PATCH(req: NextRequest, { params }: Params) {
     const { id } = await params
     const r = await load(id)
@@ -86,18 +86,18 @@ export async function PATCH(req: NextRequest, { params }: Params) {
         })
     }
     if (parsed.data.title !== undefined) {
-        if (conv.channel !== 'app') return NextResponse.json({ error: 'Só conversas do app podem ser renomeadas.' }, { status: 400 })
-        await ctx.db.from('alice_conversations').update({ title: parsed.data.title }).eq('id', id)
+        // App: the conversation's own title. WhatsApp: the name shown for the customer in the inbox.
+        const column = conv.channel === 'app' ? 'title' : 'customer_name'
+        await ctx.db.from('alice_conversations').update({ [column]: parsed.data.title }).eq('id', id)
     }
-    return NextResponse.json({ mode: parsed.data.mode ?? conv.mode, title: parsed.data.title ?? conv.title })
+    return NextResponse.json({ mode: parsed.data.mode ?? conv.mode, title: parsed.data.title ?? (conv.channel === 'app' ? conv.title : conv.customer_name) })
 }
 
-/** App: delete one of my conversations with Alice. */
+/** Delete a conversation: mine (app) or, for admins, a WhatsApp chat's history. */
 export async function DELETE(_req: NextRequest, { params }: Params) {
     const { id } = await params
     const r = await load(id)
     if (r.response) return r.response
-    if (r.conv.channel !== 'app') return NextResponse.json({ error: 'Conversas do WhatsApp ficam guardadas.' }, { status: 400 })
     await r.ctx.db.from('alice_conversations').delete().eq('id', id).eq('company_id', r.ctx.companyId)
     return NextResponse.json({ ok: true })
 }
