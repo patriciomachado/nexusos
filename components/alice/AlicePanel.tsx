@@ -5,13 +5,16 @@ import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import {
     Sparkles, X, Mic, Square, ArrowUp, Loader2, History, SquarePen, Volume2, VolumeX,
-    Check, CircleX, Clock, ChevronLeft, Trash2, ExternalLink, Settings2,
+    Check, CircleX, Clock, ChevronLeft, Trash2, ExternalLink, Settings2, Pencil,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useAliceStore } from '@/store/aliceStore'
 import { useVoice, speak, stopSpeaking } from './useVoice'
 import { RichText } from './RichText'
+import ActionMenu from '@/components/ui/ActionMenu'
+import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
+import Sheet from '@/components/tasks/Sheet'
 
 type ActionStatus = 'proposed' | 'executed' | 'rejected' | 'failed' | 'expired' | 'working'
 
@@ -53,6 +56,10 @@ export default function AlicePanel() {
     const [toolLabel, setToolLabel] = useState<string | null>(null)
     const [history, setHistory] = useState<ConversationSummary[] | null>(null)
     const [speakReplies, setSpeakReplies] = useState(false)
+    const [conversationTitle, setConversationTitle] = useState<string | null>(null)
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+    const [renaming, setRenaming] = useState(false)
+    const [renameValue, setRenameValue] = useState('')
     const scrollRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLTextAreaElement>(null)
     const abortRef = useRef<AbortController | null>(null)
@@ -96,6 +103,7 @@ export default function AlicePanel() {
     const send = useCallback(async (raw: string, voice = false) => {
         const text = raw.trim()
         if (!text || busy) return
+        const startingNew = !conversationId
         stopSpeaking()
         setInput('')
         setBusy(true)
@@ -131,7 +139,10 @@ export default function AlicePanel() {
                     buffer = buffer.slice(nl + 1)
                     if (!line) continue
                     const e = JSON.parse(line)
-                    if (e.t === 'conversation') setConversationId(e.id)
+                    if (e.t === 'conversation') {
+                        setConversationId(e.id)
+                        if (startingNew) setConversationTitle(text.slice(0, 80))
+                    }
                     else if (e.t === 'text') {
                         setToolLabel(null)
                         spoken += e.d
@@ -206,6 +217,7 @@ export default function AlicePanel() {
         abortRef.current?.abort()
         stopSpeaking()
         setConversationId(null)
+        setConversationTitle(null)
         setItems([])
         setView('chat')
     }
@@ -225,6 +237,7 @@ export default function AlicePanel() {
         const res = await fetch(`/api/alice/conversations/${id}`, { cache: 'no-store' })
         const data = await res.json().catch(() => ({}))
         setItems((data.items ?? []).map((it: Item & { role?: string }) => it))
+        setConversationTitle(data.conversation?.title ?? null)
         scrollToEnd()
     }
 
@@ -232,6 +245,33 @@ export default function AlicePanel() {
         await fetch(`/api/alice/conversations/${id}`, { method: 'DELETE' })
         setHistory(h => h?.filter(c => c.id !== id) ?? null)
         if (id === conversationId) newChat()
+    }
+
+    const confirmDelete = async () => {
+        const id = pendingDeleteId
+        setPendingDeleteId(null)
+        if (id) await deleteConversation(id)
+    }
+
+    const openRename = () => {
+        setRenameValue(conversationTitle ?? '')
+        setRenaming(true)
+    }
+
+    const saveRename = async () => {
+        if (!conversationId) return
+        const title = renameValue.trim()
+        if (!title) return
+        try {
+            const res = await fetch(`/api/alice/conversations/${conversationId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title }) })
+            if (!res.ok) throw new Error()
+            setConversationTitle(title)
+            setHistory(h => h?.map(c => c.id === conversationId ? { ...c, title } : c) ?? null)
+            setRenaming(false)
+            toast.success('Conversa renomeada')
+        } catch {
+            toast.error('Não foi possível renomear')
+        }
     }
 
     const toggleSpeak = () => {
@@ -277,11 +317,23 @@ export default function AlicePanel() {
                     <div className="ml-auto flex items-center">
                         {view === 'chat' && (
                             <>
-                                <IconButton label={speakReplies ? 'Não ler respostas em voz alta' : 'Ler respostas em voz alta'} onClick={toggleSpeak}>
-                                    {speakReplies ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-                                </IconButton>
                                 <IconButton label="Conversas anteriores" onClick={openHistory}><History className="w-5 h-5" /></IconButton>
                                 <IconButton label="Nova conversa" onClick={newChat}><SquarePen className="w-5 h-5" /></IconButton>
+                                <ActionMenu
+                                    label="Mais opções"
+                                    items={[
+                                        {
+                                            label: speakReplies ? 'Não ler respostas em voz alta' : 'Ler respostas em voz alta',
+                                            icon: speakReplies ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />,
+                                            onSelect: toggleSpeak,
+                                        },
+                                        ...(conversationId ? ([
+                                            'separator',
+                                            { label: 'Renomear conversa', icon: <Pencil className="w-4 h-4" />, onSelect: openRename },
+                                            { label: 'Apagar conversa', icon: <Trash2 className="w-4 h-4" />, danger: true, onSelect: () => setPendingDeleteId(conversationId) },
+                                        ] as const) : []),
+                                    ]}
+                                />
                             </>
                         )}
                         <IconButton label="Fechar" onClick={() => setOpen(false)}><X className="w-5 h-5" /></IconButton>
@@ -304,7 +356,7 @@ export default function AlicePanel() {
                                                 {new Date(c.last_message_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })} · {c.preview?.text ?? ''}
                                             </p>
                                         </button>
-                                        <IconButton label="Apagar conversa" onClick={() => deleteConversation(c.id)}><Trash2 className="w-4 h-4 text-muted-foreground" /></IconButton>
+                                        <IconButton label="Apagar conversa" onClick={() => setPendingDeleteId(c.id)}><Trash2 className="w-4 h-4 text-muted-foreground" /></IconButton>
                                     </li>
                                 ))}
                             </ul>
@@ -398,6 +450,36 @@ export default function AlicePanel() {
                     </>
                 )}
             </section>
+
+            {pendingDeleteId && (
+                <PremiumConfirmDialog
+                    isOpen
+                    title="Apagar esta conversa?"
+                    description="As mensagens somem para sempre. Isso não desfaz nenhum orçamento, OS ou cadastro já criado a partir dela."
+                    confirmLabel="Apagar"
+                    variant="danger"
+                    onConfirm={confirmDelete}
+                    onCancel={() => setPendingDeleteId(null)}
+                />
+            )}
+
+            {renaming && (
+                <Sheet open onClose={() => setRenaming(false)} title="Renomear conversa">
+                    <div className="space-y-4">
+                        <input
+                            data-autofocus
+                            value={renameValue}
+                            onChange={e => setRenameValue(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); saveRename() } }}
+                            maxLength={120}
+                            placeholder="Nome da conversa"
+                            aria-label="Nome da conversa"
+                            className="w-full h-12 px-4 rounded-2xl bg-foreground/[0.05] text-[17px] focus:outline-none focus:ring-2 focus:ring-primary/40"
+                        />
+                        <button type="button" disabled={!renameValue.trim()} onClick={saveRename} className="w-full h-12 rounded-full bg-primary text-primary-foreground text-[17px] font-semibold disabled:opacity-50">Salvar</button>
+                    </div>
+                </Sheet>
+            )}
         </div>,
         document.body
     )
