@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import RegisterNumber from './RegisterNumber'
 import QrConnect from './QrConnect'
 import TrustedNumber from './TrustedNumber'
+import AutomationSettings from './AutomationSettings'
 import Segmented from '@/components/ui/Segmented'
 
 export interface SettingsPayload {
@@ -28,6 +29,15 @@ export interface SettingsPayload {
         whatsapp_gateway_client_token_set: boolean
         whatsapp_webhook_ready: boolean
         auto_quote_parts: boolean
+        tone: 'professional' | 'friendly' | 'casual' | 'custom'
+        tone_custom: string | null
+        emoji_usage: 'none' | 'moderate' | 'frequent'
+        escalation_keywords: string[]
+        business_hours: {
+            enabled: boolean
+            days: Partial<Record<'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat', { open: string; close: string } | null>>
+            after_hours_message: string | null
+        }
     }
     usage: number
     environment: { ai: boolean; model: string; whatsappModel?: string; transcription: boolean; whatsappWebhook: boolean; webhookUrl: string; qrServer?: boolean }
@@ -266,6 +276,8 @@ export default function AliceSettingsView({ data, onSaved, onReload }: { data: S
             </section>
 
             <TrustedNumber />
+
+            <AutomationSettings settings={settings} onSaved={next => onSaved({ ...data, settings: next })} />
 
             <section className="lg:col-span-2 rounded-2xl bg-card border border-border/60 px-5 py-4 flex gap-3">
                 <Mic className="w-5 h-5 text-primary shrink-0 mt-0.5" />
