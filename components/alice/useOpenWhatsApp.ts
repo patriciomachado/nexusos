@@ -22,7 +22,7 @@ function rawLink(phone: string | null | undefined, text?: string) {
 export function useOpenWhatsApp() {
     const router = useRouter()
 
-    return useCallback(async ({ phone, text, customerId, customerName }: OpenArgs) => {
+    return useCallback(async ({ phone, text }: OpenArgs) => {
         if (!phone) {
             window.open(rawLink(phone, text), '_blank')
             return
@@ -31,7 +31,7 @@ export function useOpenWhatsApp() {
             const res = await fetch('/api/alice/conversations/open', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone, customer_id: customerId ?? null, name: customerName ?? null }),
+                body: JSON.stringify({ phone }),
             })
             if (res.ok) {
                 const data = await res.json()
