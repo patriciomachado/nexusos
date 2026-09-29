@@ -113,11 +113,12 @@ export async function handleIncoming(db: SupabaseClient, settings: AliceSettings
         ...(conv.customer_name ? {} : { customer_name: who }),
     }).eq('id', conv.id)
 
-    // A person is handling this chat: just let them know.
-    if (conv.mode === 'human') {
-        await tellStaff(db, companyId, conv.id, who, display)
-        return
-    }
+    // Every message notifies, like a normal WhatsApp chat — whether or not Alice ends up answering it.
+    // A trusted number talking to Alice isn't a customer writing in, so it's skipped here.
+    if (!trusted) await tellStaff(db, companyId, conv.id, who, transcribed ? `🎤 ${text}` : display)
+
+    // A person is handling this chat: the message push above already covers it.
+    if (conv.mode === 'human') return
 
     await channelMarkRead(settings, msg)
 
