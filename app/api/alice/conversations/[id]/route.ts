@@ -63,23 +63,33 @@ export async function GET(_req: NextRequest, { params }: Params) {
     })
 }
 
-const patchSchema = z.object({ mode: z.enum(['alice', 'human']) })
+const patchSchema = z.object({
+    mode: z.enum(['alice', 'human']).optional(),
+    title: z.string().trim().min(1).max(120).optional(),
+}).refine(d => d.mode !== undefined || d.title !== undefined, 'Nada para atualizar.')
 
-/** WhatsApp: hand the chat to a person, or back to Alice. */
+/** WhatsApp: hand the chat to a person, or back to Alice. App: rename the conversation. */
 export async function PATCH(req: NextRequest, { params }: Params) {
     const { id } = await params
     const r = await load(id)
     if (r.response) return r.response
     const { ctx, conv } = r
-    if (conv.channel !== 'whatsapp') return NextResponse.json({ error: 'Só conversas do WhatsApp.' }, { status: 400 })
     const parsed = patchSchema.safeParse(await req.json().catch(() => null))
-    if (!parsed.success) return NextResponse.json({ error: 'Pedido inválido.' }, { status: 400 })
-    await ctx.db.from('alice_conversations').update({ mode: parsed.data.mode }).eq('id', id)
-    await ctx.db.from('alice_messages').insert({
-        conversation_id: id, company_id: ctx.companyId, role: 'event', author_user_id: ctx.dbUser.id,
-        text: parsed.data.mode === 'human' ? `${ctx.dbUser.full_name ?? 'Um atendente'} assumiu a conversa.` : 'A conversa voltou para a Alice.',
-    })
-    return NextResponse.json({ mode: parsed.data.mode })
+    if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Pedido inválido.' }, { status: 400 })
+
+    if (parsed.data.mode !== undefined) {
+        if (conv.channel !== 'whatsapp') return NextResponse.json({ error: 'Só conversas do WhatsApp.' }, { status: 400 })
+        await ctx.db.from('alice_conversations').update({ mode: parsed.data.mode }).eq('id', id)
+        await ctx.db.from('alice_messages').insert({
+            conversation_id: id, company_id: ctx.companyId, role: 'event', author_user_id: ctx.dbUser.id,
+            text: parsed.data.mode === 'human' ? `${ctx.dbUser.full_name ?? 'Um atendente'} assumiu a conversa.` : 'A conversa voltou para a Alice.',
+        })
+    }
+    if (parsed.data.title !== undefined) {
+        if (conv.channel !== 'app') return NextResponse.json({ error: 'Só conversas do app podem ser renomeadas.' }, { status: 400 })
+        await ctx.db.from('alice_conversations').update({ title: parsed.data.title }).eq('id', id)
+    }
+    return NextResponse.json({ mode: parsed.data.mode ?? conv.mode, title: parsed.data.title ?? conv.title })
 }
 
 /** App: delete one of my conversations with Alice. */
