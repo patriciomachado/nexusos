@@ -2,9 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ArrowUp, ChevronLeft, Hand, Loader2, MessageCircle, Sparkles, User, Clock } from 'lucide-react'
+import { ArrowUp, ChevronLeft, Hand, Loader2, MessageCircle, Sparkles, User, Clock, Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import ActionMenu from '@/components/ui/ActionMenu'
+import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
+import Sheet from '@/components/tasks/Sheet'
 
 interface Conversation {
     id: string
@@ -38,6 +41,9 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
     const [detail, setDetail] = useState<{ conversation: Conversation & { title?: string }; items: Item[] } | null>(null)
     const [reply, setReply] = useState('')
     const [sending, setSending] = useState(false)
+    const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+    const [renaming, setRenaming] = useState(false)
+    const [renameValue, setRenameValue] = useState('')
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const loadList = useCallback(async () => {
@@ -109,6 +115,42 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
         }
     }
 
+    const deleteConversation = async (id: string) => {
+        const res = await fetch(`/api/alice/conversations/${id}`, { method: 'DELETE' })
+        if (!res.ok) return toast.error('Não foi possível apagar.')
+        setList(l => l?.filter(c => c.id !== id) ?? null)
+        if (id === selected) { setSelected(null); setDetail(null) }
+        toast.success('Conversa apagada')
+    }
+
+    const confirmDelete = async () => {
+        const id = pendingDeleteId
+        setPendingDeleteId(null)
+        if (id) await deleteConversation(id)
+    }
+
+    const openRename = () => {
+        if (!conv) return
+        setRenameValue(conv.customer_name ?? '')
+        setRenaming(true)
+    }
+
+    const saveRename = async () => {
+        if (!selected) return
+        const title = renameValue.trim()
+        if (!title) return
+        try {
+            const res = await fetch(`/api/alice/conversations/${selected}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title }) })
+            if (!res.ok) throw new Error()
+            setDetail(d => d ? { ...d, conversation: { ...d.conversation, customer_name: title } } : d)
+            setList(l => l?.map(c => c.id === selected ? { ...c, customer_name: title } : c) ?? null)
+            setRenaming(false)
+            toast.success('Conversa renomeada')
+        } catch {
+            toast.error('Não foi possível renomear')
+        }
+    }
+
     const conv = detail?.conversation
     const name = (c: Pick<Conversation, 'customer_name' | 'phone_label'>) => c.customer_name || c.phone_label || 'Cliente'
 
@@ -134,8 +176,8 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
                     ) : (
                         <ul className="divide-y divide-border/60">
                             {list.map(c => (
-                                <li key={c.id}>
-                                    <button type="button" onClick={() => { setSelected(c.id); setDetail(null) }} className={cn('w-full text-left px-4 py-3 flex gap-3 hover:bg-foreground/[0.03]', selected === c.id && 'bg-primary/[0.06]')}>
+                                <li key={c.id} className="flex items-center">
+                                    <button type="button" onClick={() => { setSelected(c.id); setDetail(null) }} className={cn('flex-1 min-w-0 text-left px-4 py-3 flex gap-3 hover:bg-foreground/[0.03]', selected === c.id && 'bg-primary/[0.06]')}>
                                         <span className="w-10 h-10 rounded-full bg-green-500/15 text-green-700 dark:text-green-400 flex items-center justify-center shrink-0 font-semibold">{name(c).charAt(0).toUpperCase()}</span>
                                         <span className="min-w-0 flex-1">
                                             <span className="flex items-center gap-2">
@@ -151,6 +193,7 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
                                             </span>
                                         </span>
                                     </button>
+                                    <button type="button" onClick={() => setPendingDeleteId(c.id)} aria-label={`Apagar conversa com ${name(c)}`} className="w-9 h-9 mr-2 shrink-0 rounded-full flex items-center justify-center text-muted-foreground hover:bg-foreground/[0.06] hover:text-red-600 dark:hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
                                 </li>
                             ))}
                         </ul>
@@ -179,6 +222,13 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
                                 ) : (
                                     <button type="button" onClick={() => setMode('alice')} className="h-9 px-3 rounded-full bg-primary/12 text-primary text-[14px] font-semibold flex items-center gap-1.5"><Sparkles className="w-4 h-4" /> Devolver à Alice</button>
                                 )}
+                                <ActionMenu
+                                    label="Mais opções"
+                                    items={[
+                                        { label: 'Renomear conversa', icon: <Pencil className="w-4 h-4" />, onSelect: openRename },
+                                        { label: 'Apagar conversa', icon: <Trash2 className="w-4 h-4" />, danger: true, onSelect: () => setPendingDeleteId(selected) },
+                                    ]}
+                                />
                             </div>
                             <p className={cn('px-4 py-1.5 text-[12px] border-b border-border/60', conv.mode === 'human' ? 'bg-orange-500/10 text-orange-700 dark:text-orange-400' : 'bg-primary/[0.06] text-primary')}>
                                 {conv.mode === 'human' ? 'Você está atendendo. A Alice não responde nesta conversa.' : 'A Alice está respondendo. Escrever aqui assume a conversa.'}
@@ -203,6 +253,36 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
                     )}
                 </div>
             </div>
+
+            {pendingDeleteId && (
+                <PremiumConfirmDialog
+                    isOpen
+                    title="Apagar esta conversa?"
+                    description="Todo o histórico de mensagens com esse cliente some para sempre. Isso não desfaz nenhum orçamento, OS ou cadastro já criado a partir dela."
+                    confirmLabel="Apagar"
+                    variant="danger"
+                    onConfirm={confirmDelete}
+                    onCancel={() => setPendingDeleteId(null)}
+                />
+            )}
+
+            {renaming && (
+                <Sheet open onClose={() => setRenaming(false)} title="Renomear conversa">
+                    <div className="space-y-4">
+                        <input
+                            data-autofocus
+                            value={renameValue}
+                            onChange={e => setRenameValue(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); saveRename() } }}
+                            maxLength={120}
+                            placeholder="Nome do cliente"
+                            aria-label="Nome do cliente"
+                            className="w-full h-12 px-4 rounded-2xl bg-foreground/[0.05] text-[17px] focus:outline-none focus:ring-2 focus:ring-primary/40"
+                        />
+                        <button type="button" disabled={!renameValue.trim()} onClick={saveRename} className="w-full h-12 rounded-full bg-primary text-primary-foreground text-[17px] font-semibold disabled:opacity-50">Salvar</button>
+                    </div>
+                </Sheet>
+            )}
         </div>
     )
 }
