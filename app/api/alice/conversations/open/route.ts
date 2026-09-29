@@ -2,16 +2,18 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireAliceAdmin } from '@/lib/alice/access'
 import { channelReady } from '@/lib/alice/channel'
-import { findOrCreateWhatsAppConversation } from '@/lib/alice/conversations'
 import { waFullNumber } from '@/lib/alice/phone'
 
 const schema = z.object({
     phone: z.string().trim().min(1),
-    customer_id: z.string().uuid().nullable().optional(),
-    name: z.string().trim().max(200).nullable().optional(),
 })
 
-/** Whether a message to this number can go through the app's WhatsApp chat instead of opening wa.me. */
+/**
+ * Whether a message to this number can go through the app's WhatsApp chat instead of opening wa.me.
+ * Only true for a number that has already written in: WhatsApp's rules don't let the store send a
+ * free-form message to someone who never has, template or not, so there's nothing useful to open for
+ * a first-ever contact — creating an empty conversation there would just be a dead end.
+ */
 export async function POST(req: NextRequest) {
     const access = await requireAliceAdmin()
     if (access.response) return access.response
@@ -24,6 +26,14 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ available: false })
     }
 
-    const conv = await findOrCreateWhatsAppConversation(ctx.db, ctx.companyId, phone, parsed.data.name ?? null, parsed.data.customer_id ?? null)
+    const { data: conv } = await ctx.db
+        .from('alice_conversations')
+        .select('id')
+        .eq('company_id', ctx.companyId)
+        .eq('channel', 'whatsapp')
+        .eq('customer_phone', phone)
+        .not('last_customer_message_at', 'is', null)
+        .maybeSingle()
+    if (!conv) return NextResponse.json({ available: false })
     return NextResponse.json({ available: true, id: conv.id })
 }
