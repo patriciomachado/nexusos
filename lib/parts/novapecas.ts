@@ -28,6 +28,25 @@ export interface NovaPecasProduct { title: string; url: string }
 export interface NovaPecasResult extends NovaPecasProduct { price: number | null }
 
 /**
+ * A NovaPeças vende a mesma peça em 3 linhas de marca, que a loja usa como as
+ * 3 qualidades do orçamento: WEFIX (Genuína), WK (Premium), NN (Standard) —
+ * sempre no nome do produto, ex. "FRONTAL IPHONE 11 PREMIUM ... - WEFIX - W1002".
+ */
+export const BRAND_QUALITY: Record<string, { quality: string; label: string }> = {
+    WEFIX: { quality: 'original', label: 'Genuína' },
+    WK: { quality: 'premium', label: 'Premium' },
+    NN: { quality: 'standard', label: 'Standard' },
+}
+const BRAND_ORDER = ['WEFIX', 'WK', 'NN'] as const
+
+function detectBrand(title: string): keyof typeof BRAND_QUALITY | null {
+    const m = title.toUpperCase().match(/\b(WEFIX|WK|NN)\b/)
+    return (m?.[1] as keyof typeof BRAND_QUALITY) ?? null
+}
+
+export interface NovaPecasTier { tipo: string; custo: number; produto: string; url: string }
+
+/**
  * A busca do site exige que TODAS as palavras apareçam no produto (nem que
  * seja em outro campo) — então "troca de tela" não acha nada (nenhum produto
  * tem literalmente "de"), mas "troca tela" acha. Tira palavras de conexão e
@@ -107,4 +126,28 @@ export async function searchNovaPecasWithPrices(query: string, limit = 6): Promi
         try { return { ...c, price: await fetchNovaPecasPrice(c.url) } }
         catch { return { ...c, price: null } }
     }))
+}
+
+/**
+ * Igual à busca normal, mas separa os resultados pelas 3 linhas de marca da
+ * NovaPeças e traz uma opção de cada uma achada (Genuína/WEFIX, Premium/WK,
+ * Standard/NN) — pra orçamentos com as mesmas 3 qualidades de quando a peça
+ * está cadastrada na loja, mesmo sem cadastro nenhum.
+ */
+export async function searchNovaPecasTiers(query: string, limit = 20): Promise<NovaPecasTier[]> {
+    const candidates = await searchNovaPecas(query, limit)
+    const byBrand = new Map<string, NovaPecasProduct>()
+    for (const c of candidates) {
+        const brand = detectBrand(c.title)
+        if (brand && !byBrand.has(brand)) byBrand.set(brand, c)
+    }
+    const picked = BRAND_ORDER.map(b => byBrand.get(b)).filter((c): c is NovaPecasProduct => !!c)
+    const withPrices = await Promise.all(picked.map(async c => {
+        const brand = detectBrand(c.title)!
+        try {
+            const price = await fetchNovaPecasPrice(c.url)
+            return price != null ? { tipo: BRAND_QUALITY[brand].label, custo: price, produto: c.title, url: c.url } : null
+        } catch { return null }
+    }))
+    return withPrices.filter((t): t is NovaPecasTier => t != null)
 }

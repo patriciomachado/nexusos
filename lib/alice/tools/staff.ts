@@ -7,7 +7,7 @@ import {
 import { ADMIN_ROLES, appUrl } from '../config'
 import { collectAlerts } from '@/lib/tasks/alerts'
 import { addDays } from '@/lib/tasks/dates'
-import { searchNovaPecasWithPrices } from '@/lib/parts/novapecas'
+import { searchNovaPecasTiers, searchNovaPecasWithPrices } from '@/lib/parts/novapecas'
 import { buildQuoteMessage, createPartQuote, findQuoteOptions, sortQuoteOptions, type PartQuoteOption } from '@/lib/parts/quotes'
 import { loadPartMargin } from '@/lib/parts/prices'
 import { suggestedPrice } from '@/lib/parts/server'
@@ -418,12 +418,13 @@ const atribuirTecnico = defineWrite({
 
 // ─── Orçamentos e funil ──────────────────────────────────────────────────────
 
-interface ResolvedQuote { options: PartQuoteOption[]; deviceModel: string; fonte: 'cadastro' | 'informado' | 'fornecedor'; custoFornecedor?: number; produtoFornecedor?: string }
+interface ResolvedQuote { options: PartQuoteOption[]; deviceModel: string; fonte: 'cadastro' | 'informado' | 'fornecedor' }
 
 /**
  * Preço pra um orçamento, na ordem: tabela de Peças cadastrada → valor que a
  * pessoa informou → consulta ao vivo no fornecedor (só gerente/admin, porque
- * expõe custo) com a margem da loja aplicada, igual a tela de Peças calcula.
+ * expõe custo), separada pelas 3 linhas de marca dele (Genuína/Premium/
+ * Standard) com a margem da loja aplicada, igual a tela de Peças calcula.
  */
 async function resolveOrcamentoOptions(ctx: ToolContext, aparelho: string, servico: string, valor?: number): Promise<ResolvedQuote> {
     const found = await findQuoteOptions(ctx.db, ctx.companyId, aparelho, servico)
@@ -431,12 +432,11 @@ async function resolveOrcamentoOptions(ctx: ToolContext, aparelho: string, servi
     if (valor != null) return { options: [{ tipo: null, valor }], deviceModel: aparelho, fonte: 'informado' }
     if (MANAGERS.includes(ctx.user?.role ?? '')) {
         try {
-            const results = await searchNovaPecasWithPrices(`${servico} ${aparelho}`)
-            const best = results.find(r => r.price != null)
-            if (best?.price != null) {
+            const tiers = await searchNovaPecasTiers(`${servico} ${aparelho}`)
+            if (tiers.length) {
                 const { margin, laborMin } = await loadPartMargin(ctx.db, ctx.companyId)
-                const sugerido = suggestedPrice(best.price, 0, margin, laborMin)
-                return { options: [{ tipo: null, valor: sugerido }], deviceModel: aparelho, fonte: 'fornecedor', custoFornecedor: best.price, produtoFornecedor: best.title }
+                const options: PartQuoteOption[] = tiers.map(t => ({ tipo: t.tipo, valor: suggestedPrice(t.custo, 0, margin, laborMin) }))
+                return { options: sortQuoteOptions(options), deviceModel: aparelho, fonte: 'fornecedor' }
             }
         } catch { /* fornecedor fora do ar: cai no erro abaixo, como se não tivesse achado nada */ }
     }
@@ -460,14 +460,14 @@ const criarOrcamento = defineWrite({
     async preview(ctx, i) {
         if (!i.cliente_id && !i.lead_nome) throw new ToolError('Informe o cliente (use buscar_clientes) ou o nome do lead.')
         const customer = i.cliente_id ? await findCustomer(ctx, i.cliente_id) : null
-        const { options, deviceModel, fonte, custoFornecedor, produtoFornecedor } = await resolveOrcamentoOptions(ctx, i.aparelho, i.servico, i.valor)
+        const { options, deviceModel, fonte } = await resolveOrcamentoOptions(ctx, i.aparelho, i.servico, i.valor)
         const willSend = !!i.enviar_ao_cliente && !!(customer?.phone || i.lead_telefone)
         return {
             title: `Orçamento: ${i.servico} — ${deviceModel}`,
             lines: [
                 `Cliente: ${customer?.name ?? i.lead_nome}`,
                 ...options.map(o => `${o.tipo ? o.tipo + ': ' : 'Valor: '}${brl(o.valor)}`),
-                fonte === 'fornecedor' ? `Sem cadastro na loja — sugerido com base no fornecedor (${produtoFornecedor}, custo ${brl(custoFornecedor ?? 0)}) + margem da loja.` : null,
+                fonte === 'fornecedor' ? 'Sem cadastro na loja — sugerido com base no preço ao vivo do fornecedor (NovaPeças) + margem da loja.' : null,
                 i.observacoes && `Obs.: ${i.observacoes}`,
                 willSend ? 'O link vai ser enviado ao WhatsApp do cliente.' : null,
             ].filter(Boolean) as string[],
