@@ -9,6 +9,7 @@ import { transcribe, transcriptionConfigured, audioFilename } from './transcribe
 import { digitsOnly, formatWhatsApp, phoneKey, samePhone } from './phone'
 import { findTrustedStaff } from './trusted'
 import { pushToCompany } from '@/lib/tasks/reminders'
+import { createFunnelEntry } from '@/lib/funnel/entries'
 
 /** Wait for a burst of messages ("oi" / "tudo bem?" / "meu celular...") to finish before answering once. */
 const DEBOUNCE_MS = 3000
@@ -29,15 +30,15 @@ async function findCustomers(db: SupabaseClient, companyId: string, phone: strin
 async function conversationFor(db: SupabaseClient, companyId: string, phone: string, name: string | null, customerId: string | null) {
     const find = () => db.from('alice_conversations').select('id, mode, unread_count, customer_name').eq('company_id', companyId).eq('channel', 'whatsapp').eq('customer_phone', phone).maybeSingle()
     const { data: existing } = await find()
-    if (existing) return existing
+    if (existing) return { ...existing, isNew: false }
     const { data, error } = await db
         .from('alice_conversations')
         .insert({ company_id: companyId, channel: 'whatsapp', customer_phone: phone, customer_name: name, customer_id: customerId, title: name ?? formatWhatsApp(phone) })
         .select('id, mode, unread_count, customer_name')
         .single()
-    if (data) return data
+    if (data) return { ...data, isNew: true }
     // Two webhooks raced to create it: use the one that won.
-    if (error?.code === '23505') return (await find()).data!
+    if (error?.code === '23505') return { ...(await find()).data!, isNew: false }
     throw error
 }
 
@@ -79,6 +80,18 @@ export async function handleIncoming(db: SupabaseClient, settings: AliceSettings
     const knownName = trusted?.name ?? customers[0]?.name ?? null
     const conv = await conversationFor(db, companyId, phone, knownName ?? msg.profileName, customers[0]?.id ?? null)
     const who = conv.customer_name || knownName || msg.profileName || formatWhatsApp(phone)
+
+    // First-ever message from this number, and not an already-known customer: a new lead for the funil, right away.
+    if (conv.isNew && !trusted && !customers.length) {
+        await createFunnelEntry(db, {
+            companyId,
+            title: 'Novo contato pelo WhatsApp',
+            leadName: msg.profileName ?? null,
+            leadPhone: phone,
+            stage: 'lead',
+            source: 'whatsapp',
+        }).catch(err => console.error('[alice] funil lead failed:', err))
+    }
 
     // Text, transcribed audio, or a note about media Alice can't read.
     let text = msg.text
