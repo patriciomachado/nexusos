@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { getCompanyPlan } from '@/lib/plan-server'
 import { hasFeature, PLANS, type PlanId } from '@/lib/plans'
+import { DEFAULT_BUSINESS_HOURS, normalizeBusinessHours, type BusinessHours } from './hours'
 
 /** Full control: configure Alice and use every tool. */
 export const ADMIN_ROLES = ['admin', 'owner']
@@ -45,6 +46,29 @@ export function aliceConfigured() {
 
 export type WhatsAppProvider = 'cloud' | 'evolution' | 'zapi'
 
+export type AliceTone = 'professional' | 'friendly' | 'casual' | 'custom'
+export type EmojiUsage = 'none' | 'moderate' | 'frequent'
+
+export const TONE_LABELS: Record<AliceTone, string> = { professional: 'Profissional', friendly: 'Amigável', casual: 'Descontraída', custom: 'Personalizado' }
+export const EMOJI_LABELS: Record<EmojiUsage, string> = { none: 'Nenhum', moderate: 'Moderado', frequent: 'À vontade' }
+
+const TONE_TEXT: Record<Exclude<AliceTone, 'custom'>, string> = {
+    professional: 'Tom profissional e direto, cordial mas sem intimidade.',
+    friendly: 'Tom amigável e caloroso, como alguém da loja que já conhece o cliente.',
+    casual: 'Tom descontraído e informal, como papo entre amigos — mas sempre respeitoso.',
+}
+const EMOJI_TEXT: Record<EmojiUsage, string> = {
+    none: 'Não use emojis.',
+    moderate: 'No máximo um emoji por mensagem, só quando fizer sentido.',
+    frequent: 'Pode usar emojis com mais liberdade pra deixar a conversa leve.',
+}
+
+/** One line for the system prompt: tom de voz + uso de emoji, as the owner configured for this store. */
+export function styleInstruction(settings: Pick<AliceSettings, 'tone' | 'tone_custom' | 'emoji_usage'>): string {
+    const tone = settings.tone === 'custom' && settings.tone_custom?.trim() ? settings.tone_custom.trim() : TONE_TEXT[settings.tone === 'custom' ? 'professional' : settings.tone]
+    return `Estilo definido pela loja: ${tone} ${EMOJI_TEXT[settings.emoji_usage]}`
+}
+
 export interface AliceSettings {
     company_id: string
     enabled: boolean
@@ -65,6 +89,12 @@ export interface AliceSettings {
     monthly_limit: number
     /** Cliente pergunta o preço de uma peça (ex.: troca de tela) e há valor cadastrado: manda direto, sem esperar confirmação da loja. */
     auto_quote_parts: boolean
+    tone: AliceTone
+    tone_custom: string | null
+    emoji_usage: EmojiUsage
+    /** Palavras que, se aparecerem na mensagem do cliente, chamam um atendente na hora (não depende do julgamento da IA). */
+    escalation_keywords: string[]
+    business_hours: BusinessHours
     updated_at?: string
     /** The company's plan does not include Alice (Essencial). */
     plan_blocked?: boolean
@@ -89,6 +119,11 @@ export const DEFAULT_SETTINGS: Omit<AliceSettings, 'company_id'> = {
     whatsapp_verified_name: null,
     monthly_limit: 1500,
     auto_quote_parts: false,
+    tone: 'professional',
+    tone_custom: null,
+    emoji_usage: 'moderate',
+    escalation_keywords: [],
+    business_hours: DEFAULT_BUSINESS_HOURS,
 }
 
 export async function loadSettings(db: SupabaseClient, companyId: string): Promise<AliceSettings> {
@@ -96,7 +131,9 @@ export async function loadSettings(db: SupabaseClient, companyId: string): Promi
         db.from('alice_settings').select('*').eq('company_id', companyId).maybeSingle(),
         getCompanyPlan(db, companyId),
     ])
-    return withPlan({ ...DEFAULT_SETTINGS, ...(data ?? {}), company_id: companyId }, plan)
+    const merged = { ...DEFAULT_SETTINGS, ...(data ?? {}), company_id: companyId }
+    merged.business_hours = normalizeBusinessHours(merged.business_hours)
+    return withPlan(merged, plan)
 }
 
 /** Applies the plan on top of what the admin saved: off on Essencial, limit capped on Pro. */

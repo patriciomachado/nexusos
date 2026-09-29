@@ -10,6 +10,7 @@ import { digitsOnly, formatWhatsApp, phoneKey, samePhone } from './phone'
 import { findTrustedStaff } from './trusted'
 import { pushToCompany } from '@/lib/tasks/reminders'
 import { createFunnelEntry } from '@/lib/funnel/entries'
+import { isWithinBusinessHours } from './hours'
 
 /** Wait for a burst of messages ("oi" / "tudo bem?" / "meu celular...") to finish before answering once. */
 const DEBOUNCE_MS = 3000
@@ -133,6 +134,20 @@ export async function handleIncoming(db: SupabaseClient, settings: AliceSettings
     // A person is handling this chat: the message push above already covers it.
     if (conv.mode === 'human') return
 
+    // Escalation keywords never depend on the model's judgement: a hard rule, checked here.
+    const hitKeyword = !trusted && text ? settings.escalation_keywords.find(k => k.trim() && text!.toLowerCase().includes(k.trim().toLowerCase())) : undefined
+    if (hitKeyword) {
+        await db.from('alice_conversations').update({ mode: 'human' }).eq('id', conv.id)
+        const handoff = 'Só um instante, já vou te conectar com alguém da equipe! 🙋'
+        try {
+            await channelSend(settings, phone, handoff)
+            await saveMessage(db, { conversationId: conv.id, companyId, role: 'assistant', content: [{ type: 'text', text: handoff }], text: handoff })
+        } catch (err) {
+            console.error('[alice] escalation handoff send failed:', err)
+        }
+        return
+    }
+
     await channelMarkRead(settings, msg)
 
     // Answer once per burst: only the latest message's handler replies.
@@ -149,6 +164,18 @@ export async function handleIncoming(db: SupabaseClient, settings: AliceSettings
 
     const { data: fresh } = await db.from('alice_conversations').select('mode').eq('id', conv.id).single()
     if (fresh?.mode === 'human') return
+
+    // Outside the store's configured hours: a canned notice instead of Alice acting like it's open.
+    if (!trusted && !isWithinBusinessHours(settings.business_hours)) {
+        const closed = settings.business_hours.after_hours_message?.trim() || 'No momento estamos fora do horário de atendimento. Assim que abrirmos, alguém te responde por aqui!'
+        try {
+            await channelSend(settings, phone, closed)
+            await saveMessage(db, { conversationId: conv.id, companyId, role: 'assistant', content: [{ type: 'text', text: closed }], text: closed })
+        } catch (err) {
+            console.error('[alice] after-hours send failed:', err)
+        }
+        return
+    }
 
     if (!aliceConfigured() || await monthlyUsage(db, companyId) >= settings.monthly_limit) {
         await db.from('alice_conversations').update({ mode: 'human' }).eq('id', conv.id)

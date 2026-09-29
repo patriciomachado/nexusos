@@ -1,7 +1,7 @@
 import 'server-only'
 import Anthropic from '@anthropic-ai/sdk'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { aliceModel, modelOptions, ROLE_LABELS } from './config'
+import { aliceModel, loadSettings, modelOptions, ROLE_LABELS, styleInstruction } from './config'
 import { STAFF_TOOLS } from './tools/staff'
 import { CUSTOMER_TOOLS } from './tools/customer'
 import { allowedFor, formatZodError, toApiTool, ToolError, type AnyTool, type ToolContext } from './tools/types'
@@ -272,8 +272,11 @@ export async function runAlice({ ctx, storeName, emit = () => {} }: RunOptions):
     const context = isCustomer
         ? `Loja: ${storeName}. Cliente: ${ctx.customer?.name ?? 'nome não informado'} (${ctx.customer?.customerIds.length ? 'tem cadastro' : 'sem cadastro com este número'}), WhatsApp ${formatWhatsApp(ctx.customer?.phone ?? '')}. Agora: ${nowInStore()}.`
         : `Loja: ${storeName}. Você está falando com ${ctx.user?.name ?? 'um funcionário'}${isTrustedWhatsapp ? ' pelo WhatsApp pessoal dele(a) (número de confiança)' : ''}, perfil ${ROLE_LABELS[ctx.user?.role ?? ''] ?? ctx.user?.role}. Agora: ${nowInStore()}.`
+    // Tom de voz e uso de emoji são configuráveis pela loja; só valem pro atendimento de cliente.
+    const style = isCustomer ? styleInstruction(await loadSettings(ctx.db, ctx.companyId)) : null
     const system: Anthropic.TextBlockParam[] = [
         { type: 'text', text: isCustomer ? CUSTOMER_PROMPT : isTrustedWhatsapp ? TRUSTED_WHATSAPP_PROMPT : STAFF_PROMPT, cache_control: { type: 'ephemeral' } },
+        ...(style ? [{ type: 'text' as const, text: style }] : []),
         { type: 'text', text: context },
     ]
 

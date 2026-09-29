@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireAliceAdmin } from '@/lib/alice/access'
 import { aliceConfigured, aliceModel, loadSettings, monthlyUsage, publicSettings, STAFF_ROLES } from '@/lib/alice/config'
+import { normalizeBusinessHours } from '@/lib/alice/hours'
 import { planRequiredResponse } from '@/lib/plan-server'
 import { qrServerConfigured } from '@/lib/alice/gateway'
 import { transcriptionConfigured } from '@/lib/alice/transcribe'
@@ -43,6 +44,15 @@ const putSchema = z.object({
     whatsapp_gateway_token: z.string().trim().min(4).max(500).nullable().optional(),
     whatsapp_gateway_client_token: z.string().trim().min(4).max(500).nullable().optional(),
     auto_quote_parts: z.boolean().optional(),
+    tone: z.enum(['professional', 'friendly', 'casual', 'custom']).optional(),
+    tone_custom: z.string().trim().max(500).nullable().optional(),
+    emoji_usage: z.enum(['none', 'moderate', 'frequent']).optional(),
+    escalation_keywords: z.array(z.string().trim().min(1).max(60)).max(20).optional(),
+    business_hours: z.object({
+        enabled: z.boolean(),
+        days: z.record(z.string(), z.object({ open: z.string(), close: z.string() }).nullable()).optional(),
+        after_hours_message: z.string().max(600).nullable().optional(),
+    }).optional(),
 })
 
 export async function PUT(req: NextRequest) {
@@ -52,6 +62,7 @@ export async function PUT(req: NextRequest) {
     const parsed = putSchema.safeParse(await req.json().catch(() => null))
     if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Dados inválidos.' }, { status: 400 })
     const next = { ...parsed.data }
+    if (next.business_hours) next.business_hours = normalizeBusinessHours(next.business_hours)
     if (settings.plan_blocked && (next.enabled || next.whatsapp_enabled)) return planRequiredResponse('alice')
     if (next.monthly_limit != null && settings.plan_limit != null) next.monthly_limit = Math.min(next.monthly_limit, settings.plan_limit)
 
