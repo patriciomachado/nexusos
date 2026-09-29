@@ -7,6 +7,7 @@ import { Check, Clock, Copy, ExternalLink, Link2, MessageCircle, Plus, Search, T
 import Header from '@/components/layout/Header'
 import Sheet from '@/components/tasks/Sheet'
 import { Group, Field, TextInput, TextArea, SelectRow, brl, moneyText, parseMoney } from '@/components/ui/form'
+import WhatsAppButton from '@/components/alice/WhatsAppButton'
 import { cn } from '@/lib/utils'
 import { FUNNEL_STAGES, STAGE_LABELS, STAGE_DOTS, SOURCE_LABELS, type FunnelStage, type FunnelSource } from '@/lib/funnel/stages'
 
@@ -48,10 +49,6 @@ function nameOf(e: FunnelEntry) {
 }
 function phoneOf(e: FunnelEntry) {
     return e.customer?.phone ?? e.lead_phone ?? null
-}
-function waNumber(phone: string) {
-    const d = phone.replace(/\D/g, '')
-    return d.startsWith('55') && d.length >= 12 ? d : `55${d}`
 }
 
 export default function FunilClient({ entries: initial, customers, companyId }: { entries: FunnelEntry[]; customers: CustomerOption[]; companyId: string }) {
@@ -284,9 +281,9 @@ export default function FunilClient({ entries: initial, customers, companyId }: 
                                 <a href={`/customers/${selected.customer_id}`} className="flex-1 h-12 rounded-full bg-primary text-primary-foreground text-[17px] font-semibold inline-flex items-center justify-center gap-1">Abrir cliente <ExternalLink className="w-4 h-4" /></a>
                             )}
                             {phoneOf(selected) && (
-                                <a href={`https://wa.me/${waNumber(phoneOf(selected)!)}`} target="_blank" rel="noreferrer" className="h-12 px-5 rounded-full bg-emerald-600/10 text-emerald-700 dark:text-emerald-400 text-[17px] font-medium inline-flex items-center gap-1.5">
+                                <WhatsAppButton phone={phoneOf(selected)} customerId={selected.customer_id} customerName={nameOf(selected)} className="h-12 px-5 rounded-full bg-emerald-600/10 text-emerald-700 dark:text-emerald-400 text-[17px] font-medium inline-flex items-center gap-1.5">
                                     <MessageCircle className="w-5 h-5" /> WhatsApp
-                                </a>
+                                </WhatsAppButton>
                             )}
                             <button type="button" disabled={busy} onClick={() => remove(selected)} aria-label="Remover card" className="w-12 h-12 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 flex items-center justify-center disabled:opacity-50">
                                 <Trash2 className="w-5 h-5" />

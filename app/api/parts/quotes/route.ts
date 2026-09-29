@@ -3,14 +3,6 @@ import { z } from 'zod'
 import { bad, firstIssue, partsContext } from '@/lib/parts/server'
 import { buildFollowUpMessage, buildQuoteMessage, computeQuoteStats, createPartQuote, findQuoteOptions, sortQuoteOptions, type PartQuoteOption } from '@/lib/parts/quotes'
 import { appUrl } from '@/lib/alice/config'
-import { digitsOnly } from '@/lib/alice/phone'
-
-/** wa.me pro número do cliente quando souber quem é; senão abre o seletor de contato. */
-function waLink(phone: string | null, text: string) {
-    let d = digitsOnly(phone ?? '')
-    if (d && d.length <= 11) d = `55${d}`
-    return `https://wa.me/${d}?text=${encodeURIComponent(text)}`
-}
 
 /** Orçamentos gerados (peças cotadas), com o que virou OS e o que ainda tá parado. */
 export async function GET() {
@@ -35,7 +27,6 @@ export async function GET() {
             status, order_number: order?.order_number ?? null, link,
             customer_name: r.customer_name, customer_phone: r.customer_phone,
             follow_up_message: followUp,
-            follow_up_whatsapp_url: followUp ? waLink(r.customer_phone, followUp) : null,
         }
     })
     return NextResponse.json({ quotes, stats: computeQuoteStats(rows.map(r => ({ id: r.id, device_model: r.device_model, service: r.service, options: r.options as PartQuoteOption[], valid_until: r.valid_until, created_at: r.created_at, service_order_id: r.service_order_id }))) })
@@ -66,5 +57,5 @@ export async function POST(req: NextRequest) {
     if (!token) return bad('Não foi possível gerar o link agora', 500)
     const url = `${appUrl()}/orcamento/${token}`
     const message = buildQuoteMessage(deviceModel, service, options, url)
-    return NextResponse.json({ url, message, whatsapp_url: waLink(customer_phone || null, message) })
+    return NextResponse.json({ url, message })
 }

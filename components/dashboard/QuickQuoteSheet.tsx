@@ -41,7 +41,7 @@ export default function QuickQuoteSheet({ open, onClose }: { open: boolean; onCl
     const [nome, setNome] = useState('')
     const [telefone, setTelefone] = useState('')
     const [generating, setGenerating] = useState(false)
-    const [quote, setQuote] = useState<{ message: string; whatsapp_url?: string } | null>(null)
+    const [quote, setQuote] = useState<{ message: string } | null>(null)
 
     useEffect(() => {
         if (!open) return
@@ -149,7 +149,7 @@ export default function QuickQuoteSheet({ open, onClose }: { open: boolean; onCl
                     </PrimaryButton>
                 )}
 
-                {quote && <QuotePreview message={quote.message} whatsappUrl={quote.whatsapp_url} />}
+                {quote && <QuotePreview message={quote.message} phone={telefone} customerName={nome} />}
             </div>
         </Sheet>
     )

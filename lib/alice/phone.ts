@@ -20,6 +20,13 @@ export function samePhone(a: string | null | undefined, b: string | null | undef
     return !!ka && ka === phoneKey(b)
 }
 
+/** Full digits with country code (55...), the format WhatsApp/wa.me and alice_conversations use. Null if too short to be a real number. */
+export function waFullNumber(value: string | null | undefined): string | null {
+    const d = digitsOnly(value)
+    if (d.length < 10) return null
+    return d.startsWith('55') && d.length >= 12 ? d : `55${d}`
+}
+
 /** "5511988887777" → "(11) 98888-7777" for display. */
 export function formatWhatsApp(value: string) {
     let d = digitsOnly(value)

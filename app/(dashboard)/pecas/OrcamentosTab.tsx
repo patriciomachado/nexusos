@@ -7,6 +7,7 @@ import { ClipboardPlus, Copy, Link2, Loader2, MessageCircle, Trash2 } from 'luci
 import Sheet from '@/components/tasks/Sheet'
 import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 import { Field, PrimaryButton, SecondaryButton, TextInput, brl } from '@/components/ui/form'
+import WhatsAppButton from '@/components/alice/WhatsAppButton'
 import { cn } from '@/lib/utils'
 import { send, useData } from './shared'
 
@@ -14,7 +15,7 @@ interface Option { tipo: string | null; valor: number }
 interface Quote {
     id: string; device_model: string; service: string; options: Option[]
     valid_until: string; created_at: string; status: 'aberto' | 'convertido' | 'vencido'
-    order_number: string | null; link: string; follow_up_message: string | null; follow_up_whatsapp_url: string | null
+    order_number: string | null; link: string; follow_up_message: string | null
     customer_name: string | null; customer_phone: string | null
 }
 interface Stats { total: number; converted: number; open: number; expired: number; rate: number | null }
@@ -88,9 +89,9 @@ export default function OrcamentosTab() {
                                         <SecondaryButton onClick={() => { navigator.clipboard?.writeText(q.follow_up_message ?? ''); toast.success('Lembrete copiado') }} className="flex-1 h-9 text-[13px]">
                                             <Copy className="w-3.5 h-3.5" /> Copiar lembrete
                                         </SecondaryButton>
-                                        <a href={q.follow_up_whatsapp_url ?? `https://wa.me/?text=${encodeURIComponent(q.follow_up_message ?? '')}`} target="_blank" rel="noreferrer" className="flex-1 h-9 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 text-[13px] font-medium flex items-center justify-center gap-1.5">
+                                        <WhatsAppButton phone={q.customer_phone} text={q.follow_up_message ?? ''} customerName={q.customer_name} className="flex-1 h-9 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 text-[13px] font-medium flex items-center justify-center gap-1.5">
                                             <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
-                                        </a>
+                                        </WhatsAppButton>
                                         <SecondaryButton onClick={() => setConverting(q)} className="h-9 px-3 text-[13px]"><Link2 className="w-3.5 h-3.5" /></SecondaryButton>
                                     </div>
                                 </div>

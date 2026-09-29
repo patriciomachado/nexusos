@@ -9,6 +9,7 @@ import Header from '@/components/layout/Header'
 import Sheet from '@/components/tasks/Sheet'
 import { Group, SwitchRow, brl } from '@/components/ui/form'
 import PayOSModal from '@/components/os/PayOSModal'
+import WhatsAppButton from '@/components/alice/WhatsAppButton'
 import { cn } from '@/lib/utils'
 
 /**
@@ -292,14 +293,13 @@ export default function MesaClient({ orders: initial, technicians, myTechnicianI
                         <div className="flex gap-2">
                             <Link href={`/service-orders/${selected.id}`} className="flex-1 h-12 rounded-full bg-primary text-primary-foreground text-[17px] font-semibold inline-flex items-center justify-center gap-1">Abrir OS <ChevronRight className="w-4 h-4" /></Link>
                             {selected.customer?.phone && (
-                                <a
-                                    href={`https://wa.me/${waNumber(selected.customer.phone)}`}
-                                    target="_blank"
-                                    rel="noreferrer"
+                                <WhatsAppButton
+                                    phone={selected.customer.phone}
+                                    customerName={selected.customer.name}
                                     className="h-12 px-5 rounded-full bg-emerald-600/10 text-emerald-700 dark:text-emerald-400 text-[17px] font-medium inline-flex items-center gap-1.5"
                                 >
                                     <MessageCircle className="w-5 h-5" /> WhatsApp
-                                </a>
+                                </WhatsAppButton>
                             )}
                         </div>
                     </div>
@@ -324,10 +324,6 @@ export default function MesaClient({ orders: initial, technicians, myTechnicianI
     )
 }
 
-function waNumber(phone: string) {
-    const d = phone.replace(/\D/g, '')
-    return d.startsWith('55') && d.length >= 12 ? d : `55${d}`
-}
 
 function CardList({ orders, onOpen, empty }: { orders: BoardOS[]; onOpen: (o: BoardOS) => void; empty: string }) {
     if (!orders.length) return <p className="rounded-2xl bg-card border border-border/60 px-4 py-10 text-center text-[15px] text-muted-foreground">{empty}</p>

@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 import Sheet from '@/components/tasks/Sheet'
 import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 import { Chips, Group, PrimaryButton, SecondaryButton, TextArea } from '@/components/ui/form'
+import WhatsAppButton from '@/components/alice/WhatsAppButton'
 
 interface Review {
     name: string
@@ -42,13 +43,6 @@ const FLASH: Record<string, [ok: boolean, text: string]> = {
 
 const firstName = (n: string) => n.split(' ')[0]
 const date = (iso: string) => new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
-
-function waLink(phone: string | null, text: string) {
-    let d = (phone ?? '').replace(/\D/g, '')
-    if (d.length < 10) return null
-    if (!d.startsWith('55')) d = `55${d}`
-    return `https://wa.me/${d}?text=${encodeURIComponent(text)}`
-}
 
 function Stars({ value }: { value: number }) {
     return (
@@ -249,8 +243,8 @@ function Notice({ title, text, children }: { title: string; text: string; childr
 
 function ReviewCard({ r, storeName, onReply }: { r: Review; storeName: string; onReply: () => void }) {
     const c = r.match?.customer
-    const wa = c && r.rating <= 3
-        ? waLink(c.phone, `Olá ${firstName(c.name)}, aqui é da ${storeName}. Vimos sua avaliação no Google e queremos entender o que aconteceu para resolver. Podemos conversar?`)
+    const waText = c && r.rating <= 3
+        ? `Olá ${firstName(c.name)}, aqui é da ${storeName}. Vimos sua avaliação no Google e queremos entender o que aconteceu para resolver. Podemos conversar?`
         : null
     return (
         <li className="rounded-2xl bg-card border border-border/60 p-4 space-y-2.5">
@@ -282,10 +276,10 @@ function ReviewCard({ r, storeName, onReply }: { r: Review; storeName: string; o
                             </Link>
                         )}
                     </div>
-                    {wa && (
-                        <a href={wa} target="_blank" rel="noopener noreferrer" className="h-8 px-3 rounded-full bg-green-500/12 text-green-700 dark:text-green-400 text-[13px] font-semibold inline-flex items-center gap-1.5 shrink-0">
+                    {waText && c && (
+                        <WhatsAppButton phone={c.phone} text={waText} customerId={c.id} customerName={c.name} className="h-8 px-3 rounded-full bg-green-500/12 text-green-700 dark:text-green-400 text-[13px] font-semibold inline-flex items-center gap-1.5 shrink-0">
                             <MessageCircle aria-hidden className="w-3.5 h-3.5" /> Chamar
-                        </a>
+                        </WhatsAppButton>
                     )}
                 </div>
             )}

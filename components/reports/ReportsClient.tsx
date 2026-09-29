@@ -13,6 +13,7 @@ import DailyRevenueChart from './DailyRevenueChart'
 import { brl, change, dayLabel, duration, pct } from './format'
 import Money from './Money'
 import UpgradeCard from '@/components/plans/UpgradeCard'
+import WhatsAppButton from '@/components/alice/WhatsAppButton'
 
 type Preset = 'hoje' | '7d' | 'mes' | 'mes-anterior' | 'ano' | 'custom'
 
@@ -385,12 +386,12 @@ function Technicians({ report }: { report: Report }) {
 
 // ─── Customers ───────────────────────────────────────────────────────────────
 
-function whatsappLink(phone: string | null, name: string) {
-    let d = (phone ?? '').replace(/\D/g, '')
-    if (d.length < 10) return null
-    if (!d.startsWith('55')) d = `55${d}`
+function hasPhone(phone: string | null) {
+    return (phone ?? '').replace(/\D/g, '').length >= 10
+}
+function reactivationText(name: string) {
     const first = name.split(' ')[0]
-    return `https://wa.me/${d}?text=${encodeURIComponent(`Olá ${first}! Tudo bem? Aqui é da assistência técnica. Faz um tempo que não nos vemos — precisando de algo para o seu aparelho, estamos à disposição!`)}`
+    return `Olá ${first}! Tudo bem? Aqui é da assistência técnica. Faz um tempo que não nos vemos — precisando de algo para o seu aparelho, estamos à disposição!`
 }
 
 function Customers({ report }: { report: Report }) {
@@ -438,17 +439,16 @@ function Customers({ report }: { report: Report }) {
                     {c.lapsed.length === 0 ? <p className="text-[13px] text-muted-foreground">Nenhum cliente afastado. 👏</p> : (
                         <ul className="divide-y divide-border/50 max-h-[280px] overflow-y-auto">
                             {c.lapsed.map(l => {
-                                const wa = whatsappLink(l.phone, l.name)
                                 return (
                                     <li key={l.id} className="flex items-center gap-3 py-2 text-[14px]">
                                         <div className="min-w-0 flex-1">
                                             <Link href={`/customers/${l.id}`} className="block truncate hover:text-primary">{l.name}</Link>
                                             <p className="text-[12px] text-muted-foreground">última OS em {new Date(l.lastVisit).toLocaleDateString('pt-BR')} · {l.visits} {l.visits === 1 ? 'visita' : 'visitas'}</p>
                                         </div>
-                                        {wa && (
-                                            <a href={wa} target="_blank" rel="noopener noreferrer" className="h-8 px-3 rounded-full bg-green-500/12 text-green-700 dark:text-green-400 text-[13px] font-semibold inline-flex items-center gap-1.5 shrink-0">
+                                        {hasPhone(l.phone) && (
+                                            <WhatsAppButton phone={l.phone} text={reactivationText(l.name)} customerId={l.id} customerName={l.name} className="h-8 px-3 rounded-full bg-green-500/12 text-green-700 dark:text-green-400 text-[13px] font-semibold inline-flex items-center gap-1.5 shrink-0">
                                                 <MessageCircle className="w-3.5 h-3.5" /> Chamar
-                                            </a>
+                                            </WhatsAppButton>
                                         )}
                                     </li>
                                 )

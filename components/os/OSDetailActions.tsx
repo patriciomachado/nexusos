@@ -9,6 +9,7 @@ import Sheet from '@/components/tasks/Sheet'
 import PremiumConfirmDialog from '@/components/ui/PremiumConfirmDialog'
 import { cn } from '@/lib/utils'
 import { OS_STATUS, OS_STATUS_ORDER, statusMeta } from '@/lib/os/status'
+import { useOpenWhatsApp } from '@/components/alice/useOpenWhatsApp'
 import PayOSModal from './PayOSModal'
 
 interface Props {
@@ -18,6 +19,7 @@ interface Props {
         status: string
         tracking_token?: string | null
         total: number
+        customer_id?: string | null
         customer?: { name: string; phone?: string | null } | null
     }
 }
@@ -31,6 +33,7 @@ function waNumber(phone?: string | null) {
 /** Main actions on an order: change status, message the customer, receive payment, more. */
 export default function OSDetailActions({ os }: Props) {
     const router = useRouter()
+    const openWhatsApp = useOpenWhatsApp()
     const [pending, start] = useTransition()
     const [statusOpen, setStatusOpen] = useState(false)
     const [moreOpen, setMoreOpen] = useState(false)
@@ -64,7 +67,7 @@ export default function OSDetailActions({ os }: Props) {
         if (!phone) return toast.error('O cliente não tem telefone cadastrado')
         const first = os.customer?.name?.split(' ')[0] ?? ''
         const text = `Olá${first ? ` ${first}` : ''}! Acompanhe sua OS ${os.order_number}${trackingUrl ? ` por aqui: ${trackingUrl}` : '.'}`
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank')
+        openWhatsApp({ phone, text, customerId: os.customer_id, customerName: os.customer?.name })
     }
 
     const copyLink = async () => {

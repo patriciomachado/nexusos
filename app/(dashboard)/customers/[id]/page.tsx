@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase'
 import Header from '@/components/layout/Header'
 import OSStatusBadge from '@/components/os/OSStatusBadge'
 import CustomerActions from '@/components/customers/CustomerActions'
+import WhatsAppButton from '@/components/alice/WhatsAppButton'
 import TagEditor from './TagEditor'
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -80,7 +81,7 @@ export default async function CustomerPage({ params }: { params: Promise<{ id: s
                         <CustomerActions customerId={c.id} customerName={c.name} />
                     </div>
                     <div className="mt-4 grid grid-cols-3 gap-2">
-                        {phone && <a href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer" className="h-11 rounded-xl bg-emerald-600/10 text-emerald-700 dark:text-emerald-400 inline-flex items-center justify-center gap-1.5 text-[15px] font-medium"><MessageCircle className="w-4 h-4" /> WhatsApp</a>}
+                        {phone && <WhatsAppButton phone={phone} customerId={c.id} customerName={c.name} className="h-11 rounded-xl bg-emerald-600/10 text-emerald-700 dark:text-emerald-400 inline-flex items-center justify-center gap-1.5 text-[15px] font-medium"><MessageCircle className="w-4 h-4" /> WhatsApp</WhatsAppButton>}
                         {c.phone && <a href={`tel:${c.phone.replace(/\D/g, '')}`} className="h-11 rounded-xl bg-foreground/[0.06] inline-flex items-center justify-center gap-1.5 text-[15px] font-medium"><Phone className="w-4 h-4" /> Ligar</a>}
                         <Link href={`/customers/${c.id}/edit`} className="h-11 rounded-xl bg-foreground/[0.06] inline-flex items-center justify-center gap-1.5 text-[15px] font-medium"><Pencil className="w-4 h-4" /> Editar</Link>
                     </div>
