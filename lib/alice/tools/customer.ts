@@ -7,7 +7,7 @@ import { pushToCompany } from '@/lib/tasks/reminders'
 import { buildQuoteMessage, createPartQuote, findQuoteOptions, sortQuoteOptions, type PartQuoteOption } from '@/lib/parts/quotes'
 import { loadPartMargin } from '@/lib/parts/prices'
 import { suggestedPrice } from '@/lib/parts/server'
-import { searchNovaPecasWithPrices } from '@/lib/parts/novapecas'
+import { searchNovaPecasTiers } from '@/lib/parts/novapecas'
 
 /**
  * Tools for the WhatsApp agent. None of them takes an id from the model:
@@ -156,14 +156,14 @@ const cotarPeca = defineCustomer({
             ctx.db.from('alice_settings').select('auto_quote_parts').eq('company_id', ctx.companyId).maybeSingle(),
         ])
         let found = foundRow
-        // Nada cadastrado, mas a loja confia a Alice a cotar sozinha: tenta o preço ao vivo do fornecedor.
+        // Nada cadastrado, mas a loja confia a Alice a cotar sozinha: tenta o preço ao vivo do fornecedor,
+        // separado pelas 3 linhas de marca dele (Genuína/Premium/Standard), igual a tabela de Peças traria.
         if (!found?.options.length && aliceSettings?.auto_quote_parts) {
             try {
-                const results = await searchNovaPecasWithPrices(`${servico} ${aparelho}`)
-                const best = results.find(r => r.price != null)
-                if (best?.price != null) {
+                const tiers = await searchNovaPecasTiers(`${servico} ${aparelho}`)
+                if (tiers.length) {
                     const { margin, laborMin } = await loadPartMargin(ctx.db, ctx.companyId)
-                    const options: PartQuoteOption[] = [{ tipo: null, valor: suggestedPrice(best.price, 0, margin, laborMin) }]
+                    const options: PartQuoteOption[] = tiers.map(t => ({ tipo: t.tipo, valor: suggestedPrice(t.custo, 0, margin, laborMin) }))
                     found = { deviceModel: aparelho, options }
                 }
             } catch { /* fornecedor fora do ar: segue sem cotação, cai no aviso abaixo */ }
