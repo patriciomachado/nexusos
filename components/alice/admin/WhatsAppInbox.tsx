@@ -70,13 +70,18 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
 
     useEffect(() => {
         if (!selected) return
-         
+
         loadDetail(selected, true)
         const t = setInterval(() => {
             if (document.visibilityState === 'visible') loadDetail(selected)
         }, POLL_MS)
         return () => clearInterval(t)
     }, [selected, loadDetail])
+
+    // Deep-linked here again (e.g. another WhatsApp button, already on this tab): jump to that conversation.
+    useEffect(() => {
+        if (initialId) setSelected(initialId)
+    }, [initialId])
 
     const setMode = async (mode: 'alice' | 'human') => {
         if (!selected) return

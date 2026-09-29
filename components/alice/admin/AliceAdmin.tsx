@@ -34,6 +34,13 @@ export default function AliceAdmin() {
         load()
     }, [load])
 
+    // A WhatsApp button elsewhere in the app deep-links here without remounting this page (same route, just the query
+    // string changes) — so the tab has to react to it, not just read it once at mount.
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (params.get('conversa')) setTab('conversas')
+    }, [params])
+
     const changeTab = (next: Tab) => {
         setTab(next)
         const url = new URL(window.location.href)
