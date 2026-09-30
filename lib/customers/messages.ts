@@ -52,7 +52,7 @@ export function waPhone(raw: string | null | undefined) {
  * Sends once per (kind, ref): the row in customer_messages is written first
  * as a claim, so a retry or two parallel runs never message twice.
  */
-export async function sendOnce(db: SupabaseClient, alice: AliceSettings, m: { companyId: string; customerId: string; phone: string; kind: string; ref: string; text: string; userId?: string | null }) {
+export async function sendOnce(db: SupabaseClient, alice: AliceSettings, m: { companyId: string; customerId: string | null; phone: string; kind: string; ref: string; text: string; userId?: string | null }) {
     const { data: claim, error } = await db.from('customer_messages').insert({
         company_id: m.companyId, customer_id: m.customerId, kind: m.kind, ref: m.ref, text: m.text, status: 'sending', created_by: m.userId ?? null,
     }).select('id').single()

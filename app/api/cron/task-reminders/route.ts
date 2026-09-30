@@ -3,6 +3,7 @@ import { timingSafeEqual } from 'crypto'
 import { createAdminClient } from '@/lib/supabase'
 import { deliverDueReminders, deliverRoutineReminders } from '@/lib/tasks/reminders'
 import { alertNewReviews } from '@/lib/google/alerts'
+import { sendStaleQuoteFollowUps } from '@/lib/parts/followups'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,7 +32,9 @@ export async function GET(req: NextRequest) {
         const routines = await deliverRoutineReminders(db)
         // New Google reviews, checked every 30 minutes per store.
         const reviews = await alertNewReviews(db).catch(() => 0)
-        return NextResponse.json({ delivered: tasks.length + routines.length, reviews })
+        // Orçamento parado há 2h: manda lembrete automático pelo WhatsApp (se conectado).
+        const quoteFollowUps = await sendStaleQuoteFollowUps(db).catch(() => 0)
+        return NextResponse.json({ delivered: tasks.length + routines.length, reviews, quoteFollowUps })
     } catch (error) {
         console.error('[cron/task-reminders] failed:', error)
         return NextResponse.json({ error: 'Falha ao enviar lembretes' }, { status: 500 })

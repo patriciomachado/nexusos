@@ -2,8 +2,6 @@ import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { randomBytes } from 'crypto'
 import { brl, cleanSearch } from '@/lib/alice/tools/helpers'
-import { appUrl } from '@/lib/alice/config'
-import { DEFAULT_TIMEZONE, dateStringInZone, timeInZone } from '@/lib/tasks/dates'
 
 export interface PartQuoteOption { tipo: string | null; valor: number }
 
@@ -73,26 +71,6 @@ export async function findQuoteOptions(db: SupabaseClient, companyId: string, de
     return { deviceModel: rows[0].device_model, options }
 }
 
-/** Horas até lembrar a loja de um orçamento que ainda não virou OS — serviço rápido, então o lembrete é rápido também. */
-const REMINDER_HOURS = 2
-
-/** Tarefa (com lembrete) avisando que o orçamento ainda não virou OS. Cancelada quando o orçamento é vinculado a uma OS. */
-async function scheduleFollowUp(db: SupabaseClient, companyId: string, quoteId: string, deviceModel: string, service: string, link: string) {
-    const remindAt = new Date(Date.now() + REMINDER_HOURS * 3_600_000)
-    const { data: task, error } = await db.from('tasks').insert({
-        company_id: companyId,
-        title: `Orçamento em aberto: ${service} · ${deviceModel}`,
-        notes: `Ainda não virou OS. Vale mandar um lembrete pro cliente.\n\n${link}`,
-        priority: 2,
-        do_date: dateStringInZone(DEFAULT_TIMEZONE, remindAt),
-        do_time: timeInZone(DEFAULT_TIMEZONE, remindAt),
-        source_key: `quote:${quoteId}`,
-        source_href: '/pecas?tab=orcamentos',
-    }).select('id').single()
-    if (error || !task) { console.error('[part_quotes] follow-up task failed:', error); return }
-    await db.from('task_reminders').insert({ company_id: companyId, task_id: task.id, remind_at: remindAt.toISOString() })
-}
-
 /** Grava as opções cotadas pra um aparelho/serviço com um token público, pra virar um link de orçamento. */
 export async function createPartQuote(db: SupabaseClient, companyId: string, input: {
     deviceModel: string
@@ -115,19 +93,16 @@ export async function createPartQuote(db: SupabaseClient, companyId: string, inp
         valid_until: validUntil,
     }).select('id').single()
     if (error || !data) { console.error('[part_quotes] create failed:', error); return null }
-    await scheduleFollowUp(db, companyId, data.id, input.deviceModel, input.service, `${appUrl()}/orcamento/${token}`)
     return token
 }
 
-/** Vincula o orçamento à OS que ele virou, e cancela o lembrete de orçamento parado. */
+/** Vincula o orçamento à OS que ele virou (também para o lembrete automático de orçamento parado, pois service_order_id deixa de ser nulo). */
 export async function markQuoteConverted(db: SupabaseClient, companyId: string, quoteId: string, serviceOrderId: string) {
     await db.from('part_quotes').update({ service_order_id: serviceOrderId }).eq('id', quoteId).eq('company_id', companyId)
-    await db.from('tasks').update({ status: 'done', completed_at: new Date().toISOString() }).eq('company_id', companyId).eq('source_key', `quote:${quoteId}`)
 }
 
-/** Apaga o orçamento e cancela o lembrete pendente dele, se ainda não disparou. */
+/** Apaga o orçamento. */
 export async function deletePartQuote(db: SupabaseClient, companyId: string, quoteId: string) {
-    await db.from('tasks').update({ status: 'done', completed_at: new Date().toISOString() }).eq('company_id', companyId).eq('source_key', `quote:${quoteId}`).eq('status', 'open')
     const { error } = await db.from('part_quotes').delete().eq('id', quoteId).eq('company_id', companyId)
     return !error
 }
