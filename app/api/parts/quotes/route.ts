@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { bad, firstIssue, partsContext } from '@/lib/parts/server'
 import { buildFollowUpMessage, buildQuoteMessage, computeQuoteStats, createPartQuote, findQuoteOptions, sortQuoteOptions, type PartQuoteOption } from '@/lib/parts/quotes'
 import { appUrl } from '@/lib/alice/config'
+import { createFunnelEntry } from '@/lib/funnel/entries'
 
 /** Orçamentos gerados (peças cotadas), com o que virou OS e o que ainda tá parado. */
 export async function GET() {
@@ -44,7 +45,7 @@ const schema = z.object({
 /** Gera um link de orçamento (/orcamento/[token]), a partir da tabela de Peças ou de opções já cotadas na hora. */
 export async function POST(req: NextRequest) {
     const g = await partsContext(); if ('error' in g) return g.error
-    const { db, companyId } = g.ctx
+    const { db, companyId, dbUser } = g.ctx
     const parsed = schema.safeParse(await req.json().catch(() => ({})))
     if (!parsed.success) return bad(firstIssue(parsed.error))
     const { device_model, service, options: given, customer_name, customer_phone } = parsed.data
@@ -55,6 +56,22 @@ export async function POST(req: NextRequest) {
 
     const token = await createPartQuote(db, companyId, { deviceModel, service, options, customerName: customer_name || null, customerPhone: customer_phone || null })
     if (!token) return bad('Não foi possível gerar o link agora', 500)
+    const { data: quoteRow } = await db.from('part_quotes').select('id').eq('token', token).eq('company_id', companyId).single()
+
+    // Mesmo pipeline do funil que a Alice alimenta (lib/funnel/entries.ts): sem isso,
+    // orçamentos feitos aqui no dashboard nunca viravam card no Funil de Vendas.
+    await createFunnelEntry(db, {
+        companyId,
+        title: `${service} — ${deviceModel}`,
+        leadName: customer_name || null,
+        leadPhone: customer_phone || null,
+        stage: 'orcamento',
+        valueEstimate: options[0]?.valor ?? 0,
+        source: 'manual',
+        quoteId: quoteRow?.id ?? null,
+        createdBy: dbUser.id,
+    }).catch(err => console.error('[parts/quotes] funnel entry failed:', err))
+
     const url = `${appUrl()}/orcamento/${token}`
     const message = buildQuoteMessage(deviceModel, service, options, url)
     return NextResponse.json({ url, message })

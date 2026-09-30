@@ -485,6 +485,7 @@ const criarOrcamento = defineWrite({
         const link = `${appUrl()}/orcamento/${token}`
         const { data: quoteRow } = await ctx.db.from('part_quotes').select('id').eq('token', token).eq('company_id', ctx.companyId).single()
 
+        // Não deixa uma falha aqui derrubar a resposta pro cliente: o orçamento acima já foi criado.
         await createFunnelEntry(ctx.db, {
             companyId: ctx.companyId,
             title: `${i.servico} — ${deviceModel}`,
@@ -497,7 +498,7 @@ const criarOrcamento = defineWrite({
             quoteId: quoteRow?.id ?? null,
             notes: i.observacoes ?? null,
             createdBy: ctx.user?.id ?? null,
-        })
+        }).catch(err => console.error('[alice/criar_orcamento] funnel entry failed:', err))
 
         let note = ''
         const phone = waPhone(customer?.phone ?? i.lead_telefone)
