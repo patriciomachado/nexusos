@@ -46,16 +46,24 @@ export async function createFunnelEntry(db: SupabaseClient, input: NewFunnelEntr
 }
 
 /** Moves a card to a new stage (drag on the board, or a write tool closing/losing it). */
-export async function moveFunnelEntry(db: SupabaseClient, companyId: string, id: string, patch: { stage: FunnelStage; lostReason?: string | null }) {
+export async function moveFunnelEntry(db: SupabaseClient, companyId: string, id: string, patch: { stage: FunnelStage; lostReason?: string | null; serviceOrderId?: string | null }) {
+    const update: Record<string, unknown> = {
+        stage: patch.stage,
+        stage_changed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        lost_reason: patch.stage === 'perdido' ? (patch.lostReason ?? null) : null,
+    }
+    if (patch.serviceOrderId !== undefined) update.service_order_id = patch.serviceOrderId
     const { error } = await db
         .from('funnel_entries')
-        .update({
-            stage: patch.stage,
-            stage_changed_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            lost_reason: patch.stage === 'perdido' ? (patch.lostReason ?? null) : null,
-        })
+        .update(update)
         .eq('id', id)
         .eq('company_id', companyId)
     if (error) throw new Error(error.message)
+}
+
+/** Card do funil ligado a este orçamento, se existir (a Alice ou o dashboard já podem tê-lo criado). */
+export async function findFunnelEntryByQuote(db: SupabaseClient, companyId: string, quoteId: string) {
+    const { data } = await db.from('funnel_entries').select('id').eq('company_id', companyId).eq('quote_id', quoteId).maybeSingle()
+    return data?.id as string | undefined
 }

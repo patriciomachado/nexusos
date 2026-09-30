@@ -2,6 +2,7 @@ import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { randomBytes } from 'crypto'
 import { brl, cleanSearch } from '@/lib/alice/tools/helpers'
+import { findFunnelEntryByQuote, moveFunnelEntry } from '@/lib/funnel/entries'
 
 export interface PartQuoteOption { tipo: string | null; valor: number }
 
@@ -96,9 +97,11 @@ export async function createPartQuote(db: SupabaseClient, companyId: string, inp
     return token
 }
 
-/** Vincula o orçamento à OS que ele virou (também para o lembrete automático de orçamento parado, pois service_order_id deixa de ser nulo). */
+/** Vincula o orçamento à OS que ele virou (também para o lembrete automático de orçamento parado, pois service_order_id deixa de ser nulo) e avança o card do funil pra Fechado. */
 export async function markQuoteConverted(db: SupabaseClient, companyId: string, quoteId: string, serviceOrderId: string) {
     await db.from('part_quotes').update({ service_order_id: serviceOrderId }).eq('id', quoteId).eq('company_id', companyId)
+    const entryId = await findFunnelEntryByQuote(db, companyId, quoteId)
+    if (entryId) await moveFunnelEntry(db, companyId, entryId, { stage: 'fechado', serviceOrderId }).catch(err => console.error('[part_quotes] funnel move failed:', err))
 }
 
 /** Apaga o orçamento. */
