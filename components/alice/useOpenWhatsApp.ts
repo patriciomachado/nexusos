@@ -1,0 +1,48 @@
+'use client'
+import { useRouter } from 'next/navigation'
+import { useCallback } from 'react'
+
+type OpenArgs = {
+    phone: string | null | undefined
+    text?: string
+    customerId?: string | null
+    customerName?: string | null
+}
+
+function rawLink(phone: string | null | undefined, text?: string) {
+    const d = (phone ?? '').replace(/\D/g, '')
+    const full = d ? (d.startsWith('55') && d.length >= 12 ? d : `55${d}`) : ''
+    return `https://wa.me/${full}${text ? `?text=${encodeURIComponent(text)}` : ''}`
+}
+
+/**
+ * Opens a WhatsApp conversation: through the app's own chat when the number is connected
+ * via the official API, falling back to a wa.me link (new tab) exactly like before otherwise.
+ */
+export function useOpenWhatsApp() {
+    const router = useRouter()
+
+    return useCallback(async ({ phone, text }: OpenArgs) => {
+        if (!phone) {
+            window.open(rawLink(phone, text), '_blank')
+            return
+        }
+        try {
+            const res = await fetch('/api/alice/conversations/open', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone }),
+            })
+            if (res.ok) {
+                const data = await res.json()
+                if (data.available && data.id) {
+                    router.push(`/alice?conversa=${data.id}`)
+                    return
+                }
+            }
+        } catch {
+            // network error or no access: fall through to wa.me below
+        }
+        window.open(rawLink(phone, text), '_blank')
+    }, [router])
+}

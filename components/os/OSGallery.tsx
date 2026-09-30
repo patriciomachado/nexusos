@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Info, X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
 
 interface AttachmentImage {
     id: string
@@ -66,53 +66,50 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
         <>
             {/* Device Photos */}
             {(devicesPhotos?.photo_front_url || devicesPhotos?.photo_back_url) && (
-                <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm">
-                    <h2 className="text-[10px] font-black text-muted-foreground/60 mb-4 md:mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
-                        <Info className="w-3 h-3" />
-                        Fotos do Dispositivo
-                    </h2>
+                <section className="space-y-1.5">
+                    <h2 className="px-4 text-[13px] font-medium text-muted-foreground">Fotos na entrada</h2>
+                    <div className="rounded-2xl bg-card border border-border/60 p-3">
                     <div className="grid grid-cols-2 gap-3 md:gap-4">
                         {devicesPhotos?.photo_front_url && (
                             <div className="space-y-2">
-                                <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block text-center">Frontal</span>
+                                <span className="text-xs font-semibold text-muted-foreground block text-center">Frontal</span>
                                 <div 
                                     className="aspect-video rounded-xl overflow-hidden border border-border bg-muted/50 cursor-pointer"
                                     onClick={() => openLightbox(0)}
                                 >
-                                    <img 
+                                    <img width={400} height={400} loading="lazy" 
                                         src={devicesPhotos.photo_front_url} 
                                         alt="Frontal" 
-                                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+                                        className="w-full h-full object-cover transition-transform duration-500" 
                                     />
                                 </div>
                             </div>
                         )}
                         {devicesPhotos?.photo_back_url && (
                             <div className="space-y-2">
-                                <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block text-center">Traseira</span>
+                                <span className="text-xs font-semibold text-muted-foreground block text-center">Traseira</span>
                                 <div 
                                     className="aspect-video rounded-xl overflow-hidden border border-border bg-muted/50 cursor-pointer"
                                     onClick={() => openLightbox(devicesPhotos?.photo_front_url ? 1 : 0)}
                                 >
-                                    <img 
+                                    <img width={400} height={400} loading="lazy" 
                                         src={devicesPhotos.photo_back_url} 
                                         alt="Traseira" 
-                                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+                                        className="w-full h-full object-cover transition-transform duration-500" 
                                     />
                                 </div>
                             </div>
                         )}
                     </div>
-                </div>
+                    </div>
+                </section>
             )}
 
             {/* Attachments */}
             {attachments && attachments.length > 0 && (
-                <div className="rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl p-4 md:p-6 shadow-sm">
-                    <h2 className="text-[10px] font-black text-muted-foreground/60 mb-4 md:mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
-                        <Info className="w-3 h-3" />
-                        Imagens Adicionadas
-                    </h2>
+                <section className="space-y-1.5">
+                    <h2 className="px-4 text-[13px] font-medium text-muted-foreground">Outras imagens</h2>
+                    <div className="rounded-2xl bg-card border border-border/60 p-3">
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                         {attachments.map((attachment, idx) => {
                             if (attachment.file_type !== 'photo') return null
@@ -124,14 +121,14 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
                                     onClick={() => openLightbox(imageIndex)}
                                 >
                                     <div className="aspect-video rounded-xl overflow-hidden border border-border bg-muted/50 group-hover:border-primary/30 transition-colors">
-                                        <img 
+                                        <img width={400} height={400} loading="lazy" 
                                             src={attachment.file_url} 
                                             alt={attachment.file_name || 'Imagem'} 
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                                         />
                                     </div>
                                     {attachment.description && (
-                                        <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] block text-center truncate">
+                                        <span className="text-xs font-semibold text-muted-foreground block text-center truncate">
                                             {attachment.description}
                                         </span>
                                     )}
@@ -139,7 +136,8 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
                             )
                         })}
                     </div>
-                </div>
+                    </div>
+                </section>
             )}
 
             {/* Lightbox */}
@@ -152,7 +150,7 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
                 >
                     <button
                         onClick={closeLightbox}
-                        className="absolute top-4 right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all z-10"
+                        className="absolute top-4 right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition z-10"
                     >
                         <X className="w-6 h-6" />
                     </button>
@@ -179,13 +177,13 @@ export default function OSGallery({ devicesPhotos, attachments }: Props) {
                         <>
                             <button
                                 onClick={(e) => { e.stopPropagation(); prevImage() }}
-                                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all"
+                                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition"
                             >
                                 <ChevronLeft className="w-8 h-8" />
                             </button>
                             <button
                                 onClick={(e) => { e.stopPropagation(); nextImage() }}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition"
                             >
                                 <ChevronRight className="w-8 h-8" />
                             </button>

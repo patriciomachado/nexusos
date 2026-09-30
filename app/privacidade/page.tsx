@@ -18,7 +18,7 @@ export default function PrivacyPolicyPage() {
             {/* Header / Navigation */}
             <header className="relative z-10 h-20 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl sticky top-0 px-4 md:px-8 flex items-center justify-between">
                 <div className="max-w-6xl w-full mx-auto flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2 group text-xs font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors">
+                    <Link href="/" className="flex items-center gap-2 group text-xs font-black text-slate-400 hover:text-white transition-colors">
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         Voltar para o Início
                     </Link>
@@ -34,25 +34,25 @@ export default function PrivacyPolicyPage() {
             {/* Content Section */}
             <main className="relative z-10 max-w-4xl mx-auto px-4 py-12 md:py-20 space-y-12">
                 <div className="space-y-4 text-center">
-                    <div className="w-16 h-16 bg-indigo-500/10 rounded-[1.5rem] flex items-center justify-center mx-auto text-indigo-400 border border-indigo-500/20 shadow-[0_0_45px_rgba(99,102,241,0.15)]">
+                    <div className="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center mx-auto text-indigo-400 border border-indigo-500/20 shadow-[0_0_45px_rgba(99,102,241,0.15)]">
                         <Shield className="w-8 h-8" />
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white">Política de Privacidade</h1>
                     <p className="text-slate-400 font-medium max-w-xl mx-auto text-sm md:text-base">
                         Saiba como coletamos, utilizamos, armazenamos e protegemos seus dados pessoais em conformidade com a LGPD.
                     </p>
-                    <div className="inline-flex gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 pt-2">
+                    <div className="inline-flex gap-4 text-[11px] font-bold uppercase tracking-widest text-slate-500 pt-2">
                         <span>Última atualização: 16 de julho de 2026</span>
                         <span>&bull;</span>
                         <span>Versão: 1.1</span>
                     </div>
                 </div>
 
-                <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 md:p-10 shadow-2xl space-y-8 backdrop-blur-xl">
+                <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 md:p-10 shadow-2xl space-y-8 backdrop-blur-xl">
                     
                     {/* Section 1 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">1</span>
                             Introdução
                         </h2>
@@ -63,7 +63,7 @@ export default function PrivacyPolicyPage() {
 
                     {/* Section 2 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">2</span>
                             Quem Somos e Nossos Papéis na LGPD
                         </h2>
@@ -84,25 +84,25 @@ export default function PrivacyPolicyPage() {
 
                     {/* Section 3 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">3</span>
                             Dados que Coletamos
                         </h2>
                         <div className="space-y-4">
                             <div>
-                                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">3.1. Dados do Usuário (Dono/Funcionário da Assistência):</h3>
+                                <h3 className="text-xs font-black text-slate-400 mb-2">3.1. Dados do Usuário (Dono/Funcionário da Assistência):</h3>
                                 <p className="text-sm text-slate-300 leading-relaxed">
                                     Nome completo, e-mail de autenticação, telefone/WhatsApp corporativo, dados cadastrais da empresa (nome, CNPJ, endereço, logotipo) e dados de cobrança e assinatura.
                                 </p>
                             </div>
                             <div>
-                                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">3.2. Dados dos Clientes Finais (Inseridos pelo Usuário):</h3>
+                                <h3 className="text-xs font-black text-slate-400 mb-2">3.2. Dados dos Clientes Finais (Inseridos pelo Usuário):</h3>
                                 <p className="text-sm text-slate-300 leading-relaxed">
                                     Nome completo, telefone, e-mail, CPF/CNPJ, endereço, detalhes do equipamento (marca, modelo, IMEI/número de série, cor, estado físico), checklist de testes de entrada e saída, senha ou padrão gráfico de desbloqueio do dispositivo (fornecidos voluntariamente para execução técnica) e histórico financeiro dos serviços prestados.
                                 </p>
                             </div>
                             <div>
-                                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">3.3. Dados Coletados Automaticamente:</h3>
+                                <h3 className="text-xs font-black text-slate-400 mb-2">3.3. Dados Coletados Automaticamente:</h3>
                                 <p className="text-sm text-slate-300 leading-relaxed">
                                     Tipo de dispositivo, sistema operacional, resolução de tela, navegador, endereço IP e dados de marketing (parâmetros UTM, referrer — coletados apenas no ato do cadastro).
                                 </p>
@@ -112,7 +112,7 @@ export default function PrivacyPolicyPage() {
 
                     {/* Section 4 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">4</span>
                             Como Utilizamos os Dados
                         </h2>
@@ -128,7 +128,7 @@ export default function PrivacyPolicyPage() {
 
                     {/* Section 5 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">5</span>
                             Bases Legais de Tratamento
                         </h2>
@@ -153,7 +153,7 @@ export default function PrivacyPolicyPage() {
 
                     {/* Section 6 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">6</span>
                             Segurança dos Dados e Infraestrutura
                         </h2>
@@ -182,7 +182,7 @@ export default function PrivacyPolicyPage() {
 
                     {/* Section 7 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">7</span>
                             Prazos de Retenção e Exclusão Automática
                         </h2>
@@ -201,7 +201,7 @@ export default function PrivacyPolicyPage() {
 
                     {/* Section 8 */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                        <h2 className="text-lg font-black text-indigo-400 flex items-center gap-2">
                             <span className="text-xs bg-indigo-500/15 px-2 py-0.5 rounded text-indigo-400 font-mono">8</span>
                             Direitos dos Titulares dos Dados
                         </h2>
@@ -212,7 +212,7 @@ export default function PrivacyPolicyPage() {
 
                     {/* Section 9 */}
                     <div className="space-y-4 pt-4 border-t border-white/5">
-                        <h2 className="text-base font-black uppercase tracking-wider text-white">Contato e Dúvidas</h2>
+                        <h2 className="text-base font-black text-white">Contato e Dúvidas</h2>
                         <p className="text-sm text-slate-400 leading-relaxed">
                             Se você tiver dúvidas sobre nossa Política de Privacidade ou precisar exercer seus direitos, por favor entre em contato com nosso Encarregado de Proteção de Dados (DPO):
                         </p>
@@ -225,7 +225,7 @@ export default function PrivacyPolicyPage() {
             </main>
 
             {/* Footer */}
-            <footer className="relative z-10 border-t border-white/5 bg-[#0a0a0f]/50 py-8 text-center text-[10px] font-bold uppercase tracking-widest text-[#505060]">
+            <footer className="relative z-10 border-t border-white/5 bg-[#0a0a0f]/50 py-8 text-center text-[11px] font-bold uppercase tracking-widest text-[#505060]">
                 © 2026 Nexus OS. Todos os direitos reservados.
             </footer>
         </div>

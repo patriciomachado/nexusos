@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
+import { dateStringInZone, addDays } from '@/lib/tasks/dates'
 
 export async function POST(req: NextRequest) {
     const ctx = await getContext()
@@ -7,7 +8,7 @@ export async function POST(req: NextRequest) {
 
     const { db, companyId } = ctx
     const body = await req.json()
-    const { type, title, message, userId, relatedEntityType, relatedEntityId } = body
+    const { title, message, userId, relatedEntityType, relatedEntityId } = body
 
     const { data, error } = await db
         .from('notifications')
@@ -32,88 +33,132 @@ export async function GET(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
 
-    const { db, companyId } = ctx
+    const { db, companyId, dbUser } = ctx
     const { searchParams } = new URL(req.url)
     const generate = searchParams.get('generate') === 'true'
 
     if (generate) {
-        await generateNotifications(db, companyId)
+        try {
+            await generateNotifications(db, companyId)
+        } catch (error) {
+            console.error('Error generating notifications:', error)
+        }
     }
 
     const { data, error } = await db
         .from('notifications')
         .select('*')
         .eq('company_id', companyId)
+        .or(`user_id.is.null,user_id.eq.${dbUser.id}`)
         .order('created_at', { ascending: false })
         .limit(50)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ data, count: data?.length || 0 })
+    const unread = (data || []).filter(n => n.status !== 'read').length
+    return NextResponse.json({ data, count: data?.length || 0, unread })
 }
 
-async function generateNotifications(db: any, companyId: string) {
-    const now = new Date()
-    const today = now.toISOString().split('T')[0]
-    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+/** Marks one notification (`{ id }`) or all of them (`{ all: true }`) as read. */
+export async function PATCH(req: NextRequest) {
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
 
-    // 1. OS Atrasadas (+5, 10, 20, 30 dias)
-    const daysToCheck = [5, 10, 20, 30]
-    for (const days of daysToCheck) {
-        const targetDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-        
-        const { data: oldOS } = await db
-            .from('service_orders')
-            .select('id, order_number, title, created_at, status, technicians(id, name)')
-            .eq('company_id', companyId)
-            .in('status', ['aberta', 'agendada', 'em_andamento', 'aguardando_pecas'])
-            .gte('created_at', `${targetDate}T00:00:00.000Z`)
-            .lt('created_at', `${targetDate}T23:59:59.999Z`)
+    const { db, companyId, dbUser } = ctx
+    const body = await req.json().catch(() => ({}))
+    const now = new Date().toISOString()
 
-        if (oldOS && oldOS.length > 0) {
-            for (const os of oldOS) {
-                const existingNotif = await db
-                    .from('notifications')
-                    .select('id')
-                    .eq('company_id', companyId)
-                    .eq('related_entity_id', os.id)
-                    .like('title', `%${days} dias%`)
-                    .maybeSingle()
+    let query = db
+        .from('notifications')
+        .update({ status: 'read', read_at: now })
+        .eq('company_id', companyId)
+        .or(`user_id.is.null,user_id.eq.${dbUser.id}`)
 
-                if (!existingNotif) {
-                    const techName = os.technicians?.name || 'Não atribuído'
-                    await db.from('notifications').insert({
-                        company_id: companyId,
-                        type: 'push',
-                        title: `OS aberta há ${days} dias`,
-                        message: `A OS #${os.order_number} - ${os.title} está aberta há ${days} dias. Técnico: ${techName}`,
-                        status: 'pending',
-                        related_entity_type: 'service_order',
-                        related_entity_id: os.id
-                    })
-                }
-            }
-        }
+    if (body?.all === true) {
+        query = query.neq('status', 'read')
+    } else if (typeof body?.id === 'string') {
+        query = query.eq('id', body.id)
+    } else {
+        return NextResponse.json({ error: 'Informe id ou all' }, { status: 400 })
     }
 
-    // 2. Estoque Baixo
-    const { data: lowStockItems } = await db
+    const { error } = await query
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+}
+
+const OPEN_OS_STATUSES = ['aberta', 'agendada', 'em_andamento', 'aguardando_pecas']
+const OS_AGE_MILESTONES = [30, 20, 10, 5]
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function generateNotifications(db: any, companyId: string) {
+    const today = dateStringInZone()
+    const tomorrow = addDays(today, 1)
+    const startOfToday = `${today}T00:00:00-03:00`
+
+    // 1. OS abertas há 5, 10, 20 ou 30 dias (uma notificação por marco)
+    const oldestRelevant = new Date(Date.now() - 5 * 86_400_000).toISOString()
+    const { data: openOS } = await db
+        .from('service_orders')
+        .select('id, order_number, title, created_at, technicians(name)')
+        .eq('company_id', companyId)
+        .in('status', OPEN_OS_STATUSES)
+        .lte('created_at', oldestRelevant)
+        .limit(200)
+
+    if (openOS && openOS.length > 0) {
+        const ids = openOS.map((os: { id: string }) => os.id)
+        const { data: existing } = await db
+            .from('notifications')
+            .select('related_entity_id, title')
+            .eq('company_id', companyId)
+            .eq('related_entity_type', 'service_order')
+            .in('related_entity_id', ids)
+        const seen = new Set((existing || []).map((n: { related_entity_id: string; title: string }) => `${n.related_entity_id}|${n.title}`))
+
+        const rows = []
+        for (const os of openOS) {
+            const ageDays = Math.floor((Date.now() - new Date(os.created_at).getTime()) / 86_400_000)
+            const milestone = OS_AGE_MILESTONES.find(m => ageDays >= m)
+            if (!milestone) continue
+            const title = `OS aberta há ${milestone} dias`
+            if (seen.has(`${os.id}|${title}`)) continue
+            rows.push({
+                company_id: companyId,
+                type: 'push',
+                title,
+                message: `A OS #${os.order_number} - ${os.title} está aberta há ${ageDays} dias. Técnico: ${os.technicians?.name || 'não atribuído'}`,
+                status: 'pending',
+                related_entity_type: 'service_order',
+                related_entity_id: os.id,
+            })
+        }
+        if (rows.length > 0) await db.from('notifications').insert(rows)
+    }
+
+    // 2. Estoque baixo (comparação coluna × coluna feita aqui, o PostgREST não compara colunas)
+    const { data: stockItems } = await db
         .from('inventory_items')
         .select('id, name, quantity_in_stock, minimum_quantity')
         .eq('company_id', companyId)
         .eq('is_active', true)
-        .filter('quantity_in_stock', 'lte', 'minimum_quantity')
+        .gt('minimum_quantity', 0)
+        .limit(1000)
 
-    if (lowStockItems && lowStockItems.length > 0) {
-        const existingStockNotif = await db
+    const lowStockItems = (stockItems || []).filter(
+        (i: { quantity_in_stock: number; minimum_quantity: number }) => Number(i.quantity_in_stock) <= Number(i.minimum_quantity)
+    )
+
+    if (lowStockItems.length > 0) {
+        const { data: existingStockNotif } = await db
             .from('notifications')
             .select('id')
             .eq('company_id', companyId)
             .eq('related_entity_type', 'low_stock')
-            .gte('created_at', `${today}T00:00:00.000Z`)
-            .maybeSingle()
+            .gte('created_at', startOfToday)
+            .limit(1)
 
-        if (!existingStockNotif) {
-            const itemsList = lowStockItems.slice(0, 3).map((i: any) => i.name).join(', ')
+        if (!existingStockNotif?.length) {
+            const itemsList = lowStockItems.slice(0, 3).map((i: { name: string }) => i.name).join(', ')
             const more = lowStockItems.length > 3 ? ` e mais ${lowStockItems.length - 3}` : ''
             await db.from('notifications').insert({
                 company_id: companyId,
@@ -127,25 +172,25 @@ async function generateNotifications(db: any, companyId: string) {
         }
     }
 
-    // 3. Agendamentos de Amanhã
+    // 3. Agendamentos de amanhã
     const { data: tomorrowAppts } = await db
         .from('appointments')
-        .select('id, scheduled_date, service_type, customers(name)')
+        .select('id')
         .eq('company_id', companyId)
-        .gte('scheduled_date', `${tomorrow}T00:00:00.000Z`)
-        .lt('scheduled_date', `${tomorrow}T23:59:59.999Z`)
-        .eq('status', 'scheduled')
+        .gte('scheduled_date', `${tomorrow}T00:00:00-03:00`)
+        .lt('scheduled_date', `${addDays(tomorrow, 1)}T00:00:00-03:00`)
+        .in('status', ['scheduled', 'confirmed'])
 
     if (tomorrowAppts && tomorrowAppts.length > 0) {
-        const existingApptNotif = await db
+        const { data: existingApptNotif } = await db
             .from('notifications')
             .select('id')
             .eq('company_id', companyId)
             .eq('related_entity_type', 'appointments_tomorrow')
-            .gte('created_at', `${today}T00:00:00.000Z`)
-            .maybeSingle()
+            .gte('created_at', startOfToday)
+            .limit(1)
 
-        if (!existingApptNotif) {
+        if (!existingApptNotif?.length) {
             await db.from('notifications').insert({
                 company_id: companyId,
                 type: 'push',
@@ -158,34 +203,32 @@ async function generateNotifications(db: any, companyId: string) {
         }
     }
 
-    // 6. Recebimentos Pendentes (crediário vence em 5 dias)
-    const fiveDaysFromNow = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    
+    // 4. Recebimentos pendentes que vencem nos próximos 5 dias
     const { data: pendingPayments } = await db
         .from('payments')
-        .select('id, amount, due_date, customers(name)')
+        .select('id, amount')
         .eq('company_id', companyId)
         .eq('payment_status', 'pending')
         .gte('due_date', today)
-        .lte('due_date', fiveDaysFromNow)
+        .lte('due_date', addDays(today, 5))
 
     if (pendingPayments && pendingPayments.length > 0) {
-        const totalPending: number = pendingPayments.reduce((sum: number, p: any) => sum + (Number(p.amount) || 0), 0)
-        
-        const existingPayNotif = await db
+        const totalPending: number = pendingPayments.reduce((sum: number, p: { amount: number }) => sum + (Number(p.amount) || 0), 0)
+
+        const { data: existingPayNotif } = await db
             .from('notifications')
             .select('id')
             .eq('company_id', companyId)
             .eq('related_entity_type', 'pending_payments')
-            .gte('created_at', `${today}T00:00:00.000Z`)
-            .maybeSingle()
+            .gte('created_at', startOfToday)
+            .limit(1)
 
-        if (!existingPayNotif) {
+        if (!existingPayNotif?.length) {
             await db.from('notifications').insert({
                 company_id: companyId,
                 type: 'push',
                 title: `${pendingPayments.length} recebimento(s) pendente(s)`,
-                message: `R$ ${totalPending.toFixed(2)} em recebimentos próximos (próximos 5 dias)`,
+                message: `R$ ${totalPending.toFixed(2)} em recebimentos nos próximos 5 dias`,
                 status: 'pending',
                 related_entity_type: 'pending_payments',
                 related_entity_id: pendingPayments[0].id

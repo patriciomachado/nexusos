@@ -46,7 +46,11 @@ export async function POST(req: NextRequest) {
                 assessment_checklist: body.assessment_checklist || {},
                 offered_price: Number(body.offered_price),
                 status: body.status || 'avaliado',
-                notes: body.notes || null
+                notes: body.notes || null,
+                ...(Array.isArray(body.photos) ? { photos: body.photos.slice(0, 6) } : {}),
+                ...(body.reference_price !== undefined ? { reference_price: Number(body.reference_price) || null } : {}),
+                ...(body.suggested_price !== undefined ? { suggested_price: Number(body.suggested_price) || null } : {}),
+                ...(body.customer_id ? { customer_id: body.customer_id } : {}),
             })
             .select()
             .single()

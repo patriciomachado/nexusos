@@ -18,11 +18,19 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     const body = await req.json()
-    const { role, is_active } = body
+    const update: Record<string, unknown> = { updated_at: new Date().toISOString() }
+    if (body.role !== undefined) {
+        if (!['admin', 'manager', 'technician', 'cashier', 'attendant', 'talento'].includes(body.role)) return NextResponse.json({ error: 'Função inválida' }, { status: 400 })
+        if (body.role === 'admin' && currentUser.role !== 'admin') return NextResponse.json({ error: 'Só o dono pode dar acesso de dono.' }, { status: 403 })
+        update.role = body.role
+    }
+    if (body.is_active !== undefined) update.is_active = !!body.is_active
+    if (typeof body.full_name === 'string' && body.full_name.trim().length >= 2) update.full_name = body.full_name.trim().slice(0, 120)
+    if (body.phone !== undefined) update.phone = typeof body.phone === 'string' ? body.phone.slice(0, 20) || null : null
 
     const { data, error } = await db
         .from('users')
-        .update({ role, is_active, updated_at: new Date().toISOString() })
+        .update(update)
         .eq('id', id)
         .eq('company_id', companyId) // IDOR PROTECTION
         .select()

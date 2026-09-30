@@ -1,31 +1,36 @@
 import { auth } from '@clerk/nextjs/server'
 import { createAdminClient } from '@/lib/supabase'
+import { loadItemOptions } from '@/lib/os/options'
 import Header from '@/components/layout/Header'
-import NewOSClient from '@/components/forms/NewOSClient'
+import OSWizard from '@/components/os/form/OSWizard'
 
-export default async function NewServiceOrderPage() {
+export default async function NewServiceOrderPage({ searchParams }: { searchParams: Promise<{ quote_id?: string }> }) {
     const { userId } = await auth()
     const db = createAdminClient()
+    const { quote_id } = await searchParams
 
     const { data: user } = await db.from('users').select('company_id').eq('clerk_id', userId!).single()
     const companyId = user?.company_id
-    const { data: company } = await db.from('companies').select('warranty_terms').eq('id', companyId).single()
 
-    const [{ data: customers }, { data: technicians }, { data: inventoryItems }] = await Promise.all([
+    const [{ data: customers }, { data: technicians }, { inventory: inventoryItems, prices }, quote] = await Promise.all([
         db.from('customers').select('id, name').eq('company_id', companyId).eq('is_active', true).order('name'),
         db.from('technicians').select('id, name').eq('company_id', companyId).eq('is_active', true).order('name'),
-        db.from('inventory_items').select('id, name, selling_price, category').eq('company_id', companyId).eq('is_active', true).order('name'),
+        loadItemOptions(db, companyId),
+        quote_id
+            ? db.from('part_quotes').select('id, device_model, service').eq('id', quote_id).eq('company_id', companyId).is('service_order_id', null).maybeSingle().then(r => r.data)
+            : Promise.resolve(null),
     ])
 
     return (
-        <div className="animate-fade-in">
-            <Header title="Nova Ordem de Serviço" />
-            <NewOSClient
+        <div className="min-h-full flex flex-col bg-background">
+            <Header title="Nova OS" />
+            <OSWizard
                 customers={customers || []}
                 technicians={technicians || []}
+                inventory={inventoryItems || []}
+                prices={prices}
                 companyId={companyId}
-                inventoryItems={inventoryItems || []}
-                warrantyTerms={company?.warranty_terms}
+                initialQuote={quote ? { id: quote.id, deviceModel: quote.device_model, service: quote.service } : null}
             />
         </div>
     )

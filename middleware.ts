@@ -2,6 +2,7 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
 const isPublicRoute = createRouteMatcher([
     '/',
+    '/entrar(.*)',
     '/sign-in(.*)',
     '/sign-up(.*)',
     '/loja(.*)',
@@ -10,16 +11,22 @@ const isPublicRoute = createRouteMatcher([
     '/api/catalog/(.*)',
     '/track(.*)',
     '/api/track(.*)',
-    '/api/os(.*)',
+    '/orcamento(.*)',
+    '/lead(.*)',
+    '/api/lead(.*)',
     '/privacidade(.*)',
     '/termos(.*)',
+    // Scheduler calls; the route checks CRON_SECRET itself.
+    '/api/cron/(.*)',
+    // Meta's servers; the route checks the webhook signature itself.
+    '/api/whatsapp/webhook',
 ])
 
 export default clerkMiddleware(async (auth, request) => {
     if (!isPublicRoute(request)) {
         await auth.protect()
     }
-}, { clockSkewInMs: 300000 })
+}, { clockSkewInMs: 300000, signInUrl: '/entrar', signUpUrl: '/sign-up' })
 
 export const config = {
     matcher: [

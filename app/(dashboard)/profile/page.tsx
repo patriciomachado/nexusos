@@ -23,7 +23,7 @@ export default function ProfilePage() {
                             theme: resolvedTheme === 'dark' ? dark : undefined,
                             elements: {
                                 rootBox: "mx-auto w-full max-w-4xl",
-                                card: "w-full max-w-full shadow-2xl rounded-2xl border border-border bg-card",
+                                card: "w-full max-w-full rounded-2xl border border-border bg-card",
                             }
                         }}
                     />

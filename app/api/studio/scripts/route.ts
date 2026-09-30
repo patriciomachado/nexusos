@@ -1,107 +1,89 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
+import { companyHasFeature, planRequiredResponse } from '@/lib/plan-server'
 
-export async function GET(req: NextRequest) {
+/** Saved Studio posts: texts per channel, art settings and status (ideia → pronto → publicado). */
+
+const STATUSES = ['ideia', 'pronto', 'publicado']
+const SOURCES = ['os', 'device', 'seasonal', 'manual']
+const text = (v: unknown, max: number) => (typeof v === 'string' ? v.slice(0, max) : undefined)
+
+function fields(body: Record<string, unknown>) {
+    const out: Record<string, unknown> = {}
+    const t = text(body.title, 160); if (t !== undefined) out.title = t.trim() || 'Post'
+    const ig = text(body.instagram, 3000); if (ig !== undefined) out.instagram_caption = ig
+    const wa = text(body.whatsapp, 2000); if (wa !== undefined) out.whatsapp_text = wa
+    const gg = text(body.google, 2000); if (gg !== undefined) out.google_post = gg
+    const rt = text(body.roteiro, 4000); if (rt !== undefined) out.body_script = rt
+    if (typeof body.status === 'string' && STATUSES.includes(body.status)) out.status = body.status
+    if (body.scheduled_for === null || (typeof body.scheduled_for === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(body.scheduled_for))) out.scheduled_for = body.scheduled_for
+    if (body.art && typeof body.art === 'object' && JSON.stringify(body.art).length < 4000) out.art = body.art
+    return out
+}
+
+async function guard() {
     const ctx = await getContext()
-    if (!ctx) return unauthorizedResponse()
+    if (!ctx) return { error: unauthorizedResponse() }
+    if (!await companyHasFeature(ctx.db, ctx.companyId, 'studio')) return { error: planRequiredResponse('studio') }
+    return { ctx }
+}
 
-    const { db, companyId } = ctx
-    const { searchParams } = new URL(req.url)
-    const category = searchParams.get('category')
-
-    try {
-        let query = db
-            .from('studio_scripts')
-            .select('*')
-            .eq('company_id', companyId)
-            .order('created_at', { ascending: false })
-
-        if (category) {
-            query = query.eq('category', category)
-        }
-
-        const { data, error } = await query.limit(100)
-
-        if (error) {
-            console.error('Error fetching studio scripts:', error)
-            return NextResponse.json([])
-        }
-        return NextResponse.json(data || [])
-    } catch (err: any) {
-        console.error('Exception fetching studio scripts:', err)
-        return NextResponse.json([])
-    }
+export async function GET() {
+    const { ctx, error } = await guard()
+    if (!ctx) return error
+    const { data, error: dbError } = await ctx.db.from('studio_scripts').select('*')
+        .eq('company_id', ctx.companyId).order('created_at', { ascending: false }).limit(200)
+    if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
+    return NextResponse.json(data ?? [])
 }
 
 export async function POST(req: NextRequest) {
-    const ctx = await getContext()
-    if (!ctx) return unauthorizedResponse()
+    const { ctx, error } = await guard()
+    if (!ctx) return error
+    const body = await req.json().catch(() => ({})) as Record<string, unknown>
+    const sourceType = typeof body.source_type === 'string' && SOURCES.includes(body.source_type) ? body.source_type : 'manual'
+    const patch = fields(body)
+    const { data, error: dbError } = await ctx.db.from('studio_scripts').insert({
+        title: 'Post',
+        ...patch,
+        // First time a post is saved already "publicado": mark today as a publish day for the streak.
+        published_at: patch.status === 'publicado' ? new Date().toISOString() : null,
+        company_id: ctx.companyId,
+        user_id: ctx.dbUser.id,
+        source_type: sourceType,
+        source_id: text(body.source_id, 80) || null,
+        category: sourceType,
+    }).select().single()
+    if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
+    return NextResponse.json(data, { status: 201 })
+}
 
-    const { db, companyId, dbUser } = ctx
-    const body = await req.json()
-
-    if (!body.title || !body.hook_3s || !body.body_script) {
-        return NextResponse.json({ error: 'Título, Gancho e Roteiro são obrigatórios.' }, { status: 400 })
+export async function PATCH(req: NextRequest) {
+    const { ctx, error } = await guard()
+    if (!ctx) return error
+    const body = await req.json().catch(() => ({})) as Record<string, unknown>
+    if (typeof body.id !== 'string') return NextResponse.json({ error: 'ID é obrigatório' }, { status: 400 })
+    const patch = fields(body)
+    // Streak base: the day a post first becomes "publicado", not the (possibly later-edited) scheduled date.
+    if (patch.status === 'publicado') {
+        const { data: current } = await ctx.db.from('studio_scripts').select('published_at')
+            .eq('id', body.id).eq('company_id', ctx.companyId).maybeSingle()
+        if (current && !current.published_at) patch.published_at = new Date().toISOString()
     }
-
-    try {
-        const userIdVal = dbUser?.id || null
-
-        const { data, error } = await db
-            .from('studio_scripts')
-            .insert({
-                company_id: companyId,
-                user_id: userIdVal,
-                title: body.title,
-                category: body.category || 'Geral',
-                source_type: body.source_type || 'manual',
-                source_id: body.source_id || null,
-                hook_3s: body.hook_3s,
-                body_script: body.body_script,
-                cta_text: body.cta_text || '',
-                instagram_caption: body.instagram_caption || '',
-                whatsapp_text: body.whatsapp_text || '',
-                google_post: body.google_post || '',
-                banner_prompt: body.banner_prompt || null,
-                is_favorite: body.is_favorite || false
-            })
-            .select()
-            .single()
-
-        if (error) {
-            console.error('Error inserting studio script:', error)
-            return NextResponse.json({ 
-                error: 'Erro ao salvar no banco. ' + error.message, 
-                details: error 
-            }, { status: 500 })
-        }
-
-        return NextResponse.json(data, { status: 201 })
-    } catch (err: any) {
-        console.error('Exception inserting studio script:', err)
-        return NextResponse.json({ error: 'Erro interno ao salvar roteiro: ' + (err.message || 'Erro desconhecido') }, { status: 500 })
-    }
+    const { data, error: dbError } = await ctx.db.from('studio_scripts')
+        .update({ ...patch, updated_at: new Date().toISOString() })
+        .eq('id', body.id).eq('company_id', ctx.companyId).select().maybeSingle()
+    if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
+    if (!data) return NextResponse.json({ error: 'Post não encontrado' }, { status: 404 })
+    return NextResponse.json(data)
 }
 
 export async function DELETE(req: NextRequest) {
-    const ctx = await getContext()
-    if (!ctx) return unauthorizedResponse()
-
-    const { searchParams } = new URL(req.url)
-    const id = searchParams.get('id')
-
+    const { ctx, error } = await guard()
+    if (!ctx) return error
+    const id = new URL(req.url).searchParams.get('id')
     if (!id) return NextResponse.json({ error: 'ID é obrigatório' }, { status: 400 })
-
-    try {
-        const { error } = await ctx.db
-            .from('studio_scripts')
-            .delete()
-            .eq('id', id)
-            .eq('company_id', ctx.companyId)
-
-        if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-        return NextResponse.json({ success: true })
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 })
-    }
+    const { error: dbError } = await ctx.db.from('studio_scripts').delete().eq('id', id).eq('company_id', ctx.companyId)
+    if (dbError) return NextResponse.json({ error: dbError.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
 }

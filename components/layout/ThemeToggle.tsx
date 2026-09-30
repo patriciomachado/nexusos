@@ -1,52 +1,34 @@
 'use client'
 
 import * as React from 'react'
-import { Moon, Sun, Monitor } from 'lucide-react'
+import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { cn } from '@/lib/utils'
 
+/**
+ * The app follows the system appearance by default (dark-mode.md). This
+ * button is a single, quiet override for shared shop computers.
+ */
 export default function ThemeToggle() {
-    const { theme, setTheme } = useTheme()
+    const { resolvedTheme, setTheme } = useTheme()
     const [mounted, setMounted] = React.useState(false)
 
-    // Avoid hydration mismatch
     React.useEffect(() => {
         setMounted(true)
     }, [])
 
-    if (!mounted) return <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 animate-pulse" />
+    if (!mounted) return <div className="w-11 h-11" aria-hidden />
 
-    const themes = [
-        { id: 'light', icon: Sun, label: 'Luz' },
-        { id: 'dark', icon: Moon, label: 'Noite' },
-    ]
+    const isDark = resolvedTheme === 'dark'
+    const label = isDark ? 'Usar aparência clara' : 'Usar aparência escura'
 
     return (
-        <div className="flex items-center p-1 bg-muted/50 border border-border rounded-2xl gap-1" suppressHydrationWarning>
-            {themes.map((t) => {
-                const Icon = t.icon
-                const isActive = theme === t.id
-                return (
-                    <button
-                        key={t.id}
-                        onClick={() => setTheme(t.id)}
-                        title={t.label}
-                        className={cn(
-                            "p-2 rounded-xl transition-all duration-300 relative group",
-                            isActive
-                                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                                : "text-muted-foreground hover:text-foreground hover:bg-background"
-                        )}
-                    >
-                        <Icon className="w-4 h-4 relative z-10" />
-                        {!isActive && (
-                            <span className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-popover text-[10px] font-black text-popover-foreground rounded-md border border-border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl">
-                                {t.label}
-                            </span>
-                        )}
-                    </button>
-                )
-            })}
-        </div>
+        <button
+            onClick={() => setTheme(isDark ? 'light' : 'dark')}
+            aria-label={label}
+            title={label}
+            className="w-11 h-11 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/[0.05] active:bg-foreground/[0.08] transition-colors"
+        >
+            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        </button>
     )
 }

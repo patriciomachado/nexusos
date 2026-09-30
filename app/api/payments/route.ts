@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { paymentSchema } from '@/lib/validations/schemas'
+import { findOpenRegister } from '@/lib/cash/server'
 
 export async function GET(req: NextRequest) {
     const ctx = await getContext()
@@ -8,12 +9,16 @@ export async function GET(req: NextRequest) {
 
     const { db, companyId } = ctx
     
-    const { data, error, count } = await db
+    const list = (select: string) => db
         .from('payments')
-        .select('*, customers(name), service_orders(order_number, title, parts_cost), sales(total_cost)', { count: 'exact' })
+        .select(select, { count: 'exact' })
         .eq('company_id', companyId)
         .order('payment_date', { ascending: false })
         .limit(100)
+
+    let { data, error, count } = await list('*, customers(name), service_orders(order_number, title, parts_cost), sales(total_cost)')
+    // Databases without a payments → sales foreign key can't embed sales.
+    if (error?.code === 'PGRST200') ({ data, error, count } = await list('*, customers(name), service_orders(order_number, title, parts_cost)'))
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ data, count })
@@ -45,12 +50,7 @@ export async function POST(req: NextRequest) {
 
     // 1. If there's an open cash register, record a transaction there too
     if (validation.data.payment_status === 'completed') {
-        const { data: openRegister } = await db
-            .from('cash_registers')
-            .select('id')
-            .eq('company_id', companyId)
-            .eq('status', 'open')
-            .maybeSingle()
+        const openRegister = await findOpenRegister(db, companyId, dbUser.id)
 
         if (openRegister) {
             // Map payment method string to ID

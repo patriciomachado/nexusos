@@ -73,55 +73,47 @@ export default function BarcodeScannerModal({
 
         const startScanner = async () => {
             try {
-                // Get available cameras
-                const devices = await Html5Qrcode.getCameras()
-                if (devices && devices.length > 0) {
+                scanner = new Html5Qrcode(scannerContainerId, {
+                    verbose: false,
+                    formatsToSupport: [
+                        Html5QrcodeSupportedFormats.EAN_13,
+                        Html5QrcodeSupportedFormats.EAN_8,
+                        Html5QrcodeSupportedFormats.CODE_128,
+                        Html5QrcodeSupportedFormats.CODE_39,
+                        Html5QrcodeSupportedFormats.UPC_A,
+                        Html5QrcodeSupportedFormats.UPC_E,
+                        Html5QrcodeSupportedFormats.QR_CODE,
+                    ]
+                })
+                setHtml5Qrcode(scanner)
+
+                // Straight to the back camera: listing the cameras first asks
+                // for the camera a second time, and the installed iPhone app
+                // shows the permission prompt for each request.
+                await scanner.start(
+                    { facingMode: 'environment' },
+                    {
+                        fps: 15,
+                        qrbox: { width: 280, height: 160 },
+                        aspectRatio: 1.0,
+                    },
+                    (decodedText) => {
+                        handleSuccessfulScan(decodedText)
+                    },
+                    () => {
+                        // Frame scanning fail (normal when searching)
+                    }
+                )
+                setIsScanning(true)
+
+                // With the camera already allowed, listing them asks nothing.
+                const devices = await Html5Qrcode.getCameras().catch(() => [])
+                if (devices.length) {
                     setCameras(devices.map(d => ({ id: d.id, label: d.label || `Câmera ${d.id}` })))
-                    // Prefer back camera if available
-                    const backCamera = devices.find(d => 
-                        d.label.toLowerCase().includes('back') || 
-                        d.label.toLowerCase().includes('traseira') || 
-                        d.label.toLowerCase().includes('environment')
-                    ) || devices[0]
-
-                    const cameraId = backCamera.id
-                    setSelectedCameraId(cameraId)
-
-                    scanner = new Html5Qrcode(scannerContainerId, {
-                        verbose: false,
-                        formatsToSupport: [
-                            Html5QrcodeSupportedFormats.EAN_13,
-                            Html5QrcodeSupportedFormats.EAN_8,
-                            Html5QrcodeSupportedFormats.CODE_128,
-                            Html5QrcodeSupportedFormats.CODE_39,
-                            Html5QrcodeSupportedFormats.UPC_A,
-                            Html5QrcodeSupportedFormats.UPC_E,
-                            Html5QrcodeSupportedFormats.QR_CODE,
-                        ]
-                    })
-
-                    setHtml5Qrcode(scanner)
-
-                    await scanner.start(
-                        { facingMode: 'environment' },
-                        {
-                            fps: 15,
-                            qrbox: { width: 280, height: 160 },
-                            aspectRatio: 1.0,
-                        },
-                        (decodedText) => {
-                            handleSuccessfulScan(decodedText)
-                        },
-                        () => {
-                            // Frame scanning fail (normal when searching)
-                        }
-                    )
-                    setIsScanning(true)
-                } else {
-                    toast.error('Nenhuma câmera encontrada no dispositivo.')
-                    setShowManualInput(true)
+                    const back = devices.find(d => /back|traseira|environment/i.test(d.label)) ?? devices[0]
+                    setSelectedCameraId(back.id)
                 }
-            } catch (err: any) {
+            } catch (err) {
                 console.error('Camera access error:', err)
                 toast.error('Permissão de câmera negada ou indisponível.')
                 setShowManualInput(true)
@@ -187,7 +179,7 @@ export default function BarcodeScannerModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xl p-4 animate-in fade-in duration-300">
-            <div className="relative w-full max-w-lg bg-card/95 border border-border/50 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="relative w-full max-w-lg bg-card/95 border border-border/50 rounded-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 
                 {/* Header */}
                 <div className="p-4 sm:p-5 border-b border-border/40 flex items-center justify-between bg-muted/20">
@@ -197,7 +189,7 @@ export default function BarcodeScannerModal({
                         </div>
                         <div>
                             <h3 className="font-black text-foreground text-base tracking-tight">{title}</h3>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Aproxime o código da câmera</p>
+                            <p className="text-xs font-bold text-muted-foreground">Aproxime o código da câmera</p>
                         </div>
                     </div>
 
@@ -206,7 +198,7 @@ export default function BarcodeScannerModal({
                             type="button"
                             onClick={() => setSoundEnabled(!soundEnabled)}
                             className={cn(
-                                "p-2.5 rounded-xl border transition-all",
+                                "p-2.5 rounded-xl border transition",
                                 soundEnabled ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/40 border-transparent text-muted-foreground"
                             )}
                             title={soundEnabled ? "Som Ativado" : "Som Desativado"}
@@ -216,7 +208,7 @@ export default function BarcodeScannerModal({
                         <button
                             type="button"
                             onClick={handleClose}
-                            className="p-2.5 rounded-xl bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition-all"
+                            className="p-2.5 rounded-xl bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -230,7 +222,7 @@ export default function BarcodeScannerModal({
                     {/* Viewfinder Target Overlay */}
                     {isScanning && !showManualInput && (
                         <div className="absolute inset-0 pointer-events-none flex items-center justify-center p-6">
-                            <div className="relative w-[280px] h-[160px] border-2 border-primary/40 rounded-2xl shadow-[0_0_50px_rgba(59,130,246,0.3)] bg-primary/5">
+                            <div className="relative w-[280px] h-[160px] border-2 border-primary/40 rounded-2xl bg-primary/5">
                                 {/* Corners */}
                                 <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-xl" />
                                 <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-xl" />
@@ -238,7 +230,7 @@ export default function BarcodeScannerModal({
                                 <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-xl" />
 
                                 {/* Scanning Line Animation */}
-                                <div className="absolute inset-x-2 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse shadow-[0_0_12px_#3b82f6] top-1/2 -translate-y-1/2" />
+                                <div className="absolute inset-x-2 h-0.5 animate-pulse shadow-[0_0_12px_#3b82f6] top-1/2 -translate-y-1/2" />
                             </div>
                         </div>
                     )}
@@ -265,7 +257,7 @@ export default function BarcodeScannerModal({
                         <button
                             type="button"
                             onClick={() => setShowManualInput(!showManualInput)}
-                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/60 hover:bg-muted text-xs font-bold text-foreground transition-all ml-auto"
+                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-muted/60 hover:bg-muted text-xs font-bold text-foreground transition ml-auto"
                         >
                             <Keyboard className="w-4 h-4 text-primary" />
                             <span>{showManualInput ? 'Usar Câmera' : 'Digitar Código'}</span>
@@ -283,9 +275,9 @@ export default function BarcodeScannerModal({
                                 autoFocus
                             />
                             <button
-                                type="submit"
-                                className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs uppercase tracking-wider flex items-center gap-1 hover:bg-primary/90 transition-all"
-                            >
+ type="submit"
+ className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center gap-1 hover:bg-primary/90 transition"
+ >
                                 <Check className="w-4 h-4" />
                                 <span>OK</span>
                             </button>

@@ -1,3 +1,5 @@
+import { insertOrderItems } from '@/lib/os/items'
+import { syncServiceOrderStock } from '@/lib/parts/stock'
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { serviceOrderSchema, idSchema } from '@/lib/validations/schemas'
@@ -137,9 +139,8 @@ export async function PUT(req: NextRequest, { params }: Params) {
                 })
             }
 
-            if (itemsToInsert.length > 0) {
-                await db.from('service_order_items').insert(itemsToInsert)
-            }
+            const itemsError = await insertOrderItems(db, itemsToInsert)
+            if (itemsError) return NextResponse.json({ error: 'A OS foi salva, mas os itens não. Tente de novo.' }, { status: 500 })
         }
 
         // 3. Update the header parts_cost
@@ -149,6 +150,8 @@ export async function PUT(req: NextRequest, { params }: Params) {
             .eq('id', id)
             .eq('company_id', companyId)
     }
+
+    await syncServiceOrderStock(db, companyId, id, { userId: ctx.dbUser.id })
 
     return NextResponse.json(data)
 }
@@ -173,7 +176,8 @@ export async function DELETE(req: NextRequest, { params }: Params) {
             .eq('company_id', companyId)
             .single()
 
-        // 2. Apagar itens da OS
+        // 2. Devolver as peças ao estoque e apagar itens da OS
+        await syncServiceOrderStock(db, companyId, id, { deleted: true, userId: dbUser.id })
         await db.from('service_order_items').delete().eq('service_order_id', id)
         
         // 3. Apagar histórico e anexos (se existirem, para evitar erro de FK)

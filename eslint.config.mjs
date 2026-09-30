@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Separate Node service (WhatsApp by QR code), deployed outside Vercel.
+    "whatsapp-server/**",
   ]),
 ]);
 

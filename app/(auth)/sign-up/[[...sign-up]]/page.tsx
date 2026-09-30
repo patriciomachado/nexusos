@@ -1,15 +1,18 @@
+'use client'
+
+import Link from 'next/link'
 import { SignUp } from '@clerk/nextjs'
+import AuthShell, { useClerkAppearance } from '@/components/auth/AuthShell'
 
 export default function SignUpPage() {
+    const appearance = useClerkAppearance()
     return (
-        <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-                <div className="text-center mb-8">
-                    <h1 className="text-2xl font-bold text-white">Crie sua conta grátis</h1>
-                    <p className="text-white/60 mt-2">15 dias grátis · Sem cartão de crédito</p>
-                </div>
-                <SignUp />
-            </div>
-        </div>
+        <AuthShell
+            title="Crie sua conta"
+            subtitle="15 dias grátis · sem cartão de crédito"
+            footer={<>Já tem conta? <Link href="/entrar" className="text-primary font-medium">Entrar</Link></>}
+        >
+            <SignUp routing="path" path="/sign-up" signInUrl="/entrar" fallbackRedirectUrl="/dashboard" appearance={appearance} />
+        </AuthShell>
     )
 }

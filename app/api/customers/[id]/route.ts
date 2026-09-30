@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
-import { customerSchema, idSchema } from '@/lib/validations/schemas'
+import { customerUpdateSchema, idSchema } from '@/lib/validations/schemas'
 
 type P = { params: Promise<{ id: string }> }
 
@@ -38,7 +38,7 @@ export async function PUT(req: NextRequest, { params }: P) {
         return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
     }
 
-    const validation = customerSchema.partial().safeParse(body)
+    const validation = customerUpdateSchema.safeParse(body)
     if (!validation.success) {
         return NextResponse.json({ error: validation.error.format() }, { status: 400 })
     }

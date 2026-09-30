@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
+import { isManager } from '@/lib/cash/server'
 
 export async function GET(req: NextRequest) {
     const ctx = await getContext()
     if (!ctx) return unauthorizedResponse()
 
-    const { db, companyId } = ctx
+    const { db, companyId, dbUser, role } = ctx
     const { searchParams } = new URL(req.url)
     const status = searchParams.get('status')
+    const asList = searchParams.get('list') === '1'
 
     // List cash registers for the company
     let query = db
@@ -22,13 +24,15 @@ export async function GET(req: NextRequest) {
     if (status) {
         query = query.eq('status', status)
     }
+    // Operators see only their own registers.
+    if (!isManager(role)) query = query.eq('user_id', dbUser.id)
 
     const { data, error, count } = await query.limit(50)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
     // If status=open is requested, return just the object if it exists
-    if (status === 'open' && data && data.length > 0) {
+    if (status === 'open' && !asList && data && data.length > 0) {
         return NextResponse.json(data[0])
     }
 

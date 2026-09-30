@@ -74,6 +74,7 @@ interface PublicCatalogData {
 export function DynamicCatalogContent({ slug }: { slug: string }) {
     const [data, setData] = useState<PublicCatalogData | null>(null)
     const [loading, setLoading] = useState(true)
+    const [unavailable, setUnavailable] = useState(false)
 
     const [allDevices, setAllDevices] = useState<Device[]>([])
     const [activeTab, setActiveTab] = useState<'devices' | 'accessories'>('devices')
@@ -115,6 +116,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
         let remoteDevices: Device[] = []
         try {
             const res = await fetch(`/api/catalog/${slug}`)
+            if (res.status === 404) setUnavailable(true)
             if (res.ok) {
                 const catalogData = await res.json()
                 setData(catalogData)
@@ -138,6 +140,17 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
         } finally {
             setLoading(false)
         }
+    }
+
+    if (unavailable && !loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-50 text-neutral-900 p-6 text-center">
+                <div>
+                    <p className="text-lg font-semibold">Catálogo indisponível</p>
+                    <p className="text-sm text-neutral-500 mt-1">Este catálogo não está disponível no momento.</p>
+                </div>
+            </div>
+        )
     }
 
     if (loading) {
@@ -240,7 +253,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                     <div className="flex items-center gap-3">
                         {companyLogo ? (
                             <div className="w-11 h-11 rounded-2xl overflow-hidden border p-0.5 bg-black shadow-lg" style={{ borderColor: `${theme.primary}50` }}>
-                                <img src={companyLogo} alt={companyName} className="w-full h-full object-cover rounded-xl" />
+                                <img width={400} height={400} src={companyLogo} alt={companyName} className="w-full h-full object-cover rounded-xl" />
                             </div>
                         ) : (
                             <div className="w-11 h-11 rounded-2xl text-black font-black text-lg flex items-center justify-center shadow-lg" style={{ backgroundColor: theme.primary }}>
@@ -265,7 +278,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setViewMode(viewMode === '3d' ? '2d' : '3d')}
-                            className="px-3.5 py-2 rounded-2xl text-xs font-mono font-black border border-cyan-500/40 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 transition-all shadow-md flex items-center gap-1.5"
+                            className="px-3.5 py-2 rounded-2xl text-xs font-mono font-black border border-cyan-500/40 text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/20 transition shadow-md flex items-center gap-1.5"
                         >
                             <Zap className="w-3.5 h-3.5 fill-current" />
                             {viewMode === '3d' ? 'MODO 2D' : 'MODO 3D'}
@@ -273,10 +286,10 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
                         {companyPhone && (
                             <button
-                                onClick={() => openWhatsAppInterest('Atendimento Geral', 0)}
-                                className="px-4 py-2 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
-                                style={{ backgroundColor: theme.primary }}
-                            >
+ onClick={() => openWhatsAppInterest('Atendimento Geral', 0)}
+ className="px-4 py-2 text-black font-black rounded-2xl text-xs transition flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
+ style={{ backgroundColor: theme.primary }}
+ >
                                 <MessageSquare className="w-4 h-4 fill-current" />
                                 <span className="hidden sm:inline">Falar no</span> WhatsApp
                             </button>
@@ -309,11 +322,11 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
                     <div className="relative z-10 space-y-4">
                         <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1.5 border" style={{ backgroundColor: `${theme.primary}20`, borderColor: `${theme.primary}40`, color: theme.primary }}>
+                            <span className="text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1.5 border" style={{ backgroundColor: `${theme.primary}20`, borderColor: `${theme.primary}40`, color: theme.primary }}>
                                 <ShieldCheck className="w-3.5 h-3.5" />
                                 Catálogo Verificado • {companyName}
                             </span>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-300 bg-slate-800/80 px-3 py-1 rounded-full">
+                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-300 bg-slate-800/80 px-3 py-1 rounded-full">
                                 {warrantyText}
                             </span>
                         </div>
@@ -348,7 +361,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                     {/* GAMIFIED QUIZ CALLOUT BANNER */}
                     <div className="relative z-10 p-4 md:p-5 bg-gradient-to-r from-emerald-500/20 via-teal-500/10 to-transparent border border-emerald-500/30 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
                         <div className="space-y-1 text-center sm:text-left">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 flex items-center justify-center sm:justify-start gap-1">
+                            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400 flex items-center justify-center sm:justify-start gap-1">
                                 <Sparkles className="w-3.5 h-3.5 fill-current" />
                                 Assistente Virtual de Troca em 45 Segundos
                             </span>
@@ -357,10 +370,10 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                             </h3>
                         </div>
                         <button
-                            onClick={() => setIsQuizOpen(true)}
-                            className="w-full sm:w-auto px-5 py-3 text-black font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg hover:scale-105 active:scale-95 shrink-0 animate-pulse"
-                            style={{ backgroundColor: theme.primary }}
-                        >
+ onClick={() => setIsQuizOpen(true)}
+ className="w-full sm:w-auto px-5 py-3 text-black font-black rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg hover:scale-105 active:scale-95 shrink-0 animate-pulse"
+ style={{ backgroundColor: theme.primary }}
+ >
                             <Sparkles className="w-4 h-4 fill-current" />
                             Fazer Quiz de Troca 🎮
                         </button>
@@ -378,7 +391,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 placeholder="Buscar modelo de celular..."
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
-                                className="w-full border border-slate-700/80 rounded-2xl pl-10 pr-4 py-2.5 text-xs font-bold text-white outline-none transition-all placeholder:text-slate-500"
+                                className="w-full border border-slate-700/80 rounded-2xl pl-10 pr-4 py-2.5 text-xs font-bold text-white outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition placeholder:text-slate-500"
                                 style={{ backgroundColor: theme.background }}
                             />
                         </div>
@@ -388,7 +401,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                             <button
                                 onClick={() => setActiveTab('devices')}
                                 className={cn(
-                                    "flex-1 md:flex-initial px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
+                                    "flex-1 md:flex-initial px-5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2",
                                     activeTab === 'devices' ? "text-black font-black shadow-lg" : "text-slate-400 hover:text-white"
                                 )}
                                 style={activeTab === 'devices' ? { backgroundColor: theme.primary } : {}}
@@ -400,7 +413,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                             <button
                                 onClick={() => setActiveTab('accessories')}
                                 className={cn(
-                                    "flex-1 md:flex-initial px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2",
+                                    "flex-1 md:flex-initial px-5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2",
                                     activeTab === 'accessories' ? "text-black font-black shadow-lg" : "text-slate-400 hover:text-white"
                                 )}
                                 style={activeTab === 'accessories' ? { backgroundColor: theme.primary } : {}}
@@ -416,13 +429,13 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                         <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-800/80">
                             {/* Marcas (SOMENTE AS MARCAS CADASTRADAS NO ESTOQUE DA LOJA) */}
                             <div className="flex flex-wrap items-center gap-2">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 mr-1">Marca:</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 mr-1">Marca:</span>
                                 {availableBrands.map(brand => (
                                     <button
                                         key={brand}
                                         onClick={() => setSelectedBrand(brand)}
                                         className={cn(
-                                            "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border",
+                                            "px-3.5 py-1.5 rounded-xl text-xs font-bold transition border",
                                             selectedBrand === brand
                                                 ? "border-emerald-500 text-white"
                                                 : "border-slate-800 text-slate-400 hover:text-white"
@@ -436,11 +449,11 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
                             {/* Faixa de Preço */}
                             <div className="flex items-center gap-2 text-xs">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Preço:</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-500">Preço:</span>
                                 <select
                                     value={priceRange}
                                     onChange={e => setPriceRange(e.target.value as any)}
-                                    className="border border-slate-800 text-slate-300 font-bold text-xs rounded-xl px-3 py-1.5 outline-none cursor-pointer"
+                                    className="border border-slate-800 text-slate-300 font-bold text-xs rounded-xl px-3 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-primary/40 cursor-pointer"
                                     style={{ backgroundColor: theme.background }}
                                 >
                                     <option value="todos">Qualquer Preço</option>
@@ -470,13 +483,13 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 return (
                                     <div
                                         key={device.id}
-                                        className="border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl flex flex-col justify-between transition-all group hover:-translate-y-1 hover:shadow-2xl"
+                                        className="border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl flex flex-col justify-between transition group hover:-translate-y-1 hover:shadow-2xl"
                                         style={{ backgroundColor: theme.card_bg }}
                                     >
                                         <div className="space-y-3">
                                             {/* Photo Preview / Thumb Header */}
-                                            <div className="relative w-full h-48 bg-black/40 rounded-2xl overflow-hidden border border-slate-800/80 flex items-center justify-center transition-all">
-                                                <img
+                                            <div className="relative w-full h-48 bg-black/40 rounded-2xl overflow-hidden border border-slate-800/80 flex items-center justify-center transition">
+                                                <img width={400} height={400} loading="lazy"
                                                     src={mainPhoto}
                                                     alt={device.model}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -485,13 +498,13 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                                 {/* Top Badges */}
                                                 <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
                                                     <span 
-                                                        className="text-[9px] font-black uppercase tracking-widest bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 shadow-md"
+                                                        className="text-[11px] font-black uppercase tracking-widest bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 shadow-md"
                                                         style={{ color: theme.primary }}
                                                     >
                                                         {device.condition === 'novo_lacrado' ? 'NOVO LACRADO' : 'SEMINOVO PREMIUM'}
                                                     </span>
                                                     {device.storage && (
-                                                        <span className="text-[9px] font-mono font-bold text-white bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800">
+                                                        <span className="text-[11px] font-mono font-bold text-white bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-800">
                                                             {device.storage}
                                                         </span>
                                                     )}
@@ -504,7 +517,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                                             setSelectedDeviceModal(device)
                                                             setActivePhotoIndex(0)
                                                         }}
-                                                        className="absolute bottom-3 right-3 px-3 py-1.5 bg-black/80 hover:bg-black text-white rounded-xl text-[10px] font-bold backdrop-blur-md border border-slate-700 transition-all flex items-center gap-1.5 shadow-lg"
+                                                        className="absolute bottom-3 right-3 px-3 py-1.5 bg-black/80 hover:bg-black text-white rounded-xl text-[11px] font-bold backdrop-blur-md border border-slate-700 transition flex items-center gap-1.5 shadow-lg"
                                                     >
                                                         <Eye className="w-3.5 h-3.5" style={{ color: theme.primary }} />
                                                         {photos.length} {photos.length === 1 ? 'Foto' : 'Fotos'}
@@ -536,17 +549,17 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
                                             {/* Pricing Box */}
                                             <div className="p-4 bg-black/40 border border-slate-800 rounded-2xl space-y-1">
-                                                <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest">PREÇO À VISTA (PIX)</span>
+                                                <span className="text-[11px] font-black uppercase text-slate-500 tracking-widest">PREÇO À VISTA (PIX)</span>
                                                 <p className="text-2xl font-black tracking-tight" style={{ color: theme.primary }}>{formatCurrency(device.cash_price)}</p>
                                                 
                                                 {/* Automatic 12x and 24x installment calculation */}
                                                 <div className="pt-1.5 space-y-0.5 border-t border-slate-800/80 mt-1">
                                                     <p className="text-xs font-bold flex items-center justify-between" style={{ color: theme.accent }}>
-                                                        <span className="text-[10px] uppercase text-slate-400 font-semibold">12x no cartão:</span>
+                                                        <span className="text-[11px] uppercase text-slate-400 font-semibold">12x no cartão:</span>
                                                         <span className="font-mono font-black">12x de {formatCurrency((device.cash_price * (1 + rate12x / 100)) / 12)}</span>
                                                     </p>
                                                     <p className="text-xs font-bold flex items-center justify-between text-amber-300">
-                                                        <span className="text-[10px] uppercase text-slate-400 font-semibold">24x no cartão:</span>
+                                                        <span className="text-[11px] uppercase text-slate-400 font-semibold">24x no cartão:</span>
                                                         <span className="font-mono font-black">24x de {formatCurrency((device.cash_price * (1 + rate24x / 100)) / 24)}</span>
                                                     </p>
                                                 </div>
@@ -556,10 +569,10 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                         {/* Action Buttons */}
                                         <div className="space-y-2 pt-2">
                                             <button
-                                                onClick={() => openWhatsAppInterest(`${device.brand} ${device.model} ${device.storage || ''}`, device.cash_price, `Bateria ${device.battery_health}%`)}
-                                                className="w-full py-3 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95 hover:opacity-90"
-                                                style={{ backgroundColor: theme.primary }}
-                                            >
+ onClick={() => openWhatsAppInterest(`${device.brand} ${device.model} ${device.storage || ''}`, device.cash_price, `Bateria ${device.battery_health}%`)}
+ className="w-full py-3 text-black font-black rounded-2xl text-xs transition flex items-center justify-center gap-2 shadow-lg active:scale-95 hover:opacity-90"
+ style={{ backgroundColor: theme.primary }}
+ >
                                                 <MessageSquare className="w-4 h-4 fill-current" />
                                                 Comprar pelo WhatsApp
                                             </button>
@@ -569,7 +582,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                                     setSelectedTradeInDevice(device)
                                                     setIsTradeInModalOpen(true)
                                                 }}
-                                                className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border border-slate-800"
+                                                className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-800"
                                                 style={{ borderColor: `${theme.primary}40`, color: theme.primary }}
                                             >
                                                 <RefreshCw className="w-3.5 h-3.5" />
@@ -594,7 +607,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                             filteredAccessories.map(item => (
                                 <div key={item.id} className="bg-[#111622] border border-slate-800 rounded-2xl p-5 space-y-3 shadow-md flex flex-col justify-between">
                                     <div>
-                                        <span className="text-[9px] font-black uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-md">
+                                        <span className="text-[11px] font-black uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-md">
                                             {item.category || 'Acessório'}
                                         </span>
                                         <h3 className="font-bold text-sm text-white mt-2">{item.name}</h3>
@@ -603,7 +616,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
                                     <button
                                         onClick={() => openWhatsAppInterest(item.name, item.sale_price)}
-                                        className="w-full py-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-black rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+                                        className="w-full py-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-black rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5"
                                     >
                                         <MessageSquare className="w-3.5 h-3.5" />
                                         Quero Comprar
@@ -635,7 +648,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                     <p className="max-w-md mx-auto leading-relaxed">
                         Garantia e suporte técnico em {companyCity || 'nossa loja'}. Todos os direitos reservados.
                     </p>
-                    <p className="text-[10px] text-slate-600 font-mono">Desenvolvido com tecnologia Nexus OS</p>
+                    <p className="text-[11px] text-slate-600 font-mono">Desenvolvido com tecnologia Nexus OS</p>
                 </footer>
             </main>
             )}
@@ -651,7 +664,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                 </h3>
                                 <p className="text-xs text-slate-400 font-semibold">{selectedDeviceModal.storage} • {selectedDeviceModal.color}</p>
                             </div>
-                            <button onClick={() => setSelectedDeviceModal(null)} className="p-2 hover:bg-slate-800 rounded-xl transition-all">
+                            <button onClick={() => setSelectedDeviceModal(null)} className="p-2 hover:bg-slate-800 rounded-xl transition">
                                 <X className="w-5 h-5 text-slate-400" />
                             </button>
                         </div>
@@ -660,7 +673,7 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                         {Array.isArray(selectedDeviceModal.images) && selectedDeviceModal.images.length > 0 && (
                             <div className="space-y-3">
                                 <div className="w-full h-64 bg-black rounded-2xl overflow-hidden border border-slate-800">
-                                    <img
+                                    <img width={400} height={400}
                                         src={selectedDeviceModal.images[activePhotoIndex]}
                                         alt="Foto do Aparelho"
                                         className="w-full h-full object-contain"
@@ -674,11 +687,11 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
                                             key={idx}
                                             onClick={() => setActivePhotoIndex(idx)}
                                             className={cn(
-                                                "w-12 h-12 rounded-xl overflow-hidden border-2 transition-all",
+                                                "w-12 h-12 rounded-xl overflow-hidden border-2 transition",
                                                 activePhotoIndex === idx ? "border-emerald-400 scale-105" : "border-slate-800 opacity-60"
                                             )}
                                         >
-                                            <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
+                                            <img width={400} height={400} loading="lazy" src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
                                         </button>
                                     ))}
                                 </div>
@@ -687,16 +700,16 @@ export function DynamicCatalogContent({ slug }: { slug: string }) {
 
                         <div className="p-4 bg-[#0A0D14] border border-slate-800 rounded-2xl flex items-center justify-between">
                             <div>
-                                <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest">À VISTA NO PIX</span>
+                                <span className="text-[11px] font-black uppercase text-slate-500 tracking-widest">À VISTA NO PIX</span>
                                 <p className="text-2xl font-black text-emerald-400">{formatCurrency(selectedDeviceModal.cash_price)}</p>
                             </div>
                             <button
-                                onClick={() => {
-                                    openWhatsAppInterest(`${selectedDeviceModal.brand} ${selectedDeviceModal.model}`, selectedDeviceModal.cash_price)
-                                    setSelectedDeviceModal(null)
-                                }}
-                                className="px-5 py-2.5 bg-emerald-500 text-black font-black rounded-xl text-xs uppercase tracking-wider hover:bg-emerald-400 transition-all flex items-center gap-1.5"
-                            >
+ onClick={() => {
+ openWhatsAppInterest(`${selectedDeviceModal.brand} ${selectedDeviceModal.model}`, selectedDeviceModal.cash_price)
+ setSelectedDeviceModal(null)
+ }}
+ className="px-5 py-2.5 bg-emerald-500 text-black font-black rounded-xl text-xs hover:bg-emerald-400 transition flex items-center gap-1.5"
+ >
                                 <MessageSquare className="w-4 h-4 fill-current" />
                                 Enviar Mensagem
                             </button>

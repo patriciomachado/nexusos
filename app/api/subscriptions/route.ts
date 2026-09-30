@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
+import { getCompanyPlan } from '@/lib/plan-server'
+import { isPlanId, type PlanId } from '@/lib/plans'
 
 const TRIAL_DAYS = 15
-const MONTHLY_PRICE = 9900
-const MONTHLY_PRICE_ID = process.env.STRIPE_MONTHLY_PRICE_ID || 'price_monthly_99'
-const ANNUAL_PRICE = 9900 // R$ 99,00 em centavos
+
+/** Cakto product per plan. The old single product id stays as the Essencial one. */
+function caktoProduct(plan: PlanId) {
+    if (plan === 'pro') return process.env.CAKTO_PRODUCT_ID_PRO?.trim() || null
+    return process.env.CAKTO_PRODUCT_ID_ESSENCIAL?.trim() || process.env.CAKTO_PRODUCT_ID?.trim() || 'gs38yot_931352'
+}
 
 function getStripe() {
     const Stripe = require('stripe')
@@ -52,7 +57,8 @@ export async function GET(req: NextRequest) {
             subscription: {
                 ...newSub,
                 trial_days_remaining: TRIAL_DAYS,
-                is_trialing: true
+                is_trialing: true,
+                effective_plan: 'pro',
             }
         })
     }
@@ -67,7 +73,8 @@ export async function GET(req: NextRequest) {
         subscription: {
             ...subscription,
             trial_days_remaining: daysRemaining,
-            is_trialing: isTrialing
+            is_trialing: isTrialing,
+            effective_plan: await getCompanyPlan(db, companyId),
         }
     })
 }
@@ -78,7 +85,8 @@ export async function POST(req: NextRequest) {
 
     const { db, companyId, userId } = ctx
     const body = await req.json()
-    const { action, priceId } = body
+    const { action } = body
+    const plan: PlanId = isPlanId(body.plan) ? body.plan : 'pro'
 
     // Get current subscription
     const { data: subscription } = await db
@@ -106,8 +114,11 @@ export async function POST(req: NextRequest) {
 
             // Cakto checkout urls are simple links pointing to pay.cakto.com.br/product_id
             // We can prefill customer details in query parameters like name and email
-            const productId = process.env.CAKTO_PRODUCT_ID || 'gs38yot_931352'
-            const checkoutUrl = `https://pay.cakto.com.br/${productId}?email=${encodeURIComponent(company.email || '')}&name=${encodeURIComponent(company.name || '')}&metadata_company_id=${companyId}`
+            const productId = caktoProduct(plan)
+            if (!productId) {
+                return NextResponse.json({ error: 'O pagamento do plano Pro ainda não está disponível. Fale com o suporte.' }, { status: 503 })
+            }
+            const checkoutUrl = `https://pay.cakto.com.br/${productId}?email=${encodeURIComponent(company.email || '')}&name=${encodeURIComponent(company.name || '')}&metadata_company_id=${companyId}&metadata_plan=${plan}`
             
             return NextResponse.json({ url: checkoutUrl })
         }

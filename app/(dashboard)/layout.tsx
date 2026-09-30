@@ -1,7 +1,9 @@
 import Sidebar from '@/components/layout/Sidebar'
 import BottomNav from '@/components/layout/BottomNav'
-import ClientAIWrapper from '@/components/ai/client-wrapper'
+import AlicePanel from '@/components/alice/AlicePanel'
 import NotificationGenerator from '@/components/dashboard/NotificationGenerator'
+import ReminderWatcher from '@/components/tasks/ReminderWatcher'
+import QuickAddDialog from '@/components/tasks/QuickAddDialog'
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
@@ -81,7 +83,10 @@ async function ensureUserExists(clerkId: string, email: string, name: string): P
 }
 
 import { getSubscriptionStatus } from '@/lib/subscription'
+import { getCompanyPlan } from '@/lib/plan-server'
 import { SubscriptionStatusGuard } from '@/components/subscription/SubscriptionStatusGuard'
+import ModuleGuard from '@/components/layout/ModuleGuard'
+import { offModules } from '@/lib/modules'
 
 export default async function DashboardLayout({
     children,
@@ -90,7 +95,7 @@ export default async function DashboardLayout({
 }) {
     noStore()
     const clerkUser = await currentUser()
-    if (!clerkUser) redirect('/sign-in')
+    if (!clerkUser) redirect('/entrar')
 
     const userId = clerkUser.id
     const email = clerkUser.emailAddresses[0]?.emailAddress || ''
@@ -104,22 +109,45 @@ export default async function DashboardLayout({
     if (companyId) {
         subscription = await getSubscriptionStatus(companyId)
     }
+    const plan = await getCompanyPlan(createAdminClient(), companyId)
+    // Pages the owner hid for this role (Equipe → Permissões).
+    let hidden: string[] = []
+    // Modules the owner turned off for the whole store (Configurações → Módulos).
+    let off: string[] = []
+    if (companyId) {
+        const { data: co } = await createAdminClient().from('companies').select('settings').eq('id', companyId).single()
+        const perms = ((co?.settings ?? {}) as { permissions?: Record<string, string[]> }).permissions
+        hidden = Array.isArray(perms?.[role]) ? perms![role] : []
+        off = offModules(co?.settings)
+    }
 
     return (
-        <div className="flex h-screen bg-background overflow-hidden max-w-full w-full transition-colors duration-300" suppressHydrationWarning>
-            <Sidebar userRole={role} />
-            <main className="flex-1 overflow-y-auto overflow-x-hidden relative pb-0 w-full max-w-full" suppressHydrationWarning>
+        <>
+        {/* Pinned to the screen edges instead of 100dvh: in the installed iPhone app
+            the dynamic viewport height can get stuck short (e.g. after the keyboard
+            closes), which left a blank strip at the bottom. */}
+        <div className="app-frame fixed inset-x-0 bottom-0 ios-fill top-[env(safe-area-inset-top)] flex bg-background overflow-hidden max-w-full w-full transition-colors duration-300" suppressHydrationWarning>
+            <Sidebar userRole={role} hidden={hidden} off={off} />
+            <main className="flex-1 overflow-y-auto overflow-x-hidden relative pb-[env(safe-area-inset-bottom)] w-full max-w-full" suppressHydrationWarning>
                 <NotificationGenerator />
                 <SubscriptionStatusGuard 
+                    plan={plan}
                     isValid={subscription.isValid} 
                     isTrialing={subscription.isTrialing} 
                     daysRemaining={subscription.daysRemaining}
                 >
-                    {children}
+                    <ModuleGuard off={off} canEdit={role === 'admin' || role === 'owner'}>{children}</ModuleGuard>
                 </SubscriptionStatusGuard>
             </main>
-            <BottomNav userRole={role} />
-            {/* <ClientAIWrapper /> */}
+            <BottomNav userRole={role} hidden={hidden} off={off} />
+            {(role === 'admin' || role === 'owner') && (
+                <>
+                    <ReminderWatcher />
+                    <QuickAddDialog />
+                </>
+            )}
+            <AlicePanel />
         </div>
+        </>
     )
 }

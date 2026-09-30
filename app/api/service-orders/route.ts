@@ -1,3 +1,5 @@
+import { insertOrderItems } from '@/lib/os/items'
+import { syncServiceOrderStock } from '@/lib/parts/stock'
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { serviceOrderSchema } from '@/lib/validations/schemas'
@@ -116,10 +118,7 @@ export async function POST(req: NextRequest) {
             })
         }
 
-        const { error: itemsError } = await ctx.db.from('service_order_items').insert(itemsToInsert)
-        if (itemsError) {
-            console.error('Error inserting OS items:', itemsError)
-        }
+        await insertOrderItems(ctx.db, itemsToInsert)
 
         // Update the header parts_cost
         await ctx.db
@@ -128,6 +127,9 @@ export async function POST(req: NextRequest) {
             .eq('id', data.id)
             .eq('company_id', ctx.companyId)
     }
+
+    // Parts used on the order leave the stock.
+    await syncServiceOrderStock(ctx.db, ctx.companyId, data.id, { userId: ctx.dbUser.id })
 
     // Log history
     await ctx.db.from('service_order_history').insert({

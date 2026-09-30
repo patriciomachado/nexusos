@@ -65,7 +65,7 @@ export default function TrackingGallery({ devicesPhotos, attachments }: Props) {
     return (
         <>
             {/* Image Gallery */}
-            <div className="rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12121a] p-4 md:p-6 shadow-sm">
+            <div className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#12121a] p-4 md:p-6 shadow-sm">
                 <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
                         <Camera className="w-5 h-5" />
@@ -80,13 +80,13 @@ export default function TrackingGallery({ devicesPhotos, attachments }: Props) {
                             onClick={() => openLightbox(0)}
                         >
                             <div className="aspect-video rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 group-hover:border-indigo-500/30 transition-colors">
-                                <img 
+                                <img width={400} height={400} loading="lazy" 
                                     src={devicesPhotos.photo_front_url} 
                                     alt="Frontal" 
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                                 />
                             </div>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 block text-center">Frontal</span>
+                            <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400 block text-center">Frontal</span>
                         </div>
                     )}
                     {devicesPhotos?.photo_back_url && (
@@ -95,13 +95,13 @@ export default function TrackingGallery({ devicesPhotos, attachments }: Props) {
                             onClick={() => openLightbox(devicesPhotos?.photo_front_url ? 1 : 0)}
                         >
                             <div className="aspect-video rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 group-hover:border-indigo-500/30 transition-colors">
-                                <img 
+                                <img width={400} height={400} loading="lazy" 
                                     src={devicesPhotos.photo_back_url} 
                                     alt="Traseira" 
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                                 />
                             </div>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 block text-center">Traseira</span>
+                            <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400 block text-center">Traseira</span>
                         </div>
                     )}
                     {attachments?.map((attachment, idx) => {
@@ -114,14 +114,14 @@ export default function TrackingGallery({ devicesPhotos, attachments }: Props) {
                                 onClick={() => openLightbox(imageIndex)}
                             >
                                 <div className="aspect-video rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 group-hover:border-indigo-500/30 transition-colors">
-                                    <img 
+                                    <img width={400} height={400} loading="lazy" 
                                         src={attachment.file_url} 
                                         alt={attachment.file_name || 'Imagem'} 
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                                     />
                                 </div>
                                 {attachment.description && (
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 block text-center truncate">
+                                    <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400 block text-center truncate">
                                         {attachment.description}
                                     </span>
                                 )}
@@ -141,7 +141,7 @@ export default function TrackingGallery({ devicesPhotos, attachments }: Props) {
                 >
                     <button
                         onClick={closeLightbox}
-                        className="absolute top-4 right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all z-10"
+                        className="absolute top-4 right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition z-10"
                     >
                         <X className="w-6 h-6" />
                     </button>
@@ -168,13 +168,13 @@ export default function TrackingGallery({ devicesPhotos, attachments }: Props) {
                         <>
                             <button
                                 onClick={(e) => { e.stopPropagation(); prevImage() }}
-                                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all"
+                                className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition"
                             >
                                 <ChevronLeft className="w-8 h-8" />
                             </button>
                             <button
                                 onClick={(e) => { e.stopPropagation(); nextImage() }}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition"
                             >
                                 <ChevronRight className="w-8 h-8" />
                             </button>

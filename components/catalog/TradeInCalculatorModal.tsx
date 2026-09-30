@@ -75,7 +75,7 @@ export default function TradeInCalculatorModal({
                             <p className="text-xs text-slate-400">Calcule a diferença a pagar dando seu usado</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-xl transition-all">
+                    <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-xl transition">
                         <X className="w-5 h-5 text-slate-400" />
                     </button>
                 </div>
@@ -83,14 +83,14 @@ export default function TradeInCalculatorModal({
                 {/* Target Device Header */}
                 <div className="p-4 bg-[#0A0D14] border border-slate-800 rounded-2xl flex items-center gap-4">
                     <div className="w-16 h-16 bg-black rounded-xl overflow-hidden shrink-0 border border-slate-800 p-1">
-                        <img
+                        <img width={400} height={400}
                             src={Array.isArray(targetDevice.images) && targetDevice.images.length > 0 ? targetDevice.images[0] : 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=300&auto=format&fit=crop&q=80'}
                             alt={targetDevice.model}
                             className="w-full h-full object-contain"
                         />
                     </div>
                     <div>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md">
+                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md">
                             Aparelho Desejado
                         </span>
                         <h4 className="font-black text-sm text-white mt-1">{targetDevice.brand} {targetDevice.model} ({targetDevice.storage || 'Estoque'})</h4>
@@ -100,7 +100,7 @@ export default function TradeInCalculatorModal({
 
                 {/* Trade-In Selection Grid */}
                 <div className="space-y-3">
-                    <label className="text-xs font-black uppercase tracking-wider text-slate-300 block">
+                    <label className="text-[13px] font-medium text-slate-300 block">
                         Selecione o seu celular atual para dar como entrada:
                     </label>
 
@@ -112,18 +112,18 @@ export default function TradeInCalculatorModal({
                                     key={item.id}
                                     onClick={() => setSelectedTradeIn(item)}
                                     className={cn(
-                                        "p-2.5 rounded-xl border text-left flex items-center gap-2.5 transition-all",
+                                        "p-2.5 rounded-xl border text-left flex items-center gap-2.5 transition",
                                         isSel ? "bg-slate-800 border-emerald-400" : "bg-[#111622] border-slate-800/80 hover:border-slate-700"
                                     )}
                                     style={isSel ? { borderColor: themePrimary } : {}}
                                 >
                                     <div className="w-10 h-10 rounded-lg overflow-hidden bg-black shrink-0 border border-slate-800">
-                                        <img src={item.image_url} alt={item.model} className="w-full h-full object-cover" />
+                                        <img width={400} height={400} loading="lazy" src={item.image_url} alt={item.model} className="w-full h-full object-cover" />
                                     </div>
                                     <div className="min-w-0">
                                         <p className="font-bold text-xs text-white truncate">{item.model}</p>
-                                        <span className="text-[10px] text-slate-400">{item.storage}</span>
-                                        <p className="text-[10px] font-black text-emerald-400">Abate: {formatCurrency(item.estimated_value)}</p>
+                                        <span className="text-[11px] text-slate-400">{item.storage}</span>
+                                        <p className="text-[11px] font-black text-emerald-400">Abate: {formatCurrency(item.estimated_value)}</p>
                                     </div>
                                 </button>
                             )
@@ -144,18 +144,18 @@ export default function TradeInCalculatorModal({
 
                         <div className="pt-2 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                             <div>
-                                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">VOCÊ SÓ PAGA A DIFERENÇA (PIX):</span>
+                                <span className="text-[11px] font-black uppercase text-slate-400 tracking-widest">VOCÊ SÓ PAGA A DIFERENÇA (PIX):</span>
                                 <p className="text-2xl font-black text-emerald-400">{formatCurrency(remainingCash)}</p>
                             </div>
 
                             <div className="text-left sm:text-right space-y-0.5">
-                                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest block">PARCELADO NO CARTÃO:</span>
+                                <span className="text-[11px] font-black uppercase text-slate-400 tracking-widest block">PARCELADO NO CARTÃO:</span>
                                 <p className="text-xs font-bold text-slate-200">12x de {formatCurrency(remainingMonthly12x)}</p>
                                 <p className="text-xs font-bold text-amber-300">24x de {formatCurrency(remainingMonthly24x)}</p>
                             </div>
                         </div>
 
-                        <p className="text-[10px] text-slate-400 text-center font-medium pt-1 border-t border-slate-800/80">
+                        <p className="text-[11px] text-slate-400 text-center font-medium pt-1 border-t border-slate-800/80">
                             *Aviso: O valor do seu celular de entrada é uma estimativa aproximada sujeita à avaliação física presencial em nossa loja.
                         </p>
                     </div>
@@ -163,10 +163,10 @@ export default function TradeInCalculatorModal({
 
                 {/* Action Button */}
                 <button
-                    onClick={sendWhatsAppProposal}
-                    className="w-full py-3.5 text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl hover:scale-[1.02]"
-                    style={{ backgroundColor: themePrimary }}
-                >
+ onClick={sendWhatsAppProposal}
+ className="w-full py-3.5 text-black font-black rounded-2xl text-xs transition flex items-center justify-center gap-2 shadow-xl hover:scale-[1.02]"
+ style={{ backgroundColor: themePrimary }}
+ >
                     <MessageSquare className="w-4 h-4 fill-current" />
                     Enviar Proposta de Troca no WhatsApp 📲
                 </button>

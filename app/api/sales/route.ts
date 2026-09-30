@@ -1,6 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logMovement } from '@/lib/inventory/movements'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { saleSchema } from '@/lib/validations/schemas'
+import { findOpenRegister, isManager, isOwner, loadCashSettings, verifyPin } from '@/lib/cash/server'
+import { rateLimit } from '@/lib/security-rate-limit'
+
+/** Recent sales (for returns and receipts). ?days=7 (max 90), ?q= customer or #code. */
+export async function GET(req: NextRequest) {
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+    const params = new URL(req.url).searchParams
+    const days = Math.min(Math.max(Number(params.get('days')) || 7, 1), 90)
+    const since = new Date(Date.now() - days * 86_400_000).toISOString()
+    let query = ctx.db
+        .from('sales')
+        .select('id, created_at, total_amount, discount_amount, final_amount, status, notes, customer_id, customers(name, phone), users(full_name), sale_items(*)')
+        .eq('company_id', ctx.companyId)
+        .gte('created_at', since)
+        .order('created_at', { ascending: false })
+        .limit(200)
+    if (!isManager(ctx.role)) query = query.eq('user_id', ctx.dbUser.id)
+    const { data, error } = await query
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ data })
+}
 
 export async function POST(req: NextRequest) {
     const ctx = await getContext()
@@ -15,21 +38,15 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: validation.error.format() }, { status: 400 })
     }
 
-    const { items, ...saleData } = validation.data
+    const { items, payments: splitPayments, owner_pin: ownerPin, ...saleData } = validation.data
 
     // 2. Ensure cash register is open and belongs to the company
     let registerId = saleData.cash_register_id
 
-    const { data: activeRegister, error: registerError } = await db
-        .from('cash_registers')
-        .select('id')
-        .eq('company_id', companyId)
-        .eq('status', 'open')
-        .order('opened_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
+    // The seller's own register, else the store's open one.
+    const activeRegister = await findOpenRegister(db, companyId, dbUser.id)
 
-    if (registerError || !activeRegister) {
+    if (!activeRegister) {
         return NextResponse.json({ error: 'Nenhum caixa aberto encontrado para esta empresa.' }, { status: 400 })
     }
 
@@ -72,17 +89,96 @@ export async function POST(req: NextRequest) {
 
             stockUpdates.push({
                 id: item.inventory_item_id,
-                new_stock: Number(stockItem.quantity_in_stock) - Number(item.quantity)
+                new_stock: Number(stockItem.quantity_in_stock) - Number(item.quantity),
             })
         }
 
         const calculatedFinalAmount = Math.max(0, calculatedTotalAmount - (saleData.discount_amount || 0))
+
+        // Discounts above the store's limit need the owner's PIN (owners don't).
+        const discount = saleData.discount_amount || 0
+        if (discount > 0 && calculatedTotalAmount > 0 && !isOwner(ctx.role)) {
+            const { cash } = await loadCashSettings(db, companyId)
+            const pct = (discount / calculatedTotalAmount) * 100
+            if (cash.max_discount_pct > 0 && pct > cash.max_discount_pct + 0.001) {
+                if (!cash.pin_hash) return NextResponse.json({ error: `Desconto acima de ${cash.max_discount_pct}% só pelo dono.`, code: 'NEEDS_OWNER' }, { status: 403 })
+                if (ownerPin && !rateLimit('owner-pin', 5, 10 * 60_000, dbUser.id)) return NextResponse.json({ error: 'Muitas tentativas de senha. Espere alguns minutos.', code: 'NEEDS_PIN' }, { status: 429 })
+                if (!verifyPin(ownerPin ?? '', cash.pin_hash)) return NextResponse.json({ error: ownerPin ? 'Senha do dono incorreta.' : `Desconto acima de ${cash.max_discount_pct}% precisa da senha do dono.`, code: 'NEEDS_PIN' }, { status: 403 })
+            }
+        }
+
+        // 2.1 Resolve payments (single method, or split across several).
+        // Only cash can exceed what it covers; the excess is the change.
+        const round2 = (n: number) => Math.round(n * 100) / 100
+        const splits = splitPayments?.length
+            ? splitPayments
+            : saleData.payment_method_id
+                ? [{ payment_method_id: saleData.payment_method_id, amount: calculatedFinalAmount }]
+                : []
+        if (splits.length === 0) {
+            return NextResponse.json({ error: 'Selecione a forma de pagamento.' }, { status: 400 })
+        }
+
+        const methodIds = [...new Set(splits.map(p => p.payment_method_id))]
+        const { data: methods } = await db
+            .from('payment_methods')
+            .select('id, code, name')
+            .in('id', methodIds)
+        if (!methods || methods.length !== methodIds.length) {
+            return NextResponse.json({ error: 'Forma de pagamento inválida.' }, { status: 400 })
+        }
+        const methodById = new Map(methods.map(m => [m.id, m]))
+        const isCash = (id: string) => (methodById.get(id)?.code || '').toUpperCase() === 'CASH'
+
+        const nonCashTotal = round2(splits.filter(p => !isCash(p.payment_method_id)).reduce((sum, p) => sum + p.amount, 0))
+        const cashTotal = round2(splits.filter(p => isCash(p.payment_method_id)).reduce((sum, p) => sum + p.amount, 0))
+
+        if (nonCashTotal > calculatedFinalAmount + 0.009) {
+            return NextResponse.json({ error: 'O valor em cartão/PIX é maior que o total da venda.' }, { status: 400 })
+        }
+        const balance = round2(nonCashTotal + cashTotal - calculatedFinalAmount)
+        if (splitPayments?.length && balance < -0.009) {
+            return NextResponse.json({ error: `Faltam R$ ${(-balance).toFixed(2).replace('.', ',')} para completar o pagamento.` }, { status: 400 })
+        }
+        const change = Math.max(0, balance)
+
+        // Net amount per method (same method merged; change taken out of cash).
+        const installmentsByMethod = new Map<string, number>()
+        for (const p of splits) if ('installments' in p && p.installments && p.installments > 1) installmentsByMethod.set(p.payment_method_id, p.installments)
+        const netByMethod = new Map<string, number>()
+        for (const p of splits) netByMethod.set(p.payment_method_id, round2((netByMethod.get(p.payment_method_id) || 0) + p.amount))
+        let changeLeft = change
+        for (const [id, amount] of netByMethod) {
+            if (!isCash(id) || changeLeft <= 0) continue
+            const take = Math.min(amount, changeLeft)
+            netByMethod.set(id, round2(amount - take))
+            changeLeft = round2(changeLeft - take)
+        }
+        let paymentEntries = [...netByMethod].filter(([, amount]) => amount > 0.009)
+        if (paymentEntries.length === 0) paymentEntries = [[splits[0].payment_method_id, calculatedFinalAmount]]
+        paymentEntries.sort((a, b) => b[1] - a[1])
+        const primaryMethodId = paymentEntries[0][0]
+
+        // Crediário (fiado): not received yet, so it goes to "contas a receber"
+        // instead of the register, and needs the customer.
+        const isCredit = (id: string) => (methodById.get(id)?.code || '').toUpperCase() === 'INSTALLMENT'
+        if (paymentEntries.some(([id]) => isCredit(id)) && !saleData.customer_id) {
+            return NextResponse.json({ error: 'Para vender no crediário, escolha o cliente.' }, { status: 400 })
+        }
+        const cashEntries = paymentEntries.filter(([id]) => !isCredit(id))
+
+        const fmt = (n: number) => `R$ ${n.toFixed(2).replace('.', ',')}`
+        const paymentSummary = paymentEntries.length > 1 || change > 0
+            ? `Pagamento: ${paymentEntries.map(([id, amount]) => `${methodById.get(id)?.name} ${fmt(amount)}`).join(' + ')}${change > 0 ? ` · Recebido em dinheiro ${fmt(cashTotal)}, troco ${fmt(change)}` : ''}`
+            : null
 
         // 3. Create Sale
         const { data: sale, error: saleError } = await db
             .from('sales')
             .insert({
                 ...saleData,
+                payment_method_id: primaryMethodId,
+                notes: [saleData.notes, paymentSummary].filter(Boolean).join('\n') || null,
                 total_amount: calculatedTotalAmount,
                 final_amount: calculatedFinalAmount,
                 company_id: companyId,
@@ -121,6 +217,10 @@ export async function POST(req: NextRequest) {
                 })
                 .eq('id', updateData.id)
                 .eq('company_id', companyId)
+            await logMovement(db, {
+                companyId, itemId: updateData.id, quantity: -Number(insertData.quantity), balance: updateData.new_stock,
+                kind: 'venda', reason: `Venda ${sale.id.slice(0, 8)}`, unitCost: insertData.unit_cost, refId: sale.id, userId: dbUser.id,
+            })
         }
 
         // Update total cost on sale header
@@ -137,20 +237,23 @@ export async function POST(req: NextRequest) {
             .eq('code', 'PRODUCT_SALE')
             .single()
 
-        const { error: cashError } = await db
+        // One entry per payment method, so the register closes correctly by method.
+        const { error: cashError } = cashEntries.length === 0 ? { error: null } : await db
             .from('cash_transactions')
-            .insert({
+            .insert(cashEntries.map(([methodId, amount]) => ({
                 cash_register_id: registerId,
                 company_id: companyId,
                 type: 'entry',
-                amount: calculatedFinalAmount,
-                payment_method_id: saleData.payment_method_id,
+                amount,
+                payment_method_id: methodId,
                 transaction_type_id: transType?.id,
-                description: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
+                description: cashEntries.length > 1
+                    ? `Venda PDV - ID: ${sale.id.substring(0, 8)} (${methodById.get(methodId)?.name})`
+                    : `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
                 source_type: 'product_sale',
                 source_id: sale.id,
                 user_id: dbUser.id
-            })
+            })))
 
         if (cashError) throw cashError
 
@@ -164,7 +267,7 @@ export async function POST(req: NextRequest) {
                     company_id: companyId,
                     type: 'exit',
                     amount: costValue,
-                    payment_method_id: saleData.payment_method_id,
+                    payment_method_id: primaryMethodId,
                     description: `Custo Produtos - Venda ID: ${sale.id.substring(0, 8)}`,
                     source_type: 'product_sale',
                     source_id: sale.id,
@@ -174,12 +277,7 @@ export async function POST(req: NextRequest) {
             if (costError) console.error('Error creating cost transaction:', costError)
         }
 
-        // 6. Register Payment (Financial History)
-        const { data: pm } = await db
-            .from('payment_methods')
-            .select('code')
-            .eq('id', saleData.payment_method_id)
-            .single()
+        // 6. Register Payment (Financial History), one row per method
 
         const methodMap: Record<string, string> = {
             'CASH': 'dinheiro',
@@ -192,18 +290,20 @@ export async function POST(req: NextRequest) {
 
         const { error: paymentError } = await db
             .from('payments')
-            .insert({
+            .insert(paymentEntries.map(([methodId, amount]) => ({
                 company_id: companyId,
                 customer_id: saleData.customer_id || null,
-                amount: calculatedFinalAmount,
-                payment_method: methodMap[pm?.code || ''] || 'dinheiro',
-                payment_status: 'completed',
+                amount,
+                payment_method: methodMap[methodById.get(methodId)?.code || ''] || 'dinheiro',
+                payment_status: isCredit(methodId) ? 'pending' : 'completed',
                 payment_date: new Date().toISOString(),
+                due_date: isCredit(methodId) ? new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10) : null,
                 reference_id: sale.id,
                 sale_id: sale.id,
+                installments: installmentsByMethod.get(methodId) ?? 1,
                 notes: `Venda PDV - ID: ${sale.id.substring(0, 8)}`,
                 created_by: dbUser.id
-            })
+            })))
 
         if (paymentError) console.error('Error creating payment record:', paymentError)
 

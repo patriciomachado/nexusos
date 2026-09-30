@@ -6,22 +6,42 @@ export const idSchema = z.string().uuid('ID inválido')
 // Appointment Schema
 export const appointmentSchema = z.object({
   customer_id: z.string().uuid('Cliente inválido'),
-  technician_id: z.string().uuid('Técnico inválido'),
+  technician_id: z.string().uuid('Técnico inválido').nullable().optional(),
+  title: z.string().max(255).optional().nullable(),
   scheduled_date: z.string().datetime({ message: 'Data e hora inválidas' }),
-  notes: z.string().optional(),
-  status: z.enum(['scheduled', 'in_progress', 'completed', 'cancelled']).default('scheduled'),
-  service_order_id: z.string().uuid('Ordem de serviço inválida').optional()
+  scheduled_end_date: z.string().datetime({ message: 'Horário final inválido' }).optional().nullable(),
+  location_address: z.string().max(500).optional().nullable(),
+  notes: z.string().optional().nullable(),
+  status: z.enum(['scheduled', 'confirmed', 'in_progress', 'completed', 'cancelled']).default('scheduled'),
+  service_order_id: z.string().uuid('Ordem de serviço inválida').nullable().optional()
 })
 
 // Customer Schema
-export const customerSchema = z.object({
+const optionalText = z.string().max(500).optional().nullable()
+const customerFields = z.object({
   name: z.string().min(2, 'Nome muito curto'),
-  email: z.string().email('E-mail inválido').optional().or(z.literal('')),
-  phone: z.string().optional(),
-  address: z.string().optional(),
-  document: z.string().optional(),
-  is_active: z.boolean().default(true)
+  email: z.string().email('E-mail inválido').optional().nullable().or(z.literal('')),
+  phone: optionalText,
+  cpf_cnpj: optionalText,
+  address: optionalText,
+  city: optionalText,
+  state: optionalText,
+  zip_code: optionalText,
+  notes: z.string().max(4000).optional().nullable(),
+  birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inválida').optional().nullable().or(z.literal('')),
+  tags: z.array(z.string().min(1).max(30)).max(20).optional(),
+  is_active: z.boolean().optional(),
 })
+/** Empty e-mail / birth date become null (the columns are typed). */
+function cleanCustomer<T extends { email?: string | null; birth_date?: string | null }>({ birth_date, email, ...rest }: T) {
+  return {
+    ...rest,
+    ...(email !== undefined ? { email: email || null } : {}),
+    ...(birth_date !== undefined ? { birth_date: birth_date || null } : {}),
+  }
+}
+export const customerSchema = customerFields.transform(cleanCustomer)
+export const customerUpdateSchema = customerFields.partial().transform(cleanCustomer)
 
 // Inventory Item Schema
 export const inventoryItemSchema = z.object({
@@ -37,6 +57,8 @@ export const inventoryItemSchema = z.object({
   unit: z.string().default('un'),
   barcode: z.string().optional().nullable(),
   image_url: z.string().optional().nullable(),
+  supplier: z.string().max(120).optional().nullable(),
+  location: z.string().max(60).optional().nullable(),
   serial_number_required: z.boolean().optional().default(false),
   is_active: z.boolean().default(true)
 })
@@ -104,6 +126,14 @@ export const saleSchema = z.object({
   final_amount: z.number().min(0).optional(),
   payment_method_id: z.string().uuid('Método de pagamento inválido').optional().nullable(),
   notes: z.string().optional().nullable(),
+  /** Split payment: one entry per method. Cash may exceed what it covers (change). */
+  payments: z.array(z.object({
+    payment_method_id: z.string().uuid('Método de pagamento inválido'),
+    amount: z.number().positive('Valor do pagamento deve ser positivo').max(10_000_000),
+    installments: z.number().int().min(1).max(24).optional(),
+  })).min(1).max(5).optional(),
+  /** Owner's PIN, when the discount is above the store's limit. */
+  owner_pin: z.string().max(12).optional(),
   items: z.array(z.object({
     inventory_item_id: z.string().uuid('Item de estoque inválido'),
     item_name: z.string(),
@@ -163,9 +193,6 @@ export const companyUpdateSchema = z.object({
   auto_close_cash: z.boolean().optional(),
   settings: z.record(z.string(), z.any()).optional(),
   google_review_url: z.string().optional().nullable().or(z.literal('')),
-  alice_active: z.boolean().optional(),
-  alice_token: z.string().optional().nullable(),
-  alice_sync_url: z.string().optional().nullable(),
 })
 
 // Service Type Schema
@@ -173,6 +200,7 @@ export const serviceTypeSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   description: z.string().optional().nullable(),
   base_price: z.number().min(0).default(0),
+  estimated_time_minutes: z.number().int().min(0).max(10080).optional(),
   is_active: z.boolean().default(true).optional(),
 })
 
@@ -185,7 +213,10 @@ export const paymentMethodSchema = z.object({
 
 // Inventory Adjustment Schema
 export const inventoryAdjustSchema = z.object({
-  quantity: z.number().describe('Quantidade a ser adicionada ou removida'),
+  quantity: z.number().refine(n => n !== 0, 'Quantidade não pode ser zero').describe('Quantidade a ser adicionada ou removida'),
+  kind: z.enum(['entrada', 'saida', 'ajuste']).optional(),
+  reason: z.string().max(200).optional().nullable(),
+  unit_cost: z.number().min(0).optional().nullable(),
 })
 
 // OS Status Update Schema
