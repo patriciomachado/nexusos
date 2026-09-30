@@ -97,12 +97,8 @@ export default function AlertRow({ alert, today, onConvert, onSnooze, onDismiss 
                         <MenuItem icon={Clock} label="Adiar para amanhã" onClick={() => { setMenuOpen(false); onSnooze(alert, addDays(today, 1)) }} />
                         <MenuItem icon={Clock} label="Adiar para segunda" onClick={() => { setMenuOpen(false); onSnooze(alert, nextMonday) }} />
                         <MenuItem icon={Calendar} label="Virar tarefa para amanhã" onClick={() => { setMenuOpen(false); onConvert({ ...alert, date: addDays(today, 1) }) }} />
-                        {alert.dismissible && (
-                            <>
-                                <div className="my-1 h-px bg-border/70" />
-                                <MenuItem icon={CheckCircle2} label="Marcar como resolvido" onClick={() => { setMenuOpen(false); onDismiss(alert) }} />
-                            </>
-                        )}
+                        <div className="my-1 h-px bg-border/70" />
+                        <MenuItem icon={CheckCircle2} label="Marcar como resolvido" onClick={() => { setMenuOpen(false); onDismiss(alert) }} />
                     </div>
                 )}
             </div>
