@@ -10,7 +10,7 @@ interface NotificationState {
     markAsRead: (id: string) => Promise<void>
     markAllAsRead: () => Promise<void>
     addNotification: (notification: Partial<Notification>) => Promise<void>
-    clearAll: () => void
+    clearAll: () => Promise<void>
 }
 
 export const useNotificationStore = create<NotificationState>()((set, get) => ({
@@ -74,5 +74,15 @@ export const useNotificationStore = create<NotificationState>()((set, get) => ({
         })
     },
 
-    clearAll: () => set({ notifications: [], unreadCount: 0 })
+    clearAll: async () => {
+        const previous = get().notifications
+        set({ notifications: [], unreadCount: 0 })
+        try {
+            const res = await fetch('/api/notifications', { method: 'DELETE' })
+            if (!res.ok) throw new Error('Falha ao limpar notificações')
+        } catch (error) {
+            console.error('Error clearing notifications:', error)
+            set({ notifications: previous, unreadCount: previous.filter(n => n.status !== 'read').length })
+        }
+    },
 }))

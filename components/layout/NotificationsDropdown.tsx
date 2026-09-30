@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { MessageCircle, Bell, Inbox, ClipboardList, Package, Calendar, DollarSign, ListChecks } from 'lucide-react'
+import { MessageCircle, Bell, Inbox, ClipboardList, Package, Calendar, DollarSign, ListChecks, Trash2 } from 'lucide-react'
 import { useNotificationStore } from '@/store/notificationStore'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -26,7 +26,7 @@ const MotionDiv = motion.div as any
 
 export default function NotificationsDropdown() {
     const [isOpen, setIsOpen] = useState(false)
-    const { notifications, unreadCount, fetchNotifications, markAsRead, markAllAsRead, isLoading } = useNotificationStore()
+    const { notifications, unreadCount, fetchNotifications, markAsRead, markAllAsRead, clearAll, isLoading } = useNotificationStore()
     const dropdownRef = useRef<HTMLDivElement>(null)
     const router = useRouter()
 
@@ -88,16 +88,28 @@ export default function NotificationsDropdown() {
                         role="dialog"
                         aria-label="Notificações"
                     >
-                        <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+                        <div className="px-4 pt-4 pb-2 flex items-center justify-between gap-3">
                             <h3 className="type-headline text-foreground">Notificações</h3>
-                            {unreadCount > 0 && (
-                                <button
-                                    onClick={markAllAsRead}
-                                    className="text-[15px] text-primary hover:opacity-80 transition-opacity"
-                                >
-                                    Marcar todas como lidas
-                                </button>
-                            )}
+                            <div className="flex items-center gap-3 shrink-0">
+                                {unreadCount > 0 && (
+                                    <button
+                                        onClick={markAllAsRead}
+                                        className="text-[15px] text-primary hover:opacity-80 transition-opacity whitespace-nowrap"
+                                    >
+                                        Marcar todas como lidas
+                                    </button>
+                                )}
+                                {notifications.length > 0 && (
+                                    <button
+                                        onClick={clearAll}
+                                        aria-label="Limpar notificações"
+                                        title="Limpar notificações"
+                                        className="text-muted-foreground hover:text-red-600 transition-colors shrink-0"
+                                    >
+                                        <Trash2 className="w-[18px] h-[18px]" />
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         <div className="max-h-[420px] overflow-y-auto pb-2">

@@ -86,6 +86,28 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ ok: true })
 }
 
+/** Clears one notification (`?id=`) or every notification visible to this user (no query param). */
+export async function DELETE(req: NextRequest) {
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+
+    const { db, companyId, dbUser } = ctx
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id')
+
+    let query = db
+        .from('notifications')
+        .delete()
+        .eq('company_id', companyId)
+        .or(`user_id.is.null,user_id.eq.${dbUser.id}`)
+
+    if (id) query = query.eq('id', id)
+
+    const { error } = await query
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+}
+
 const OPEN_OS_STATUSES = ['aberta', 'agendada', 'em_andamento', 'aguardando_pecas']
 const OS_AGE_MILESTONES = [30, 20, 10, 5]
 
