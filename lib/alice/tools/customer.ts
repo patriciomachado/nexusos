@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { defineCustomer, ToolError, type AnyTool, type ToolContext } from './types'
-import { OS_STATUS_LABELS, brl, cleanSearch, formatDate, formatDateTime, todayInStore } from './helpers'
+import { OS_STATUS_LABELS, brl, cleanSearch, formatDate, formatDateTime } from './helpers'
 import { appUrl, ADMIN_ROLES } from '../config'
 import { formatWhatsApp } from '../phone'
 import { pushToCompany } from '@/lib/tasks/reminders'
@@ -103,30 +103,21 @@ const aparelhosAVenda = defineCustomer({
     },
 })
 
-/** Per chat per day, so a customer can't flood the store's task list. */
+/** Per chat per day, so a customer can't flood the store's notifications. */
 const MAX_REQUESTS_PER_DAY = 5
 
-/** Task + in-app notification for the store's admins about this conversation. */
-async function notifyStore(ctx: ToolContext, title: string, detail: string, priority: number) {
+/** Heads-up for the store's admins about this conversation (bell + push) — no task, staff act straight from the conversation itself. */
+async function notifyStore(ctx: ToolContext, title: string, detail: string) {
     const { count } = await ctx.db
-        .from('tasks')
+        .from('notifications')
         .select('id', { count: 'exact', head: true })
         .eq('company_id', ctx.companyId)
-        .like('source_key', `alice:${ctx.conversationId}:%`)
+        .eq('related_entity_type', 'alice_conversation')
+        .eq('related_entity_id', ctx.conversationId)
         .gte('created_at', new Date(Date.now() - 86_400_000).toISOString())
     if ((count ?? 0) >= MAX_REQUESTS_PER_DAY) return
     const who = ctx.customer?.name || formatWhatsApp(ctx.customer?.phone ?? '')
     const { data: admins } = await ctx.db.from('users').select('id').eq('company_id', ctx.companyId).in('role', ADMIN_ROLES).eq('is_active', true)
-    await ctx.db.from('tasks').insert({
-        company_id: ctx.companyId,
-        user_id: admins?.[0]?.id ?? null,
-        title: `${title} · ${who}`.slice(0, 300),
-        notes: `${detail}\n\nWhatsApp: ${formatWhatsApp(ctx.customer?.phone ?? '')}`,
-        priority,
-        do_date: todayInStore(),
-        source_key: `alice:${ctx.conversationId}:${Date.now()}`,
-        source_href: `/alice?conversa=${ctx.conversationId}`,
-    })
     if (admins?.length) {
         await ctx.db.from('notifications').insert(admins.map(a => ({
             company_id: ctx.companyId, user_id: a.id, type: 'push', status: 'pending',
@@ -183,7 +174,7 @@ const cotarPeca = defineCustomer({
             const mensagem_sugerida = buildQuoteMessage(deviceModel, servico, opcoesNum, link ?? '')
             return { encontrado: true, pode_informar_ao_cliente: true, opcoes, link, mensagem_sugerida, instrucao: 'Mande a mensagem_sugerida ao cliente quase como está (pode ajustar o tom, mas mantenha os valores e o link).' }
         }
-        await notifyStore(ctx, `Orçamento calculado: ${servico} · ${deviceModel}`, `${opcoes.map(o => `${o.tipo ? o.tipo + ': ' : ''}${o.valor}`).join(' / ')}${link ? ` — ${link}` : ''}`, 2)
+        await notifyStore(ctx, `Orçamento calculado: ${servico} · ${deviceModel}`, `${opcoes.map(o => `${o.tipo ? o.tipo + ': ' : ''}${o.valor}`).join(' / ')}${link ? ` — ${link}` : ''}`)
         return { encontrado: true, pode_informar_ao_cliente: false, instrucao: 'Não informe nenhum valor nem o link. Diga ao cliente que a loja já está com o orçamento calculado e vai confirmar e enviar em instantes.' }
     },
 })
@@ -195,7 +186,7 @@ const chamarAtendente = defineCustomer({
     schema: z.object({ motivo: z.string().min(3).max(500).describe('Resumo do que o cliente precisa') }),
     async run(ctx, { motivo }) {
         await ctx.db.from('alice_conversations').update({ mode: 'human' }).eq('id', ctx.conversationId).eq('company_id', ctx.companyId)
-        await notifyStore(ctx, 'Cliente pediu atendimento', motivo, 2)
+        await notifyStore(ctx, 'Cliente pediu atendimento', motivo)
         return { ok: true, instrucao: 'Avise o cliente, em uma frase, que um atendente da loja vai continuar a conversa em breve.' }
     },
 })
@@ -215,7 +206,7 @@ const registrarPedido = defineCustomer({
             await ctx.db.from('alice_conversations').update({ customer_name: i.nome_informado }).eq('id', ctx.conversationId)
             if (ctx.customer) ctx.customer.name = i.nome_informado
         }
-        await notifyStore(ctx, labels[i.tipo], i.descricao, i.tipo === 'orcamento' || i.tipo === 'agendamento' ? 2 : 3)
+        await notifyStore(ctx, labels[i.tipo], i.descricao)
         return { ok: true, instrucao: 'Confirme ao cliente que o pedido foi registrado e que a loja vai retornar.' }
     },
 })
