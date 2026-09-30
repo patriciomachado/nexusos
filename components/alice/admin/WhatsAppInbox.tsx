@@ -168,7 +168,7 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
             )}
             <div className="rounded-2xl bg-card border border-border/60 overflow-hidden grid md:grid-cols-[320px_1fr] h-[calc(100dvh-14rem-env(safe-area-inset-top))] min-h-[420px]">
                 {/* List */}
-                <div className={cn('border-r border-border/60 overflow-y-auto', selected && 'hidden md:block')}>
+                <div className={cn('border-r border-border/60 overflow-y-auto min-w-0', selected && 'hidden md:block')}>
                     {list === null ? (
                         <div className="p-6 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>
                     ) : list.length === 0 ? (
@@ -204,7 +204,7 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
                 </div>
 
                 {/* Chat */}
-                <div className={cn('flex flex-col min-h-0', !selected && 'hidden md:flex')}>
+                <div className={cn('flex flex-col min-h-0 min-w-0', !selected && 'hidden md:flex')}>
                     {!selected ? (
                         <div className="flex-1 flex items-center justify-center text-[15px] text-muted-foreground p-6 text-center">Escolha uma conversa</div>
                     ) : !conv ? (
@@ -221,22 +221,24 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
                                     </p>
                                 </div>
                                 {conv.mode === 'alice' ? (
-                                    <button type="button" onClick={() => setMode('human')} className="h-9 px-3 rounded-full bg-orange-500/12 text-orange-700 dark:text-orange-400 text-[14px] font-semibold flex items-center gap-1.5"><Hand className="w-4 h-4" /> Assumir</button>
+                                    <button type="button" onClick={() => setMode('human')} className="h-9 px-3 rounded-full bg-orange-500/12 text-orange-700 dark:text-orange-400 text-[14px] font-semibold flex items-center gap-1.5 shrink-0 whitespace-nowrap"><Hand className="w-4 h-4" /> Assumir</button>
                                 ) : (
-                                    <button type="button" onClick={() => setMode('alice')} className="h-9 px-3 rounded-full bg-primary/12 text-primary text-[14px] font-semibold flex items-center gap-1.5"><Sparkles className="w-4 h-4" /> Devolver à Alice</button>
+                                    <button type="button" onClick={() => setMode('alice')} className="h-9 px-3 rounded-full bg-primary/12 text-primary text-[14px] font-semibold flex items-center gap-1.5 shrink-0 whitespace-nowrap"><Sparkles className="w-4 h-4" /> Devolver à Alice</button>
                                 )}
-                                <ActionMenu
-                                    label="Mais opções"
-                                    items={[
-                                        { label: 'Renomear conversa', icon: <Pencil className="w-4 h-4" />, onSelect: openRename },
-                                        { label: 'Apagar conversa', icon: <Trash2 className="w-4 h-4" />, danger: true, onSelect: () => setPendingDeleteId(selected) },
-                                    ]}
-                                />
+                                <div className="shrink-0">
+                                    <ActionMenu
+                                        label="Mais opções"
+                                        items={[
+                                            { label: 'Renomear conversa', icon: <Pencil className="w-4 h-4" />, onSelect: openRename },
+                                            { label: 'Apagar conversa', icon: <Trash2 className="w-4 h-4" />, danger: true, onSelect: () => setPendingDeleteId(selected) },
+                                        ]}
+                                    />
+                                </div>
                             </div>
                             <p className={cn('px-4 py-1.5 text-[12px] border-b border-border/60', conv.mode === 'human' ? 'bg-orange-500/10 text-orange-700 dark:text-orange-400' : 'bg-primary/[0.06] text-primary')}>
                                 {conv.mode === 'human' ? 'Você está atendendo. A Alice não responde nesta conversa.' : 'A Alice está respondendo. Escrever aqui assume a conversa.'}
                             </p>
-                            <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-2 bg-foreground/[0.015]">
+                            <div ref={scrollRef} className="flex-1 min-w-0 overflow-y-auto px-4 py-4 space-y-2 bg-foreground/[0.015]">
                                 {detail.items.map(it => it.kind === 'action' ? null : <Bubble key={it.id} item={it} />)}
                             </div>
                             <div className="border-t border-border/60 p-2">
