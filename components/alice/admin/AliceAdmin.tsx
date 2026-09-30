@@ -15,7 +15,7 @@ export default function AliceAdmin() {
     const router = useRouter()
     const [data, setData] = useState<SettingsPayload | null>(null)
     const [error, setError] = useState<{ message: string; migration: boolean } | null>(null)
-    const [tab, setTab] = useState<Tab>(params.get('conversa') ? 'conversas' : (params.get('aba') as Tab) || 'config')
+    const [tab, setTab] = useState<Tab>(params.get('conversa') ? 'conversas' : (params.get('aba') as Tab) || 'conversas')
     const [unread, setUnread] = useState(0)
 
     const load = useCallback(async () => {
