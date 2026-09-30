@@ -25,7 +25,10 @@ type Item =
     | { kind: 'message'; id: string; role: 'user' | 'assistant' | 'staff' | 'event'; text: string; at: string }
     | { kind: 'action'; id: string; title: string; lines: string[]; status: string; at: string }
 
-const POLL_MS = 6000
+/** Sidebar list: who's talking, unread counts. Doesn't need to be instant. */
+const LIST_POLL_MS = 3000
+/** Open conversation: fast enough to feel live. */
+const DETAIL_POLL_MS = 1500
 
 function timeLabel(iso: string) {
     const d = new Date(iso)
@@ -66,22 +69,22 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
     }, [])
 
     useEffect(() => {
-         
+
         loadList()
-        const t = setInterval(() => {
-            if (document.visibilityState === 'visible') loadList()
-        }, POLL_MS)
-        return () => clearInterval(t)
+        const onVisible = () => { if (document.visibilityState === 'visible') loadList() }
+        const t = setInterval(onVisible, LIST_POLL_MS)
+        document.addEventListener('visibilitychange', onVisible)
+        return () => { clearInterval(t); document.removeEventListener('visibilitychange', onVisible) }
     }, [loadList])
 
     useEffect(() => {
         if (!selected) return
 
         loadDetail(selected, true)
-        const t = setInterval(() => {
-            if (document.visibilityState === 'visible') loadDetail(selected)
-        }, POLL_MS)
-        return () => clearInterval(t)
+        const onVisible = () => { if (document.visibilityState === 'visible') loadDetail(selected) }
+        const t = setInterval(onVisible, DETAIL_POLL_MS)
+        document.addEventListener('visibilitychange', onVisible)
+        return () => { clearInterval(t); document.removeEventListener('visibilitychange', onVisible) }
     }, [selected, loadDetail])
 
     // Deep-linked here again (e.g. another WhatsApp button, already on this tab): jump to that conversation.
