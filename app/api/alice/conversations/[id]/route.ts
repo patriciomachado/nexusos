@@ -3,10 +3,14 @@ import { z } from 'zod'
 import { getContext, unauthorizedResponse, forbiddenResponse } from '@/lib/security'
 import { canUseAlice, effectiveStatus, isAdminRole, loadSettings } from '@/lib/alice/config'
 import { formatWhatsApp } from '@/lib/alice/phone'
+import { findTrustedStaff } from '@/lib/alice/trusted'
 
 type Params = { params: Promise<{ id: string }> }
 
-/** App chats belong to their user; WhatsApp chats go to anyone Alice → Configurações allows (admins always). */
+/**
+ * App chats belong to their user; WhatsApp chats go to anyone Alice → Configurações allows (admins always) —
+ * except a trusted number's own chat with Alice (financial/supplier tools), which stays admin-only.
+ */
 async function load(id: string) {
     const ctx = await getContext()
     if (!ctx) return { response: unauthorizedResponse() }
@@ -24,6 +28,9 @@ async function load(id: string) {
     }
     if (conv.channel === 'app' && conv.user_id !== ctx.dbUser.id) {
         return { response: NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 }) }
+    }
+    if (conv.channel === 'whatsapp' && !isAdminRole(ctx.role) && conv.customer_phone && await findTrustedStaff(ctx.db, ctx.companyId, conv.customer_phone)) {
+        return { response: forbiddenResponse() }
     }
     return { ctx, conv }
 }

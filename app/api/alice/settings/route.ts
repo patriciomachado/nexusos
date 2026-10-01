@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { requireAliceAdmin, requireAliceUser } from '@/lib/alice/access'
-import { aliceConfigured, aliceModel, isAdminRole, loadSettings, monthlyUsage, publicSettings, STAFF_ROLES } from '@/lib/alice/config'
+import { requireAliceAdmin, migrationMissingResponse, missingTables } from '@/lib/alice/access'
+import { getContext, unauthorizedResponse, forbiddenResponse } from '@/lib/security'
+import { aliceConfigured, aliceModel, canUseAlice, isAdminRole, loadSettings, monthlyUsage, publicSettings, STAFF_ROLES } from '@/lib/alice/config'
 import { normalizeBusinessHours } from '@/lib/alice/hours'
 import { planRequiredResponse } from '@/lib/plan-server'
 import { qrServerConfigured } from '@/lib/alice/gateway'
@@ -10,14 +11,19 @@ import { webhookConfigured, describeNumber, WhatsAppError } from '@/lib/alice/wh
 import { appUrl } from '@/lib/alice/config'
 
 /**
- * Admins get the full config payload (tokens, environment, usage). A staff role the admin allowed
- * in "Quem pode usar" only gets what the WhatsApp inbox needs — never tokens or business settings.
+ * Admins get the full config payload (tokens, environment, usage) even on a plan without Alice,
+ * so they can see why and upgrade. A staff role the admin allowed in "Quem pode usar" only gets
+ * what the WhatsApp inbox needs — never tokens or business settings — and is plan-gated normally.
  */
 export async function GET() {
-    const access = await requireAliceUser()
-    if (access.response) return access.response
-    const { ctx, settings } = access
+    const ctx = await getContext()
+    if (!ctx) return unauthorizedResponse()
+    if (!ctx.companyId) return forbiddenResponse()
+    const { error } = await ctx.db.from('alice_settings').select('company_id').limit(1)
+    if (error && missingTables(error)) return migrationMissingResponse()
+    const settings = await loadSettings(ctx.db, ctx.companyId)
     if (!isAdminRole(ctx.role)) {
+        if (!canUseAlice(ctx.role, settings)) return forbiddenResponse()
         return NextResponse.json({ isAdmin: false, settings: { whatsapp_enabled: settings.whatsapp_enabled } })
     }
     return NextResponse.json({
