@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAliceAdmin, requireAliceUser } from '@/lib/alice/access'
+import { requireAliceUser } from '@/lib/alice/access'
 import { formatWhatsApp } from '@/lib/alice/phone'
 
 /**
  * ?channel=app       the caller's own conversations with Alice
- * ?channel=whatsapp  customer chats (admin only)
+ * ?channel=whatsapp  customer chats (admins always; other roles per Alice → Configurações → "Quem pode usar")
  */
 export async function GET(req: NextRequest) {
     const channel = req.nextUrl.searchParams.get('channel') === 'whatsapp' ? 'whatsapp' : 'app'
-    const access = channel === 'whatsapp' ? await requireAliceAdmin() : await requireAliceUser()
+    const access = await requireAliceUser()
     if (access.response) return access.response
     const { ctx } = access
 

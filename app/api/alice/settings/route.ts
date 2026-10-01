@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { requireAliceAdmin } from '@/lib/alice/access'
-import { aliceConfigured, aliceModel, loadSettings, monthlyUsage, publicSettings, STAFF_ROLES } from '@/lib/alice/config'
+import { requireAliceAdmin, requireAliceUser } from '@/lib/alice/access'
+import { aliceConfigured, aliceModel, isAdminRole, loadSettings, monthlyUsage, publicSettings, STAFF_ROLES } from '@/lib/alice/config'
 import { normalizeBusinessHours } from '@/lib/alice/hours'
 import { planRequiredResponse } from '@/lib/plan-server'
 import { qrServerConfigured } from '@/lib/alice/gateway'
@@ -9,11 +9,19 @@ import { transcriptionConfigured } from '@/lib/alice/transcribe'
 import { webhookConfigured, describeNumber, WhatsAppError } from '@/lib/alice/whatsapp'
 import { appUrl } from '@/lib/alice/config'
 
+/**
+ * Admins get the full config payload (tokens, environment, usage). A staff role the admin allowed
+ * in "Quem pode usar" only gets what the WhatsApp inbox needs — never tokens or business settings.
+ */
 export async function GET() {
-    const access = await requireAliceAdmin()
+    const access = await requireAliceUser()
     if (access.response) return access.response
     const { ctx, settings } = access
+    if (!isAdminRole(ctx.role)) {
+        return NextResponse.json({ isAdmin: false, settings: { whatsapp_enabled: settings.whatsapp_enabled } })
+    }
     return NextResponse.json({
+        isAdmin: true,
         settings: publicSettings(settings),
         usage: await monthlyUsage(ctx.db, ctx.companyId),
         environment: {
