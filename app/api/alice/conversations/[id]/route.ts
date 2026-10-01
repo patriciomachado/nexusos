@@ -24,7 +24,8 @@ async function load(id: string) {
     if (!conv) return { response: NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 }) }
     const settings = await loadSettings(ctx.db, ctx.companyId)
     if (!canUseAlice(ctx.role, settings)) {
-        return { response: conv.channel === 'app' ? NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 }) : forbiddenResponse() }
+        // Same 404 for both channels — a distinct 403 would confirm a guessed id exists.
+        return { response: NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 }) }
     }
     if (conv.channel === 'app' && conv.user_id !== ctx.dbUser.id) {
         return { response: NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 }) }
