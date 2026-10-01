@@ -71,7 +71,7 @@ export default function AliceAdmin() {
     if (!data.isAdmin) {
         return (
             <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-10 max-w-6xl mx-auto">
-                <WhatsAppInbox enabled={data.settings.whatsapp_enabled} initialId={params.get('conversa')} onUnread={setUnread} />
+                <WhatsAppInbox enabled={data.settings.whatsapp_enabled} initialId={params.get('conversa')} onUnread={setUnread} isAdmin={false} />
             </div>
         )
     }

@@ -38,7 +38,7 @@ function timeLabel(iso: string) {
         : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
 }
 
-export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }: { enabled: boolean; initialId: string | null; onUnread: (n: number) => void; onSetup?: () => void }) {
+export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, isAdmin = true }: { enabled: boolean; initialId: string | null; onUnread: (n: number) => void; onSetup?: () => void; isAdmin?: boolean }) {
     const [list, setList] = useState<Conversation[] | null>(null)
     const [selected, setSelected] = useState<string | null>(initialId)
     const [detail, setDetail] = useState<{ conversation: Conversation & { title?: string }; items: Item[] } | null>(null)
@@ -196,7 +196,7 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
                                             </span>
                                         </span>
                                     </button>
-                                    <button type="button" onClick={() => setPendingDeleteId(c.id)} aria-label={`Apagar conversa com ${name(c)}`} className="w-9 h-9 mr-2 shrink-0 rounded-full flex items-center justify-center text-muted-foreground hover:bg-foreground/[0.06] hover:text-red-600 dark:hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
+                                    {isAdmin && <button type="button" onClick={() => setPendingDeleteId(c.id)} aria-label={`Apagar conversa com ${name(c)}`} className="w-9 h-9 mr-2 shrink-0 rounded-full flex items-center justify-center text-muted-foreground hover:bg-foreground/[0.06] hover:text-red-600 dark:hover:text-red-400"><Trash2 className="w-4 h-4" /></button>}
                                 </li>
                             ))}
                         </ul>
@@ -230,7 +230,7 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
                                         label="Mais opções"
                                         items={[
                                             { label: 'Renomear conversa', icon: <Pencil className="w-4 h-4" />, onSelect: openRename },
-                                            { label: 'Apagar conversa', icon: <Trash2 className="w-4 h-4" />, danger: true, onSelect: () => setPendingDeleteId(selected) },
+                                            ...(isAdmin ? [{ label: 'Apagar conversa', icon: <Trash2 className="w-4 h-4" />, danger: true, onSelect: () => setPendingDeleteId(selected) }] : []),
                                         ]}
                                     />
                                 </div>
