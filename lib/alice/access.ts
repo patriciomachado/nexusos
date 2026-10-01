@@ -7,7 +7,7 @@ import { canUseAlice, isAdminRole, loadSettings, type AliceSettings } from './co
 type Ctx = NonNullable<Awaited<ReturnType<typeof getContext>>>
 type Result = { ctx: Ctx; settings: AliceSettings; response?: undefined } | { ctx?: undefined; settings?: undefined; response: NextResponse }
 
-function missingTables(error: unknown) {
+export function missingTables(error: unknown) {
     const e = error as { code?: string; message?: string } | null
     return e?.code === '42P01' || e?.code === 'PGRST205' || /alice_\w+/.test(e?.message ?? '') && /does not exist|Could not find the table/i.test(e?.message ?? '')
 }

@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAliceAdmin, requireAliceUser } from '@/lib/alice/access'
-import { formatWhatsApp } from '@/lib/alice/phone'
+import { requireAliceUser } from '@/lib/alice/access'
+import { isAdminRole } from '@/lib/alice/config'
+import { formatWhatsApp, samePhone } from '@/lib/alice/phone'
 
 /**
  * ?channel=app       the caller's own conversations with Alice
- * ?channel=whatsapp  customer chats (admin only)
+ * ?channel=whatsapp  customer chats (admins always; other roles per Alice → Configurações → "Quem pode usar").
+ *                    A trusted number's own chat with Alice (financial/supplier tools) stays admin-only.
  */
 export async function GET(req: NextRequest) {
     const channel = req.nextUrl.searchParams.get('channel') === 'whatsapp' ? 'whatsapp' : 'app'
-    const access = channel === 'whatsapp' ? await requireAliceAdmin() : await requireAliceUser()
+    const access = await requireAliceUser()
     if (access.response) return access.response
     const { ctx } = access
 
@@ -23,8 +25,15 @@ export async function GET(req: NextRequest) {
     const { data, error } = await q
     if (error) return NextResponse.json({ error: 'Não foi possível carregar as conversas.' }, { status: 500 })
 
+    let rows = data ?? []
+    if (channel === 'whatsapp' && !isAdminRole(ctx.role)) {
+        const { data: trusted } = await ctx.db.from('alice_trusted_numbers').select('phone').eq('company_id', ctx.companyId)
+        const trustedPhones = (trusted ?? []).map(t => t.phone)
+        rows = rows.filter(c => !trustedPhones.some(tp => samePhone(tp, c.customer_phone)))
+    }
+
     // Last line of each chat for the list.
-    const ids = (data ?? []).map(c => c.id)
+    const ids = rows.map(c => c.id)
     const previews = new Map<string, { text: string; role: string }>()
     if (ids.length) {
         const { data: msgs } = await ctx.db
@@ -39,7 +48,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({
-        conversations: (data ?? []).map(c => ({
+        conversations: rows.map(c => ({
             ...c,
             phone_label: c.customer_phone ? formatWhatsApp(c.customer_phone) : null,
             preview: previews.get(c.id) ?? null,

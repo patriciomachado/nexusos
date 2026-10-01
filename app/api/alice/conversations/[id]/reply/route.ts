@@ -1,16 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { requireAliceAdmin } from '@/lib/alice/access'
+import { requireAliceUser } from '@/lib/alice/access'
+import { isAdminRole } from '@/lib/alice/config'
 import { sendStaffReply } from '@/lib/alice/inbound'
+import { isTrustedNumber } from '@/lib/alice/trusted'
 import { WhatsAppError } from '@/lib/alice/whatsapp'
 
 type Params = { params: Promise<{ id: string }> }
 
 const bodySchema = z.object({ text: z.string().trim().min(1).max(4000) })
 
-/** A person answers the customer on WhatsApp from the Alice page; the chat becomes theirs. */
+/**
+ * A person answers the customer on WhatsApp from the Alice page; the chat becomes theirs.
+ * A trusted number's own chat with Alice stays admin-only, same as reading it.
+ */
 export async function POST(req: NextRequest, { params }: Params) {
-    const access = await requireAliceAdmin()
+    const access = await requireAliceUser()
     if (access.response) return access.response
     const { ctx, settings } = access
     const { id } = await params
@@ -25,6 +30,9 @@ export async function POST(req: NextRequest, { params }: Params) {
         .eq('channel', 'whatsapp')
         .maybeSingle()
     if (!conv?.customer_phone) return NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 })
+    if (!isAdminRole(ctx.role) && await isTrustedNumber(ctx.db, ctx.companyId, conv.customer_phone)) {
+        return NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 })
+    }
 
     try {
         await sendStaffReply(ctx.db, settings, { id: conv.id, customer_phone: conv.customer_phone }, ctx.dbUser.id, parsed.data.text)

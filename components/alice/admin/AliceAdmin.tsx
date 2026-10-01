@@ -9,11 +9,14 @@ import ActivityView from './ActivityView'
 import { Loader2, Database } from 'lucide-react'
 
 type Tab = 'conversas' | 'config' | 'atividade'
+/** What a staff role without admin access gets: just enough for the WhatsApp inbox. */
+type StaffPayload = { isAdmin: false; settings: { whatsapp_enabled: boolean } }
+type Payload = SettingsPayload | StaffPayload
 
 export default function AliceAdmin() {
     const params = useSearchParams()
     const router = useRouter()
-    const [data, setData] = useState<SettingsPayload | null>(null)
+    const [data, setData] = useState<Payload | null>(null)
     const [error, setError] = useState<{ message: string; migration: boolean } | null>(null)
     const [tab, setTab] = useState<Tab>(params.get('conversa') ? 'conversas' : (params.get('aba') as Tab) || 'conversas')
     const [unread, setUnread] = useState(0)
@@ -63,6 +66,15 @@ export default function AliceAdmin() {
         )
     }
     if (!data) return <div className="p-10 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
+
+    // Staff allowed into Alice but not an admin: just the WhatsApp inbox, no config or activity log.
+    if (!data.isAdmin) {
+        return (
+            <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-10 max-w-6xl mx-auto">
+                <WhatsAppInbox enabled={data.settings.whatsapp_enabled} initialId={params.get('conversa')} onUnread={setUnread} isAdmin={false} />
+            </div>
+        )
+    }
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-10 max-w-6xl mx-auto space-y-5">

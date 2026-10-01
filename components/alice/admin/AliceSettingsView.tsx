@@ -11,6 +11,7 @@ import AutomationSettings from './AutomationSettings'
 import Segmented from '@/components/ui/Segmented'
 
 export interface SettingsPayload {
+    isAdmin: true
     settings: {
         enabled: boolean
         staff_roles: string[]
@@ -115,7 +116,7 @@ export default function AliceSettingsView({ data, onSaved, onReload }: { data: S
                 </div>
                 {settings.enabled && (
                     <div className="border-t border-border/60 px-5 py-4 space-y-2">
-                        <p className="text-[13px] text-muted-foreground">Quem pode usar (clientes, OS, agenda, estoque e aparelhos; sem financeiro e sem configurações):</p>
+                        <p className="text-[13px] text-muted-foreground">Quem pode usar (clientes, OS, agenda, estoque, aparelhos e as conversas de WhatsApp dos clientes; sem financeiro e sem configurações):</p>
                         <div className="flex flex-wrap gap-2">
                             {ROLE_OPTIONS.map(r => {
                                 const on = settings.staff_roles.includes(r.value)

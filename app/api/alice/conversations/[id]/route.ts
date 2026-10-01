@@ -3,10 +3,14 @@ import { z } from 'zod'
 import { getContext, unauthorizedResponse, forbiddenResponse } from '@/lib/security'
 import { canUseAlice, effectiveStatus, isAdminRole, loadSettings } from '@/lib/alice/config'
 import { formatWhatsApp } from '@/lib/alice/phone'
+import { isTrustedNumber } from '@/lib/alice/trusted'
 
 type Params = { params: Promise<{ id: string }> }
 
-/** App chats belong to their user; WhatsApp chats are visible to admins. */
+/**
+ * App chats belong to their user; WhatsApp chats go to anyone Alice → Configurações allows (admins always) —
+ * except a trusted number's own chat with Alice (financial/supplier tools), which stays admin-only.
+ */
 async function load(id: string) {
     const ctx = await getContext()
     if (!ctx) return { response: unauthorizedResponse() }
@@ -18,11 +22,17 @@ async function load(id: string) {
         .eq('company_id', ctx.companyId)
         .maybeSingle()
     if (!conv) return { response: NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 }) }
-    if (conv.channel === 'app') {
-        const settings = await loadSettings(ctx.db, ctx.companyId)
-        if (conv.user_id !== ctx.dbUser.id || !canUseAlice(ctx.role, settings)) return { response: NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 }) }
-    } else if (!isAdminRole(ctx.role)) {
-        return { response: forbiddenResponse() }
+    const settings = await loadSettings(ctx.db, ctx.companyId)
+    if (!canUseAlice(ctx.role, settings)) {
+        // Same 404 for both channels — a distinct 403 would confirm a guessed id exists.
+        return { response: NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 }) }
+    }
+    if (conv.channel === 'app' && conv.user_id !== ctx.dbUser.id) {
+        return { response: NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 }) }
+    }
+    if (conv.channel === 'whatsapp' && !isAdminRole(ctx.role) && await isTrustedNumber(ctx.db, ctx.companyId, conv.customer_phone)) {
+        // Same shape as "not found" — a distinct 403 would tell staff this id is a trusted-number chat.
+        return { response: NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 }) }
     }
     return { ctx, conv }
 }
@@ -93,11 +103,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return NextResponse.json({ mode: parsed.data.mode ?? conv.mode, title: parsed.data.title ?? (conv.channel === 'app' ? conv.title : conv.customer_name) })
 }
 
-/** Delete a conversation: mine (app) or, for admins, a WhatsApp chat's history. */
+/** Delete a conversation: mine (app) or, for admins only, a WhatsApp chat's history — staff can read and reply but not erase it. */
 export async function DELETE(_req: NextRequest, { params }: Params) {
     const { id } = await params
     const r = await load(id)
     if (r.response) return r.response
+    if (r.conv.channel === 'whatsapp' && !isAdminRole(r.ctx.role)) return forbiddenResponse()
     await r.ctx.db.from('alice_conversations').delete().eq('id', id).eq('company_id', r.ctx.companyId)
     return NextResponse.json({ ok: true })
 }

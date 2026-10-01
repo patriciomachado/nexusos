@@ -16,13 +16,13 @@ function rawLink(phone: string | null | undefined, text?: string) {
 }
 
 /**
- * Opens a WhatsApp conversation: through the app's own chat when the number is connected
- * via the official API, falling back to a wa.me link (new tab) exactly like before otherwise.
+ * Opens a WhatsApp conversation: through the app's own chat when the store's WhatsApp is connected,
+ * falling back to a wa.me link (new tab) exactly like before otherwise.
  */
 export function useOpenWhatsApp() {
     const router = useRouter()
 
-    return useCallback(async ({ phone, text }: OpenArgs) => {
+    return useCallback(async ({ phone, text, customerId, customerName }: OpenArgs) => {
         if (!phone) {
             window.open(rawLink(phone, text), '_blank')
             return
@@ -31,7 +31,7 @@ export function useOpenWhatsApp() {
             const res = await fetch('/api/alice/conversations/open', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone }),
+                body: JSON.stringify({ phone, customerId: customerId || undefined, customerName: customerName || undefined }),
             })
             if (res.ok) {
                 const data = await res.json()

@@ -38,7 +38,7 @@ function timeLabel(iso: string) {
         : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
 }
 
-export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }: { enabled: boolean; initialId: string | null; onUnread: (n: number) => void; onSetup: () => void }) {
+export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, isAdmin = true }: { enabled: boolean; initialId: string | null; onUnread: (n: number) => void; onSetup?: () => void; isAdmin?: boolean }) {
     const [list, setList] = useState<Conversation[] | null>(null)
     const [selected, setSelected] = useState<string | null>(initialId)
     const [detail, setDetail] = useState<{ conversation: Conversation & { title?: string }; items: Item[] } | null>(null)
@@ -163,7 +163,7 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
                 <div className="rounded-2xl bg-orange-500/10 border border-orange-500/20 px-4 py-3 flex items-center gap-3">
                     <MessageCircle className="w-5 h-5 text-orange-600 dark:text-orange-400 shrink-0" />
                     <p className="text-[14px] flex-1">O atendimento pelo WhatsApp está desligado. As conversas antigas continuam aqui.</p>
-                    <button type="button" onClick={onSetup} className="text-[14px] font-semibold text-primary shrink-0">Configurar</button>
+                    {onSetup && <button type="button" onClick={onSetup} className="text-[14px] font-semibold text-primary shrink-0">Configurar</button>}
                 </div>
             )}
             <div className="rounded-2xl bg-card border border-border/60 overflow-hidden grid md:grid-cols-[320px_1fr] h-[calc(100dvh-14rem-env(safe-area-inset-top))] min-h-[420px]">
@@ -196,7 +196,7 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
                                             </span>
                                         </span>
                                     </button>
-                                    <button type="button" onClick={() => setPendingDeleteId(c.id)} aria-label={`Apagar conversa com ${name(c)}`} className="w-9 h-9 mr-2 shrink-0 rounded-full flex items-center justify-center text-muted-foreground hover:bg-foreground/[0.06] hover:text-red-600 dark:hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
+                                    {isAdmin && <button type="button" onClick={() => setPendingDeleteId(c.id)} aria-label={`Apagar conversa com ${name(c)}`} className="w-9 h-9 mr-2 shrink-0 rounded-full flex items-center justify-center text-muted-foreground hover:bg-foreground/[0.06] hover:text-red-600 dark:hover:text-red-400"><Trash2 className="w-4 h-4" /></button>}
                                 </li>
                             ))}
                         </ul>
@@ -230,7 +230,7 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
                                         label="Mais opções"
                                         items={[
                                             { label: 'Renomear conversa', icon: <Pencil className="w-4 h-4" />, onSelect: openRename },
-                                            { label: 'Apagar conversa', icon: <Trash2 className="w-4 h-4" />, danger: true, onSelect: () => setPendingDeleteId(selected) },
+                                            ...(isAdmin ? [{ label: 'Apagar conversa', icon: <Trash2 className="w-4 h-4" />, danger: true, onSelect: () => setPendingDeleteId(selected) }] : []),
                                         ]}
                                     />
                                 </div>
@@ -241,18 +241,17 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup }:
                             <div ref={scrollRef} className="flex-1 min-w-0 overflow-y-auto px-4 py-4 space-y-2 bg-foreground/[0.015]">
                                 {detail.items.map(it => it.kind === 'action' ? null : <Bubble key={it.id} item={it} />)}
                             </div>
-                            <div className="border-t border-border/60 p-2">
-                                {conv.window_open ? (
-                                    <form onSubmit={e => { e.preventDefault(); send() }} className="flex items-end gap-2">
-                                        <textarea value={reply} onChange={e => setReply(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send() } }}
-                                            rows={1} placeholder="Responder como a loja…" aria-label="Resposta" className="flex-1 max-h-32 resize-none rounded-[20px] bg-foreground/[0.05] px-4 py-2.5 text-[16px] focus:outline-none focus:ring-2 focus:ring-primary/40 field-sizing-content" />
-                                        <button type="submit" disabled={!reply.trim() || sending} aria-label="Enviar" className="w-10 h-10 mb-0.5 rounded-full bg-green-500 text-white flex items-center justify-center disabled:opacity-40">
-                                            {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUp className="w-5 h-5" />}
-                                        </button>
-                                    </form>
-                                ) : (
-                                    <p className="text-[13px] text-muted-foreground px-2 py-2 flex items-center gap-1.5"><Clock className="w-4 h-4" /> Passaram mais de 24h da última mensagem do cliente. Pelas regras do WhatsApp, só dá para responder quando ele escrever de novo.</p>
+                            <div className="border-t border-border/60 p-2 space-y-1.5">
+                                {!conv.window_open && (
+                                    <p className="text-[12px] text-muted-foreground px-2 flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 shrink-0" /> {detail.items.length ? 'Mais de 24h desde a última mensagem do cliente.' : 'Este cliente ainda não escreveu pelo WhatsApp.'} Pelas regras do WhatsApp, o envio pode ser recusado sem uma mensagem de modelo aprovada — pode tentar mesmo assim.</p>
                                 )}
+                                <form onSubmit={e => { e.preventDefault(); send() }} className="flex items-end gap-2">
+                                    <textarea value={reply} onChange={e => setReply(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send() } }}
+                                        rows={1} placeholder="Responder como a loja…" aria-label="Resposta" className="flex-1 max-h-32 resize-none rounded-[20px] bg-foreground/[0.05] px-4 py-2.5 text-[16px] focus:outline-none focus:ring-2 focus:ring-primary/40 field-sizing-content" />
+                                    <button type="submit" disabled={!reply.trim() || sending} aria-label="Enviar" className="w-10 h-10 mb-0.5 rounded-full bg-green-500 text-white flex items-center justify-center disabled:opacity-40">
+                                        {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUp className="w-5 h-5" />}
+                                    </button>
+                                </form>
                             </div>
                         </>
                     )}
