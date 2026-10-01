@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { requireAliceUser } from '@/lib/alice/access'
 import { isAdminRole } from '@/lib/alice/config'
 import { sendStaffReply } from '@/lib/alice/inbound'
-import { findTrustedStaff } from '@/lib/alice/trusted'
+import { isTrustedNumber } from '@/lib/alice/trusted'
 import { WhatsAppError } from '@/lib/alice/whatsapp'
 
 type Params = { params: Promise<{ id: string }> }
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest, { params }: Params) {
         .eq('channel', 'whatsapp')
         .maybeSingle()
     if (!conv?.customer_phone) return NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 })
-    if (!isAdminRole(ctx.role) && await findTrustedStaff(ctx.db, ctx.companyId, conv.customer_phone)) {
+    if (!isAdminRole(ctx.role) && await isTrustedNumber(ctx.db, ctx.companyId, conv.customer_phone)) {
         return NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 })
     }
 

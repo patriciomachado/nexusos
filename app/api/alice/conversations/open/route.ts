@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireAliceUser } from '@/lib/alice/access'
 import { channelReady } from '@/lib/alice/channel'
-import { isAdminRole } from '@/lib/alice/config'
 import { waFullNumber } from '@/lib/alice/phone'
 import { findOrCreateWhatsAppConversation } from '@/lib/alice/conversations'
-import { findTrustedStaff } from '@/lib/alice/trusted'
 
 const schema = z.object({
     phone: z.string().trim().min(1),
@@ -20,6 +18,9 @@ const schema = z.object({
  * by Meta/the gateway at send time, not here, so opening the chat always works; only sending a first
  * message may come back with a clear error if the provider blocks it.
  * Same access as the rest of Alice: admins always, other roles per Alice → Configurações → "Quem pode usar".
+ * Deliberately doesn't special-case a trusted number here — doing so would let staff probe arbitrary
+ * phone numbers and learn which ones are registered as trusted. The real protection is downstream:
+ * opening the returned conversation id still 404s for non-admins if it turns out to be one (see [id]/route.ts).
  */
 export async function POST(req: NextRequest) {
     const access = await requireAliceUser()
@@ -30,10 +31,6 @@ export async function POST(req: NextRequest) {
 
     const phone = waFullNumber(parsed.data.phone)
     if (!phone || !settings.whatsapp_enabled || !channelReady(settings)) {
-        return NextResponse.json({ available: false })
-    }
-    // A trusted number's own chat with Alice stays admin-only — don't surface or create it for other staff.
-    if (!isAdminRole(ctx.role) && await findTrustedStaff(ctx.db, ctx.companyId, phone)) {
         return NextResponse.json({ available: false })
     }
 

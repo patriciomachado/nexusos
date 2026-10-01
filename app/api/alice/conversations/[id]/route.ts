@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { getContext, unauthorizedResponse, forbiddenResponse } from '@/lib/security'
 import { canUseAlice, effectiveStatus, isAdminRole, loadSettings } from '@/lib/alice/config'
 import { formatWhatsApp } from '@/lib/alice/phone'
-import { findTrustedStaff } from '@/lib/alice/trusted'
+import { isTrustedNumber } from '@/lib/alice/trusted'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -29,8 +29,9 @@ async function load(id: string) {
     if (conv.channel === 'app' && conv.user_id !== ctx.dbUser.id) {
         return { response: NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 }) }
     }
-    if (conv.channel === 'whatsapp' && !isAdminRole(ctx.role) && conv.customer_phone && await findTrustedStaff(ctx.db, ctx.companyId, conv.customer_phone)) {
-        return { response: forbiddenResponse() }
+    if (conv.channel === 'whatsapp' && !isAdminRole(ctx.role) && await isTrustedNumber(ctx.db, ctx.companyId, conv.customer_phone)) {
+        // Same shape as "not found" — a distinct 403 would tell staff this id is a trusted-number chat.
+        return { response: NextResponse.json({ error: 'Conversa não encontrada.' }, { status: 404 }) }
     }
     return { ctx, conv }
 }
