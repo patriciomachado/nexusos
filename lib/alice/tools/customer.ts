@@ -116,17 +116,18 @@ async function notifyStore(ctx: ToolContext, title: string, detail: string) {
         .eq('related_entity_id', ctx.conversationId)
         .gte('created_at', new Date(Date.now() - 86_400_000).toISOString())
     if ((count ?? 0) >= MAX_REQUESTS_PER_DAY) return
-    const who = ctx.customer?.name || formatWhatsApp(ctx.customer?.phone ?? '')
+    const channelLabel = ctx.channel === 'instagram' ? 'Instagram' : 'WhatsApp'
+    const who = ctx.customer?.name || (ctx.customer?.phone ? formatWhatsApp(ctx.customer.phone) : ctx.customer?.instagramUsername ? `@${ctx.customer.instagramUsername}` : 'Cliente')
     const { data: admins } = await ctx.db.from('users').select('id').eq('company_id', ctx.companyId).in('role', ADMIN_ROLES).eq('is_active', true)
     if (admins?.length) {
         await ctx.db.from('notifications').insert(admins.map(a => ({
             company_id: ctx.companyId, user_id: a.id, type: 'push', status: 'pending',
-            title: `WhatsApp: ${title}`, message: `${who}: ${detail}`.slice(0, 500),
+            title: `${channelLabel}: ${title}`, message: `${who}: ${detail}`.slice(0, 500),
             related_entity_type: 'alice_conversation', related_entity_id: ctx.conversationId,
         })))
     }
     await pushToCompany(ctx.db, ctx.companyId, {
-        title: `WhatsApp: ${title}`,
+        title: `${channelLabel}: ${title}`,
         body: `${who}: ${detail}`.slice(0, 180),
         url: `/alice?conversa=${ctx.conversationId}`,
         tag: `alice-${ctx.conversationId}`,

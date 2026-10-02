@@ -8,6 +8,7 @@ import { planRequiredResponse } from '@/lib/plan-server'
 import { qrServerConfigured } from '@/lib/alice/gateway'
 import { transcriptionConfigured } from '@/lib/alice/transcribe'
 import { webhookConfigured, describeNumber, WhatsAppError } from '@/lib/alice/whatsapp'
+import { webhookConfigured as instagramWebhookConfigured, describeAccount, InstagramError } from '@/lib/alice/instagram'
 import { appUrl } from '@/lib/alice/config'
 
 /**
@@ -24,7 +25,7 @@ export async function GET() {
     const settings = await loadSettings(ctx.db, ctx.companyId)
     if (!isAdminRole(ctx.role)) {
         if (!canUseAlice(ctx.role, settings)) return forbiddenResponse()
-        return NextResponse.json({ isAdmin: false, settings: { whatsapp_enabled: settings.whatsapp_enabled } })
+        return NextResponse.json({ isAdmin: false, settings: { whatsapp_enabled: settings.whatsapp_enabled, instagram_enabled: settings.instagram_enabled } })
     }
     return NextResponse.json({
         isAdmin: true,
@@ -38,6 +39,8 @@ export async function GET() {
             whatsappWebhook: webhookConfigured(),
             webhookUrl: `${appUrl()}/api/whatsapp/webhook`,
             qrServer: qrServerConfigured(),
+            instagramWebhook: instagramWebhookConfigured(),
+            instagramWebhookUrl: `${appUrl()}/api/instagram/webhook`,
         },
     })
 }
@@ -57,6 +60,10 @@ const putSchema = z.object({
     whatsapp_gateway_instance: z.string().trim().regex(/^[\w.-]{1,120}$/, 'Nome/ID da instância inválido').nullable().optional().or(z.literal('').transform(() => null)),
     whatsapp_gateway_token: z.string().trim().min(4).max(500).nullable().optional(),
     whatsapp_gateway_client_token: z.string().trim().min(4).max(500).nullable().optional(),
+    instagram_enabled: z.boolean().optional(),
+    instagram_account_id: z.string().trim().regex(/^\d{6,30}$/, 'Identificação da conta inválida (só dígitos)').nullable().optional(),
+    // Write-only: omitted keeps the saved token, null removes it.
+    instagram_access_token: z.string().trim().min(20).max(1000).nullable().optional(),
     auto_quote_parts: z.boolean().optional(),
     tone: z.enum(['professional', 'friendly', 'casual', 'custom']).optional(),
     tone_custom: z.string().trim().max(500).nullable().optional(),
@@ -94,6 +101,24 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ error: `A Meta recusou as credenciais: ${message}` }, { status: 400 })
         }
     }
+    const igAccountId = next.instagram_account_id !== undefined ? next.instagram_account_id : settings.instagram_account_id
+    const igToken = next.instagram_access_token !== undefined ? next.instagram_access_token : settings.instagram_access_token
+    let instagramInfo: { instagram_username?: string | null } = {}
+
+    // Credentials changed: check them with Meta before saving.
+    if ((next.instagram_account_id !== undefined || next.instagram_access_token !== undefined) && igAccountId && igToken) {
+        try {
+            const info = await describeAccount(igToken, igAccountId)
+            instagramInfo = { instagram_username: info.username ?? null }
+        } catch (err) {
+            const message = err instanceof InstagramError ? err.message : 'Não foi possível validar com a Meta.'
+            return NextResponse.json({ error: `A Meta recusou as credenciais do Instagram: ${message}` }, { status: 400 })
+        }
+    }
+    if (next.instagram_enabled && !(igAccountId && igToken)) {
+        return NextResponse.json({ error: 'Informe a identificação da conta e o token antes de ativar o Instagram.' }, { status: 400 })
+    }
+
     const provider = next.whatsapp_provider ?? settings.whatsapp_provider
     // Switching the way of connecting pauses the WhatsApp until the new one is ready.
     const switching = next.whatsapp_provider !== undefined && next.whatsapp_provider !== settings.whatsapp_provider
@@ -109,13 +134,15 @@ export async function PUT(req: NextRequest) {
         company_id: ctx.companyId,
         ...next,
         ...numberInfo,
+        ...instagramInfo,
         ...(provider === 'cloud' && !phoneId ? { whatsapp_display_phone: null, whatsapp_verified_name: null, whatsapp_enabled: false } : {}),
         ...(switching ? { whatsapp_display_phone: null, whatsapp_verified_name: null } : {}),
+        ...(!igAccountId ? { instagram_username: null, instagram_enabled: false } : {}),
         updated_by: ctx.dbUser.id,
         updated_at: new Date().toISOString(),
     }, { onConflict: 'company_id' })
     if (error) {
-        if (error.code === '23505') return NextResponse.json({ error: 'Este número de WhatsApp já está ligado a outra loja.' }, { status: 409 })
+        if (error.code === '23505') return NextResponse.json({ error: 'Este número de WhatsApp (ou conta de Instagram) já está ligado a outra loja.' }, { status: 409 })
         console.error('[alice] settings save failed:', error)
         return NextResponse.json({ error: 'Não foi possível salvar.' }, { status: 500 })
     }

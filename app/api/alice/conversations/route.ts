@@ -4,32 +4,31 @@ import { isAdminRole } from '@/lib/alice/config'
 import { formatWhatsApp, samePhone } from '@/lib/alice/phone'
 
 /**
- * ?channel=app       the caller's own conversations with Alice
- * ?channel=whatsapp  customer chats (admins always; other roles per Alice → Configurações → "Quem pode usar").
- *                    A trusted number's own chat with Alice (financial/supplier tools) stays admin-only.
+ * ?channel=app     the caller's own conversations with Alice
+ * ?channel=social  WhatsApp + Instagram, merged (admins always; other roles per Alice → Configurações → "Quem pode usar").
+ *                  A trusted number's own WhatsApp chat with Alice (financial/supplier tools) stays admin-only.
  */
 export async function GET(req: NextRequest) {
-    const channel = req.nextUrl.searchParams.get('channel') === 'whatsapp' ? 'whatsapp' : 'app'
+    const channel = req.nextUrl.searchParams.get('channel') === 'app' ? 'app' : 'social'
     const access = await requireAliceUser()
     if (access.response) return access.response
     const { ctx } = access
 
     let q = ctx.db
         .from('alice_conversations')
-        .select('id, channel, title, customer_name, customer_phone, customer_id, mode, unread_count, last_message_at, last_customer_message_at')
+        .select('id, channel, title, customer_name, customer_phone, instagram_username, customer_id, mode, unread_count, last_message_at, last_customer_message_at')
         .eq('company_id', ctx.companyId)
-        .eq('channel', channel)
         .order('last_message_at', { ascending: false })
-        .limit(channel === 'whatsapp' ? 100 : 30)
-    if (channel === 'app') q = q.eq('user_id', ctx.dbUser.id)
+        .limit(channel === 'social' ? 100 : 30)
+    q = channel === 'app' ? q.eq('channel', 'app').eq('user_id', ctx.dbUser.id) : q.in('channel', ['whatsapp', 'instagram'])
     const { data, error } = await q
     if (error) return NextResponse.json({ error: 'Não foi possível carregar as conversas.' }, { status: 500 })
 
     let rows = data ?? []
-    if (channel === 'whatsapp' && !isAdminRole(ctx.role)) {
+    if (channel === 'social' && !isAdminRole(ctx.role)) {
         const { data: trusted } = await ctx.db.from('alice_trusted_numbers').select('phone').eq('company_id', ctx.companyId)
         const trustedPhones = (trusted ?? []).map(t => t.phone)
-        rows = rows.filter(c => !trustedPhones.some(tp => samePhone(tp, c.customer_phone)))
+        rows = rows.filter(c => !(c.channel === 'whatsapp' && trustedPhones.some(tp => samePhone(tp, c.customer_phone))))
     }
 
     // Last line of each chat for the list.
@@ -50,7 +49,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
         conversations: rows.map(c => ({
             ...c,
-            phone_label: c.customer_phone ? formatWhatsApp(c.customer_phone) : null,
+            contact_label: c.customer_phone ? formatWhatsApp(c.customer_phone) : c.instagram_username ? `@${c.instagram_username}` : null,
             preview: previews.get(c.id) ?? null,
             window_open: c.last_customer_message_at ? Date.now() - new Date(c.last_customer_message_at).getTime() < 24 * 3600 * 1000 : false,
         })),

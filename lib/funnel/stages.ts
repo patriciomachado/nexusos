@@ -21,7 +21,7 @@ export function isFunnelStage(value: unknown): value is FunnelStage {
     return typeof value === 'string' && (FUNNEL_STAGES as readonly string[]).includes(value)
 }
 
-export const FUNNEL_SOURCES = ['manual', 'whatsapp', 'alice', 'landing', 'indicacao'] as const
+export const FUNNEL_SOURCES = ['manual', 'whatsapp', 'alice', 'landing', 'indicacao', 'instagram'] as const
 export type FunnelSource = (typeof FUNNEL_SOURCES)[number]
 
 export const SOURCE_LABELS: Record<FunnelSource, string> = {
@@ -30,4 +30,5 @@ export const SOURCE_LABELS: Record<FunnelSource, string> = {
     alice: 'Alice',
     landing: 'Página de captação',
     indicacao: 'Indicação',
+    instagram: 'Instagram',
 }

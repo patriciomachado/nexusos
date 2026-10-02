@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ArrowUp, ChevronLeft, Hand, Loader2, MessageCircle, Sparkles, User, Clock, Pencil, Trash2 } from 'lucide-react'
+import { ArrowUp, ChevronLeft, Hand, Instagram, Loader2, MessageCircle, Sparkles, User, Clock, Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import ActionMenu from '@/components/ui/ActionMenu'
@@ -11,14 +11,22 @@ import Sheet from '@/components/tasks/Sheet'
 
 interface Conversation {
     id: string
+    channel: 'whatsapp' | 'instagram'
     customer_name: string | null
-    phone_label: string | null
+    contact_label: string | null
     customer_id: string | null
     mode: 'alice' | 'human'
     unread_count: number
     last_message_at: string
     window_open: boolean
     preview: { text: string; role: string } | null
+}
+
+/** Small per-channel accent so WhatsApp and Instagram conversations stay visually distinct in the merged inbox. */
+function channelStyle(channel: Conversation['channel']) {
+    return channel === 'instagram'
+        ? { avatarBg: 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 text-white', badgeBg: 'bg-pink-500', sendBg: 'bg-pink-500', icon: Instagram }
+        : { avatarBg: 'bg-green-500/15 text-green-700 dark:text-green-400', badgeBg: 'bg-green-500', sendBg: 'bg-green-500', icon: MessageCircle }
 }
 
 type Item =
@@ -50,7 +58,7 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const loadList = useCallback(async () => {
-        const res = await fetch('/api/alice/conversations?channel=whatsapp', { cache: 'no-store' })
+        const res = await fetch('/api/alice/conversations?channel=social', { cache: 'no-store' })
         const data = await res.json().catch(() => ({}))
         const convs: Conversation[] = data.conversations ?? []
         setList(convs)
@@ -155,14 +163,14 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
     }
 
     const conv = detail?.conversation
-    const name = (c: Pick<Conversation, 'customer_name' | 'phone_label'>) => c.customer_name || c.phone_label || 'Cliente'
+    const name = (c: Pick<Conversation, 'customer_name' | 'contact_label'>) => c.customer_name || c.contact_label || 'Cliente'
 
     return (
         <div className="space-y-3">
             {!enabled && (
                 <div className="rounded-2xl bg-orange-500/10 border border-orange-500/20 px-4 py-3 flex items-center gap-3">
                     <MessageCircle className="w-5 h-5 text-orange-600 dark:text-orange-400 shrink-0" />
-                    <p className="text-[14px] flex-1">O atendimento pelo WhatsApp está desligado. As conversas antigas continuam aqui.</p>
+                    <p className="text-[14px] flex-1">O atendimento pelo WhatsApp e Instagram está desligado. As conversas antigas continuam aqui.</p>
                     {onSetup && <button type="button" onClick={onSetup} className="text-[14px] font-semibold text-primary shrink-0">Configurar</button>}
                 </div>
             )}
@@ -178,10 +186,16 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
                         </div>
                     ) : (
                         <ul className="divide-y divide-border/60">
-                            {list.map(c => (
+                            {list.map(c => {
+                                const style = channelStyle(c.channel)
+                                const ChannelIcon = style.icon
+                                return (
                                 <li key={c.id} className="flex items-center">
                                     <button type="button" onClick={() => { setSelected(c.id); setDetail(null) }} className={cn('flex-1 min-w-0 text-left px-4 py-3 flex gap-3 hover:bg-foreground/[0.03]', selected === c.id && 'bg-primary/[0.06]')}>
-                                        <span className="w-10 h-10 rounded-full bg-green-500/15 text-green-700 dark:text-green-400 flex items-center justify-center shrink-0 font-semibold">{name(c).charAt(0).toUpperCase()}</span>
+                                        <span className="relative shrink-0">
+                                            <span className={cn('w-10 h-10 rounded-full flex items-center justify-center font-semibold', style.avatarBg)}>{name(c).charAt(0).toUpperCase()}</span>
+                                            <span className={cn('absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-white ring-2 ring-card', style.badgeBg)}><ChannelIcon className="w-2.5 h-2.5" /></span>
+                                        </span>
                                         <span className="min-w-0 flex-1">
                                             <span className="flex items-center gap-2">
                                                 <span className="text-[15px] font-semibold truncate flex-1">{name(c)}</span>
@@ -192,13 +206,14 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
                                                     {c.preview ? `${c.preview.role === 'assistant' ? 'Alice: ' : c.preview.role === 'staff' ? 'Você: ' : ''}${c.preview.text}` : ''}
                                                 </span>
                                                 {c.mode === 'human' && <span className="text-[11px] font-semibold text-orange-600 dark:text-orange-400 shrink-0">Humano</span>}
-                                                {c.unread_count > 0 && <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-green-500 text-white text-[12px] font-semibold flex items-center justify-center shrink-0">{c.unread_count}</span>}
+                                                {c.unread_count > 0 && <span className={cn('min-w-[20px] h-5 px-1.5 rounded-full text-white text-[12px] font-semibold flex items-center justify-center shrink-0', style.badgeBg)}>{c.unread_count}</span>}
                                             </span>
                                         </span>
                                     </button>
                                     {isAdmin && <button type="button" onClick={() => setPendingDeleteId(c.id)} aria-label={`Apagar conversa com ${name(c)}`} className="w-9 h-9 mr-2 shrink-0 rounded-full flex items-center justify-center text-muted-foreground hover:bg-foreground/[0.06] hover:text-red-600 dark:hover:text-red-400"><Trash2 className="w-4 h-4" /></button>}
                                 </li>
-                            ))}
+                                )
+                            })}
                         </ul>
                     )}
                 </div>
@@ -214,9 +229,12 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
                             <div className="px-3 py-2 border-b border-border/60 flex items-center gap-2">
                                 <button type="button" onClick={() => setSelected(null)} className="md:hidden w-9 h-9 -ml-1 flex items-center justify-center text-primary" aria-label="Voltar"><ChevronLeft className="w-5 h-5" /></button>
                                 <div className="min-w-0 flex-1">
-                                    <p className="text-[16px] font-semibold truncate">{name(conv)}</p>
+                                    <p className="text-[16px] font-semibold truncate flex items-center gap-1.5">
+                                        {(() => { const ChannelIcon = channelStyle(conv.channel).icon; return <ChannelIcon className="w-3.5 h-3.5 shrink-0 text-muted-foreground" /> })()}
+                                        {name(conv)}
+                                    </p>
                                     <p className="text-[12px] text-muted-foreground truncate">
-                                        {conv.phone_label}
+                                        {conv.contact_label}
                                         {conv.customer_id && <> · <Link href={`/customers/${conv.customer_id}`} className="text-primary">ver cliente</Link></>}
                                     </p>
                                 </div>
@@ -243,12 +261,15 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
                             </div>
                             <div className="border-t border-border/60 p-2 space-y-1.5">
                                 {!conv.window_open && (
-                                    <p className="text-[12px] text-muted-foreground px-2 flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 shrink-0" /> {detail.items.length ? 'Mais de 24h desde a última mensagem do cliente.' : 'Este cliente ainda não escreveu pelo WhatsApp.'} Pelas regras do WhatsApp, o envio pode ser recusado sem uma mensagem de modelo aprovada — pode tentar mesmo assim.</p>
+                                    <p className="text-[12px] text-muted-foreground px-2 flex items-center gap-1.5">
+                                        <Clock className="w-3.5 h-3.5 shrink-0" /> {detail.items.length ? 'Mais de 24h desde a última mensagem do cliente.' : `Este cliente ainda não escreveu pelo ${conv.channel === 'instagram' ? 'Instagram' : 'WhatsApp'}.`}{' '}
+                                        {conv.channel === 'instagram' ? 'O Instagram só permite responder dentro dessa janela — pode tentar mesmo assim.' : 'Pelas regras do WhatsApp, o envio pode ser recusado sem uma mensagem de modelo aprovada — pode tentar mesmo assim.'}
+                                    </p>
                                 )}
                                 <form onSubmit={e => { e.preventDefault(); send() }} className="flex items-end gap-2">
                                     <textarea value={reply} onChange={e => setReply(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send() } }}
                                         rows={1} placeholder="Responder como a loja…" aria-label="Resposta" className="flex-1 max-h-32 resize-none rounded-[20px] bg-foreground/[0.05] px-4 py-2.5 text-[16px] focus:outline-none focus:ring-2 focus:ring-primary/40 field-sizing-content" />
-                                    <button type="submit" disabled={!reply.trim() || sending} aria-label="Enviar" className="w-10 h-10 mb-0.5 rounded-full bg-green-500 text-white flex items-center justify-center disabled:opacity-40">
+                                    <button type="submit" disabled={!reply.trim() || sending} aria-label="Enviar" className={cn('w-10 h-10 mb-0.5 rounded-full text-white flex items-center justify-center disabled:opacity-40', channelStyle(conv.channel).sendBg)}>
                                         {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUp className="w-5 h-5" />}
                                     </button>
                                 </form>

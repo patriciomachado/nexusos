@@ -4,6 +4,7 @@ import { getContext, unauthorizedResponse, forbiddenResponse } from '@/lib/secur
 import { canUseAlice, effectiveStatus, isAdminRole, loadSettings } from '@/lib/alice/config'
 import { formatWhatsApp } from '@/lib/alice/phone'
 import { isTrustedNumber } from '@/lib/alice/trusted'
+import { clearConversationNotifications } from '@/lib/alice/inbound'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -58,15 +59,19 @@ export async function GET(_req: NextRequest, { params }: Params) {
         }),
     ].sort((a, b) => a.at.localeCompare(b.at))
 
-    if (conv.channel === 'whatsapp' && conv.unread_count) {
+    const isDm = conv.channel === 'whatsapp' || conv.channel === 'instagram'
+    if (isDm && conv.unread_count) {
         await ctx.db.from('alice_conversations').update({ unread_count: 0 }).eq('id', id)
+    }
+    if (isDm) {
+        await clearConversationNotifications(ctx.db, ctx.companyId, id).catch(err => console.error('[alice] clear notifications failed:', err))
     }
 
     return NextResponse.json({
         conversation: {
             id: conv.id, channel: conv.channel, title: conv.title, mode: conv.mode,
             customer_name: conv.customer_name, customer_id: conv.customer_id,
-            phone_label: conv.customer_phone ? formatWhatsApp(conv.customer_phone) : null,
+            contact_label: conv.customer_phone ? formatWhatsApp(conv.customer_phone) : conv.instagram_username ? `@${conv.instagram_username}` : null,
             window_open: conv.last_customer_message_at ? Date.now() - new Date(conv.last_customer_message_at).getTime() < 24 * 3600 * 1000 : false,
         },
         items,
@@ -88,7 +93,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Pedido inválido.' }, { status: 400 })
 
     if (parsed.data.mode !== undefined) {
-        if (conv.channel !== 'whatsapp') return NextResponse.json({ error: 'Só conversas do WhatsApp.' }, { status: 400 })
+        if (conv.channel !== 'whatsapp' && conv.channel !== 'instagram') return NextResponse.json({ error: 'Só conversas do WhatsApp ou Instagram.' }, { status: 400 })
         await ctx.db.from('alice_conversations').update({ mode: parsed.data.mode }).eq('id', id)
         await ctx.db.from('alice_messages').insert({
             conversation_id: id, company_id: ctx.companyId, role: 'event', author_user_id: ctx.dbUser.id,
@@ -103,12 +108,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return NextResponse.json({ mode: parsed.data.mode ?? conv.mode, title: parsed.data.title ?? (conv.channel === 'app' ? conv.title : conv.customer_name) })
 }
 
-/** Delete a conversation: mine (app) or, for admins only, a WhatsApp chat's history — staff can read and reply but not erase it. */
+/** Delete a conversation: mine (app) or, for admins only, a DM chat's history — staff can read and reply but not erase it. */
 export async function DELETE(_req: NextRequest, { params }: Params) {
     const { id } = await params
     const r = await load(id)
     if (r.response) return r.response
-    if (r.conv.channel === 'whatsapp' && !isAdminRole(r.ctx.role)) return forbiddenResponse()
+    if ((r.conv.channel === 'whatsapp' || r.conv.channel === 'instagram') && !isAdminRole(r.ctx.role)) return forbiddenResponse()
     await r.ctx.db.from('alice_conversations').delete().eq('id', id).eq('company_id', r.ctx.companyId)
     return NextResponse.json({ ok: true })
 }

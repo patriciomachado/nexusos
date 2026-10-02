@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, X, Copy, Loader2, MessageCircle, Mic, Sparkles, ShieldCheck, ExternalLink } from 'lucide-react'
+import { Check, X, Copy, Loader2, MessageCircle, Instagram, Mic, Sparkles, ShieldCheck, ExternalLink } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import RegisterNumber from './RegisterNumber'
@@ -29,6 +29,10 @@ export interface SettingsPayload {
         whatsapp_gateway_token_set: boolean
         whatsapp_gateway_client_token_set: boolean
         whatsapp_webhook_ready: boolean
+        instagram_enabled: boolean
+        instagram_account_id: string | null
+        instagram_username: string | null
+        instagram_token_set: boolean
         auto_quote_parts: boolean
         tone: 'professional' | 'friendly' | 'casual' | 'custom'
         tone_custom: string | null
@@ -41,7 +45,7 @@ export interface SettingsPayload {
         }
     }
     usage: number
-    environment: { ai: boolean; model: string; whatsappModel?: string; transcription: boolean; whatsappWebhook: boolean; webhookUrl: string; qrServer?: boolean }
+    environment: { ai: boolean; model: string; whatsappModel?: string; transcription: boolean; whatsappWebhook: boolean; webhookUrl: string; qrServer?: boolean; instagramWebhook: boolean; instagramWebhookUrl: string }
 }
 
 const ROLE_OPTIONS = [
@@ -65,6 +69,8 @@ export default function AliceSettingsView({ data, onSaved, onReload }: { data: S
     const [limit, setLimit] = useState(String(settings.monthly_limit))
     const [phoneId, setPhoneId] = useState(settings.whatsapp_phone_number_id ?? '')
     const [token, setToken] = useState('')
+    const [igAccountId, setIgAccountId] = useState(settings.instagram_account_id ?? '')
+    const [igToken, setIgToken] = useState('')
     const [busy, setBusy] = useState<string | null>(null)
 
     const apply = async (key: string, patch: Record<string, unknown>, success = 'Salvo') => {
@@ -89,6 +95,7 @@ export default function AliceSettingsView({ data, onSaved, onReload }: { data: S
 
     const viaQr = settings.whatsapp_provider !== 'cloud'
     const waReady = viaQr ? settings.whatsapp_webhook_ready && !!settings.whatsapp_display_phone : settings.whatsapp_token_set && !!settings.whatsapp_phone_number_id
+    const igReady = settings.instagram_token_set && !!settings.instagram_account_id
 
     const usagePct = settings.monthly_limit ? Math.min(100, Math.round((usage / settings.monthly_limit) * 100)) : 100
 
@@ -273,6 +280,73 @@ export default function AliceSettingsView({ data, onSaved, onReload }: { data: S
                     <div className="flex justify-end">
                         <button type="button" disabled={busy === 'info' || storeInfo === (settings.store_info ?? '')} onClick={() => apply('info', { store_info: storeInfo.trim() || null })} className="h-10 px-4 rounded-full bg-primary/12 text-primary text-[15px] font-semibold disabled:opacity-40">Salvar informações</button>
                     </div>
+                </div>
+            </section>
+
+            {/* Instagram */}
+            <section className="rounded-2xl bg-card border border-border/60 overflow-hidden">
+                <header className="px-5 pt-5 pb-3 flex items-start gap-3">
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 text-white flex items-center justify-center shrink-0"><Instagram className="w-5 h-5" /></span>
+                    <div className="min-w-0 flex-1">
+                        <h2 className="type-headline">Atendimento no Instagram</h2>
+                        <p className="text-[14px] text-muted-foreground">A Alice responde as mensagens diretas da sua conta profissional do Instagram, do mesmo jeito que responde no WhatsApp.</p>
+                    </div>
+                </header>
+                <div className="border-t border-border/60 px-5 py-4 flex items-center justify-between gap-4">
+                    <div className="min-w-0">
+                        <p className="text-[15px] font-medium">Alice responde no Instagram</p>
+                        <p className="text-[13px] text-muted-foreground truncate">
+                            {settings.instagram_username ? `@${settings.instagram_username}` : 'Conecte a conta abaixo'}
+                        </p>
+                    </div>
+                    <Toggle checked={settings.instagram_enabled} busy={busy === 'ig'} disabled={!igReady} onChange={v => apply('ig', { instagram_enabled: v }, v ? 'A Alice vai responder no Instagram' : 'Instagram pausado')} label="Alice responde no Instagram" />
+                </div>
+
+                <div className="border-t border-border/60 px-5 py-4 space-y-3">
+                    <p className="text-[15px] font-medium">Passo a passo (uma vez só)</p>
+                    <ol className="text-[14px] text-muted-foreground space-y-2 list-decimal pl-5">
+                        <li>Transforme sua conta em <b>Profissional</b> (Criador de conteúdo ou Empresa) no app do Instagram, se ainda não for.</li>
+                        <li>Em <a className="text-primary inline-flex items-center gap-0.5" href="https://developers.facebook.com/apps" target="_blank" rel="noopener noreferrer">developers.facebook.com <ExternalLink className="w-3 h-3" /></a>, crie (ou reutilize) um app e adicione o produto <b>Instagram</b> com o fluxo <b>Login do Instagram</b>.</li>
+                        <li>Em <b>Instagram → Configuração da API</b>, gere um <b>token de acesso de longa duração</b> para sua conta profissional, com as permissões <code>instagram_business_basic</code> e <code>instagram_business_manage_messages</code>. Copie também a <b>identificação da conta</b> (Instagram account ID).</li>
+                        <li>
+                            Na Vercel, adicione <code>INSTAGRAM_APP_SECRET</code> (app da Meta → Configurações → Básico → Chave secreta) e <code>INSTAGRAM_VERIFY_TOKEN</code> (uma senha que você inventar).
+                            <span className={cn('ml-1 inline-flex items-center gap-1 text-[12px] font-medium', environment.instagramWebhook ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400')}>
+                                {environment.instagramWebhook ? <><Check className="w-3 h-3" /> configurado</> : 'pendente'}
+                            </span>
+                        </li>
+                        <li>
+                            Em <b>Instagram → Configuração → Webhook</b>, use a URL abaixo, o mesmo <code>INSTAGRAM_VERIFY_TOKEN</code>, e assine o campo <b>messages</b>.
+                            <CopyField value={environment.instagramWebhookUrl} />
+                        </li>
+                        <li>Cole a identificação da conta e o token aqui, salve e ative o botão acima.</li>
+                    </ol>
+                    <form
+                        className="space-y-2 pt-1"
+                        onSubmit={async e => {
+                            e.preventDefault()
+                            const patch: Record<string, unknown> = { instagram_account_id: igAccountId.trim() || null }
+                            if (igToken.trim()) patch.instagram_access_token = igToken.trim()
+                            if (await apply('ig-creds', patch, 'Conta conectada e verificada com a Meta')) setIgToken('')
+                        }}
+                    >
+                        <label className="block">
+                            <span className="text-[13px] text-muted-foreground">Identificação da conta (Instagram account ID)</span>
+                            <input value={igAccountId} onChange={e => setIgAccountId(e.target.value.replace(/\D/g, ''))} inputMode="numeric" placeholder="Ex.: 17841400000000000" className="mt-1 w-full h-11 px-3 rounded-xl bg-foreground/[0.05] text-[16px] focus:outline-none focus:ring-2 focus:ring-primary/40" />
+                        </label>
+                        <label className="block">
+                            <span className="text-[13px] text-muted-foreground">Token de acesso {settings.instagram_token_set && <span className="text-green-600 dark:text-green-400">(salvo — preencha só para trocar)</span>}</span>
+                            <input value={igToken} onChange={e => setIgToken(e.target.value)} type="password" autoComplete="off" placeholder={settings.instagram_token_set ? '••••••••••••' : 'IGAA…'} className="mt-1 w-full h-11 px-3 rounded-xl bg-foreground/[0.05] text-[16px] focus:outline-none focus:ring-2 focus:ring-primary/40" />
+                        </label>
+                        <div className="flex items-center gap-2">
+                            <button type="submit" disabled={busy === 'ig-creds' || !igAccountId || (!igToken && !settings.instagram_token_set)} className="h-10 px-4 rounded-full bg-primary text-primary-foreground text-[15px] font-semibold disabled:opacity-40 inline-flex items-center gap-2">
+                                {busy === 'ig-creds' && <Loader2 className="w-4 h-4 animate-spin" />} Salvar e verificar
+                            </button>
+                            {settings.instagram_token_set && (
+                                <button type="button" onClick={() => apply('ig-creds', { instagram_access_token: null, instagram_account_id: null, instagram_enabled: false }, 'Instagram desconectado')} className="h-10 px-3 rounded-full text-[15px] text-red-600 dark:text-red-400">Desconectar</button>
+                            )}
+                        </div>
+                        <p className="text-[12px] text-muted-foreground flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> O token fica só no servidor e nunca é exibido de novo.</p>
+                    </form>
                 </div>
             </section>
 

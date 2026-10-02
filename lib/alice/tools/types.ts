@@ -2,7 +2,12 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type Anthropic from '@anthropic-ai/sdk'
 import { z } from 'zod'
 
-export type Channel = 'app' | 'whatsapp'
+export type Channel = 'app' | 'whatsapp' | 'instagram'
+
+/** 'whatsapp'/'instagram': a customer DM channel, no confirm-card UI, cheap model. */
+export function isDmChannel(channel: Channel) {
+    return channel === 'whatsapp' || channel === 'instagram'
+}
 
 export interface ToolContext {
     db: SupabaseClient
@@ -11,8 +16,8 @@ export interface ToolContext {
     conversationId: string
     /** App user talking to Alice (channel 'app'), or a trusted number talking on WhatsApp (channel 'whatsapp'). */
     user?: { id: string; role: string; name: string | null }
-    /** WhatsApp customer (channel 'whatsapp', no `user`): tools only see this person's data. */
-    customer?: { phone: string; name: string | null; customerIds: string[] }
+    /** DM customer ('whatsapp'/'instagram', no `user`): tools only see this person's data. */
+    customer?: { phone?: string; instagramUsername?: string; name: string | null; customerIds: string[] }
 }
 
 /** What the confirmation card shows before a write runs. */

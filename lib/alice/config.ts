@@ -86,6 +86,11 @@ export interface AliceSettings {
     whatsapp_gateway_token: string | null
     whatsapp_gateway_client_token: string | null
     whatsapp_webhook_secret: string | null
+    /** Instagram Direct (Instagram Messaging API) — same manual-credential pattern as WhatsApp Cloud API. */
+    instagram_enabled: boolean
+    instagram_account_id: string | null
+    instagram_access_token: string | null
+    instagram_username: string | null
     monthly_limit: number
     /** Cliente pergunta o preço de uma peça (ex.: troca de tela) e há valor cadastrado: manda direto, sem esperar confirmação da loja. */
     auto_quote_parts: boolean
@@ -117,6 +122,10 @@ export const DEFAULT_SETTINGS: Omit<AliceSettings, 'company_id'> = {
     whatsapp_webhook_secret: null,
     whatsapp_display_phone: null,
     whatsapp_verified_name: null,
+    instagram_enabled: false,
+    instagram_account_id: null,
+    instagram_access_token: null,
+    instagram_username: null,
     monthly_limit: 1500,
     auto_quote_parts: false,
     tone: 'professional',
@@ -140,20 +149,21 @@ export async function loadSettings(db: SupabaseClient, companyId: string): Promi
 export function withPlan(settings: AliceSettings, plan: PlanId): AliceSettings {
     const planLimit = PLANS[plan].aliceReplies
     if (!hasFeature(plan, 'alice')) {
-        return { ...settings, enabled: false, whatsapp_enabled: false, monthly_limit: 0, plan_blocked: true, plan_limit: 0 }
+        return { ...settings, enabled: false, whatsapp_enabled: false, instagram_enabled: false, monthly_limit: 0, plan_blocked: true, plan_limit: 0 }
     }
     return { ...settings, monthly_limit: Math.min(settings.monthly_limit, planLimit), plan_blocked: false, plan_limit: planLimit }
 }
 
-/** Settings as the admin screen sees them: the WhatsApp token never leaves the server. */
+/** Settings as the admin screen sees them: tokens never leave the server. */
 export function publicSettings(s: AliceSettings) {
-    const { whatsapp_access_token, whatsapp_gateway_token, whatsapp_gateway_client_token, whatsapp_webhook_secret, ...rest } = s
+    const { whatsapp_access_token, whatsapp_gateway_token, whatsapp_gateway_client_token, whatsapp_webhook_secret, instagram_access_token, ...rest } = s
     return {
         ...rest,
         whatsapp_token_set: !!whatsapp_access_token,
         whatsapp_gateway_token_set: !!whatsapp_gateway_token,
         whatsapp_gateway_client_token_set: !!whatsapp_gateway_client_token,
         whatsapp_webhook_ready: !!whatsapp_webhook_secret,
+        instagram_token_set: !!instagram_access_token,
     }
 }
 

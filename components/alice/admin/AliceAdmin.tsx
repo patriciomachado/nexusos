@@ -9,8 +9,8 @@ import ActivityView from './ActivityView'
 import { Loader2, Database } from 'lucide-react'
 
 type Tab = 'conversas' | 'config' | 'atividade'
-/** What a staff role without admin access gets: just enough for the WhatsApp inbox. */
-type StaffPayload = { isAdmin: false; settings: { whatsapp_enabled: boolean } }
+/** What a staff role without admin access gets: just enough for the messages inbox. */
+type StaffPayload = { isAdmin: false; settings: { whatsapp_enabled: boolean; instagram_enabled: boolean } }
 type Payload = SettingsPayload | StaffPayload
 
 export default function AliceAdmin() {
@@ -67,11 +67,11 @@ export default function AliceAdmin() {
     }
     if (!data) return <div className="p-10 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>
 
-    // Staff allowed into Alice but not an admin: just the WhatsApp inbox, no config or activity log.
+    // Staff allowed into Alice but not an admin: just the messages inbox, no config or activity log.
     if (!data.isAdmin) {
         return (
             <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-10 max-w-6xl mx-auto">
-                <WhatsAppInbox enabled={data.settings.whatsapp_enabled} initialId={params.get('conversa')} onUnread={setUnread} isAdmin={false} />
+                <WhatsAppInbox enabled={data.settings.whatsapp_enabled || data.settings.instagram_enabled} initialId={params.get('conversa')} onUnread={setUnread} isAdmin={false} />
             </div>
         )
     }
@@ -84,12 +84,12 @@ export default function AliceAdmin() {
                 ariaLabel="Seções da Alice"
                 options={[
                     { value: 'config', label: 'Configuração' },
-                    { value: 'conversas', label: 'WhatsApp', badge: unread },
+                    { value: 'conversas', label: 'Mensagens', badge: unread },
                     { value: 'atividade', label: 'Atividade' },
                 ]}
             />
             {tab === 'config' && <AliceSettingsView data={data} onSaved={setData} onReload={load} />}
-            {tab === 'conversas' && <WhatsAppInbox enabled={data.settings.whatsapp_enabled} initialId={params.get('conversa')} onUnread={setUnread} onSetup={() => changeTab('config')} />}
+            {tab === 'conversas' && <WhatsAppInbox enabled={data.settings.whatsapp_enabled || data.settings.instagram_enabled} initialId={params.get('conversa')} onUnread={setUnread} onSetup={() => changeTab('config')} />}
             {tab === 'atividade' && <ActivityView />}
         </div>
     )
