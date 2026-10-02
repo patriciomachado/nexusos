@@ -20,9 +20,13 @@ export async function GET(req: NextRequest) {
  * away (Meta retries slow webhooks) and let Alice work after the response.
  */
 export async function POST(req: NextRequest) {
+    // TEMP debug (remove once Meta delivery is confirmed working): prove whether Meta is calling at all.
+    console.log('[instagram debug] POST received, has-sig:', !!req.headers.get('x-hub-signature-256'), 'configured:', webhookConfigured())
     if (!webhookConfigured()) return NextResponse.json({ error: 'not configured' }, { status: 503 })
     const raw = await req.text()
-    if (!validSignature(raw, req.headers.get('x-hub-signature-256'))) {
+    const sigOk = validSignature(raw, req.headers.get('x-hub-signature-256'))
+    console.log('[instagram debug] sig valid:', sigOk, 'body:', raw.slice(0, 500))
+    if (!sigOk) {
         return NextResponse.json({ error: 'invalid signature' }, { status: 401 })
     }
     let body: unknown
