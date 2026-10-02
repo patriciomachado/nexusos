@@ -160,7 +160,7 @@ export async function DELETE(req: NextRequest) {
     // Verify the transaction belongs to the company
     const { data: transaction } = await ctx.db
         .from('cash_transactions')
-        .select('id, company_id, cash_register_id')
+        .select('id, company_id, cash_register_id, type, source_type, source_id, amount')
         .eq('id', id)
         .single()
 
@@ -193,6 +193,28 @@ export async function DELETE(req: NextRequest) {
         .from('sales')
         .update({ cash_transaction_id: null })
         .eq('cash_transaction_id', id)
+
+    // An entry linked to an OS/sale has a matching `payments` row created alongside it
+    // (faturamento). Dashboards and reports read revenue from `payments`, not from
+    // cash_transactions, so deleting only the register entry would leave the amount
+    // still counted as revenue. Remove the matching payment too.
+    if (transaction.type === 'entry' && transaction.source_id && (transaction.source_type === 'service_order' || transaction.source_type === 'product_sale')) {
+        const column = transaction.source_type === 'service_order' ? 'service_order_id' : 'sale_id'
+        const { data: matchingPayment } = await ctx.db
+            .from('payments')
+            .select('id')
+            .eq('company_id', ctx.companyId)
+            .eq(column, transaction.source_id)
+            .eq('payment_status', 'completed')
+            .eq('amount', transaction.amount)
+            .order('payment_date', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+
+        if (matchingPayment) {
+            await ctx.db.from('payments').delete().eq('id', matchingPayment.id)
+        }
+    }
 
     // Delete the transaction
     const { error } = await ctx.db
