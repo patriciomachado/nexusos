@@ -20,6 +20,7 @@ const isPublicRoute = createRouteMatcher([
     '/api/cron/(.*)',
     // Meta's servers; the route checks the webhook signature itself.
     '/api/whatsapp/webhook',
+    '/api/instagram/webhook',
 ])
 
 export default clerkMiddleware(async (auth, request) => {
