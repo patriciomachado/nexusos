@@ -49,7 +49,7 @@ export default async function PrintOSPage({ params }: { params: Promise<{ id: st
     const checklist = (Array.isArray(os.checklist_progress) ? os.checklist_progress : []) as Check[]
     const doc = readDocuments(company?.settings)
     const accent = doc.accent
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL?.trim() || 'https://nexusgestor.com').replace(/\/$/, '')
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL?.trim() || 'https://www.nexusgestor.com').replace(/\/$/, '')
     const months = Number(os.warranty_months) || 0
     const terms = doc.os_terms || (months > 0 ? `Garantia de ${months} ${months === 1 ? 'mês' : 'meses'} para o serviço executado, a partir da data de entrega.` : '')
 

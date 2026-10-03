@@ -194,7 +194,7 @@ export async function monthlyUsage(db: SupabaseClient, companyId: string) {
 }
 
 export function appUrl() {
-    return (process.env.NEXT_PUBLIC_APP_URL?.trim() || 'https://nexusgestor.com').replace(/\/$/, '')
+    return (process.env.NEXT_PUBLIC_APP_URL?.trim() || 'https://www.nexusgestor.com').replace(/\/$/, '')
 }
 
 /** A prepared action may be confirmed for this long. */
