@@ -106,7 +106,10 @@ export async function settingsForInstagramAccountId(db: SupabaseClient, accountI
 
 /** Handles one incoming WhatsApp message end to end (runs after the webhook answered). */
 export async function handleIncoming(db: SupabaseClient, settings: AliceSettings, msg: InboundMessage) {
-    if (!settings.whatsapp_enabled || !channelReady(settings)) return
+    if (!settings.whatsapp_enabled || !channelReady(settings)) {
+        console.error('[whatsapp] message dropped before reaching the inbox', { enabled: settings.whatsapp_enabled, ready: channelReady(settings), company: settings.company_id })
+        return
+    }
     const companyId = settings.company_id
     const phone = digitsOnly(msg.from)
 
