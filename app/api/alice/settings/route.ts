@@ -8,7 +8,7 @@ import { planRequiredResponse } from '@/lib/plan-server'
 import { qrServerConfigured } from '@/lib/alice/gateway'
 import { transcriptionConfigured } from '@/lib/alice/transcribe'
 import { webhookConfigured, describeNumber, WhatsAppError } from '@/lib/alice/whatsapp'
-import { webhookConfigured as instagramWebhookConfigured, describeAccount, InstagramError } from '@/lib/alice/instagram'
+import { webhookConfigured as instagramWebhookConfigured, describeAccount, subscribeAccount, InstagramError } from '@/lib/alice/instagram'
 import { appUrl } from '@/lib/alice/config'
 
 /**
@@ -105,11 +105,13 @@ export async function PUT(req: NextRequest) {
     const igToken = next.instagram_access_token !== undefined ? next.instagram_access_token : settings.instagram_access_token
     let instagramInfo: { instagram_username?: string | null } = {}
 
-    // Credentials changed: check them with Meta before saving.
+    // Credentials changed: check them with Meta before saving, then (re)subscribe to the webhook —
+    // without this, Meta never delivers DM events to the account even with valid credentials.
     if ((next.instagram_account_id !== undefined || next.instagram_access_token !== undefined) && igAccountId && igToken) {
         try {
             const info = await describeAccount(igToken, igAccountId)
             instagramInfo = { instagram_username: info.username ?? null }
+            await subscribeAccount(igToken, igAccountId)
         } catch (err) {
             const message = err instanceof InstagramError ? err.message : 'Não foi possível validar com a Meta.'
             return NextResponse.json({ error: `A Meta recusou as credenciais do Instagram: ${message}` }, { status: 400 })
@@ -117,6 +119,16 @@ export async function PUT(req: NextRequest) {
     }
     if (next.instagram_enabled && !(igAccountId && igToken)) {
         return NextResponse.json({ error: 'Informe a identificação da conta e o token antes de ativar o Instagram.' }, { status: 400 })
+    }
+    // Toggling on with credentials saved earlier: the block above only ran if they changed just now,
+    // so make sure the subscription still exists before letting the store rely on it.
+    if (next.instagram_enabled && next.instagram_account_id === undefined && next.instagram_access_token === undefined && igAccountId && igToken) {
+        try {
+            await subscribeAccount(igToken, igAccountId)
+        } catch (err) {
+            const message = err instanceof InstagramError ? err.message : 'Não foi possível confirmar a inscrição do webhook com a Meta.'
+            return NextResponse.json({ error: `A Meta recusou a inscrição do webhook do Instagram: ${message}` }, { status: 400 })
+        }
     }
 
     const provider = next.whatsapp_provider ?? settings.whatsapp_provider

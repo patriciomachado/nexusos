@@ -67,6 +67,16 @@ export async function describeAccount(token: string, accountId: string) {
     return graph<{ username?: string; name?: string }>(token, `${accountId}?fields=username,name`)
 }
 
+/**
+ * Subscribes this account to the app's webhook so Meta actually starts delivering DM events to it.
+ * Unlike the WhatsApp Cloud API (where the embedded setup auto-attaches the webhook to the WABA),
+ * each Instagram account must be explicitly subscribed via this endpoint — otherwise GET verification
+ * succeeds and credentials validate fine, but no "messages" event ever arrives. Safe to call repeatedly.
+ */
+export async function subscribeAccount(token: string, accountId: string) {
+    await graph(token, `${accountId}/subscribed_apps?subscribed_fields=messages`, { method: 'POST' })
+}
+
 /** Best-effort profile lookup for a DM sender, shown as the conversation title. Never blocks the inbound flow. */
 export async function describeUser(token: string, igsid: string): Promise<{ username?: string; name?: string } | null> {
     try {
