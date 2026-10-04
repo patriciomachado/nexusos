@@ -195,7 +195,11 @@ async function emit(inst, event, data) {
     for (let attempt = 0; attempt < 3; attempt++) {
         try {
             const res = await fetch(hook.url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, signal: AbortSignal.timeout(15000) })
-            if (res.ok || res.status < 500) return
+            if (res.ok) return
+            if (res.status < 500) {
+                console.error(`[${inst.name}] o app recusou o webhook (${event}): HTTP ${res.status} em ${hook.url}`)
+                return
+            }
         } catch { /* retry */ }
         await new Promise(r => setTimeout(r, 1000 * (attempt + 1)))
     }
