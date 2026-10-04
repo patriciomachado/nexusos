@@ -516,6 +516,49 @@ const criarOrcamento = defineWrite({
     },
 })
 
+/**
+ * Igual ao "Cotar" do dashboard, mas pela Alice: monta as opções (tabela de
+ * Peças, ou fornecedor + margem da loja nas 3 linhas Genuína/Premium/
+ * Standard), grava o orçamento com link público e devolve a mensagem pronta.
+ * É só leitura de preço + um link novo (o mesmo que o cotar_peca do cliente
+ * gera), então roda direto também no WhatsApp de confiança, sem cartão.
+ */
+const montarOrcamento = defineRead({
+    name: 'montar_orcamento',
+    label: 'Montando orçamento',
+    description: 'Monta um orçamento pronto pra mandar ao cliente, igual ao botão "Cotar" do app: usa o preço cadastrado na tabela de Peças ou, sem cadastro, o preço do fornecedor (NovaPeças) já com a margem da loja, separado nas linhas Genuína/Premium/Standard, e gera o link do orçamento. Use sempre que perguntarem quanto custa/fica um reparo, pedirem pra cotar ou orçar algo, ou quando a peça não está em estoque e o preço vai sair do fornecedor. Não registra no Funil nem envia nada — pra isso, no app, use criar_orcamento.',
+    schema: z.object({
+        aparelho: z.string().min(2).max(120).describe('Marca e modelo do aparelho, ex.: "Moto G15"'),
+        servico: z.string().min(2).max(80).describe('Ex.: "troca de tela", "troca de bateria"'),
+        cliente_nome: z.string().max(120).optional().describe('Nome do cliente, se souber (aparece no orçamento)'),
+        cliente_telefone: z.string().max(30).optional(),
+    }),
+    async run(ctx, i) {
+        let resolved: ResolvedQuote
+        try {
+            resolved = await resolveOrcamentoOptions(ctx, i.aparelho, i.servico)
+        } catch (err) {
+            if (err instanceof ToolError) return { encontrado: false, instrucao: MANAGERS.includes(ctx.user?.role ?? '') ? 'Nada cadastrado nem no fornecedor para esse aparelho/serviço.' : 'Nada cadastrado na tabela de Peças para esse aparelho/serviço.' }
+            throw err
+        }
+        const { options, deviceModel, fonte } = resolved
+        const token = await createPartQuote(ctx.db, ctx.companyId, {
+            deviceModel, service: i.servico, options,
+            customerName: i.cliente_nome ?? null, customerPhone: i.cliente_telefone ?? null,
+        })
+        if (!token) throw new ToolError('Não foi possível gerar o orçamento agora.')
+        const link = `${appUrl()}/orcamento/${token}`
+        return {
+            encontrado: true,
+            fonte: fonte === 'fornecedor' ? 'fornecedor + margem da loja (sem cadastro)' : 'tabela de Peças',
+            opcoes: options.map(o => ({ tipo: o.tipo, valor: brl(o.valor) })),
+            link,
+            mensagem_sugerida: buildQuoteMessage(deviceModel, i.servico, options, link),
+            instrucao: 'Responda com a mensagem_sugerida quase como está (pode ajustar o tom, mas mantenha os valores e o link). Nunca mostre o preço de custo do fornecedor.',
+        }
+    },
+})
+
 // ─── Agenda, equipe e catálogo ───────────────────────────────────────────────
 
 const agenda = defineRead({
@@ -658,7 +701,7 @@ const consultarAparelhos = defineRead({
 const consultarPrecoFornecedor = defineRead({
     name: 'consultar_preco_fornecedor',
     label: 'Consultando preço no site do fornecedor',
-    description: 'Consulta ao vivo, no site da NovaPeças (novapecascell.com.br), o preço de uma peça pelo nome/aparelho (ex.: "tela iphone 13"). Não é o custo já cadastrado no sistema — é o preço atual no site do fornecedor, útil pra decidir se vale atualizar o custo cadastrado.',
+    description: 'Consulta ao vivo, no site da NovaPeças (novapecascell.com.br), o preço de uma peça pelo nome/aparelho (ex.: "tela iphone 13"). Não é o custo já cadastrado no sistema — é o preço atual no site do fornecedor (CUSTO da loja), útil pra decidir se vale atualizar o custo cadastrado. Nunca use isso pra responder quanto custa um reparo: aí use montar_orcamento, que já aplica a margem.',
     roles: MANAGERS,
     schema: z.object({ busca: z.string().min(2).max(80).describe('Nome da peça e aparelho, ex.: "tela iphone 13", "bateria moto g30"') }),
     async run(ctx, i) {
@@ -789,7 +832,7 @@ const criarTarefa = defineWrite({
 export const STAFF_TOOLS: AnyTool[] = [
     buscarClientes, verCliente, cadastrarCliente, atualizarCliente,
     buscarOrdens, verOrdem, criarOrdem, atualizarStatus, anotarOrdem, atribuirTecnico,
-    criarOrcamento,
+    criarOrcamento, montarOrcamento,
     agenda, agendar, listarTecnicos, consultarEstoque, consultarAparelhos, consultarPrecoFornecedor, listarServicos,
     pendencias, resumoFinanceiro, minhasTarefas, criarTarefa,
 ]
