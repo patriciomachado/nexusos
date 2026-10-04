@@ -63,10 +63,12 @@ function level(o: BoardOS): 'ok' | 'warn' | 'late' {
 
 const normalize = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
-export default function MesaClient({ orders: initial, technicians, myTechnicianId }: {
+export default function MesaClient({ orders: initial, technicians, myTechnicianId, notifyReadyDefault }: {
     orders: BoardOS[]
     technicians: { id: string; name: string }[]
     myTechnicianId: string | null
+    /** "Pronto para retirada" com envio automático ligado em Mensagens automáticas. */
+    notifyReadyDefault: boolean
 }) {
     const router = useRouter()
     const [orders, setOrders] = useState(initial)
@@ -78,7 +80,7 @@ export default function MesaClient({ orders: initial, technicians, myTechnicianI
     const [paying, setPaying] = useState<BoardOS | null>(null)
     const [dragId, setDragId] = useState<string | null>(null)
     const [over, setOver] = useState<string | null>(null)
-    const [notify, setNotify] = useState(true)
+    const [notify, setNotify] = useState(notifyReadyDefault)
     const [busy, setBusy] = useState(false)
 
     const filtered = useMemo(() => {
@@ -110,7 +112,8 @@ export default function MesaClient({ orders: initial, technicians, myTechnicianI
             const res = await fetch(`/api/service-orders/${o.id}/status`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status, notify }),
+                // O switch só vale pro aviso de pronta; os outros status seguem o que está em Mensagens automáticas.
+                body: JSON.stringify(status === 'concluida' ? { status, notify } : { status }),
             })
             const d = await res.json().catch(() => ({}))
             if (!res.ok) throw new Error()
@@ -286,7 +289,7 @@ export default function MesaClient({ orders: initial, technicians, myTechnicianI
                             </div>
                         </div>
 
-                        <Group footer="Quando a OS vira “Pronta”, a Alice manda o aviso com o valor pelo WhatsApp da loja.">
+                        <Group footer="Quando a OS vira “Pronta”, o aviso sai pelo WhatsApp da loja com o texto de Configurações → Mensagens automáticas.">
                             <SwitchRow label="Avisar cliente quando ficar pronta" checked={notify} onChange={setNotify} />
                         </Group>
 

@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { createAdminClient } from '@/lib/supabase'
 import { redirect } from 'next/navigation'
 import MesaClient, { type BoardOS } from './MesaClient'
+import { eventMessage, normalizeAutomations } from '@/lib/customers/messages'
 
 const ACTIVE = ['aberta', 'agendada', 'em_andamento', 'aguardando_pecas', 'concluida']
 const daysAgoIso = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString()
@@ -17,7 +18,7 @@ export default async function MesaPage() {
 
     // Board: everything in progress plus what was delivered in the last 7 days.
     const weekAgo = daysAgoIso(7)
-    const [{ data: active }, { data: delivered }, { data: technicians }] = await Promise.all([
+    const [{ data: active }, { data: delivered }, { data: technicians }, { data: company }] = await Promise.all([
         db.from('service_orders')
             .select('id, order_number, title, equipment_description, status, priority, created_at, updated_at, final_cost, estimated_cost, technician_id, customers(name, phone), technicians(name)')
             .eq('company_id', companyId).in('status', ACTIVE).order('created_at', { ascending: false }).limit(500),
@@ -25,7 +26,9 @@ export default async function MesaPage() {
             .select('id, order_number, title, equipment_description, status, priority, created_at, updated_at, final_cost, estimated_cost, technician_id, customers(name, phone), technicians(name)')
             .eq('company_id', companyId).eq('status', 'faturada').gte('updated_at', weekAgo).order('updated_at', { ascending: false }).limit(60),
         db.from('technicians').select('id, name, user_id').eq('company_id', companyId).eq('is_active', true).order('name'),
+        db.from('companies').select('settings').eq('id', companyId).single(),
     ])
+    const readyAuto = eventMessage(normalizeAutomations((company?.settings as Record<string, unknown> | null)?.automations), 'os_concluida').auto
 
     const orders = [...(active ?? []), ...(delivered ?? [])]
 
@@ -64,6 +67,7 @@ export default async function MesaPage() {
             orders={board}
             technicians={(technicians ?? []).map(t => ({ id: t.id, name: t.name }))}
             myTechnicianId={myTech}
+            notifyReadyDefault={readyAuto}
         />
     )
 }

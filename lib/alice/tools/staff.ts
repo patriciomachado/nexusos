@@ -13,6 +13,7 @@ import { loadPartMargin } from '@/lib/parts/prices'
 import { suggestedPrice } from '@/lib/parts/server'
 import { createFunnelEntry } from '@/lib/funnel/entries'
 import { readyChannel, sendOnce, waPhone } from '@/lib/customers/messages'
+import { notifyOrderEvent, notifyOrderStatus } from '@/lib/os/notify'
 
 const MANAGERS = [...ADMIN_ROLES, 'manager']
 
@@ -329,7 +330,8 @@ const criarOrdem = defineWrite({
                 related_entity_type: 'service_order', related_entity_id: data.id,
             })
         }
-        return { message: `OS ${data.order_number} aberta para ${c.name}.`, href: `/service-orders/${data.id}`, data: { numero: data.order_number } }
+        const notice = await notifyOrderEvent(ctx.db, ctx.companyId, data.id, 'os_aberta', { userId: ctx.user?.id ?? null }).catch(() => null)
+        return { message: `OS ${data.order_number} aberta para ${c.name}.${notice?.sent ? ' Cliente avisado no WhatsApp.' : ''}`, href: `/service-orders/${data.id}`, data: { numero: data.order_number } }
     },
 })
 
@@ -363,7 +365,8 @@ const atualizarStatus = defineWrite({
         const { error } = await ctx.db.from('service_orders').update(patch).eq('id', os.id).eq('company_id', ctx.companyId)
         if (error) throw new ToolError('Não foi possível mudar o status.')
         await logOrderHistory(ctx, os.id, 'status', os.status, i.status, i.motivo || 'Alterado pela Alice')
-        return { message: `${os.order_number} agora está ${OS_STATUS_LABELS[i.status]}.`, href: `/service-orders/${os.id}` }
+        const notice = os.status !== i.status ? await notifyOrderStatus(ctx.db, ctx.companyId, os.id, i.status, { userId: ctx.user?.id ?? null }).catch(() => null) : null
+        return { message: `${os.order_number} agora está ${OS_STATUS_LABELS[i.status]}.${notice?.sent ? ' Cliente avisado no WhatsApp.' : ''}`, href: `/service-orders/${os.id}` }
     },
 })
 

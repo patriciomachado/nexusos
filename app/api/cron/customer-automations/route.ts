@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { timingSafeEqual } from 'crypto'
 import { createAdminClient } from '@/lib/supabase'
 import { dateStringInZone, DEFAULT_TIMEZONE, addDays } from '@/lib/tasks/dates'
-import { fill, normalizeAutomations, readyChannel, sendOnce, waPhone } from '@/lib/customers/messages'
+import { eventMessage, fill, normalizeAutomations, readyChannel, sendOnce, waPhone } from '@/lib/customers/messages'
+import { sendCharge } from '@/lib/messages/charge'
 import { remindAppointment } from '@/lib/appointments/reminder'
 import { alertNewReviews } from '@/lib/google/alerts'
 
@@ -18,8 +19,9 @@ function authorized(req: NextRequest) {
 }
 
 /**
- * Daily: birthday messages and the Google review request a few days after
- * an OS is delivered, for stores that turned them on (Clientes → Automações).
+ * Daily: birthday messages, the Google review request a few days after an
+ * OS is delivered, appointment reminders and payment reminders on the due
+ * date, for stores that turned them on (Configurações → Mensagens automáticas).
  * Each message goes once (customer_messages).
  */
 export async function GET(req: NextRequest) {
@@ -31,7 +33,8 @@ export async function GET(req: NextRequest) {
     let sent = 0
     for (const c of companies ?? []) {
         const auto = normalizeAutomations((c.settings as Record<string, unknown> | null)?.automations)
-        if (!auto.birthday && !auto.review && !auto.appointment_reminder) continue
+        const chargeOnDue = eventMessage(auto, 'cobranca').auto
+        if (!auto.birthday && !auto.review && !auto.appointment_reminder && !chargeOnDue) continue
         const alice = await readyChannel(db, c.id)
         if (!alice) continue
 
@@ -72,6 +75,18 @@ export async function GET(req: NextRequest) {
             for (const a of appts ?? []) {
                 const r = await remindAppointment(db, c.id, a)
                 if (r.sent) sent++
+            }
+        }
+
+        // Contas a receber que vencem hoje: lembrete de pagamento (uma vez por conta).
+        if (chargeOnDue) {
+            const { data: due } = await db.from('payments')
+                .select('id, amount, due_date, notes, customer_id, customers(name, phone), service_orders(order_number)')
+                .eq('company_id', c.id).eq('payment_status', 'pending').eq('due_date', today)
+                .not('customer_id', 'is', null).limit(100)
+            for (const p of due ?? []) {
+                const r = await sendCharge(db, c.id, p, { automations: auto, storeName: c.name ?? 'loja' }).catch(() => null)
+                if (r?.sent) sent++
             }
         }
     }

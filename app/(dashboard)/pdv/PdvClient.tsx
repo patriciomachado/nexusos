@@ -433,6 +433,7 @@ function CheckoutSheet({ total, subtotal, discountValue, discountNeedsPin, cart,
                 if (d.code === 'NEEDS_PIN') { setAskPin(true); setPin('') }
                 throw new Error(typeof d.error === 'string' ? d.error : 'Não foi possível concluir a venda.')
             }
+            if (d.receipt_sent) toast.success('Recibo enviado no WhatsApp do cliente')
             onDone({ id: d.id, change, total })
         } catch (e) {
             toast.error((e as Error).message)

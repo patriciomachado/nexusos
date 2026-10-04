@@ -110,11 +110,6 @@ export async function deletePartQuote(db: SupabaseClient, companyId: string, quo
     return !error
 }
 
-/** Texto pra cutucar o cliente sobre um orçamento parado — conversa de gente, não aviso de sistema. */
-export function buildFollowUpMessage(deviceModel: string, service: string, link: string) {
-    return `Oi, tudo bem? Vi aqui que você chegou a pedir um orçamento pra ${service.toLowerCase()} do seu ${deviceModel}. Ainda tá precisando? Consigo encaixar rapidinho aqui na loja, é só me falar 🙂\n\n${link}`
-}
-
 export interface QuoteRow { id: string; device_model: string; service: string; options: PartQuoteOption[]; valid_until: string; created_at: string; service_order_id: string | null }
 
 /** Total, convertidos em OS, em aberto e vencidos sem confirmar. */

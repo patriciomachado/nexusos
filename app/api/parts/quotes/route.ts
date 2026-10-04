@@ -1,20 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { bad, firstIssue, partsContext } from '@/lib/parts/server'
-import { buildFollowUpMessage, buildQuoteMessage, computeQuoteStats, createPartQuote, findQuoteOptions, sortQuoteOptions, type PartQuoteOption } from '@/lib/parts/quotes'
+import { buildQuoteMessage, computeQuoteStats, createPartQuote, findQuoteOptions, sortQuoteOptions, type PartQuoteOption } from '@/lib/parts/quotes'
 import { appUrl } from '@/lib/alice/config'
 import { createFunnelEntry } from '@/lib/funnel/entries'
+import { eventMessage, renderMessage } from '@/lib/customers/messages'
+import { loadAutomations } from '@/lib/messages/server'
 
 /** Orçamentos gerados (peças cotadas), com o que virou OS e o que ainda tá parado. */
 export async function GET() {
     const g = await partsContext(); if ('error' in g) return g.error
     const { db, companyId } = g.ctx
-    const { data, error } = await db.from('part_quotes')
+    const [{ data, error }, { automations, storeName }] = await Promise.all([db.from('part_quotes')
         .select('id, token, device_model, service, options, valid_until, created_at, service_order_id, customer_name, customer_phone, service_orders(order_number)')
         .eq('company_id', companyId)
         .order('created_at', { ascending: false })
-        .limit(200)
+        .limit(200), loadAutomations(db, companyId)])
     if (error) return bad(error.message, 500)
+    // Mesmo texto do lembrete automático (Configurações → Mensagens automáticas), pra copiar ou mandar na mão.
+    const followUpText = eventMessage(automations, 'orcamento_lembrete').text
     const rows = data ?? []
     const now = Date.now()
     const quotes = rows.map(r => {
@@ -22,7 +26,9 @@ export async function GET() {
         const link = `${appUrl()}/orcamento/${r.token}`
         const order = Array.isArray(r.service_orders) ? r.service_orders[0] : r.service_orders
         const status = r.service_order_id ? 'convertido' : new Date(r.valid_until).getTime() < now ? 'vencido' : 'aberto'
-        const followUp = status === 'aberto' ? buildFollowUpMessage(r.device_model, r.service, link) : null
+        const followUp = status === 'aberto'
+            ? renderMessage(followUpText, { nome: (r.customer_name ?? '').split(' ')[0], aparelho: r.device_model, servico: r.service.toLowerCase(), link, loja: storeName })
+            : null
         return {
             id: r.id, device_model: r.device_model, service: r.service, options, valid_until: r.valid_until, created_at: r.created_at,
             status, order_number: order?.order_number ?? null, link,

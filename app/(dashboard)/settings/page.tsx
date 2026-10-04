@@ -72,7 +72,7 @@ export default async function SettingsPage() {
 
                         <SettingsSection title="Clientes e WhatsApp">
                             <SettingsRow href="/alice?aba=config" icon={MessageCircle} color="bg-green-500" label="Alice e WhatsApp" detail="Quem usa, respostas e número conectado" />
-                            <SettingsRow href="/customers?automacoes=1" icon={Bell} color="bg-rose-500" label="Mensagens automáticas" detail="Aniversário, pós-venda e revisão" />
+                            <SettingsRow href="/settings/mensagens" icon={Bell} color="bg-rose-500" label="Mensagens automáticas" detail="OS, orçamentos, vendas, cobrança, agenda e clientes" />
                         </SettingsSection>
 
                         <SettingsSection title="Dados" footer="Exporte planilhas quando quiser e guarde um backup completo da loja.">

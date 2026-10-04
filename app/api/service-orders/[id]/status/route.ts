@@ -1,7 +1,7 @@
 import { syncServiceOrderStock } from '@/lib/parts/stock'
 import { NextRequest, NextResponse } from 'next/server'
 import { findOpenRegister } from '@/lib/cash/server'
-import { notifyReady } from '@/lib/os/notify'
+import { notifyOrderStatus } from '@/lib/os/notify'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { idSchema, osStatusUpdateSchema } from '@/lib/validations/schemas'
 
@@ -167,10 +167,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         change_reason: reason,
     })
 
-    // Ready: tell the customer (unless the screen asked not to).
-    let notice: Awaited<ReturnType<typeof notifyReady>> | null = null
-    if (status === 'concluida' && os.status !== 'concluida' && body?.notify !== false) {
-        notice = await notifyReady(db, companyId, id).catch(() => null)
+    // Mensagem pro cliente do novo status, conforme Configurações → Mensagens automáticas.
+    // notify: false → não manda; true → manda mesmo com o automático desligado (pedido na hora).
+    let notice: Awaited<ReturnType<typeof notifyOrderStatus>> = null
+    if (os.status !== status && body?.notify !== false) {
+        notice = await notifyOrderStatus(db, companyId, id, status, { manual: body?.notify === true, userId: dbUser.id }).catch(() => null)
     }
 
     return NextResponse.json({ success: true, notice })

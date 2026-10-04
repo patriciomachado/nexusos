@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { Cake, CheckCircle2, ChevronRight, Crown, Loader2, MessageCircle, Plus, Search, Settings2, UserPlus, X } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Sheet from '@/components/tasks/Sheet'
-import { Field, Group, PrimaryButton, SecondaryButton, SwitchRow, TextArea, TextInput, brl } from '@/components/ui/form'
+import { Field, Group, PrimaryButton, SecondaryButton, TextArea, brl } from '@/components/ui/form'
 import { cn } from '@/lib/utils'
 
 /**
@@ -38,7 +38,7 @@ const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCa
 const daysSince = (iso: string | null) => (iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000) : Infinity)
 const initials = (n: string) => n.split(' ').filter(Boolean).slice(0, 2).map(p => p[0]?.toUpperCase()).join('')
 
-export default function CustomersClient({ role, openAutomations }: { role: string; openAutomations?: boolean }) {
+export default function CustomersClient({ role }: { role: string }) {
     const manager = ['admin', 'owner', 'manager'].includes(role)
     const [rows, setRows] = useState<CustomerRow[]>([])
     const [loading, setLoading] = useState(true)
@@ -46,7 +46,6 @@ export default function CustomersClient({ role, openAutomations }: { role: strin
     const [imeiIds, setImeiIds] = useState<string[] | null>(null)
     const [segment, setSegment] = useState<Segment>('all')
     const [campaign, setCampaign] = useState(false)
-    const [autoOpen, setAutoOpen] = useState(!!openAutomations)
 
     const load = useCallback(() => {
         fetch('/api/customers/insights').then(r => r.json()).then(d => setRows(Array.isArray(d.data) ? d.data : [])).catch(() => toast.error('Não foi possível carregar os clientes')).finally(() => setLoading(false))
@@ -130,7 +129,7 @@ export default function CustomersClient({ role, openAutomations }: { role: strin
                         <SecondaryButton className="flex-1 text-[16px]" onClick={() => shown.length ? setCampaign(true) : toast.message('Nenhum cliente neste filtro.')}>
                             <MessageCircle className="w-5 h-5" /> Mensagem para {segment === 'all' && !query ? 'todos' : 'estes'} ({shown.length})
                         </SecondaryButton>
-                        <SecondaryButton onClick={() => setAutoOpen(true)} aria-label="Automações"><Settings2 className="w-5 h-5" /></SecondaryButton>
+                        <Link href="/settings/mensagens" aria-label="Mensagens automáticas" className="h-12 w-12 shrink-0 rounded-full bg-foreground/[0.07] hover:bg-foreground/[0.1] inline-flex items-center justify-center"><Settings2 className="w-5 h-5" /></Link>
                     </div>
                 )}
 
@@ -169,7 +168,6 @@ export default function CustomersClient({ role, openAutomations }: { role: strin
             </div>
 
             {campaign && <CampaignSheet targets={shown} onClose={() => setCampaign(false)} />}
-            {autoOpen && <AutomationsSheet onClose={() => setAutoOpen(false)} />}
         </div>
     )
 }
@@ -238,43 +236,3 @@ function CampaignSheet({ targets, onClose }: { targets: CustomerRow[]; onClose: 
     )
 }
 
-/* ────────────────────────────── Automations ────────────────────────────── */
-
-interface Auto { birthday: boolean; birthday_text: string; review: boolean; review_days: number; review_text: string; google_review_url: string | null; whatsapp_ready: boolean; can_edit: boolean }
-
-function AutomationsSheet({ onClose }: { onClose: () => void }) {
-    const [a, setA] = useState<Auto | null>(null)
-    const [saving, setSaving] = useState(false)
-    useEffect(() => { fetch('/api/customers/automations').then(r => r.json()).then(d => d && 'birthday' in d && setA(d)).catch(() => {}) }, [])
-    const save = async () => {
-        if (!a) return
-        setSaving(true)
-        try {
-            const res = await fetch('/api/customers/automations', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(a) })
-            if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'Não foi possível salvar')
-            toast.success('Automações salvas'); onClose()
-        } catch (e) { toast.error((e as Error).message) } finally { setSaving(false) }
-    }
-    return (
-        <Sheet open onClose={onClose} title="Mensagens automáticas" full footer={a?.can_edit ? <PrimaryButton className="w-full" onClick={save} disabled={saving}>{saving && <Loader2 className="w-5 h-5 animate-spin" />}Salvar</PrimaryButton> : undefined}>
-            {!a ? <div className="h-40 animate-pulse rounded-2xl bg-foreground/[0.04]" /> : (
-                <div className="space-y-5">
-                    {!a.whatsapp_ready && <p className="rounded-2xl bg-orange-500/10 text-orange-800 dark:text-orange-300 px-4 py-3 text-[15px]">Conecte o WhatsApp da loja em Alice → Configurações para as mensagens saírem sozinhas.</p>}
-                    <Group footer="Enviada às 10h no dia do aniversário (precisa da data de nascimento no cadastro).">
-                        <SwitchRow label="Parabéns no aniversário" checked={a.birthday} onChange={v => setA({ ...a, birthday: v })} />
-                        {a.birthday && <Field label="Mensagem" htmlFor="au-bd"><TextArea id="au-bd" rows={3} value={a.birthday_text} onChange={e => setA({ ...a, birthday_text: e.target.value })} /></Field>}
-                    </Group>
-                    <Group footer={a.google_review_url ? 'Enviada alguns dias depois de a OS ser entregue. Variáveis: {nome}, {aparelho}, {link}, {loja}.' : 'Cadastre o link de avaliação do Google em Configurações → Loja para ativar.'}>
-                        <SwitchRow label="Pedir avaliação no Google" checked={a.review} onChange={v => setA({ ...a, review: v })} />
-                        {a.review && (
-                            <>
-                                <Field label="Dias depois da entrega" htmlFor="au-days"><TextInput id="au-days" inputMode="numeric" value={String(a.review_days)} onChange={e => setA({ ...a, review_days: Number(e.target.value.replace(/\D/g, '')) || 1 })} /></Field>
-                                <Field label="Mensagem" htmlFor="au-rv"><TextArea id="au-rv" rows={3} value={a.review_text} onChange={e => setA({ ...a, review_text: e.target.value })} /></Field>
-                            </>
-                        )}
-                    </Group>
-                </div>
-            )}
-        </Sheet>
-    )
-}

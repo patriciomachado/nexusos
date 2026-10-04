@@ -4,6 +4,7 @@ import { getContext, unauthorizedResponse } from '@/lib/security'
 import { saleSchema } from '@/lib/validations/schemas'
 import { findOpenRegister, isManager, isOwner, loadCashSettings, verifyPin } from '@/lib/cash/server'
 import { rateLimit } from '@/lib/security-rate-limit'
+import { sendSaleReceipt } from '@/lib/pdv/send'
 
 /** Recent sales (for returns and receipts). ?days=7 (max 90), ?q= customer or #code. */
 export async function GET(req: NextRequest) {
@@ -307,7 +308,12 @@ export async function POST(req: NextRequest) {
 
         if (paymentError) console.error('Error creating payment record:', paymentError)
 
-        return NextResponse.json(sale, { status: 201 })
+        // Recibo automático pro cliente, se a loja ligou (Configurações → Mensagens automáticas).
+        const receipt = saleData.customer_id
+            ? await sendSaleReceipt(db, companyId, sale.id, { userId: dbUser.id }).catch(err => { console.error('[pdv] auto receipt failed:', err); return null })
+            : null
+
+        return NextResponse.json({ ...sale, receipt_sent: !!receipt?.sent }, { status: 201 })
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 })
     }

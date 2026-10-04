@@ -3,6 +3,9 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { loadSettings, type AliceSettings } from '@/lib/alice/config'
 import { channelReady, channelSend } from '@/lib/alice/channel'
 import { digitsOnly } from '@/lib/alice/phone'
+import { MAX_MESSAGE_LENGTH, MESSAGE_EVENTS, messageEvent, renderTemplate } from '@/lib/messages/catalog'
+
+export interface EventMessageConfig { auto: boolean; text: string }
 
 export interface Automations {
     birthday: boolean
@@ -12,6 +15,8 @@ export interface Automations {
     review_text: string
     appointment_reminder: boolean
     appointment_text: string
+    /** Mensagens dos outros módulos (lib/messages/catalog.ts), por chave. */
+    events: Record<string, EventMessageConfig>
 }
 
 export const DEFAULT_AUTOMATIONS: Automations = {
@@ -22,6 +27,21 @@ export const DEFAULT_AUTOMATIONS: Automations = {
     review_text: 'Oi, {nome}! Tudo certo com o seu {aparelho}? Se puder, conta pra gente como foi o atendimento da {loja} no Google, ajuda muito: {link}',
     appointment_reminder: false,
     appointment_text: 'Olá, {nome}! Passando para lembrar do seu horário na {loja}: {data} às {hora}.{servico} Se precisar remarcar, é só responder aqui.',
+    events: {},
+}
+
+function normalizeEvents(raw: unknown): Record<string, EventMessageConfig> {
+    const r = (raw ?? {}) as Record<string, Partial<EventMessageConfig> | undefined>
+    const out: Record<string, EventMessageConfig> = {}
+    for (const e of MESSAGE_EVENTS) {
+        if (e.legacy) continue
+        const v = r[e.key]
+        out[e.key] = {
+            auto: e.canAuto === false ? false : typeof v?.auto === 'boolean' ? v.auto : e.defaultAuto,
+            text: typeof v?.text === 'string' && v.text.trim() ? v.text.slice(0, MAX_MESSAGE_LENGTH) : e.defaultText,
+        }
+    }
+    return out
 }
 
 export function normalizeAutomations(raw: unknown): Automations {
@@ -34,8 +54,20 @@ export function normalizeAutomations(raw: unknown): Automations {
         review_text: typeof r.review_text === 'string' && r.review_text.trim() ? r.review_text.slice(0, 600) : DEFAULT_AUTOMATIONS.review_text,
         appointment_reminder: !!r.appointment_reminder,
         appointment_text: typeof r.appointment_text === 'string' && r.appointment_text.trim() ? r.appointment_text.slice(0, 600) : DEFAULT_AUTOMATIONS.appointment_text,
+        events: normalizeEvents(r.events),
     }
 }
+
+/** Se a mensagem sai sozinha e com qual texto (já com o padrão quando a loja não mexeu). */
+export function eventMessage(auto: Automations, key: string): EventMessageConfig {
+    const e = messageEvent(key)
+    if (!e) return { auto: false, text: '' }
+    if (e.legacy) return { auto: !!auto[e.legacy.auto], text: String(auto[e.legacy.text] || e.defaultText) }
+    return auto.events[key] ?? { auto: e.defaultAuto, text: e.defaultText }
+}
+
+/** Preenche as variáveis do texto configurado pela loja. */
+export const renderMessage = renderTemplate
 
 export function fill(text: string, vars: Record<string, string>) {
     return text.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m))

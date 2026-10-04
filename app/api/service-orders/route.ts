@@ -1,5 +1,6 @@
 import { insertOrderItems } from '@/lib/os/items'
 import { syncServiceOrderStock } from '@/lib/parts/stock'
+import { notifyOrderEvent } from '@/lib/os/notify'
 import { NextRequest, NextResponse } from 'next/server'
 import { getContext, unauthorizedResponse } from '@/lib/security'
 import { serviceOrderSchema } from '@/lib/validations/schemas'
@@ -140,6 +141,9 @@ export async function POST(req: NextRequest) {
         new_value: validatedData.status || 'aberta',
         change_reason: 'OS criada',
     })
+
+    // "OS aberta" pro cliente, se a loja ligou o envio automático (Configurações → Mensagens automáticas).
+    await notifyOrderEvent(ctx.db, ctx.companyId, data.id, 'os_aberta', { userId: ctx.dbUser.id }).catch(err => console.error('[os] open notice failed:', err))
 
     return NextResponse.json(data, { status: 201 })
 }
