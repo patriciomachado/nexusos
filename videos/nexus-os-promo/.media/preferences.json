@@ -44,11 +44,18 @@
       "updated_at": "2026-10-04T10:58:59.560Z"
     },
     "voice": {
-      "value": "gemini:Puck",
+      "value": "Puck (gemini)",
       "confirmed_in": [
         "nexus-os-promo"
       ],
-      "updated_at": "2026-10-04T14:00:00.000Z"
+      "updated_at": "2026-10-04T13:33:54.448Z"
+    },
+    "tts_provider": {
+      "value": "gemini",
+      "confirmed_in": [
+        "nexus-os-promo"
+      ],
+      "updated_at": "2026-10-04T13:33:54.448Z"
     }
   },
   "sightings": {}

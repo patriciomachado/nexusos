@@ -1,5 +1,9 @@
 {
   "provider": "gemini",
+  "tts_model": "gemini-3.8-flash-tts",
+  "voice": "Puck",
+  "speed": "1.0",
+  "style": "Locutor brasileiro, português do Brasil (sotaque paulista neutro), tom confiante e próximo, ritmo de Reels — direto ao ponto, energia constante.",
   "lines": [
     {
       "id": "01",
@@ -27,21 +31,21 @@
     },
     {
       "id": "07",
-      "text": "Pergunte para a Alice, a inteligência artificial do Nexus: ela responde e resolve."
+      "text": "Pergunte para a Alice, a inteligência artificial do Nexus: ela responde e resolve.",
+      "tts_model": "gemini-3.8-flash-lite-tts"
     },
     {
       "id": "08",
-      "text": "Tudo da sua loja, em um só app."
+      "text": "Tudo da sua loja, em um só app.",
+      "tts_model": "gemini-3.8-flash-lite-tts"
     },
     {
       "id": "09",
-      "text": "Teste grátis por quinze dias, sem cartão. nexusgestor ponto com."
+      "text": "Teste grátis por quinze dias, sem cartão. nexusgestor ponto com.",
+      "tts_model": "gemini-3.8-flash-lite-tts"
     }
   ],
   "bgm": {
     "mode": "none"
-  },
-  "voice": "Puck",
-  "model": "gemini-3.1-flash-tts-preview",
-  "style_prompt": "Leia o roteiro abaixo em português do Brasil, com sotaque brasileiro, tom confiante, próximo e animado, como a locução de um vídeo curto para Reels. Faça uma pausa clara de um segundo entre uma linha e a próxima."
+  }
 }

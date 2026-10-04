@@ -1,7 +1,7 @@
 # SCRIPT — nexus-os-promo
 
-**Voice:** Puck (Gemini TTS `gemini-3.1-flash-tts-preview`, masculina, pt-BR)
-**Voice settings:** as 9 falas geradas numa única chamada (voz e ritmo consistentes), divididas nas pausas entre linhas
+**Voice:** Puck (Gemini TTS, pt-BR — gemini-3.8-flash-tts; falas 7–9 com gemini-3.8-flash-lite-tts)
+**Voice settings:** speed 1.0 (Gemini); style "Locutor brasileiro, português do Brasil (sotaque paulista neutro), tom confiante e próximo, ritmo de Reels — direto ao ponto, energia constante."; loudnorm -16 LUFS; silêncios de borda aparados (0,05s/0,15s); cena 1 remontada com pausas 0,32/0,32/0,45s
 **Voice direction:** Confiante, próximo, ritmo de Reels — direto ao ponto.
 
 ---

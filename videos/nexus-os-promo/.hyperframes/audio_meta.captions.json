@@ -5,432 +5,432 @@
     {
       "frame": 1,
       "path": "assets/voice/01.wav",
-      "duration_s": 5.85,
+      "duration_s": 5.15,
       "words": []
     },
     {
       "frame": 2,
       "path": "assets/voice/02.wav",
-      "duration_s": 1.85,
+      "duration_s": 1.84,
       "words": [
         {
           "text": "Conheça",
-          "start": 0.06,
-          "end": 0.751
+          "start": 0.05,
+          "end": 0.724
         },
         {
           "text": "o",
-          "start": 0.771,
-          "end": 0.989
+          "start": 0.744,
+          "end": 0.956
         },
         {
           "text": "Nexus",
-          "start": 1.009,
-          "end": 1.463
+          "start": 0.976,
+          "end": 1.419
         },
         {
           "text": "OS.",
-          "start": 1.483,
-          "end": 1.7
+          "start": 1.439,
+          "end": 1.65
         }
       ]
     },
     {
       "frame": 3,
       "path": "assets/voice/03.wav",
-      "duration_s": 4.78,
+      "duration_s": 4.13,
       "words": [
         {
           "text": "Cada",
-          "start": 0.06,
-          "end": 0.389
+          "start": 0.05,
+          "end": 0.338
         },
         {
           "text": "ordem",
-          "start": 0.409,
-          "end": 0.739
+          "start": 0.358,
+          "end": 0.646
         },
         {
           "text": "de",
-          "start": 0.759,
-          "end": 0.913
+          "start": 0.666,
+          "end": 0.8
         },
         {
           "text": "serviço",
-          "start": 0.933,
-          "end": 1.437
+          "start": 0.82,
+          "end": 1.262
         },
         {
           "text": "com",
-          "start": 1.457,
-          "end": 1.612
+          "start": 1.282,
+          "end": 1.416
         },
         {
           "text": "etapa",
-          "start": 1.632,
-          "end": 2.136
+          "start": 1.436,
+          "end": 1.878
         },
         {
           "text": "e",
-          "start": 2.156,
-          "end": 2.311
+          "start": 1.898,
+          "end": 2.032
         },
         {
           "text": "prazo,",
-          "start": 2.331,
-          "end": 2.66
+          "start": 2.052,
+          "end": 2.34
         },
         {
           "text": "e",
-          "start": 3.0,
-          "end": 3.131
+          "start": 2.52,
+          "end": 2.626
         },
         {
           "text": "o",
-          "start": 3.151,
-          "end": 3.282
+          "start": 2.646,
+          "end": 2.753
         },
         {
           "text": "cliente",
-          "start": 3.302,
-          "end": 3.584
+          "start": 2.773,
+          "end": 3.005
         },
         {
           "text": "acompanha",
-          "start": 3.604,
-          "end": 4.187
+          "start": 3.025,
+          "end": 3.511
         },
         {
           "text": "pelo",
-          "start": 4.207,
-          "end": 4.489
+          "start": 3.531,
+          "end": 3.764
         },
         {
           "text": "link.",
-          "start": 4.509,
-          "end": 4.64
+          "start": 3.784,
+          "end": 3.89
         }
       ]
     },
     {
       "frame": 4,
       "path": "assets/voice/04.wav",
-      "duration_s": 3.19,
+      "duration_s": 2.83,
       "words": [
         {
           "text": "PDV",
-          "start": 0.06,
-          "end": 0.254
+          "start": 0.05,
+          "end": 0.218
         },
         {
           "text": "e",
-          "start": 0.274,
-          "end": 0.469
+          "start": 0.238,
+          "end": 0.406
         },
         {
           "text": "caixa",
-          "start": 0.489,
-          "end": 0.897
+          "start": 0.426,
+          "end": 0.781
         },
         {
           "text": "que",
-          "start": 0.917,
-          "end": 1.111
+          "start": 0.801,
+          "end": 0.969
         },
         {
           "text": "fecham",
-          "start": 1.131,
-          "end": 1.54
+          "start": 0.989,
+          "end": 1.345
         },
         {
           "text": "certinho",
-          "start": 1.56,
-          "end": 2.183
+          "start": 1.365,
+          "end": 1.909
         },
         {
           "text": "no",
-          "start": 2.203,
-          "end": 2.397
+          "start": 1.929,
+          "end": 2.096
         },
         {
           "text": "fim",
-          "start": 2.417,
-          "end": 2.611
+          "start": 2.116,
+          "end": 2.284
         },
         {
           "text": "do",
-          "start": 2.631,
-          "end": 2.826
+          "start": 2.304,
+          "end": 2.472
         },
         {
           "text": "dia.",
-          "start": 2.846,
-          "end": 3.04
+          "start": 2.492,
+          "end": 2.66
         }
       ]
     },
     {
       "frame": 5,
       "path": "assets/voice/05.wav",
-      "duration_s": 3.03,
+      "duration_s": 2.77,
       "words": [
         {
           "text": "Estoque",
-          "start": 0.06,
-          "end": 0.608
+          "start": 0.05,
+          "end": 0.544
         },
         {
           "text": "de",
-          "start": 0.628,
-          "end": 0.797
+          "start": 0.564,
+          "end": 0.715
         },
         {
           "text": "peças",
-          "start": 0.817,
-          "end": 1.176
+          "start": 0.735,
+          "end": 1.058
         },
         {
           "text": "e",
-          "start": 1.196,
-          "end": 1.365
+          "start": 1.078,
+          "end": 1.229
         },
         {
           "text": "seminovos",
-          "start": 1.385,
-          "end": 2.123
+          "start": 1.249,
+          "end": 1.915
         },
         {
           "text": "sob",
-          "start": 2.143,
-          "end": 2.312
+          "start": 1.935,
+          "end": 2.086
         },
         {
           "text": "controle.",
-          "start": 2.332,
-          "end": 2.88
+          "start": 2.106,
+          "end": 2.6
         }
       ]
     },
     {
       "frame": 6,
       "path": "assets/voice/06.wav",
-      "duration_s": 2.89,
+      "duration_s": 2.69,
       "words": [
         {
           "text": "E",
-          "start": 0.06,
-          "end": 0.224
+          "start": 0.05,
+          "end": 0.198
         },
         {
           "text": "no",
-          "start": 0.244,
-          "end": 0.408
+          "start": 0.218,
+          "end": 0.366
         },
         {
           "text": "fim",
-          "start": 0.428,
-          "end": 0.592
+          "start": 0.386,
+          "end": 0.534
         },
         {
           "text": "do",
-          "start": 0.612,
-          "end": 0.776
+          "start": 0.554,
+          "end": 0.702
         },
         {
           "text": "mês,",
-          "start": 0.796,
-          "end": 0.96
+          "start": 0.722,
+          "end": 0.87
         },
         {
           "text": "você",
-          "start": 1.17,
-          "end": 1.506
+          "start": 1.03,
+          "end": 1.343
         },
         {
           "text": "sabe",
-          "start": 1.526,
-          "end": 1.861
+          "start": 1.363,
+          "end": 1.677
         },
         {
           "text": "se",
-          "start": 1.881,
-          "end": 2.039
+          "start": 1.697,
+          "end": 1.843
         },
         {
           "text": "teve",
-          "start": 2.059,
-          "end": 2.394
+          "start": 1.863,
+          "end": 2.177
         },
         {
           "text": "lucro.",
-          "start": 2.414,
-          "end": 2.75
+          "start": 2.197,
+          "end": 2.51
         }
       ]
     },
     {
       "frame": 7,
       "path": "assets/voice/07.wav",
-      "duration_s": 5.4,
+      "duration_s": 5.13,
       "words": [
         {
           "text": "Pergunte",
-          "start": 0.06,
-          "end": 0.413
+          "start": 0.05,
+          "end": 0.393
         },
         {
           "text": "para",
-          "start": 0.433,
-          "end": 0.662
+          "start": 0.413,
+          "end": 0.636
         },
         {
           "text": "a",
-          "start": 0.682,
-          "end": 0.787
+          "start": 0.656,
+          "end": 0.757
         },
         {
           "text": "Alice,",
-          "start": 0.807,
-          "end": 1.16
+          "start": 0.777,
+          "end": 1.12
         },
         {
           "text": "a",
-          "start": 1.38,
-          "end": 1.5
+          "start": 1.37,
+          "end": 1.505
         },
         {
           "text": "inteligência",
-          "start": 1.52,
-          "end": 2.2
+          "start": 1.525,
+          "end": 2.278
         },
         {
           "text": "artificial",
-          "start": 2.22,
-          "end": 2.76
+          "start": 2.298,
+          "end": 2.896
         },
         {
           "text": "do",
-          "start": 2.78,
-          "end": 2.9
+          "start": 2.916,
+          "end": 3.051
         },
         {
           "text": "Nexus:",
-          "start": 2.92,
-          "end": 3.18
+          "start": 3.071,
+          "end": 3.36
         },
         {
           "text": "ela",
-          "start": 3.52,
-          "end": 3.889
+          "start": 3.57,
+          "end": 3.863
         },
         {
           "text": "responde",
-          "start": 3.909,
-          "end": 4.472
+          "start": 3.883,
+          "end": 4.333
         },
         {
           "text": "e",
-          "start": 4.492,
-          "end": 4.667
+          "start": 4.353,
+          "end": 4.49
         },
         {
           "text": "resolve.",
-          "start": 4.687,
-          "end": 5.25
+          "start": 4.51,
+          "end": 4.96
         }
       ]
     },
     {
       "frame": 8,
       "path": "assets/voice/08.wav",
-      "duration_s": 2.35,
+      "duration_s": 2.02,
       "words": [
         {
           "text": "Tudo",
-          "start": 0.06,
-          "end": 0.38
+          "start": 0.05,
+          "end": 0.34
         },
         {
           "text": "da",
-          "start": 0.4,
-          "end": 0.55
+          "start": 0.36,
+          "end": 0.495
         },
         {
           "text": "sua",
-          "start": 0.57,
-          "end": 0.72
+          "start": 0.515,
+          "end": 0.65
         },
         {
           "text": "loja,",
-          "start": 0.74,
-          "end": 1.06
+          "start": 0.67,
+          "end": 0.96
         },
         {
           "text": "em",
-          "start": 1.26,
-          "end": 1.482
+          "start": 1.13,
+          "end": 1.295
         },
         {
           "text": "um",
-          "start": 1.502,
-          "end": 1.725
+          "start": 1.315,
+          "end": 1.48
         },
         {
           "text": "só",
-          "start": 1.745,
-          "end": 1.967
+          "start": 1.5,
+          "end": 1.665
         },
         {
           "text": "app.",
-          "start": 1.987,
-          "end": 2.21
+          "start": 1.685,
+          "end": 1.85
         }
       ]
     },
     {
       "frame": 9,
       "path": "assets/voice/09.wav",
-      "duration_s": 5.06,
+      "duration_s": 4.37,
       "words": [
         {
           "text": "Teste",
-          "start": 0.06,
-          "end": 0.532
+          "start": 0.05,
+          "end": 0.452
         },
         {
           "text": "grátis",
-          "start": 0.552,
-          "end": 1.025
+          "start": 0.472,
+          "end": 0.875
         },
         {
           "text": "por",
-          "start": 1.045,
-          "end": 1.271
+          "start": 0.895,
+          "end": 1.086
         },
         {
           "text": "quinze",
-          "start": 1.291,
-          "end": 1.764
+          "start": 1.106,
+          "end": 1.509
         },
         {
           "text": "dias,",
-          "start": 1.784,
-          "end": 2.01
+          "start": 1.529,
+          "end": 1.72
         },
         {
           "text": "sem",
-          "start": 2.14,
-          "end": 2.307
+          "start": 1.84,
+          "end": 2.037
         },
         {
           "text": "cartão.",
-          "start": 2.327,
-          "end": 2.68
+          "start": 2.057,
+          "end": 2.47
         },
         {
           "text": "nexusgestor.com",
-          "start": 3.32,
-          "end": 4.91
+          "start": 2.88,
+          "end": 4.18
         }
       ]
     }

@@ -1,4 +1,4 @@
-"""Estimate word timings for Kokoro narration (no ASR available offline).
+"""Estimate word timings for TTS narration (Kokoro, then Gemini) (no ASR available offline).
 
 The script text is known exactly, so we find speech/pause regions from the
 waveform energy, map punctuation breaks to the longest pauses, and spread the
@@ -52,16 +52,14 @@ def align(audio, text):
         if re.search(r"[,.:;…!?]$", w): segs.append(cur); cur = []
     if cur: segs.append(cur)
     # Pick, for each punctuation break, the pause nearest its syllable-proportional
-    # expected time, favouring long pauses: closures inside words also read as
-    # short silences, while real punctuation breaks are the longest gaps.
+    # expected time (closures inside words also read as short silences).
     seg_syl = [sum(syllables(w) for w in seg) for seg in segs]
     total, cum, bounds, used = sum(seg_syl), 0, [s0], set()
     for si in range(len(segs) - 1):
         cum += seg_syl[si]
         exp = s0 + (s1 - s0) * cum / total
-        wgt = 1 if segs[si][-1].endswith(",") else 3  # sentence stops pause longer than commas
-        cand = [(abs((p[0] + p[1]) / 2 - exp) - wgt * (p[1] - p[0]), j) for j, p in enumerate(pauses)
-                if j not in used and p[0] > bounds[-1] and abs((p[0] + p[1]) / 2 - exp) < 0.3 * (s1 - s0)]
+        cand = [(abs((p[0] + p[1]) / 2 - exp), j) for j, p in enumerate(pauses)
+                if j not in used and p[0] > bounds[-1] and abs((p[0] + p[1]) / 2 - exp) < 0.22 * (s1 - s0)]
         if cand:
             j = min(cand)[1]; used.add(j); bounds += [pauses[j][0], pauses[j][1]]
         else:
