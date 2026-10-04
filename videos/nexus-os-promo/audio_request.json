@@ -1,0 +1,46 @@
+{
+  "provider": "kokoro",
+  "speed": "1.1",
+  "lines": [
+    {
+      "id": "01",
+      "text": "Caderno, WhatsApp, memória… sua assistência merece mais."
+    },
+    {
+      "id": "02",
+      "text": "Conheça o Nexus OS."
+    },
+    {
+      "id": "03",
+      "text": "Cada ordem de serviço com etapa e prazo, e o cliente acompanha pelo link."
+    },
+    {
+      "id": "04",
+      "text": "PDV e caixa que fecham certinho no fim do dia."
+    },
+    {
+      "id": "05",
+      "text": "Estoque de peças e seminovos sob controle."
+    },
+    {
+      "id": "06",
+      "text": "E no fim do mês, você sabe se teve lucro."
+    },
+    {
+      "id": "07",
+      "text": "Pergunte para a Alice, a inteligência artificial do Nexus: ela responde e resolve."
+    },
+    {
+      "id": "08",
+      "text": "Tudo da sua loja, em um só app."
+    },
+    {
+      "id": "09",
+      "text": "Teste grátis por quinze dias, sem cartão. nexusgestor ponto com."
+    }
+  ],
+  "bgm": {
+    "mode": "none"
+  },
+  "voice": "pm_alex"
+}

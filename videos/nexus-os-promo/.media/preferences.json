@@ -42,6 +42,13 @@
         "nexus-os-promo"
       ],
       "updated_at": "2026-10-04T10:58:59.560Z"
+    },
+    "voice": {
+      "value": "pm_alex",
+      "confirmed_in": [
+        "nexus-os-promo"
+      ],
+      "updated_at": "2026-10-04T11:56:50.525Z"
     }
   },
   "sightings": {}

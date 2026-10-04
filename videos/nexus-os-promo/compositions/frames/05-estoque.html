@@ -1,0 +1,60 @@
+<template>
+  <style>
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+#root{position:absolute;inset:0;width:1080px;height:1920px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.f05-bg{position:absolute;inset:0;background:#F2F2F7}
+.f05-f{position:absolute;left:0;right:0;top:0;height:1590px;padding:150px 76px 0;display:flex;flex-direction:column}
+.f05-eyebrow{font-size:38px;font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.f05-h2{font-size:84px;font-weight:700;letter-spacing:-.025em;line-height:1.06;margin-top:22px}
+.f05-card{background:#FFFFFF;border-radius:56px;box-shadow:0 26px 70px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.04)}
+.f05-muted{color:#6E6E73}
+.f05-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.f05-num{font-variant-numeric:tabular-nums}
+
+.f05-stack{display:flex;flex-direction:column;gap:30px;margin-top:80px}
+.f05-item{display:flex;align-items:center;gap:40px;padding:46px 54px;border-radius:44px}
+.f05-ic{width:112px;height:112px;border-radius:30px;background:rgba(88,86,214,.1);display:flex;align-items:center;justify-content:center;flex:none}
+.f05-icd{width:44px;height:64px;border-radius:12px;border:6px solid #5856D6;box-sizing:border-box}
+.f05-in{display:block;font-size:46px;font-weight:700;letter-spacing:-.015em}
+.f05-is{display:block;font-size:36px;margin-top:6px}
+.f05-ip{font-size:44px;font-weight:700}
+
+  </style>
+  <div id="root" data-composition-id="05-estoque" data-width="1080" data-height="1920">
+    <div id="f05-bg" class="clip f05-bg" data-start="0" data-duration="2.603" data-track-index="0"></div>
+    <div class="f05-f">
+      <div class="f05-eyebrow" id="f05-eb">Estoque e aparelhos</div>
+      <div class="f05-h2" id="f05-h">Peças e seminovos<br>sob controle.</div>
+      <div class="f05-stack">
+        <div class="f05-card f05-item" id="f05-i0"><span class="f05-ic"><span class="f05-icd"></span></span><span style="flex:1"><b class="f05-in">Tela iPhone 13</b><span class="f05-is f05-muted">Peça · 4 un</span></span><b class="f05-ip">R$ 480</b></div>
+        <div class="f05-card f05-item" id="f05-i1"><span class="f05-ic"><span class="f05-icd"></span></span><span style="flex:1"><b class="f05-in">Bateria Galaxy A54</b><span class="f05-is f05-muted">Peça · 7 un</span></span><b class="f05-ip">R$ 160</b></div>
+        <div class="f05-card f05-item" id="f05-i2"><span class="f05-ic"><span class="f05-icd"></span></span><span style="flex:1"><b class="f05-in">Conector Moto G84</b><span class="f05-is f05-muted">Peça · 12 un</span></span><b class="f05-ip">R$ 70</b></div>
+        <div class="f05-card f05-item" id="f05-i3"><span class="f05-ic"><span class="f05-icd"></span></span><span style="flex:1"><b class="f05-in">iPhone 11 seminovo</b><span class="f05-is f05-muted">Aparelho · 128 GB</span></span><b class="f05-ip">R$ 1.890</b></div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="05-estoque"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="05-estoque"] ' + s);
+    const brl = (v, cents) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      const s = String(r).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      return cents ? [s, String(c).padStart(2, "0")] : [s, "00"];
+    };
+    tl.fromTo(q("#f05-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0);
+    tl.fromTo(q("#f05-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q("#f05-i0"), {opacity:0, y:110, scale:0.96}, {opacity:1, y:0, scale:1, duration:0.55, ease:"power3.out"}, 0.25);
+    tl.fromTo(q("#f05-i1"), {opacity:0, y:110, scale:0.96}, {opacity:1, y:0, scale:1, duration:0.55, ease:"power3.out"}, 0.5);
+    tl.fromTo(q("#f05-i2"), {opacity:0, y:110, scale:0.96}, {opacity:1, y:0, scale:1, duration:0.55, ease:"power3.out"}, 0.75);
+    tl.fromTo(q("#f05-i3"), {opacity:0, y:110, scale:0.96}, {opacity:1, y:0, scale:1, duration:0.55, ease:"power3.out"}, 1.06);
+
+    window.__timelines["05-estoque"] = tl;
+  })();
+  </script>
+</template>

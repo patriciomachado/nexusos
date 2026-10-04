@@ -21,7 +21,7 @@ animada + trilha de fundo, legível com som desligado.
 
 ## Customizations
 
-- Só música + texto (sem locução, sem legendas de voz).
+- Locução pt-BR (voz pm_alex, Kokoro) + legendas sincronizadas; sem trilha embutida.
 - CTA final: teste grátis por 15 dias, sem cartão de crédito — nexusgestor.com.
 
 ## Notes

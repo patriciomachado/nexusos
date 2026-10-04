@@ -1,0 +1,439 @@
+{
+  "bgm": null,
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/01.wav",
+      "duration_s": 5.12,
+      "words": []
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/02.wav",
+      "duration_s": 1.579,
+      "words": [
+        {
+          "text": "Conheça",
+          "start": 0.04,
+          "end": 0.646
+        },
+        {
+          "text": "o",
+          "start": 0.666,
+          "end": 0.854
+        },
+        {
+          "text": "Nexus",
+          "start": 0.874,
+          "end": 1.271
+        },
+        {
+          "text": "OS.",
+          "start": 1.291,
+          "end": 1.48
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/03.wav",
+      "duration_s": 4.373,
+      "words": [
+        {
+          "text": "Cada",
+          "start": 0.04,
+          "end": 0.333
+        },
+        {
+          "text": "ordem",
+          "start": 0.353,
+          "end": 0.647
+        },
+        {
+          "text": "de",
+          "start": 0.667,
+          "end": 0.803
+        },
+        {
+          "text": "serviço",
+          "start": 0.823,
+          "end": 1.273
+        },
+        {
+          "text": "com",
+          "start": 1.293,
+          "end": 1.43
+        },
+        {
+          "text": "etapa",
+          "start": 1.45,
+          "end": 1.9
+        },
+        {
+          "text": "e",
+          "start": 1.92,
+          "end": 2.057
+        },
+        {
+          "text": "prazo,",
+          "start": 2.077,
+          "end": 2.37
+        },
+        {
+          "text": "e",
+          "start": 2.66,
+          "end": 2.773
+        },
+        {
+          "text": "o",
+          "start": 2.793,
+          "end": 2.905
+        },
+        {
+          "text": "cliente",
+          "start": 2.925,
+          "end": 3.171
+        },
+        {
+          "text": "acompanha",
+          "start": 3.191,
+          "end": 3.702
+        },
+        {
+          "text": "pelo",
+          "start": 3.722,
+          "end": 3.967
+        },
+        {
+          "text": "link.",
+          "start": 3.987,
+          "end": 4.1
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/04.wav",
+      "duration_s": 2.901,
+      "words": [
+        {
+          "text": "PDV",
+          "start": 0.03,
+          "end": 0.205
+        },
+        {
+          "text": "e",
+          "start": 0.225,
+          "end": 0.4
+        },
+        {
+          "text": "caixa",
+          "start": 0.42,
+          "end": 0.79
+        },
+        {
+          "text": "que",
+          "start": 0.81,
+          "end": 0.985
+        },
+        {
+          "text": "fecham",
+          "start": 1.005,
+          "end": 1.375
+        },
+        {
+          "text": "certinho",
+          "start": 1.395,
+          "end": 1.96
+        },
+        {
+          "text": "no",
+          "start": 1.98,
+          "end": 2.155
+        },
+        {
+          "text": "fim",
+          "start": 2.175,
+          "end": 2.35
+        },
+        {
+          "text": "do",
+          "start": 2.37,
+          "end": 2.545
+        },
+        {
+          "text": "dia.",
+          "start": 2.565,
+          "end": 2.74
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "path": "assets/voice/05.wav",
+      "duration_s": 2.603,
+      "words": [
+        {
+          "text": "Estoque",
+          "start": 0.03,
+          "end": 0.492
+        },
+        {
+          "text": "de",
+          "start": 0.512,
+          "end": 0.653
+        },
+        {
+          "text": "peças",
+          "start": 0.673,
+          "end": 0.974
+        },
+        {
+          "text": "e",
+          "start": 0.994,
+          "end": 1.135
+        },
+        {
+          "text": "seminovos",
+          "start": 1.155,
+          "end": 1.777
+        },
+        {
+          "text": "sob",
+          "start": 1.797,
+          "end": 1.938
+        },
+        {
+          "text": "controle.",
+          "start": 1.958,
+          "end": 2.42
+        }
+      ]
+    },
+    {
+      "frame": 6,
+      "path": "assets/voice/06.wav",
+      "duration_s": 2.325,
+      "words": [
+        {
+          "text": "E",
+          "start": 0.03,
+          "end": 0.166
+        },
+        {
+          "text": "no",
+          "start": 0.186,
+          "end": 0.322
+        },
+        {
+          "text": "fim",
+          "start": 0.342,
+          "end": 0.478
+        },
+        {
+          "text": "do",
+          "start": 0.498,
+          "end": 0.634
+        },
+        {
+          "text": "mês,",
+          "start": 0.654,
+          "end": 0.79
+        },
+        {
+          "text": "você",
+          "start": 0.81,
+          "end": 1.106
+        },
+        {
+          "text": "sabe",
+          "start": 1.126,
+          "end": 1.421
+        },
+        {
+          "text": "se",
+          "start": 1.441,
+          "end": 1.579
+        },
+        {
+          "text": "teve",
+          "start": 1.599,
+          "end": 1.894
+        },
+        {
+          "text": "lucro.",
+          "start": 1.914,
+          "end": 2.21
+        }
+      ]
+    },
+    {
+      "frame": 7,
+      "path": "assets/voice/07.wav",
+      "duration_s": 4.779,
+      "words": [
+        {
+          "text": "Pergunte",
+          "start": 0.03,
+          "end": 0.443
+        },
+        {
+          "text": "para",
+          "start": 0.463,
+          "end": 0.732
+        },
+        {
+          "text": "a",
+          "start": 0.752,
+          "end": 0.877
+        },
+        {
+          "text": "Alice,",
+          "start": 0.897,
+          "end": 1.31
+        },
+        {
+          "text": "a",
+          "start": 1.33,
+          "end": 1.445
+        },
+        {
+          "text": "inteligência",
+          "start": 1.465,
+          "end": 2.118
+        },
+        {
+          "text": "artificial",
+          "start": 2.138,
+          "end": 2.656
+        },
+        {
+          "text": "do",
+          "start": 2.676,
+          "end": 2.791
+        },
+        {
+          "text": "Nexus:",
+          "start": 2.811,
+          "end": 3.06
+        },
+        {
+          "text": "ela",
+          "start": 3.34,
+          "end": 3.587
+        },
+        {
+          "text": "responde",
+          "start": 3.607,
+          "end": 3.987
+        },
+        {
+          "text": "e",
+          "start": 4.007,
+          "end": 4.12
+        },
+        {
+          "text": "resolve.",
+          "start": 4.14,
+          "end": 4.52
+        }
+      ]
+    },
+    {
+      "frame": 8,
+      "path": "assets/voice/08.wav",
+      "duration_s": 1.963,
+      "words": [
+        {
+          "text": "Tudo",
+          "start": 0.05,
+          "end": 0.33
+        },
+        {
+          "text": "da",
+          "start": 0.35,
+          "end": 0.48
+        },
+        {
+          "text": "sua",
+          "start": 0.5,
+          "end": 0.63
+        },
+        {
+          "text": "loja,",
+          "start": 0.65,
+          "end": 0.93
+        },
+        {
+          "text": "em",
+          "start": 1.05,
+          "end": 1.195
+        },
+        {
+          "text": "um",
+          "start": 1.215,
+          "end": 1.36
+        },
+        {
+          "text": "só",
+          "start": 1.38,
+          "end": 1.525
+        },
+        {
+          "text": "app.",
+          "start": 1.545,
+          "end": 1.69
+        }
+      ]
+    },
+    {
+      "frame": 9,
+      "path": "assets/voice/09.wav",
+      "duration_s": 3.861,
+      "words": [
+        {
+          "text": "Teste",
+          "start": 0.03,
+          "end": 0.513
+        },
+        {
+          "text": "grátis",
+          "start": 0.533,
+          "end": 1.015
+        },
+        {
+          "text": "por",
+          "start": 1.035,
+          "end": 1.266
+        },
+        {
+          "text": "quinze",
+          "start": 1.286,
+          "end": 1.769
+        },
+        {
+          "text": "dias,",
+          "start": 1.789,
+          "end": 2.02
+        },
+        {
+          "text": "sem",
+          "start": 2.13,
+          "end": 2.173
+        },
+        {
+          "text": "cartão.",
+          "start": 2.193,
+          "end": 2.3
+        },
+        {
+          "text": "nexusgestor.com",
+          "start": 2.53,
+          "end": 3.69
+        }
+      ]
+    }
+  ],
+  "sfx": []
+}
