@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Check, ChevronLeft, Phone } from 'lucide-react'
 import { formatDateTime, formatCurrency, cn } from '@/lib/utils'
 import OSDetailActions from '@/components/os/OSDetailActions'
+import { normalizeAutomations } from '@/lib/customers/templates'
 import OSStatusBadge from '@/components/os/OSStatusBadge'
 import OSGallery from '@/components/os/OSGallery'
 import OSSecurityView from '@/components/os/OSSecurityView'
@@ -73,6 +74,9 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
 
     if (!os) notFound()
 
+    const { data: company } = await db.from('companies').select('name, settings').eq('id', user?.company_id).maybeSingle()
+    const trackingText = normalizeAutomations((company?.settings as Record<string, unknown> | null)?.automations).os_tracking_text
+
     const { cleanNotes, security } = parseInternalNotes(os.internal_notes)
     const customer = os.customers as Row | null
     const technician = os.technicians as Row | null
@@ -110,7 +114,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
                     </p>
                 </div>
 
-                <OSDetailActions os={{ id: os.id, order_number: os.order_number, status: os.status, tracking_token: os.tracking_token, total, customer_id: os.customer_id ?? null, customer: customer ? { name: customer.name, phone: customer.phone } : null }} />
+                <OSDetailActions trackingText={trackingText} storeName={company?.name ?? ''} os={{ id: os.id, order_number: os.order_number, status: os.status, tracking_token: os.tracking_token, total, customer_id: os.customer_id ?? null, customer: customer ? { name: customer.name, phone: customer.phone } : null }} />
 
                 <div className="mt-6 grid lg:grid-cols-[minmax(0,1fr)_340px] gap-6 items-start">
                     <div className="space-y-6 min-w-0">

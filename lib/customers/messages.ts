@@ -3,43 +3,10 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { loadSettings, type AliceSettings } from '@/lib/alice/config'
 import { channelReady, channelSend } from '@/lib/alice/channel'
 import { digitsOnly } from '@/lib/alice/phone'
+import { DEFAULT_AUTOMATIONS, fill, normalizeAutomations } from './templates'
 
-export interface Automations {
-    birthday: boolean
-    birthday_text: string
-    review: boolean
-    review_days: number
-    review_text: string
-    appointment_reminder: boolean
-    appointment_text: string
-}
-
-export const DEFAULT_AUTOMATIONS: Automations = {
-    birthday: false,
-    birthday_text: 'Feliz aniversário, {nome}! 🎉 A equipe da {loja} deseja um ano incrível. Passando aqui para lembrar que você tem 10% de desconto em película e capinha este mês.',
-    review: false,
-    review_days: 2,
-    review_text: 'Oi, {nome}! Tudo certo com o seu {aparelho}? Se puder, conta pra gente como foi o atendimento da {loja} no Google, ajuda muito: {link}',
-    appointment_reminder: false,
-    appointment_text: 'Olá, {nome}! Passando para lembrar do seu horário na {loja}: {data} às {hora}.{servico} Se precisar remarcar, é só responder aqui.',
-}
-
-export function normalizeAutomations(raw: unknown): Automations {
-    const r = (raw ?? {}) as Partial<Automations>
-    return {
-        birthday: !!r.birthday,
-        birthday_text: typeof r.birthday_text === 'string' && r.birthday_text.trim() ? r.birthday_text.slice(0, 600) : DEFAULT_AUTOMATIONS.birthday_text,
-        review: !!r.review,
-        review_days: Math.min(Math.max(Math.round(Number(r.review_days) || 2), 1), 30),
-        review_text: typeof r.review_text === 'string' && r.review_text.trim() ? r.review_text.slice(0, 600) : DEFAULT_AUTOMATIONS.review_text,
-        appointment_reminder: !!r.appointment_reminder,
-        appointment_text: typeof r.appointment_text === 'string' && r.appointment_text.trim() ? r.appointment_text.slice(0, 600) : DEFAULT_AUTOMATIONS.appointment_text,
-    }
-}
-
-export function fill(text: string, vars: Record<string, string>) {
-    return text.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m))
-}
+export { DEFAULT_AUTOMATIONS, fill, normalizeAutomations }
+export type { Automations } from './templates'
 
 export function waPhone(raw: string | null | undefined) {
     let d = digitsOnly(raw)

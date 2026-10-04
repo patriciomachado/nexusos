@@ -11,8 +11,12 @@ import { cn } from '@/lib/utils'
 import { OS_STATUS, OS_STATUS_ORDER, statusMeta } from '@/lib/os/status'
 import { useOpenWhatsApp } from '@/components/alice/useOpenWhatsApp'
 import PayOSModal from './PayOSModal'
+import { DEFAULT_AUTOMATIONS, fill } from '@/lib/customers/templates'
 
 interface Props {
+    /** Message template configured in Alice → Automações; variables: {nome} {os} {link} {loja}. */
+    trackingText?: string
+    storeName?: string
     os: {
         id: string
         order_number: string
@@ -31,7 +35,7 @@ function waNumber(phone?: string | null) {
 }
 
 /** Main actions on an order: change status, message the customer, receive payment, more. */
-export default function OSDetailActions({ os }: Props) {
+export default function OSDetailActions({ os, trackingText, storeName }: Props) {
     const router = useRouter()
     const openWhatsApp = useOpenWhatsApp()
     const [pending, start] = useTransition()
@@ -66,7 +70,8 @@ export default function OSDetailActions({ os }: Props) {
     const whatsapp = () => {
         if (!phone) return toast.error('O cliente não tem telefone cadastrado')
         const first = os.customer?.name?.split(' ')[0] ?? ''
-        const text = `Olá${first ? ` ${first}` : ''}! Acompanhe sua OS ${os.order_number}${trackingUrl ? ` por aqui: ${trackingUrl}` : '.'}`
+        const text = fill(trackingText || DEFAULT_AUTOMATIONS.os_tracking_text, { nome: first, os: os.order_number, link: trackingUrl ?? '', loja: storeName ?? '' })
+            .replace(/ por aqui: $/, '.').replace(/\s+!/, '!').trim()
         openWhatsApp({ phone, text, customerId: os.customer_id, customerName: os.customer?.name })
     }
 

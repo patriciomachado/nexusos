@@ -27,7 +27,6 @@ export default function AutomationSettings({ settings, onSaved }: { settings: Se
     const [busy, setBusy] = useState<string | null>(null)
     const [toneCustom, setToneCustom] = useState(settings.tone_custom ?? '')
     const [keywordInput, setKeywordInput] = useState('')
-    const [afterHours, setAfterHours] = useState(settings.business_hours.after_hours_message ?? '')
 
     const apply = async (key: string, patch: Record<string, unknown>, success = 'Salvo') => {
         setBusy(key)
@@ -151,17 +150,6 @@ export default function AutomationSettings({ settings, onSaved }: { settings: Se
                                     </div>
                                 )
                             })}
-                        </div>
-                        <div className="space-y-1">
-                            <label htmlFor="ah-msg" className="text-[13px] text-muted-foreground">Mensagem fora do horário</label>
-                            <div className="flex items-center gap-2">
-                                <textarea
-                                    id="ah-msg" value={afterHours} onChange={e => setAfterHours(e.target.value)} rows={2}
-                                    placeholder="Ex.: No momento estamos fechados! Voltamos amanhã às 9h."
-                                    className="flex-1 px-3 py-2.5 rounded-xl bg-foreground/[0.05] text-[15px] leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary/40"
-                                />
-                                <button type="button" disabled={busy === 'after_hours' || afterHours === (settings.business_hours.after_hours_message ?? '')} onClick={() => apply('after_hours', { business_hours: { ...settings.business_hours, after_hours_message: afterHours.trim() || null } })} className="h-10 px-4 rounded-full bg-primary/12 text-primary text-[14px] font-semibold disabled:opacity-40 shrink-0">Salvar</button>
-                            </div>
                         </div>
                     </div>
                 )}
