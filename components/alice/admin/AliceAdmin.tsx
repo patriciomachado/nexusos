@@ -6,9 +6,18 @@ import Segmented from '@/components/ui/Segmented'
 import AliceSettingsView, { type SettingsPayload } from './AliceSettingsView'
 import WhatsAppInbox from './WhatsAppInbox'
 import ActivityView from './ActivityView'
+import AutoRepliesView from './suite/AutoRepliesView'
+import SchedulerView from './suite/SchedulerView'
+import BroadcastView from './suite/BroadcastView'
+import ContactsView from './suite/ContactsView'
+import GroupsView from './suite/GroupsView'
+import LabelsView from './suite/LabelsView'
+import WebhooksView from './suite/WebhooksView'
+import StickerView from './suite/StickerView'
 import { Loader2, Database } from 'lucide-react'
 
-type Tab = 'conversas' | 'config' | 'atividade'
+type Tab = 'conversas' | 'respostas' | 'agendador' | 'disparos' | 'contatos' | 'grupos' | 'etiquetas' | 'webhooks' | 'figurinhas' | 'config' | 'atividade'
+const TABS: Tab[] = ['conversas', 'respostas', 'agendador', 'disparos', 'contatos', 'grupos', 'etiquetas', 'webhooks', 'figurinhas', 'config', 'atividade']
 /** What a staff role without admin access gets: just enough for the messages inbox. */
 type StaffPayload = { isAdmin: false; settings: { whatsapp_enabled: boolean; instagram_enabled: boolean } }
 type Payload = SettingsPayload | StaffPayload
@@ -18,7 +27,7 @@ export default function AliceAdmin() {
     const router = useRouter()
     const [data, setData] = useState<Payload | null>(null)
     const [error, setError] = useState<{ message: string; migration: boolean } | null>(null)
-    const [tab, setTab] = useState<Tab>(params.get('conversa') ? 'conversas' : (params.get('aba') as Tab) || 'conversas')
+    const [tab, setTab] = useState<Tab>(params.get('conversa') ? 'conversas' : TABS.includes(params.get('aba') as Tab) ? (params.get('aba') as Tab) : 'conversas')
     const [unread, setUnread] = useState(0)
 
     const load = useCallback(async () => {
@@ -82,14 +91,31 @@ export default function AliceAdmin() {
                 value={tab}
                 onChange={changeTab}
                 ariaLabel="Seções da Alice"
+                className="w-full"
                 options={[
-                    { value: 'config', label: 'Configuração' },
                     { value: 'conversas', label: 'Mensagens', badge: unread },
+                    { value: 'respostas', label: 'Respostas' },
+                    { value: 'agendador', label: 'Agendador' },
+                    { value: 'disparos', label: 'Disparos' },
+                    { value: 'contatos', label: 'Contatos' },
+                    { value: 'grupos', label: 'Grupos' },
+                    { value: 'etiquetas', label: 'Etiquetas' },
+                    { value: 'webhooks', label: 'Webhooks' },
+                    { value: 'figurinhas', label: 'Figurinhas' },
+                    { value: 'config', label: 'Configuração' },
                     { value: 'atividade', label: 'Atividade' },
                 ]}
             />
             {tab === 'config' && <AliceSettingsView data={data} onSaved={setData} onReload={load} />}
             {tab === 'conversas' && <WhatsAppInbox enabled={data.settings.whatsapp_enabled || data.settings.instagram_enabled} initialId={params.get('conversa')} onUnread={setUnread} onSetup={() => changeTab('config')} />}
+            {tab === 'respostas' && <AutoRepliesView />}
+            {tab === 'agendador' && <SchedulerView />}
+            {tab === 'disparos' && <BroadcastView />}
+            {tab === 'contatos' && <ContactsView />}
+            {tab === 'grupos' && <GroupsView />}
+            {tab === 'etiquetas' && <LabelsView />}
+            {tab === 'webhooks' && <WebhooksView />}
+            {tab === 'figurinhas' && <StickerView />}
             {tab === 'atividade' && <ActivityView />}
         </div>
     )
