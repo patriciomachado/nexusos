@@ -21,6 +21,8 @@ const isPublicRoute = createRouteMatcher([
     // Meta's servers; the route checks the webhook signature itself.
     '/api/whatsapp/webhook',
     '/api/instagram/webhook',
+    // The store's own WhatsApp server (QR code); the route checks the secret in the URL itself.
+    '/api/whatsapp/gateway/(.*)',
 ])
 
 export default clerkMiddleware(async (auth, request) => {
