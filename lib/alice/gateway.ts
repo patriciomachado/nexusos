@@ -88,10 +88,14 @@ async function evolution<T = Record<string, unknown>>(s: AliceSettings, path: st
         res = await fetch(`${url}${path}`, {
             ...init,
             headers: { apikey: key, 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
-            signal: AbortSignal.timeout(20_000),
+            // Opening the connection waits for the QR code (up to ~12s, plus the first start), so it gets longer.
+            signal: AbortSignal.timeout(path.startsWith('/instance/connect/') ? 45_000 : 20_000),
         })
-    } catch {
-        throw new WhatsAppError(`Não foi possível falar com o servidor do WhatsApp (${url}). Ele está no ar?`)
+    } catch (err) {
+        const e = err as Error & { cause?: { code?: string; message?: string } }
+        const reason = e.name === 'TimeoutError' ? 'o servidor demorou demais para responder' : e.cause?.code ?? e.cause?.message ?? e.message
+        console.error('[whatsapp-qr] request failed:', path, reason)
+        throw new WhatsAppError(`Não foi possível falar com o servidor do WhatsApp (${url}): ${reason}.`)
     }
     const data = await res.json().catch(() => ({})) as T & { message?: unknown; response?: { message?: unknown } }
     if (res.status === 401 || res.status === 403 && /api ?key|unauthori/i.test(JSON.stringify(data))) {
