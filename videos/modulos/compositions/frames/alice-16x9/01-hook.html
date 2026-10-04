@@ -1,0 +1,66 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m81-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m81-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m81-eyebrow{font-size:30px}
+.m81-h2{font-size:76px;margin-top:20px}
+.m81-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m81-bg{position:absolute;inset:0;background:#F2F2F7}
+.m81-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m81-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m81-muted{color:#6E6E73}
+.m81-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m81-num{font-variant-numeric:tabular-nums}
+.m81-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m81-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m81-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m81-row{display:flex;justify-content:space-between;align-items:center}
+.m81-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m81-hookf{justify-content:center;gap:0}
+.m81-mod{align-self:flex-start;background:rgba(88,86,214,.1);color:#5856D6;padding:16px 32px;font-size:34px}
+.m81-q{font-weight:700;letter-spacing:-.035em;line-height:1.08;margin-top:40px}
+.m81-w{display:inline-block}
+.m81-hookf{flex-direction:column;align-items:flex-start;padding-top:40px}
+.m81-q{font-size:112px;max-width:1500px}
+
+  </style>
+  <div id="root" data-composition-id="01-hook" data-width="1920" data-height="1080">
+    <div id="m81-bg" class="clip m81-bg" data-start="0" data-duration="2.92" data-track-index="0"></div>
+    <div class="m81-f m81-hookf">
+      <div class="m81-pill m81-mod" id="m81-mod">Alice (IA)</div>
+      <div class="m81-q"><span class="m81-w" id="m81-w0">E</span> <span class="m81-w" id="m81-w1">se</span> <span class="m81-w" id="m81-w2">você</span> <span class="m81-w" id="m81-w3">pudesse</span> <span class="m81-w" id="m81-w4">perguntar,</span> <span class="m81-w" id="m81-w5">e</span> <span class="m81-w" id="m81-w6">o</span> <span class="m81-w" id="m81-w7">sistema</span> <span class="m81-w" id="m81-w8">respondesse?</span></div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="01-hook"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="01-hook"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m81-mod"), {opacity:0, scale:0.8}, {opacity:1, scale:1, duration:0.4, ease:"back.out(1.8)"}, 0.0);
+    tl.fromTo(q("#m81-w0"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.0);
+    tl.fromTo(q("#m81-w1"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.12);
+    tl.fromTo(q("#m81-w2"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.25);
+    tl.fromTo(q("#m81-w3"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.5);
+    tl.fromTo(q("#m81-w4"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.89);
+    tl.fromTo(q("#m81-w5"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 1.63);
+    tl.fromTo(q("#m81-w6"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 1.75);
+    tl.fromTo(q("#m81-w7"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 1.86);
+    tl.fromTo(q("#m81-w8"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 2.21);
+    tl.to(q("#m81-w8"), {color:"#5856D6", duration:0.25}, 2.27);
+
+    window.__timelines["01-hook"] = tl;
+  })();
+  </script>
+</template>

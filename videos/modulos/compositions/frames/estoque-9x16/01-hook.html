@@ -1,0 +1,64 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1080px;height:1920px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m21-f{position:absolute;left:0;right:0;top:0;height:1590px;padding:150px 76px 0;display:flex;flex-direction:column}
+.m21-eyebrow{font-size:38px}
+.m21-h2{font-size:84px;margin-top:22px}
+.m21-r{margin-top:80px;zoom:1.35;display:flex;flex-direction:column}
+
+.m21-bg{position:absolute;inset:0;background:#F2F2F7}
+.m21-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m21-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m21-muted{color:#6E6E73}
+.m21-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m21-num{font-variant-numeric:tabular-nums}
+.m21-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m21-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m21-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m21-row{display:flex;justify-content:space-between;align-items:center}
+.m21-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m21-hookf{justify-content:center;gap:0}
+.m21-mod{align-self:flex-start;background:rgba(88,86,214,.1);color:#5856D6;padding:16px 32px;font-size:34px}
+.m21-q{font-weight:700;letter-spacing:-.035em;line-height:1.08;margin-top:40px}
+.m21-w{display:inline-block}
+.m21-hookf{padding-bottom:160px}
+.m21-q{font-size:116px}
+
+  </style>
+  <div id="root" data-composition-id="01-hook" data-width="1080" data-height="1920">
+    <div id="m21-bg" class="clip m21-bg" data-start="0" data-duration="2.01" data-track-index="0"></div>
+    <div class="m21-f m21-hookf">
+      <div class="m21-pill m21-mod" id="m21-mod">Estoque e aparelhos</div>
+      <div class="m21-q"><span class="m21-w" id="m21-w0">Não</span> <span class="m21-w" id="m21-w1">sabe</span> <span class="m21-w" id="m21-w2">o</span> <span class="m21-w" id="m21-w3">que</span> <span class="m21-w" id="m21-w4">ainda</span> <span class="m21-w" id="m21-w5">tem</span> <span class="m21-w" id="m21-w6">na</span> <span class="m21-w" id="m21-w7">prateleira?</span></div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="01-hook"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="01-hook"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m21-mod"), {opacity:0, scale:0.8}, {opacity:1, scale:1, duration:0.4, ease:"back.out(1.8)"}, 0.0);
+    tl.fromTo(q("#m21-w0"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.0);
+    tl.fromTo(q("#m21-w1"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.14);
+    tl.fromTo(q("#m21-w2"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.41);
+    tl.fromTo(q("#m21-w3"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.55);
+    tl.fromTo(q("#m21-w4"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.68);
+    tl.fromTo(q("#m21-w5"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.96);
+    tl.fromTo(q("#m21-w6"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 1.1);
+    tl.fromTo(q("#m21-w7"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 1.23);
+    tl.to(q("#m21-w7"), {color:"#5856D6", duration:0.25}, 1.29);
+
+    window.__timelines["01-hook"] = tl;
+  })();
+  </script>
+</template>

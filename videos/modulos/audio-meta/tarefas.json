@@ -1,0 +1,225 @@
+{
+  "bgm": null,
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/tarefas/01.wav",
+      "duration_s": 2.72,
+      "words": [
+        {
+          "text": "Aquele",
+          "start": 0.05,
+          "end": 0.45
+        },
+        {
+          "text": "retorno",
+          "start": 0.47,
+          "end": 0.87
+        },
+        {
+          "text": "para",
+          "start": 0.89,
+          "end": 1.15
+        },
+        {
+          "text": "o",
+          "start": 1.17,
+          "end": 1.29
+        },
+        {
+          "text": "cliente",
+          "start": 1.31,
+          "end": 1.57
+        },
+        {
+          "text": "ficou",
+          "start": 1.59,
+          "end": 1.85
+        },
+        {
+          "text": "só",
+          "start": 1.87,
+          "end": 1.99
+        },
+        {
+          "text": "na",
+          "start": 2.01,
+          "end": 2.13
+        },
+        {
+          "text": "cabeça?",
+          "start": 2.15,
+          "end": 2.55
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/tarefas/02.wav",
+      "duration_s": 3.84,
+      "words": [
+        {
+          "text": "No",
+          "start": 0.05,
+          "end": 0.243
+        },
+        {
+          "text": "Nexus",
+          "start": 0.262,
+          "end": 0.668
+        },
+        {
+          "text": "OS,",
+          "start": 0.688,
+          "end": 0.88
+        },
+        {
+          "text": "as",
+          "start": 0.9,
+          "end": 1.094
+        },
+        {
+          "text": "pendências",
+          "start": 1.114,
+          "end": 1.735
+        },
+        {
+          "text": "da",
+          "start": 1.755,
+          "end": 1.949
+        },
+        {
+          "text": "loja",
+          "start": 1.969,
+          "end": 2.377
+        },
+        {
+          "text": "ficam",
+          "start": 2.397,
+          "end": 2.805
+        },
+        {
+          "text": "num",
+          "start": 2.825,
+          "end": 3.018
+        },
+        {
+          "text": "lugar",
+          "start": 3.038,
+          "end": 3.446
+        },
+        {
+          "text": "só.",
+          "start": 3.466,
+          "end": 3.66
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/tarefas/03.wav",
+      "duration_s": 3.01,
+      "words": [
+        {
+          "text": "E",
+          "start": 0.05,
+          "end": 0.175
+        },
+        {
+          "text": "o",
+          "start": 0.195,
+          "end": 0.32
+        },
+        {
+          "text": "lembrete",
+          "start": 0.34,
+          "end": 0.755
+        },
+        {
+          "text": "chega",
+          "start": 0.775,
+          "end": 1.045
+        },
+        {
+          "text": "no",
+          "start": 1.065,
+          "end": 1.19
+        },
+        {
+          "text": "seu",
+          "start": 1.21,
+          "end": 1.335
+        },
+        {
+          "text": "celular,",
+          "start": 1.355,
+          "end": 1.77
+        },
+        {
+          "text": "na",
+          "start": 2.0,
+          "end": 2.126
+        },
+        {
+          "text": "hora",
+          "start": 2.146,
+          "end": 2.418
+        },
+        {
+          "text": "certa.",
+          "start": 2.438,
+          "end": 2.71
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/cta.wav",
+      "duration_s": 4.37,
+      "words": [
+        {
+          "text": "Teste",
+          "start": 0.05,
+          "end": 0.452
+        },
+        {
+          "text": "grátis",
+          "start": 0.472,
+          "end": 0.875
+        },
+        {
+          "text": "por",
+          "start": 0.895,
+          "end": 1.086
+        },
+        {
+          "text": "quinze",
+          "start": 1.106,
+          "end": 1.509
+        },
+        {
+          "text": "dias,",
+          "start": 1.529,
+          "end": 1.72
+        },
+        {
+          "text": "sem",
+          "start": 1.84,
+          "end": 2.037
+        },
+        {
+          "text": "cartão.",
+          "start": 2.057,
+          "end": 2.47
+        },
+        {
+          "text": "nexusgestor.com",
+          "start": 2.88,
+          "end": 4.18
+        }
+      ]
+    }
+  ],
+  "sfx": []
+}

@@ -1,0 +1,245 @@
+{
+  "bgm": null,
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/estoque/01.wav",
+      "duration_s": 2.01,
+      "words": [
+        {
+          "text": "Não",
+          "start": 0.06,
+          "end": 0.177
+        },
+        {
+          "text": "sabe",
+          "start": 0.197,
+          "end": 0.451
+        },
+        {
+          "text": "o",
+          "start": 0.471,
+          "end": 0.588
+        },
+        {
+          "text": "que",
+          "start": 0.608,
+          "end": 0.725
+        },
+        {
+          "text": "ainda",
+          "start": 0.745,
+          "end": 0.998
+        },
+        {
+          "text": "tem",
+          "start": 1.018,
+          "end": 1.135
+        },
+        {
+          "text": "na",
+          "start": 1.155,
+          "end": 1.272
+        },
+        {
+          "text": "prateleira?",
+          "start": 1.292,
+          "end": 1.82
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/estoque/02.wav",
+      "duration_s": 5.35,
+      "words": [
+        {
+          "text": "No",
+          "start": 0.05,
+          "end": 0.26
+        },
+        {
+          "text": "Nexus",
+          "start": 0.28,
+          "end": 0.72
+        },
+        {
+          "text": "OS,",
+          "start": 0.74,
+          "end": 0.95
+        },
+        {
+          "text": "peças,",
+          "start": 1.17,
+          "end": 1.17
+        },
+        {
+          "text": "acessórios",
+          "start": 1.19,
+          "end": 1.951
+        },
+        {
+          "text": "e",
+          "start": 1.971,
+          "end": 2.146
+        },
+        {
+          "text": "seminovos",
+          "start": 2.166,
+          "end": 2.928
+        },
+        {
+          "text": "ficam",
+          "start": 2.948,
+          "end": 3.318
+        },
+        {
+          "text": "com",
+          "start": 3.338,
+          "end": 3.514
+        },
+        {
+          "text": "custo",
+          "start": 3.534,
+          "end": 3.904
+        },
+        {
+          "text": "e",
+          "start": 3.924,
+          "end": 4.099
+        },
+        {
+          "text": "preço,",
+          "start": 4.119,
+          "end": 4.49
+        },
+        {
+          "text": "num",
+          "start": 4.62,
+          "end": 4.743
+        },
+        {
+          "text": "lugar",
+          "start": 4.762,
+          "end": 5.028
+        },
+        {
+          "text": "só.",
+          "start": 5.048,
+          "end": 5.17
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/estoque/03.wav",
+      "duration_s": 3.54,
+      "words": [
+        {
+          "text": "Pegou",
+          "start": 0.05,
+          "end": 0.252
+        },
+        {
+          "text": "um",
+          "start": 0.272,
+          "end": 0.363
+        },
+        {
+          "text": "aparelho",
+          "start": 0.383,
+          "end": 0.807
+        },
+        {
+          "text": "na",
+          "start": 0.827,
+          "end": 0.918
+        },
+        {
+          "text": "troca?",
+          "start": 0.938,
+          "end": 1.14
+        },
+        {
+          "text": "A",
+          "start": 1.44,
+          "end": 1.547
+        },
+        {
+          "text": "avaliação",
+          "start": 1.567,
+          "end": 2.057
+        },
+        {
+          "text": "fica",
+          "start": 2.077,
+          "end": 2.311
+        },
+        {
+          "text": "registrada",
+          "start": 2.331,
+          "end": 2.821
+        },
+        {
+          "text": "no",
+          "start": 2.841,
+          "end": 2.948
+        },
+        {
+          "text": "estoque.",
+          "start": 2.968,
+          "end": 3.33
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/cta.wav",
+      "duration_s": 4.37,
+      "words": [
+        {
+          "text": "Teste",
+          "start": 0.05,
+          "end": 0.452
+        },
+        {
+          "text": "grátis",
+          "start": 0.472,
+          "end": 0.875
+        },
+        {
+          "text": "por",
+          "start": 0.895,
+          "end": 1.086
+        },
+        {
+          "text": "quinze",
+          "start": 1.106,
+          "end": 1.509
+        },
+        {
+          "text": "dias,",
+          "start": 1.529,
+          "end": 1.72
+        },
+        {
+          "text": "sem",
+          "start": 1.84,
+          "end": 2.037
+        },
+        {
+          "text": "cartão.",
+          "start": 2.057,
+          "end": 2.47
+        },
+        {
+          "text": "nexusgestor.com",
+          "start": 2.88,
+          "end": 4.18
+        }
+      ]
+    }
+  ],
+  "sfx": []
+}

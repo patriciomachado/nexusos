@@ -1,0 +1,78 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1080px;height:1920px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m12-f{position:absolute;left:0;right:0;top:0;height:1590px;padding:150px 76px 0;display:flex;flex-direction:column}
+.m12-eyebrow{font-size:38px}
+.m12-h2{font-size:84px;margin-top:22px}
+.m12-r{margin-top:80px;zoom:1.35;display:flex;flex-direction:column}
+
+.m12-bg{position:absolute;inset:0;background:#F2F2F7}
+.m12-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m12-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m12-muted{color:#6E6E73}
+.m12-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m12-num{font-variant-numeric:tabular-nums}
+.m12-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m12-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m12-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m12-row{display:flex;justify-content:space-between;align-items:center}
+.m12-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m12-pdv{padding:40px 50px 46px;display:flex;flex-direction:column}
+.m12-it{font-size:32px;padding:24px 0;border-bottom:2px solid #EFEFF4}
+.m12-tot{margin-top:22px;font-size:32px}
+.m12-tot b{font-size:64px;color:#5856D6;letter-spacing:-.03em}
+.m12-go{margin-top:28px;padding:28px;font-size:34px}
+.m12-done{align-self:center;margin-top:20px}
+
+  </style>
+  <div id="root" data-composition-id="02-demo-a" data-width="1080" data-height="1920">
+    <div id="m12-bg" class="clip m12-bg" data-start="0" data-duration="3.73" data-track-index="0"></div>
+    <div class="m12-f">
+      <div class="m12-l">
+      <div class="m12-eyebrow" id="m12-eb">PDV</div>
+      <div class="m12-h2" id="m12-h">Venda no balcão<br>em segundos.</div>
+      </div>
+      <div class="m12-r">
+        <div class="m12-card m12-pdv" id="m12-card">
+          <div class="m12-row"><b style="font-size:34px">Venda rápida</b><span class="m12-muted" style="font-size:26px">Balcão · caixa aberto</span></div>
+          <div class="m12-row m12-it" id="m12-i0"><span>Película 3D</span><b class="m12-num">R$ 40,00</b></div>
+          <div class="m12-row m12-it" id="m12-i1"><span>Capinha anti-impacto</span><b class="m12-num">R$ 59,90</b></div>
+          <div class="m12-row m12-it" id="m12-i2"><span>Carregador USB-C</span><b class="m12-num">R$ 89,90</b></div>
+          <div class="m12-row m12-tot"><span class="m12-muted">Total</span><b class="m12-num">R$ <span id="m12-int">0</span>,<span id="m12-cts">00</span></b></div>
+          <div class="m12-pill m12-btn m12-go" id="m12-go">Finalizar no Pix</div>
+          <div class="m12-pill m12-ok m12-done" id="m12-done">✓ Venda concluída · recibo enviado</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="02-demo-a"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="02-demo-a"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m12-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m12-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q("#m12-card"), {opacity:0, y:110}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.12);
+    tl.fromTo(q("#m12-i0"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 0.4);
+    tl.fromTo(q("#m12-i1"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 0.7);
+    tl.fromTo(q("#m12-i2"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 1.0);
+    { const st = {v:0}; tl.fromTo(st, {v:0}, {v:189.8, duration:1.1, ease:"power2.out", onUpdate(){
+      const [a, b] = brl(st.v); q("#m12-int").textContent = a; q("#m12-cts").textContent = b; }}, 0.45); }
+    tl.to(q("#m12-go"), {scale:0.94, duration:0.1, ease:"power2.in"}, 2.78);
+    tl.to(q("#m12-go"), {scale:1, duration:0.35, ease:"back.out(3)"}, 2.88);
+    tl.fromTo(q("#m12-done"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 3.08);
+
+    window.__timelines["02-demo-a"] = tl;
+  })();
+  </script>
+</template>

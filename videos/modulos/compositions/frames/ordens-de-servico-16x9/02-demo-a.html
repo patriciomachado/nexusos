@@ -1,0 +1,84 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m02-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m02-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m02-eyebrow{font-size:30px}
+.m02-h2{font-size:76px;margin-top:20px}
+.m02-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m02-bg{position:absolute;inset:0;background:#F2F2F7}
+.m02-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m02-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m02-muted{color:#6E6E73}
+.m02-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m02-num{font-variant-numeric:tabular-nums}
+.m02-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m02-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m02-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m02-row{display:flex;justify-content:space-between;align-items:center}
+.m02-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m02-os{padding:40px 50px 44px}
+.m02-dev{font-size:44px;font-weight:700;letter-spacing:-.02em;margin-top:12px}
+.m02-lbl{font-size:24px;font-weight:600;color:#8E8E93;text-transform:uppercase;letter-spacing:.05em;margin-top:30px}
+.m02-photos{display:flex;gap:18px;margin-top:14px}
+.m02-ph{width:150px;height:150px;border-radius:26px;background:linear-gradient(145deg,#E5E5EA,#C7C7CC);position:relative}
+.m02-ph::after{content:"";position:absolute;left:50%;top:50%;width:58px;height:42px;margin:-21px 0 0 -29px;border:5px solid #fff;border-radius:12px;box-sizing:border-box}
+.m02-ck{display:flex;align-items:center;gap:18px;font-size:30px;margin-top:14px}
+.m02-box{width:40px;height:40px;border-radius:12px;background:#34C759;color:#fff;font-size:24px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.m02-quote{margin-top:30px;padding:24px 30px;border-radius:28px;background:rgba(88,86,214,.08);font-size:32px;color:#5856D6}
+.m02-quote b{font-size:40px}
+
+  </style>
+  <div id="root" data-composition-id="02-demo-a" data-width="1920" data-height="1080">
+    <div id="m02-bg" class="clip m02-bg" data-start="0" data-duration="5.28" data-track-index="0"></div>
+    <div class="m02-f">
+      <div class="m02-l">
+      <div class="m02-eyebrow" id="m02-eb">Ordens de serviço</div>
+      <div class="m02-h2" id="m02-h">Entrada completa,<br>sem papel.</div>
+      </div>
+      <div class="m02-r">
+        <div class="m02-card m02-os" id="m02-card">
+          <div class="m02-row m02-muted" style="font-size:28px"><span class="m02-num">Nova OS #1043</span><span>Recebido hoje, 09:12</span></div>
+          <div class="m02-dev">Galaxy A54 · Troca de bateria</div>
+          <div class="m02-lbl">Fotos de entrada</div>
+          <div class="m02-photos"><span class="m02-ph" id="m02-p0"></span><span class="m02-ph" id="m02-p1"></span><span class="m02-ph" id="m02-p2"></span></div>
+          <div class="m02-lbl">Checklist</div>
+          <div class="m02-ck" id="m02-c0"><span class="m02-box">✓</span>Liga normalmente</div>
+          <div class="m02-ck" id="m02-c1"><span class="m02-box">✓</span>Tela sem trincas</div>
+          <div class="m02-ck" id="m02-c2"><span class="m02-box">✓</span>Câmeras e áudio ok</div>
+          <div class="m02-row m02-quote" id="m02-q"><span>Orçamento</span><b class="m02-num">R$ 160,00</b></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="02-demo-a"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="02-demo-a"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m02-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m02-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q("#m02-card"), {opacity:0, y:110}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.15);
+    tl.fromTo(q("#m02-p0"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.4, ease:"back.out(1.8)"}, 2.85);
+    tl.fromTo(q("#m02-p1"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.4, ease:"back.out(1.8)"}, 2.97);
+    tl.fromTo(q("#m02-p2"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.4, ease:"back.out(1.8)"}, 3.09);
+    tl.fromTo(q("#m02-c0"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 3.36);
+    tl.fromTo(q("#m02-c1"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 3.51);
+    tl.fromTo(q("#m02-c2"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 3.66);
+    tl.fromTo(q("#m02-q"), {opacity:0, scale:0.8}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 4.07);
+
+    window.__timelines["02-demo-a"] = tl;
+  })();
+  </script>
+</template>

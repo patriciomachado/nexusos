@@ -1,0 +1,85 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1080px;height:1920px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m24-f{position:absolute;left:0;right:0;top:0;height:1590px;padding:150px 76px 0;display:flex;flex-direction:column}
+.m24-eyebrow{font-size:38px}
+.m24-h2{font-size:84px;margin-top:22px}
+.m24-r{margin-top:80px;zoom:1.35;display:flex;flex-direction:column}
+
+.m24-bg{position:absolute;inset:0;background:#F2F2F7}
+.m24-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m24-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m24-muted{color:#6E6E73}
+.m24-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m24-num{font-variant-numeric:tabular-nums}
+.m24-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m24-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m24-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m24-row{display:flex;justify-content:space-between;align-items:center}
+.m24-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m24-glow{position:absolute;border-radius:50%;background:radial-gradient(closest-side,rgba(162,28,240,.18),rgba(45,212,239,.09) 55%,rgba(242,242,247,0))}
+.m24-ctaf{flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:0}
+.m24-lock{display:flex;align-items:center}
+.m24-tile{background:#fff;box-shadow:0 30px 80px rgba(0,0,0,.13);display:flex;align-items:center;justify-content:center;flex:none}
+.m24-logo{object-fit:contain;display:block}
+.m24-txt{display:flex;flex-direction:column}
+.m24-mod{background:rgba(88,86,214,.1);color:#5856D6}
+.m24-nm{font-weight:700;letter-spacing:-.04em;line-height:1}
+.m24-go{box-shadow:0 18px 44px rgba(88,86,214,.35)}
+.m24-url{font-weight:700;color:#5856D6;letter-spacing:-.01em}
+
+.m24-glow{left:-60px;top:120px;width:1200px;height:1200px}
+.m24-ctaf{padding-bottom:80px}
+.m24-lock{flex-direction:column;gap:56px}
+.m24-tile{width:330px;height:330px;border-radius:76px}
+.m24-logo{width:296px;height:296px}
+.m24-txt{align-items:center}
+.m24-mod{padding:16px 34px;font-size:38px}
+.m24-nm{font-size:132px;margin-top:28px}
+.m24-go{margin-top:80px;padding:44px 86px;font-size:50px}
+.m24-nc{font-size:42px;margin-top:34px}
+.m24-url{font-size:52px;margin-top:26px}
+
+  </style>
+  <div id="root" data-composition-id="04-cta" data-width="1080" data-height="1920">
+    <div id="m24-bg" class="clip m24-bg" data-start="0" data-duration="4.37" data-track-index="0"></div>
+    <div class="m24-glow" id="m24-glow" data-layout-allow-overflow></div>
+    <div class="m24-f m24-ctaf">
+      <div class="m24-lock">
+        <div class="m24-tile" id="m24-tile"><img src="capture/assets/nexus-logo.png" alt="Nexus" class="m24-logo"></div>
+        <div class="m24-txt"><div class="m24-pill m24-mod" id="m24-mod">Estoque e aparelhos</div><div class="m24-nm" id="m24-nm">Nexus OS</div></div>
+      </div>
+      <div class="m24-pill m24-btn m24-go" id="m24-go">Teste grátis por 15 dias</div>
+      <div class="m24-muted m24-nc" id="m24-nc">Sem cartão de crédito.</div>
+      <div class="m24-url" id="m24-url">nexusgestor.com</div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="04-cta"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="04-cta"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m24-glow"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.9, ease:"power2.out"}, 0);
+    tl.fromTo(q("#m24-tile"), {opacity:0, scale:0.6}, {opacity:1, scale:1, duration:0.55, ease:"back.out(1.8)"}, 0.0);
+    tl.fromTo(q("#m24-mod"), {opacity:0, scale:0.8}, {opacity:1, scale:1, duration:0.4, ease:"back.out(1.8)"}, 0.15);
+    tl.fromTo(q("#m24-nm"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.2);
+    tl.fromTo(q("#m24-go"), {opacity:0, scale:0.6}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 0.1);
+    tl.fromTo(q("#m24-nc"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 1.74);
+    tl.fromTo(q("#m24-url"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.45, ease:"power3.out"}, 2.73);
+    tl.to(q("#m24-go"), {scale:0.94, duration:0.12, ease:"power2.in"}, 3.23);
+    tl.to(q("#m24-go"), {scale:1, duration:0.4, ease:"back.out(3)"}, 3.35);
+
+    window.__timelines["04-cta"] = tl;
+  })();
+  </script>
+</template>

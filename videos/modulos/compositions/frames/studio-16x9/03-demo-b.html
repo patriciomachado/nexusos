@@ -1,0 +1,67 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m73-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m73-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m73-eyebrow{font-size:30px}
+.m73-h2{font-size:76px;margin-top:20px}
+.m73-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m73-bg{position:absolute;inset:0;background:#F2F2F7}
+.m73-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m73-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m73-muted{color:#6E6E73}
+.m73-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m73-num{font-variant-numeric:tabular-nums}
+.m73-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m73-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m73-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m73-row{display:flex;justify-content:space-between;align-items:center}
+.m73-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m73-post{border-radius:36px;overflow:hidden}
+.m73-avt{display:inline-block;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#F58529,#DD2A7B);vertical-align:-14px;margin-right:14px}
+.m73-art{height:330px;background:linear-gradient(140deg,#4643C4,#6E4FD6 60%,#2F7FC0);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 44px;gap:10px;font-size:28px}
+.m73-art b{font-size:58px;line-height:1.04;letter-spacing:-.02em}
+
+  </style>
+  <div id="root" data-composition-id="03-demo-b" data-width="1920" data-height="1080">
+    <div id="m73-bg" class="clip m73-bg" data-start="0" data-duration="3.07" data-track-index="0"></div>
+    <div class="m73-f">
+      <div class="m73-l">
+      <div class="m73-eyebrow" id="m73-eb">Studio de conteúdo</div>
+      <div class="m73-h2" id="m73-h">Pronto para<br>postar.</div>
+      </div>
+      <div class="m73-r">
+        <div class="m73-card m73-post" id="m73-post">
+          <div class="m73-row" style="font-size:26px;padding:20px 28px"><span><span class="m73-avt"></span><b>sua.assistencia</b></span><span class="m73-muted">•••</span></div>
+          <div class="m73-art"><b>Troca de tela<br>em 1 hora.</b><span>Garantia de 90 dias</span></div>
+          <div style="padding:20px 28px 26px;font-size:26px"><b>sua.assistencia</b> Tela trincada? A gente troca enquanto você toma um café. ☕</div>
+        </div>
+        <div class="m73-pill m73-btn" id="m73-sch" style="align-self:flex-start;margin-top:22px;padding:20px 34px;font-size:28px">Baixar arte e legenda</div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="03-demo-b"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="03-demo-b"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m73-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m73-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q("#m73-post"), {opacity:0, scale:0.88}, {opacity:1, scale:1, duration:0.6, ease:"back.out(1.8)"}, 0.1);
+    tl.fromTo(q("#m73-sch"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 1.38);
+
+    window.__timelines["03-demo-b"] = tl;
+  })();
+  </script>
+</template>

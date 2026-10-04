@@ -1,0 +1,79 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m83-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m83-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m83-eyebrow{font-size:30px}
+.m83-h2{font-size:76px;margin-top:20px}
+.m83-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m83-bg{position:absolute;inset:0;background:#F2F2F7}
+.m83-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m83-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m83-muted{color:#6E6E73}
+.m83-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m83-num{font-variant-numeric:tabular-nums}
+.m83-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m83-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m83-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m83-row{display:flex;justify-content:space-between;align-items:center}
+.m83-btn{background:#5856D6;color:#fff;justify-content:center}
+
+#root{color:#fff}
+.m83-bg{background:#000}
+.m83-eyebrow{color:#7D7AFF}
+
+.m83-wa{border-radius:44px;background:#0B141A;overflow:hidden;padding-bottom:30px;display:flex;flex-direction:column;gap:18px}
+.m83-top{display:flex;align-items:center;gap:20px;background:#1F2C34;padding:24px 30px;color:#fff;font-size:28px}
+.m83-top small{display:block;font-size:22px;color:#8696A0}
+.m83-top .m83-avt{width:62px;height:62px;border-radius:50%;background:#5856D6;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+.m83-in,.m83-out{max-width:80%;padding:20px 26px;font-size:28px;line-height:1.38;color:#E9EDEF}
+.m83-in{align-self:flex-start;margin-left:28px;background:#202C33;border-radius:8px 28px 28px 28px}
+.m83-out{align-self:flex-end;margin-right:28px;background:#005C4B;border-radius:28px 8px 28px 28px}
+.m83-typ{align-self:flex-start;margin-left:28px;display:flex;gap:10px;background:#202C33;border-radius:28px;padding:22px 26px}
+.m83-typ span{width:14px;height:14px;border-radius:50%;background:#8696A0}
+
+  </style>
+  <div id="root" data-composition-id="03-demo-b" data-width="1920" data-height="1080">
+    <div id="m83-bg" class="clip m83-bg" data-start="0" data-duration="3.52" data-track-index="0"></div>
+    <div class="m83-f">
+      <div class="m83-l">
+      <div class="m83-eyebrow" id="m83-eb">Alice no WhatsApp</div>
+      <div class="m83-h2" id="m83-h">Atende o cliente<br>no WhatsApp.</div>
+      </div>
+      <div class="m83-r">
+        <div class="m83-wa">
+          <div class="m83-top"><span class="m83-avt">N</span><span><b>Assistência Centro</b><small>online</small></span></div>
+          <div class="m83-in" id="m83-m0">Oi! Meu iPhone 13 já ficou pronto?</div>
+          <div class="m83-typ" id="m83-typ"><span></span><span></span><span></span></div>
+          <div class="m83-out" id="m83-m1">Oi, Ana! Ficou sim: a troca de tela foi concluída e ele está pronto para retirada desde as 15h. ✓✓</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="03-demo-b"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="03-demo-b"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m83-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m83-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q(".m83-wa"), {opacity:0, y:110}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.1);
+    tl.fromTo(q("#m83-m0"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.35, ease:"power3.out"}, 0.14);
+    tl.fromTo(q("#m83-typ"), {opacity:0, scale:0.8}, {opacity:1, scale:1, duration:0.3, ease:"back.out(1.8)"}, 0.74);
+    tl.to(q("#m83-typ"), {opacity:0, height:0, padding:0, duration:0.15}, 1.65);
+    tl.fromTo(q("#m83-m1"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 1.75);
+
+    window.__timelines["03-demo-b"] = tl;
+  })();
+  </script>
+</template>

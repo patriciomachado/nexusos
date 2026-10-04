@@ -1,0 +1,64 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1080px;height:1920px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m11-f{position:absolute;left:0;right:0;top:0;height:1590px;padding:150px 76px 0;display:flex;flex-direction:column}
+.m11-eyebrow{font-size:38px}
+.m11-h2{font-size:84px;margin-top:22px}
+.m11-r{margin-top:80px;zoom:1.35;display:flex;flex-direction:column}
+
+.m11-bg{position:absolute;inset:0;background:#F2F2F7}
+.m11-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m11-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m11-muted{color:#6E6E73}
+.m11-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m11-num{font-variant-numeric:tabular-nums}
+.m11-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m11-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m11-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m11-row{display:flex;justify-content:space-between;align-items:center}
+.m11-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m11-hookf{justify-content:center;gap:0}
+.m11-mod{align-self:flex-start;background:rgba(88,86,214,.1);color:#5856D6;padding:16px 32px;font-size:34px}
+.m11-q{font-weight:700;letter-spacing:-.035em;line-height:1.08;margin-top:40px}
+.m11-w{display:inline-block}
+.m11-hookf{padding-bottom:160px}
+.m11-q{font-size:116px}
+
+  </style>
+  <div id="root" data-composition-id="01-hook" data-width="1080" data-height="1920">
+    <div id="m11-bg" class="clip m11-bg" data-start="0" data-duration="1.62" data-track-index="0"></div>
+    <div class="m11-f m11-hookf">
+      <div class="m11-pill m11-mod" id="m11-mod">PDV e caixa</div>
+      <div class="m11-q"><span class="m11-w" id="m11-w0">Caixa</span> <span class="m11-w" id="m11-w1">que</span> <span class="m11-w" id="m11-w2">não</span> <span class="m11-w" id="m11-w3">bate</span> <span class="m11-w" id="m11-w4">no</span> <span class="m11-w" id="m11-w5">fim</span> <span class="m11-w" id="m11-w6">do</span> <span class="m11-w" id="m11-w7">dia?</span></div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="01-hook"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="01-hook"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m11-mod"), {opacity:0, scale:0.8}, {opacity:1, scale:1, duration:0.4, ease:"back.out(1.8)"}, 0.0);
+    tl.fromTo(q("#m11-w0"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.0);
+    tl.fromTo(q("#m11-w1"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.27);
+    tl.fromTo(q("#m11-w2"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.41);
+    tl.fromTo(q("#m11-w3"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.55);
+    tl.fromTo(q("#m11-w4"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.84);
+    tl.fromTo(q("#m11-w5"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.98);
+    tl.fromTo(q("#m11-w6"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 1.12);
+    tl.fromTo(q("#m11-w7"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 1.26);
+    tl.to(q("#m11-w7"), {color:"#5856D6", duration:0.25}, 1.32);
+
+    window.__timelines["01-hook"] = tl;
+  })();
+  </script>
+</template>

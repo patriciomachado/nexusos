@@ -1,0 +1,74 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m33-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m33-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m33-eyebrow{font-size:30px}
+.m33-h2{font-size:76px;margin-top:20px}
+.m33-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m33-bg{position:absolute;inset:0;background:#F2F2F7}
+.m33-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m33-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m33-muted{color:#6E6E73}
+.m33-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m33-num{font-variant-numeric:tabular-nums}
+.m33-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m33-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m33-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m33-row{display:flex;justify-content:space-between;align-items:center}
+.m33-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m33-lock{position:relative;height:640px;border-radius:56px;background:linear-gradient(160deg,#3B3A8F,#5856D6 55%,#8E6CF0);padding:60px 40px 0;display:flex;flex-direction:column;align-items:center;color:#fff;overflow:hidden}
+.m33-time{font-size:150px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.m33-date{font-size:30px;font-weight:500;margin-top:14px;opacity:.85}
+.m33-note{align-self:stretch;margin-top:70px;background:rgba(255,255,255,.88);color:#1D1D1F;border-radius:36px;padding:28px 34px}
+.m33-app{display:inline-block;width:30px;height:30px;border-radius:8px;background:#5856D6;vertical-align:-7px;margin-right:12px}
+
+  </style>
+  <div id="root" data-composition-id="03-demo-b" data-width="1920" data-height="1080">
+    <div id="m33-bg" class="clip m33-bg" data-start="0" data-duration="3.01" data-track-index="0"></div>
+    <div class="m33-f">
+      <div class="m33-l">
+      <div class="m33-eyebrow" id="m33-eb">Lembretes</div>
+      <div class="m33-h2" id="m33-h">Lembrete no celular,<br>na hora certa.</div>
+      </div>
+      <div class="m33-r">
+        <div class="m33-lock">
+          <div class="m33-time"><span id="m33-hh">09:59</span></div>
+          <div class="m33-date">quinta-feira, 9 de outubro</div>
+          <div class="m33-note" id="m33-note">
+            <div class="m33-row" style="font-size:24px;color:rgba(0,0,0,.55)"><span><b class="m33-app"></b>NEXUS OS</span><span>agora</span></div>
+            <b style="display:block;font-size:30px;margin-top:10px">Lembrete · 10:00</b>
+            <span style="display:block;font-size:28px;margin-top:4px">Ligar para Ana P. · retorno do orçamento</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="03-demo-b"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="03-demo-b"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m33-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m33-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q(".m33-lock"), {opacity:0, y:110}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.08);
+    tl.set(q("#m33-hh"), {textContent:"09:59"}, 0);
+    tl.set(q("#m33-hh"), {textContent:"10:00"}, 0.24);
+    tl.fromTo(q("#m33-note"), {opacity:0, y:-120, scale:0.92}, {opacity:1, y:0, scale:1, duration:0.55, ease:"back.out(1.6)"}, 0.68);
+    tl.to(q("#m33-note"), {x:8, duration:0.06, yoyo:true, repeat:3, ease:"sine.inOut"}, 2.05);
+
+    window.__timelines["03-demo-b"] = tl;
+  })();
+  </script>
+</template>

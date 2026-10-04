@@ -1,0 +1,72 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1080px;height:1920px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m62-f{position:absolute;left:0;right:0;top:0;height:1590px;padding:150px 76px 0;display:flex;flex-direction:column}
+.m62-eyebrow{font-size:38px}
+.m62-h2{font-size:84px;margin-top:22px}
+.m62-r{margin-top:80px;zoom:1.35;display:flex;flex-direction:column}
+
+.m62-bg{position:absolute;inset:0;background:#F2F2F7}
+.m62-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m62-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m62-muted{color:#6E6E73}
+.m62-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m62-num{font-variant-numeric:tabular-nums}
+.m62-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m62-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m62-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m62-row{display:flex;justify-content:space-between;align-items:center}
+.m62-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m62-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.m62-p{border-radius:36px;padding:24px 26px 26px;display:flex;flex-direction:column;font-size:28px}
+.m62-img{height:170px;border-radius:24px;background:linear-gradient(150deg,#EEEEF6,#DCDCEC);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.m62-img span{width:70px;height:120px;border-radius:16px;border:6px solid #5856D6;box-sizing:border-box}
+.m62-acc span{width:84px;height:84px;border-radius:50%}
+.m62-p small{font-size:22px}
+.m62-p b{font-size:28px;margin-top:4px}
+.m62-pr{font-size:32px;font-weight:700;color:#5856D6;margin-top:8px}
+
+  </style>
+  <div id="root" data-composition-id="02-demo-a" data-width="1080" data-height="1920">
+    <div id="m62-bg" class="clip m62-bg" data-start="0" data-duration="4.89" data-track-index="0"></div>
+    <div class="m62-f">
+      <div class="m62-l">
+      <div class="m62-eyebrow" id="m62-eb">Catálogo online</div>
+      <div class="m62-h2" id="m62-h">Sua vitrine<br>de aparelhos.</div>
+      </div>
+      <div class="m62-r">
+        <div class="m62-grid">
+          <div class="m62-card m62-p" id="m62-p0"><span class="m62-img"><span></span></span><small class="m62-muted">Seminovo</small><b>iPhone 11 · 128 GB</b><span class="m62-pr m62-num">R$ 1.890</span></div>
+          <div class="m62-card m62-p" id="m62-p1"><span class="m62-img"><span></span></span><small class="m62-muted">Seminovo</small><b>Galaxy A54</b><span class="m62-pr m62-num">R$ 1.390</span></div>
+          <div class="m62-card m62-p" id="m62-p2"><span class="m62-img m62-acc"><span></span></span><small class="m62-muted">Acessório</small><b>Carregador USB-C</b><span class="m62-pr m62-num">R$ 89,90</span></div>
+          <div class="m62-card m62-p" id="m62-p3"><span class="m62-img m62-acc"><span></span></span><small class="m62-muted">Acessório</small><b>Fone Bluetooth</b><span class="m62-pr m62-num">R$ 149,90</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="02-demo-a"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="02-demo-a"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m62-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m62-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q("#m62-p0"), {opacity:0, scale:0.85}, {opacity:1, scale:1, duration:0.45, ease:"back.out(1.8)"}, 2.17);
+    tl.fromTo(q("#m62-p1"), {opacity:0, scale:0.85}, {opacity:1, scale:1, duration:0.45, ease:"back.out(1.8)"}, 2.32);
+    tl.fromTo(q("#m62-p2"), {opacity:0, scale:0.85}, {opacity:1, scale:1, duration:0.45, ease:"back.out(1.8)"}, 2.89);
+    tl.fromTo(q("#m62-p3"), {opacity:0, scale:0.85}, {opacity:1, scale:1, duration:0.45, ease:"back.out(1.8)"}, 3.04);
+
+    window.__timelines["02-demo-a"] = tl;
+  })();
+  </script>
+</template>

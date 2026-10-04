@@ -1,0 +1,80 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m82-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m82-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m82-eyebrow{font-size:30px}
+.m82-h2{font-size:76px;margin-top:20px}
+.m82-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m82-bg{position:absolute;inset:0;background:#F2F2F7}
+.m82-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m82-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m82-muted{color:#6E6E73}
+.m82-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m82-num{font-variant-numeric:tabular-nums}
+.m82-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m82-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m82-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m82-row{display:flex;justify-content:space-between;align-items:center}
+.m82-btn{background:#5856D6;color:#fff;justify-content:center}
+
+#root{color:#fff}
+.m82-bg{background:#000}
+.m82-eyebrow{color:#7D7AFF}
+
+.m82-chat{padding:32px 36px 36px;display:flex;flex-direction:column;gap:18px;color:#fff}
+.m82-hd{display:flex;align-items:center;gap:20px;padding-bottom:18px;border-bottom:2px solid rgba(255,255,255,.1);font-size:32px}
+.m82-avt{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#818CF8,#7C3AED)}
+.m82-me{align-self:flex-end;max-width:84%;min-height:44px;background:#5856D6;border-radius:32px 32px 10px 32px;padding:20px 30px;font-size:29px;line-height:1.35}
+.m82-ai{align-self:flex-start;max-width:90%;background:rgba(255,255,255,.1);border-radius:32px 32px 32px 10px;padding:20px 30px;font-size:29px;line-height:1.38}
+.m82-act{display:flex;align-items:center;gap:20px;border:2px solid rgba(125,122,255,.5);border-radius:28px;padding:18px 18px 18px 28px;font-size:26px;color:rgba(255,255,255,.85)}
+.m82-act .m82-btn{padding:16px 28px;font-size:26px;margin-left:auto}
+
+  </style>
+  <div id="root" data-composition-id="02-demo-a" data-width="1920" data-height="1080">
+    <div id="m82-bg" class="clip m82-bg" data-start="0" data-duration="7.57" data-track-index="0"></div>
+    <div class="m82-f">
+      <div class="m82-l">
+      <div class="m82-eyebrow" id="m82-eb">Alice · IA</div>
+      <div class="m82-h2" id="m82-h">Pergunte.<br>A Alice resolve.</div>
+      </div>
+      <div class="m82-r">
+        <div class="m82-dcard m82-chat">
+          <div class="m82-hd"><span class="m82-avt"></span><b>Alice</b></div>
+          <div class="m82-me" id="m82-q"><span id="m82-qt"></span></div>
+          <div class="m82-ai" id="m82-a">São 4 aparelhos prontos há mais de 3 dias. Quer que eu crie uma tarefa para ligar para os clientes?</div>
+          <div class="m82-act" id="m82-act"><span>Criar tarefa · Ligar para 4 clientes · hoje 14h</span><span class="m82-pill m82-btn" id="m82-cf">Confirmar</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="02-demo-a"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="02-demo-a"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m82-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m82-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q(".m82-chat"), {opacity:0, y:110}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.1);
+    tl.fromTo(q("#m82-q"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.3, ease:"power3.out"}, 0.3);
+    { const ty = {n:0}; const S = "Quais aparelhos estão prontos e ninguém veio buscar?";
+      tl.fromTo(ty, {n:0}, {n:S.length, duration:0.9, ease:"none", onUpdate(){ q("#m82-qt").textContent = S.slice(0, Math.round(ty.n)); }}, 0.35); }
+    tl.fromTo(q("#m82-a"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 3.21);
+    tl.fromTo(q("#m82-act"), {opacity:0, scale:0.85}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 5.91);
+    tl.to(q("#m82-cf"), {scale:0.9, duration:0.1}, 6.98);
+    tl.to(q("#m82-cf"), {scale:1, background:"#34C759", duration:0.3, ease:"back.out(3)"}, 7.08);
+
+    window.__timelines["02-demo-a"] = tl;
+  })();
+  </script>
+</template>

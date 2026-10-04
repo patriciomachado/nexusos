@@ -1,0 +1,76 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m23-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m23-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m23-eyebrow{font-size:30px}
+.m23-h2{font-size:76px;margin-top:20px}
+.m23-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m23-bg{position:absolute;inset:0;background:#F2F2F7}
+.m23-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m23-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m23-muted{color:#6E6E73}
+.m23-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m23-num{font-variant-numeric:tabular-nums}
+.m23-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m23-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m23-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m23-row{display:flex;justify-content:space-between;align-items:center}
+.m23-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m23-av{padding:40px 50px 44px}
+.m23-dev{font-size:44px;font-weight:700;letter-spacing:-.02em;margin-top:8px;margin-bottom:12px}
+.m23-ck{font-size:30px;padding:22px 0;border-bottom:2px solid #EFEFF4}
+.m23-ck b{font-weight:600}
+.m23-val{margin-top:24px;padding:24px 30px;border-radius:28px;background:rgba(88,86,214,.08);font-size:30px;color:#5856D6}
+.m23-val b{font-size:44px}
+
+  </style>
+  <div id="root" data-composition-id="03-demo-b" data-width="1920" data-height="1080">
+    <div id="m23-bg" class="clip m23-bg" data-start="0" data-duration="3.54" data-track-index="0"></div>
+    <div class="m23-f">
+      <div class="m23-l">
+      <div class="m23-eyebrow" id="m23-eb">Aparelhos na troca</div>
+      <div class="m23-h2" id="m23-h">Troca avaliada<br>e registrada.</div>
+      </div>
+      <div class="m23-r">
+        <div class="m23-card m23-av">
+          <div class="m23-muted" style="font-size:26px">Avaliação de troca</div>
+          <div class="m23-dev">iPhone 11 · 128 GB</div>
+          <div class="m23-row m23-ck" id="m23-k0"><span>Bateria</span><b>86%</b></div>
+          <div class="m23-row m23-ck" id="m23-k1"><span>Tela</span><b>Sem marcas</b></div>
+          <div class="m23-row m23-ck" id="m23-k2"><span>Face ID</span><b>Ok</b></div>
+          <div class="m23-row m23-val" id="m23-val"><span>Valor da troca</span><b class="m23-num">R$ 1.350</b></div>
+        </div>
+        <div class="m23-pill m23-ok" id="m23-ok" style="align-self:flex-start;margin-top:26px;font-size:30px;padding:16px 30px">✓ Entrou no estoque como seminovo</div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="03-demo-b"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="03-demo-b"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m23-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m23-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q(".m23-av"), {opacity:0, y:110}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.1);
+    tl.fromTo(q("#m23-k0"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 1.04);
+    tl.fromTo(q("#m23-k1"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 1.22);
+    tl.fromTo(q("#m23-k2"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 1.4);
+    tl.fromTo(q("#m23-val"), {opacity:0, scale:0.85}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 1.52);
+    tl.fromTo(q("#m23-ok"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 2.72);
+
+    window.__timelines["03-demo-b"] = tl;
+  })();
+  </script>
+</template>

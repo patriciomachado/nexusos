@@ -1,0 +1,85 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m34-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m34-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m34-eyebrow{font-size:30px}
+.m34-h2{font-size:76px;margin-top:20px}
+.m34-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m34-bg{position:absolute;inset:0;background:#F2F2F7}
+.m34-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m34-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m34-muted{color:#6E6E73}
+.m34-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m34-num{font-variant-numeric:tabular-nums}
+.m34-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m34-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m34-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m34-row{display:flex;justify-content:space-between;align-items:center}
+.m34-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m34-glow{position:absolute;border-radius:50%;background:radial-gradient(closest-side,rgba(162,28,240,.18),rgba(45,212,239,.09) 55%,rgba(242,242,247,0))}
+.m34-ctaf{flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:0}
+.m34-lock{display:flex;align-items:center}
+.m34-tile{background:#fff;box-shadow:0 30px 80px rgba(0,0,0,.13);display:flex;align-items:center;justify-content:center;flex:none}
+.m34-logo{object-fit:contain;display:block}
+.m34-txt{display:flex;flex-direction:column}
+.m34-mod{background:rgba(88,86,214,.1);color:#5856D6}
+.m34-nm{font-weight:700;letter-spacing:-.04em;line-height:1}
+.m34-go{box-shadow:0 18px 44px rgba(88,86,214,.35)}
+.m34-url{font-weight:700;color:#5856D6;letter-spacing:-.01em}
+
+.m34-glow{left:360px;top:-380px;width:1200px;height:1200px}
+.m34-lock{gap:56px}
+.m34-tile{width:260px;height:260px;border-radius:60px}
+.m34-logo{width:232px;height:232px}
+.m34-txt{align-items:flex-start}
+.m34-mod{padding:12px 26px;font-size:30px}
+.m34-nm{font-size:128px;margin-top:20px}
+.m34-go{margin-top:60px;padding:34px 72px;font-size:42px}
+.m34-nc{font-size:32px;margin-top:24px}
+.m34-url{font-size:44px;margin-top:18px}
+
+  </style>
+  <div id="root" data-composition-id="04-cta" data-width="1920" data-height="1080">
+    <div id="m34-bg" class="clip m34-bg" data-start="0" data-duration="4.37" data-track-index="0"></div>
+    <div class="m34-glow" id="m34-glow" data-layout-allow-overflow></div>
+    <div class="m34-f m34-ctaf">
+      <div class="m34-lock">
+        <div class="m34-tile" id="m34-tile"><img src="capture/assets/nexus-logo.png" alt="Nexus" class="m34-logo"></div>
+        <div class="m34-txt"><div class="m34-pill m34-mod" id="m34-mod">Tarefas e lembretes</div><div class="m34-nm" id="m34-nm">Nexus OS</div></div>
+      </div>
+      <div class="m34-pill m34-btn m34-go" id="m34-go">Teste grátis por 15 dias</div>
+      <div class="m34-muted m34-nc" id="m34-nc">Sem cartão de crédito.</div>
+      <div class="m34-url" id="m34-url">nexusgestor.com</div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="04-cta"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="04-cta"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m34-glow"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.9, ease:"power2.out"}, 0);
+    tl.fromTo(q("#m34-tile"), {opacity:0, scale:0.6}, {opacity:1, scale:1, duration:0.55, ease:"back.out(1.8)"}, 0.0);
+    tl.fromTo(q("#m34-mod"), {opacity:0, scale:0.8}, {opacity:1, scale:1, duration:0.4, ease:"back.out(1.8)"}, 0.15);
+    tl.fromTo(q("#m34-nm"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.2);
+    tl.fromTo(q("#m34-go"), {opacity:0, scale:0.6}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 0.1);
+    tl.fromTo(q("#m34-nc"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 1.74);
+    tl.fromTo(q("#m34-url"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.45, ease:"power3.out"}, 2.73);
+    tl.to(q("#m34-go"), {scale:0.94, duration:0.12, ease:"power2.in"}, 3.23);
+    tl.to(q("#m34-go"), {scale:1, duration:0.4, ease:"back.out(3)"}, 3.35);
+
+    window.__timelines["04-cta"] = tl;
+  })();
+  </script>
+</template>

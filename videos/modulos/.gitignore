@@ -1,0 +1,9 @@
+renders/
+snapshots/
+.hyperframes/frame-packets/
+node_modules/
+
+# regenerated per video by scripts/assemble.sh
+index.html
+compositions/captions.html
+.hyperframes/caption_groups.json

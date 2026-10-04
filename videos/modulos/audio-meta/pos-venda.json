@@ -1,0 +1,230 @@
+{
+  "bgm": null,
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/pos-venda/01.wav",
+      "duration_s": 2.33,
+      "words": [
+        {
+          "text": "Atendeu",
+          "start": 0.05,
+          "end": 0.454
+        },
+        {
+          "text": "o",
+          "start": 0.474,
+          "end": 0.595
+        },
+        {
+          "text": "cliente",
+          "start": 0.615,
+          "end": 0.878
+        },
+        {
+          "text": "e",
+          "start": 0.898,
+          "end": 1.019
+        },
+        {
+          "text": "nunca",
+          "start": 1.039,
+          "end": 1.302
+        },
+        {
+          "text": "mais",
+          "start": 1.322,
+          "end": 1.443
+        },
+        {
+          "text": "falou",
+          "start": 1.463,
+          "end": 1.726
+        },
+        {
+          "text": "com",
+          "start": 1.746,
+          "end": 1.867
+        },
+        {
+          "text": "ele?",
+          "start": 1.887,
+          "end": 2.15
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/pos-venda/02.wav",
+      "duration_s": 3.19,
+      "words": [
+        {
+          "text": "O",
+          "start": 0.05,
+          "end": 0.229
+        },
+        {
+          "text": "Nexus",
+          "start": 0.249,
+          "end": 0.626
+        },
+        {
+          "text": "OS",
+          "start": 0.646,
+          "end": 0.825
+        },
+        {
+          "text": "reúne",
+          "start": 0.845,
+          "end": 1.222
+        },
+        {
+          "text": "as",
+          "start": 1.242,
+          "end": 1.421
+        },
+        {
+          "text": "avaliações",
+          "start": 1.441,
+          "end": 2.215
+        },
+        {
+          "text": "dos",
+          "start": 2.235,
+          "end": 2.414
+        },
+        {
+          "text": "seus",
+          "start": 2.434,
+          "end": 2.613
+        },
+        {
+          "text": "clientes.",
+          "start": 2.633,
+          "end": 3.01
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/pos-venda/03.wav",
+      "duration_s": 4.28,
+      "words": [
+        {
+          "text": "E",
+          "start": 0.05,
+          "end": 0.184
+        },
+        {
+          "text": "no",
+          "start": 0.204,
+          "end": 0.338
+        },
+        {
+          "text": "plano",
+          "start": 0.358,
+          "end": 0.646
+        },
+        {
+          "text": "Pro,",
+          "start": 0.666,
+          "end": 0.8
+        },
+        {
+          "text": "mostra",
+          "start": 1.07,
+          "end": 1.46
+        },
+        {
+          "text": "quem",
+          "start": 1.48,
+          "end": 1.665
+        },
+        {
+          "text": "contatar,",
+          "start": 1.685,
+          "end": 2.28
+        },
+        {
+          "text": "com",
+          "start": 2.39,
+          "end": 2.543
+        },
+        {
+          "text": "a",
+          "start": 2.563,
+          "end": 2.716
+        },
+        {
+          "text": "mensagem",
+          "start": 2.736,
+          "end": 3.235
+        },
+        {
+          "text": "pronta",
+          "start": 3.255,
+          "end": 3.581
+        },
+        {
+          "text": "no",
+          "start": 3.601,
+          "end": 3.754
+        },
+        {
+          "text": "WhatsApp.",
+          "start": 3.774,
+          "end": 4.1
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/cta.wav",
+      "duration_s": 4.37,
+      "words": [
+        {
+          "text": "Teste",
+          "start": 0.05,
+          "end": 0.452
+        },
+        {
+          "text": "grátis",
+          "start": 0.472,
+          "end": 0.875
+        },
+        {
+          "text": "por",
+          "start": 0.895,
+          "end": 1.086
+        },
+        {
+          "text": "quinze",
+          "start": 1.106,
+          "end": 1.509
+        },
+        {
+          "text": "dias,",
+          "start": 1.529,
+          "end": 1.72
+        },
+        {
+          "text": "sem",
+          "start": 1.84,
+          "end": 2.037
+        },
+        {
+          "text": "cartão.",
+          "start": 2.057,
+          "end": 2.47
+        },
+        {
+          "text": "nexusgestor.com",
+          "start": 2.88,
+          "end": 4.18
+        }
+      ]
+    }
+  ],
+  "sfx": []
+}

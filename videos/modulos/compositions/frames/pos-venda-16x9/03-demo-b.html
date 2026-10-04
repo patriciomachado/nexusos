@@ -1,0 +1,74 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m53-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m53-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m53-eyebrow{font-size:30px}
+.m53-h2{font-size:76px;margin-top:20px}
+.m53-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m53-bg{position:absolute;inset:0;background:#F2F2F7}
+.m53-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m53-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m53-muted{color:#6E6E73}
+.m53-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m53-num{font-variant-numeric:tabular-nums}
+.m53-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m53-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m53-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m53-row{display:flex;justify-content:space-between;align-items:center}
+.m53-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m53-who{display:flex;align-items:center;gap:24px;padding:28px 36px;font-size:28px}
+.m53-who b{display:block;font-size:32px}
+.m53-who small{display:block;font-size:24px;margin-top:4px}
+.m53-av{width:76px;height:76px;border-radius:50%;background:rgba(88,86,214,.14);color:#5856D6;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.m53-tag{background:rgba(255,149,0,.15);color:#B25E00;padding:10px 20px;font-size:22px}
+.m53-wa{margin-top:24px;border-radius:44px;background:#E9E2D8;padding:34px 34px 30px;display:flex;flex-direction:column}
+.m53-bub{align-self:flex-end;max-width:88%;min-height:150px;background:#D9FDD3;border-radius:28px 28px 8px 28px;padding:22px 28px;font-size:28px;line-height:1.38;box-shadow:0 2px 3px rgba(0,0,0,.08)}
+.m53-send{align-self:flex-end;margin-top:22px;background:#25D366;color:#fff;padding:20px 34px;font-size:28px}
+
+  </style>
+  <div id="root" data-composition-id="03-demo-b" data-width="1920" data-height="1080">
+    <div id="m53-bg" class="clip m53-bg" data-start="0" data-duration="4.28" data-track-index="0"></div>
+    <div class="m53-f">
+      <div class="m53-l">
+      <div class="m53-eyebrow" id="m53-eb">Pós-venda · Plano Pro</div>
+      <div class="m53-h2" id="m53-h">Quem contatar,<br>com a mensagem pronta.</div>
+      </div>
+      <div class="m53-r">
+        <div class="m53-card m53-who" id="m53-who"><span class="m53-av">AP</span><span style="flex:1"><b>Ana P.</b><small class="m53-muted">Troca de tela há 30 dias · iPhone 13</small></span><span class="m53-pill m53-tag">Contatar hoje</span></div>
+        <div class="m53-wa" id="m53-wa">
+          <div class="m53-bub" id="m53-bub"><span id="m53-msg"></span></div>
+          <div class="m53-pill m53-send" id="m53-send">Enviar no WhatsApp</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="03-demo-b"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="03-demo-b"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m53-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m53-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q("#m53-who"), {opacity:0, y:90}, {opacity:1, y:0, duration:0.55, ease:"power3.out"}, 0.1);
+    tl.fromTo(q("#m53-who .m53-tag"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 1.58);
+    tl.fromTo(q("#m53-wa"), {opacity:0, y:90}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 1.79);
+    { const ty = {n:0}; const S = "Oi, Ana! Tudo certo com o iPhone 13 depois da troca de tela? Qualquer coisa, é só chamar. 😊";
+      tl.fromTo(ty, {n:0}, {n:S.length, duration:1.0, ease:"none", onUpdate(){ q("#m53-msg").textContent = S.slice(0, Math.round(ty.n)); }}, 2.54); }
+    tl.fromTo(q("#m53-send"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 3.67);
+
+    window.__timelines["03-demo-b"] = tl;
+  })();
+  </script>
+</template>

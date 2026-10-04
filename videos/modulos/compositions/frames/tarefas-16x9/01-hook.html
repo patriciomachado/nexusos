@@ -1,0 +1,66 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m31-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m31-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m31-eyebrow{font-size:30px}
+.m31-h2{font-size:76px;margin-top:20px}
+.m31-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m31-bg{position:absolute;inset:0;background:#F2F2F7}
+.m31-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m31-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m31-muted{color:#6E6E73}
+.m31-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m31-num{font-variant-numeric:tabular-nums}
+.m31-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m31-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m31-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m31-row{display:flex;justify-content:space-between;align-items:center}
+.m31-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m31-hookf{justify-content:center;gap:0}
+.m31-mod{align-self:flex-start;background:rgba(88,86,214,.1);color:#5856D6;padding:16px 32px;font-size:34px}
+.m31-q{font-weight:700;letter-spacing:-.035em;line-height:1.08;margin-top:40px}
+.m31-w{display:inline-block}
+.m31-hookf{flex-direction:column;align-items:flex-start;padding-top:40px}
+.m31-q{font-size:112px;max-width:1500px}
+
+  </style>
+  <div id="root" data-composition-id="01-hook" data-width="1920" data-height="1080">
+    <div id="m31-bg" class="clip m31-bg" data-start="0" data-duration="2.72" data-track-index="0"></div>
+    <div class="m31-f m31-hookf">
+      <div class="m31-pill m31-mod" id="m31-mod">Tarefas e lembretes</div>
+      <div class="m31-q"><span class="m31-w" id="m31-w0">Aquele</span> <span class="m31-w" id="m31-w1">retorno</span> <span class="m31-w" id="m31-w2">para</span> <span class="m31-w" id="m31-w3">o</span> <span class="m31-w" id="m31-w4">cliente</span> <span class="m31-w" id="m31-w5">ficou</span> <span class="m31-w" id="m31-w6">só</span> <span class="m31-w" id="m31-w7">na</span> <span class="m31-w" id="m31-w8">cabeça?</span></div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="01-hook"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="01-hook"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m31-mod"), {opacity:0, scale:0.8}, {opacity:1, scale:1, duration:0.4, ease:"back.out(1.8)"}, 0.0);
+    tl.fromTo(q("#m31-w0"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.0);
+    tl.fromTo(q("#m31-w1"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.41);
+    tl.fromTo(q("#m31-w2"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 0.83);
+    tl.fromTo(q("#m31-w3"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 1.11);
+    tl.fromTo(q("#m31-w4"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 1.25);
+    tl.fromTo(q("#m31-w5"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 1.53);
+    tl.fromTo(q("#m31-w6"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 1.81);
+    tl.fromTo(q("#m31-w7"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 1.95);
+    tl.fromTo(q("#m31-w8"), {opacity:0, y:40, scale:0.9}, {opacity:1, y:0, scale:1, duration:0.32, ease:"back.out(1.7)"}, 2.09);
+    tl.to(q("#m31-w8"), {color:"#5856D6", duration:0.25}, 2.15);
+
+    window.__timelines["01-hook"] = tl;
+  })();
+  </script>
+</template>

@@ -1,0 +1,76 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m42-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m42-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m42-eyebrow{font-size:30px}
+.m42-h2{font-size:76px;margin-top:20px}
+.m42-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m42-bg{position:absolute;inset:0;background:#F2F2F7}
+.m42-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m42-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m42-muted{color:#6E6E73}
+.m42-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m42-num{font-variant-numeric:tabular-nums}
+.m42-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m42-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m42-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m42-row{display:flex;justify-content:space-between;align-items:center}
+.m42-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m42-rep{padding:40px 50px 44px}
+.m42-big{font-size:96px;font-weight:700;letter-spacing:-.04em;line-height:1.1;margin:6px 0 12px}
+.m42-big small{font-size:.5em}
+.m42-kpis{display:flex;gap:22px;margin-top:30px}
+.m42-k{flex:1;border-radius:28px;background:rgba(88,86,214,.07);padding:24px 28px;display:flex;flex-direction:column;gap:8px;font-size:26px}
+.m42-k b{font-size:40px;color:#5856D6;letter-spacing:-.02em}
+
+  </style>
+  <div id="root" data-composition-id="02-demo-a" data-width="1920" data-height="1080">
+    <div id="m42-bg" class="clip m42-bg" data-start="0" data-duration="6.38" data-track-index="0"></div>
+    <div class="m42-f">
+      <div class="m42-l">
+      <div class="m42-eyebrow" id="m42-eb">Relatórios</div>
+      <div class="m42-h2" id="m42-h">Você sabe se<br>teve lucro.</div>
+      </div>
+      <div class="m42-r">
+        <div class="m42-card m42-rep">
+          <div class="m42-muted" style="font-size:28px">Faturamento do mês</div>
+          <div class="m42-big m42-num">R$ <span id="m42-int">0</span><small>,<span id="m42-cts">00</span></small></div>
+          <div class="m42-pill m42-ok" id="m42-up">↑ +12% vs mês anterior</div>
+          <div class="m42-kpis">
+            <div class="m42-k" id="m42-k0"><span class="m42-muted">Lucro</span><b class="m42-num">R$ 7.320,40</b></div>
+            <div class="m42-k" id="m42-k1"><span class="m42-muted">Ticket médio</span><b class="m42-num">R$ 214,50</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="02-demo-a"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="02-demo-a"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m42-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m42-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q(".m42-rep"), {opacity:0, y:110}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.1);
+    { const st = {v:0}; tl.fromTo(st, {v:0}, {v:18450.9, duration:1.2, ease:"power2.out", onUpdate(){
+      const [a, b] = brl(st.v); q("#m42-int").textContent = a; q("#m42-cts").textContent = b; }}, 1.25); }
+    tl.fromTo(q("#m42-k0"), {opacity:0, scale:0.8}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 1.42);
+    tl.fromTo(q("#m42-k1"), {opacity:0, scale:0.8}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 2.0);
+    tl.fromTo(q("#m42-up"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 4.28);
+
+    window.__timelines["02-demo-a"] = tl;
+  })();
+  </script>
+</template>

@@ -1,0 +1,76 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m43-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m43-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m43-eyebrow{font-size:30px}
+.m43-h2{font-size:76px;margin-top:20px}
+.m43-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m43-bg{position:absolute;inset:0;background:#F2F2F7}
+.m43-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m43-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m43-muted{color:#6E6E73}
+.m43-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m43-num{font-variant-numeric:tabular-nums}
+.m43-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m43-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m43-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m43-row{display:flex;justify-content:space-between;align-items:center}
+.m43-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m43-pro{padding:36px 50px 36px}
+.m43-lbl{font-size:24px;font-weight:600;color:#8E8E93;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.m43-d{font-size:28px;padding:14px 0;border-bottom:2px solid #EFEFF4}
+.m43-bar{height:26px;border-radius:13px;background:rgba(88,86,214,.14);margin-top:12px;overflow:hidden}
+.m43-barf{height:100%;width:82%;border-radius:13px;background:#5856D6;transform-origin:left center}
+
+  </style>
+  <div id="root" data-composition-id="03-demo-b" data-width="1920" data-height="1080">
+    <div id="m43-bg" class="clip m43-bg" data-start="0" data-duration="4.72" data-track-index="0"></div>
+    <div class="m43-f">
+      <div class="m43-l">
+      <div class="m43-eyebrow" id="m43-eb">Relatórios · Plano Pro</div>
+      <div class="m43-h2" id="m43-h">DRE, meta<br>e equipe.</div>
+      </div>
+      <div class="m43-r">
+        <div class="m43-card m43-pro">
+          <div id="m43-dre"><div class="m43-lbl">DRE do mês</div>
+            <div class="m43-row m43-d"><span>Receita</span><b class="m43-num">R$ 18.450,90</b></div>
+            <div class="m43-row m43-d"><span>Custos e despesas</span><b class="m43-num">− R$ 11.130,50</b></div>
+            <div class="m43-row m43-d"><span>Lucro líquido</span><b class="m43-num" style="color:#5856D6">R$ 7.320,40</b></div></div>
+          <div id="m43-meta"><div class="m43-lbl" style="margin-top:28px">Meta do mês · 82%</div>
+            <div class="m43-bar"><div class="m43-barf" id="m43-barf"></div></div></div>
+          <div id="m43-tec"><div class="m43-lbl" style="margin-top:28px">Desempenho por técnico</div>
+            <div class="m43-row m43-d"><span>Rafael</span><b>38 OS</b></div>
+            <div class="m43-row m43-d"><span>Bruna</span><b>31 OS</b></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="03-demo-b"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="03-demo-b"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m43-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m43-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q(".m43-pro"), {opacity:0, y:110}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.1);
+    tl.fromTo(q("#m43-dre"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 1.79);
+    tl.fromTo(q("#m43-meta"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 2.21);
+    tl.fromTo(q("#m43-barf"), {scaleX:0}, {scaleX:1, duration:0.8, ease:"power2.out"}, 2.36);
+    tl.fromTo(q("#m43-tec"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 3.04);
+
+    window.__timelines["03-demo-b"] = tl;
+  })();
+  </script>
+</template>

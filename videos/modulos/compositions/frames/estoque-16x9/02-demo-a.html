@@ -1,0 +1,72 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m22-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m22-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m22-eyebrow{font-size:30px}
+.m22-h2{font-size:76px;margin-top:20px}
+.m22-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m22-bg{position:absolute;inset:0;background:#F2F2F7}
+.m22-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m22-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m22-muted{color:#6E6E73}
+.m22-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m22-num{font-variant-numeric:tabular-nums}
+.m22-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m22-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m22-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m22-row{display:flex;justify-content:space-between;align-items:center}
+.m22-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m22-tb{padding:30px 46px 20px}
+.m22-hd{font-size:24px;font-weight:600;color:#8E8E93;text-transform:uppercase;letter-spacing:.05em;padding-bottom:16px;border-bottom:2px solid #EFEFF4}
+.m22-ln{padding:28px 0;border-bottom:2px solid #EFEFF4;font-size:30px}
+.m22-ln:last-child{border-bottom:0}
+.m22-ln b{display:block;font-size:34px}
+.m22-ln small{display:block;font-size:26px;margin-top:4px}
+.m22-c{width:170px;text-align:right}
+
+  </style>
+  <div id="root" data-composition-id="02-demo-a" data-width="1920" data-height="1080">
+    <div id="m22-bg" class="clip m22-bg" data-start="0" data-duration="5.35" data-track-index="0"></div>
+    <div class="m22-f">
+      <div class="m22-l">
+      <div class="m22-eyebrow" id="m22-eb">Estoque</div>
+      <div class="m22-h2" id="m22-h">Custo e preço<br>de tudo.</div>
+      </div>
+      <div class="m22-r">
+        <div class="m22-card m22-tb">
+          <div class="m22-row m22-hd"><span style="flex:1">Item</span><span class="m22-c">Custo</span><span class="m22-c">Preço</span></div>
+          <div class="m22-row m22-ln" id="m22-i0"><span style="flex:1"><b>Tela iPhone 13</b><small class="m22-muted">Peça · 4 un</small></span><span class="m22-c m22-num m22-muted">R$ 310</span><span class="m22-c m22-num"><b>R$ 480</b></span></div>
+          <div class="m22-row m22-ln" id="m22-i1"><span style="flex:1"><b>Película 3D</b><small class="m22-muted">Acessório · 32 un</small></span><span class="m22-c m22-num m22-muted">R$ 8</span><span class="m22-c m22-num"><b>R$ 40</b></span></div>
+          <div class="m22-row m22-ln" id="m22-i2"><span style="flex:1"><b>iPhone 11 128 GB</b><small class="m22-muted">Seminovo · 1 un</small></span><span class="m22-c m22-num m22-muted">R$ 1.350</span><span class="m22-c m22-num"><b>R$ 1.890</b></span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="02-demo-a"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="02-demo-a"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m22-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m22-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q(".m22-tb"), {opacity:0, y:110}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.1);
+    tl.fromTo(q("#m22-i0"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 1.02);
+    tl.fromTo(q("#m22-i1"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 1.04);
+    tl.fromTo(q("#m22-i2"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 2.02);
+
+    window.__timelines["02-demo-a"] = tl;
+  })();
+  </script>
+</template>

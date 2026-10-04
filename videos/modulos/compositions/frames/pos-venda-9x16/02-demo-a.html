@@ -1,0 +1,68 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1080px;height:1920px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m52-f{position:absolute;left:0;right:0;top:0;height:1590px;padding:150px 76px 0;display:flex;flex-direction:column}
+.m52-eyebrow{font-size:38px}
+.m52-h2{font-size:84px;margin-top:22px}
+.m52-r{margin-top:80px;zoom:1.35;display:flex;flex-direction:column}
+
+.m52-bg{position:absolute;inset:0;background:#F2F2F7}
+.m52-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m52-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m52-muted{color:#6E6E73}
+.m52-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m52-num{font-variant-numeric:tabular-nums}
+.m52-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m52-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m52-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m52-row{display:flex;justify-content:space-between;align-items:center}
+.m52-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m52-sc{display:flex;align-items:center;gap:28px;padding:30px 44px}
+.m52-nota{font-size:92px;font-weight:700;letter-spacing:-.04em;color:#5856D6}
+.m52-stars{color:#A87800;font-size:40px;letter-spacing:4px}
+.m52-rv{margin-top:18px;padding:26px 40px;font-size:28px;border-radius:36px}
+.m52-rv b{font-size:30px}
+.m52-rv .m52-muted{margin-top:8px}
+
+  </style>
+  <div id="root" data-composition-id="02-demo-a" data-width="1080" data-height="1920" data-duration="3.79">
+    <div id="m52-bg" class="clip m52-bg" data-start="0" data-duration="3.79" data-track-index="0"></div>
+    <div class="m52-f">
+      <div class="m52-l">
+      <div class="m52-eyebrow" id="m52-eb">Pós-venda</div>
+      <div class="m52-h2" id="m52-h">O que os clientes<br>acharam.</div>
+      </div>
+      <div class="m52-r">
+        <div class="m52-card m52-sc"><span class="m52-nota m52-num">4,9</span><span><span class="m52-stars">★★★★★</span><span class="m52-muted" style="display:block;font-size:26px">média de 128 avaliações</span></span></div>
+        <div class="m52-card m52-rv" id="m52-r0"><div class="m52-row"><b>Ana P.</b><span class="m52-stars" style="font-size:26px">★★★★★</span></div><div class="m52-muted">“Tela perfeita e me avisaram quando ficou pronto.”</div></div>
+        <div class="m52-card m52-rv" id="m52-r1"><div class="m52-row"><b>Marcos T.</b><span class="m52-stars" style="font-size:26px">★★★★★</span></div><div class="m52-muted">“Atendimento rápido e preço justo.”</div></div>
+        <div class="m52-card m52-rv" id="m52-r2"><div class="m52-row"><b>Júlia R.</b><span class="m52-stars" style="font-size:26px">★★★★★</span></div><div class="m52-muted">“Resolveram no mesmo dia.”</div></div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="02-demo-a"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="02-demo-a"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m52-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m52-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q(".m52-sc"), {opacity:0, y:90}, {opacity:1, y:0, duration:0.55, ease:"power3.out"}, 0.1);
+    tl.fromTo(q("#m52-r0"), {opacity:0, y:70}, {opacity:1, y:0, duration:0.45, ease:"power3.out"}, 1.24);
+    tl.fromTo(q("#m52-r1"), {opacity:0, y:70}, {opacity:1, y:0, duration:0.45, ease:"power3.out"}, 1.44);
+    tl.fromTo(q("#m52-r2"), {opacity:0, y:70}, {opacity:1, y:0, duration:0.45, ease:"power3.out"}, 1.64);
+
+    window.__timelines["02-demo-a"] = tl;
+  })();
+  </script>
+</template>

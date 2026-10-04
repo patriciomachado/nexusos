@@ -1,0 +1,225 @@
+{
+  "bgm": null,
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/catalogo-online/01.wav",
+      "duration_s": 3.27,
+      "words": [
+        {
+          "text": "Ainda",
+          "start": 0.05,
+          "end": 0.334
+        },
+        {
+          "text": "manda",
+          "start": 0.354,
+          "end": 0.637
+        },
+        {
+          "text": "foto",
+          "start": 0.657,
+          "end": 0.941
+        },
+        {
+          "text": "de",
+          "start": 0.961,
+          "end": 1.093
+        },
+        {
+          "text": "aparelho,",
+          "start": 1.113,
+          "end": 1.7
+        },
+        {
+          "text": "um",
+          "start": 1.83,
+          "end": 2.187
+        },
+        {
+          "text": "por",
+          "start": 2.207,
+          "end": 2.563
+        },
+        {
+          "text": "um,",
+          "start": 2.583,
+          "end": 2.94
+        },
+        {
+          "text": "no",
+          "start": 3.07,
+          "end": 3.063
+        },
+        {
+          "text": "WhatsApp?",
+          "start": 3.083,
+          "end": 3.09
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/catalogo-online/02.wav",
+      "duration_s": 4.89,
+      "words": [
+        {
+          "text": "Com",
+          "start": 0.05,
+          "end": 0.192
+        },
+        {
+          "text": "o",
+          "start": 0.212,
+          "end": 0.355
+        },
+        {
+          "text": "catálogo",
+          "start": 0.375,
+          "end": 1.004
+        },
+        {
+          "text": "online",
+          "start": 1.024,
+          "end": 1.491
+        },
+        {
+          "text": "do",
+          "start": 1.511,
+          "end": 1.653
+        },
+        {
+          "text": "Nexus",
+          "start": 1.673,
+          "end": 1.978
+        },
+        {
+          "text": "OS,",
+          "start": 1.998,
+          "end": 2.14
+        },
+        {
+          "text": "seus",
+          "start": 2.28,
+          "end": 2.403
+        },
+        {
+          "text": "aparelhos",
+          "start": 2.423,
+          "end": 2.975
+        },
+        {
+          "text": "e",
+          "start": 2.995,
+          "end": 3.118
+        },
+        {
+          "text": "acessórios",
+          "start": 3.138,
+          "end": 3.689
+        },
+        {
+          "text": "viram",
+          "start": 3.709,
+          "end": 3.975
+        },
+        {
+          "text": "uma",
+          "start": 3.995,
+          "end": 4.261
+        },
+        {
+          "text": "vitrine.",
+          "start": 4.281,
+          "end": 4.69
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/catalogo-online/03.wav",
+      "duration_s": 2.02,
+      "words": [
+        {
+          "text": "Com",
+          "start": 0.1,
+          "end": 0.28
+        },
+        {
+          "text": "link",
+          "start": 0.3,
+          "end": 0.48
+        },
+        {
+          "text": "próprio,",
+          "start": 0.5,
+          "end": 0.88
+        },
+        {
+          "text": "pronto",
+          "start": 1.08,
+          "end": 1.283
+        },
+        {
+          "text": "para",
+          "start": 1.303,
+          "end": 1.506
+        },
+        {
+          "text": "divulgar.",
+          "start": 1.526,
+          "end": 1.84
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/cta.wav",
+      "duration_s": 4.37,
+      "words": [
+        {
+          "text": "Teste",
+          "start": 0.05,
+          "end": 0.452
+        },
+        {
+          "text": "grátis",
+          "start": 0.472,
+          "end": 0.875
+        },
+        {
+          "text": "por",
+          "start": 0.895,
+          "end": 1.086
+        },
+        {
+          "text": "quinze",
+          "start": 1.106,
+          "end": 1.509
+        },
+        {
+          "text": "dias,",
+          "start": 1.529,
+          "end": 1.72
+        },
+        {
+          "text": "sem",
+          "start": 1.84,
+          "end": 2.037
+        },
+        {
+          "text": "cartão.",
+          "start": 2.057,
+          "end": 2.47
+        },
+        {
+          "text": "nexusgestor.com",
+          "start": 2.88,
+          "end": 4.18
+        }
+      ]
+    }
+  ],
+  "sfx": []
+}

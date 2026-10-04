@@ -1,0 +1,224 @@
+{
+  "bgm": null,
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/relatorios/01.wav",
+      "duration_s": 2.6,
+      "words": []
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/relatorios/02.wav",
+      "duration_s": 6.38,
+      "words": [
+        {
+          "text": "No",
+          "start": 0.05,
+          "end": 0.327
+        },
+        {
+          "text": "Nexus",
+          "start": 0.348,
+          "end": 0.922
+        },
+        {
+          "text": "OS,",
+          "start": 0.942,
+          "end": 1.22
+        },
+        {
+          "text": "faturamento,",
+          "start": 1.35,
+          "end": 1.41
+        },
+        {
+          "text": "lucro",
+          "start": 1.52,
+          "end": 1.889
+        },
+        {
+          "text": "e",
+          "start": 1.909,
+          "end": 2.083
+        },
+        {
+          "text": "ticket",
+          "start": 2.103,
+          "end": 2.471
+        },
+        {
+          "text": "médio",
+          "start": 2.491,
+          "end": 2.86
+        },
+        {
+          "text": "aparecem",
+          "start": 2.88,
+          "end": 3.637
+        },
+        {
+          "text": "na",
+          "start": 3.657,
+          "end": 3.831
+        },
+        {
+          "text": "tela,",
+          "start": 3.851,
+          "end": 4.22
+        },
+        {
+          "text": "comparados",
+          "start": 4.38,
+          "end": 5.1
+        },
+        {
+          "text": "com",
+          "start": 5.12,
+          "end": 5.285
+        },
+        {
+          "text": "o",
+          "start": 5.305,
+          "end": 5.47
+        },
+        {
+          "text": "mês",
+          "start": 5.49,
+          "end": 5.655
+        },
+        {
+          "text": "anterior.",
+          "start": 5.675,
+          "end": 6.21
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/relatorios/03.wav",
+      "duration_s": 4.72,
+      "words": [
+        {
+          "text": "E",
+          "start": 0.05,
+          "end": 0.2
+        },
+        {
+          "text": "no",
+          "start": 0.22,
+          "end": 0.37
+        },
+        {
+          "text": "plano",
+          "start": 0.39,
+          "end": 0.71
+        },
+        {
+          "text": "Pro,",
+          "start": 0.73,
+          "end": 0.88
+        },
+        {
+          "text": "ainda",
+          "start": 1.03,
+          "end": 1.615
+        },
+        {
+          "text": "tem",
+          "start": 1.635,
+          "end": 1.918
+        },
+        {
+          "text": "DRE,",
+          "start": 1.938,
+          "end": 2.22
+        },
+        {
+          "text": "meta",
+          "start": 2.36,
+          "end": 2.672
+        },
+        {
+          "text": "do",
+          "start": 2.692,
+          "end": 2.838
+        },
+        {
+          "text": "mês",
+          "start": 2.858,
+          "end": 3.005
+        },
+        {
+          "text": "e",
+          "start": 3.025,
+          "end": 3.171
+        },
+        {
+          "text": "desempenho",
+          "start": 3.191,
+          "end": 3.835
+        },
+        {
+          "text": "por",
+          "start": 3.855,
+          "end": 4.002
+        },
+        {
+          "text": "técnico.",
+          "start": 4.022,
+          "end": 4.5
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/cta.wav",
+      "duration_s": 4.37,
+      "words": [
+        {
+          "text": "Teste",
+          "start": 0.05,
+          "end": 0.452
+        },
+        {
+          "text": "grátis",
+          "start": 0.472,
+          "end": 0.875
+        },
+        {
+          "text": "por",
+          "start": 0.895,
+          "end": 1.086
+        },
+        {
+          "text": "quinze",
+          "start": 1.106,
+          "end": 1.509
+        },
+        {
+          "text": "dias,",
+          "start": 1.529,
+          "end": 1.72
+        },
+        {
+          "text": "sem",
+          "start": 1.84,
+          "end": 2.037
+        },
+        {
+          "text": "cartão.",
+          "start": 2.057,
+          "end": 2.47
+        },
+        {
+          "text": "nexusgestor.com",
+          "start": 2.88,
+          "end": 4.18
+        }
+      ]
+    }
+  ],
+  "sfx": []
+}

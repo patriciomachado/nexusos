@@ -1,0 +1,204 @@
+{
+  "bgm": null,
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/studio/01.wav",
+      "duration_s": 1.5,
+      "words": []
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/studio/02.wav",
+      "duration_s": 5.39,
+      "words": [
+        {
+          "text": "O",
+          "start": 0.06,
+          "end": 0.29
+        },
+        {
+          "text": "Studio",
+          "start": 0.31,
+          "end": 0.79
+        },
+        {
+          "text": "do",
+          "start": 0.81,
+          "end": 1.04
+        },
+        {
+          "text": "Nexus",
+          "start": 1.06,
+          "end": 1.54
+        },
+        {
+          "text": "OS",
+          "start": 1.56,
+          "end": 1.79
+        },
+        {
+          "text": "cria",
+          "start": 1.81,
+          "end": 2.04
+        },
+        {
+          "text": "ideias,",
+          "start": 2.06,
+          "end": 2.54
+        },
+        {
+          "text": "roteiros",
+          "start": 2.7,
+          "end": 3.222
+        },
+        {
+          "text": "e",
+          "start": 3.242,
+          "end": 3.403
+        },
+        {
+          "text": "artes",
+          "start": 3.423,
+          "end": 3.764
+        },
+        {
+          "text": "a",
+          "start": 3.784,
+          "end": 3.945
+        },
+        {
+          "text": "partir",
+          "start": 3.965,
+          "end": 4.306
+        },
+        {
+          "text": "dos",
+          "start": 4.326,
+          "end": 4.487
+        },
+        {
+          "text": "seus",
+          "start": 4.507,
+          "end": 4.668
+        },
+        {
+          "text": "serviços.",
+          "start": 4.688,
+          "end": 5.21
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/studio/03.wav",
+      "duration_s": 3.07,
+      "words": [
+        {
+          "text": "Conteúdo",
+          "start": 0.05,
+          "end": 0.457
+        },
+        {
+          "text": "da",
+          "start": 0.478,
+          "end": 0.6
+        },
+        {
+          "text": "sua",
+          "start": 0.62,
+          "end": 0.742
+        },
+        {
+          "text": "loja",
+          "start": 0.762,
+          "end": 1.027
+        },
+        {
+          "text": "para",
+          "start": 1.047,
+          "end": 1.312
+        },
+        {
+          "text": "as",
+          "start": 1.332,
+          "end": 1.455
+        },
+        {
+          "text": "redes,",
+          "start": 1.475,
+          "end": 1.74
+        },
+        {
+          "text": "sem",
+          "start": 1.91,
+          "end": 2.03
+        },
+        {
+          "text": "começar",
+          "start": 2.05,
+          "end": 2.45
+        },
+        {
+          "text": "do",
+          "start": 2.47,
+          "end": 2.59
+        },
+        {
+          "text": "zero.",
+          "start": 2.61,
+          "end": 2.87
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/cta.wav",
+      "duration_s": 4.37,
+      "words": [
+        {
+          "text": "Teste",
+          "start": 0.05,
+          "end": 0.452
+        },
+        {
+          "text": "grátis",
+          "start": 0.472,
+          "end": 0.875
+        },
+        {
+          "text": "por",
+          "start": 0.895,
+          "end": 1.086
+        },
+        {
+          "text": "quinze",
+          "start": 1.106,
+          "end": 1.509
+        },
+        {
+          "text": "dias,",
+          "start": 1.529,
+          "end": 1.72
+        },
+        {
+          "text": "sem",
+          "start": 1.84,
+          "end": 2.037
+        },
+        {
+          "text": "cartão.",
+          "start": 2.057,
+          "end": 2.47
+        },
+        {
+          "text": "nexusgestor.com",
+          "start": 2.88,
+          "end": 4.18
+        }
+      ]
+    }
+  ],
+  "sfx": []
+}

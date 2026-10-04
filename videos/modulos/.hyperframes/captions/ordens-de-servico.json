@@ -1,0 +1,224 @@
+{
+  "bgm": null,
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/ordens-de-servico/01.wav",
+      "duration_s": 3.62,
+      "words": []
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/ordens-de-servico/02.wav",
+      "duration_s": 5.28,
+      "words": [
+        {
+          "text": "No",
+          "start": 0.05,
+          "end": 0.29
+        },
+        {
+          "text": "Nexus",
+          "start": 0.31,
+          "end": 0.81
+        },
+        {
+          "text": "OS,",
+          "start": 0.83,
+          "end": 1.07
+        },
+        {
+          "text": "cada",
+          "start": 1.34,
+          "end": 1.631
+        },
+        {
+          "text": "ordem",
+          "start": 1.651,
+          "end": 1.942
+        },
+        {
+          "text": "de",
+          "start": 1.962,
+          "end": 2.097
+        },
+        {
+          "text": "serviço",
+          "start": 2.117,
+          "end": 2.563
+        },
+        {
+          "text": "entra",
+          "start": 2.583,
+          "end": 2.874
+        },
+        {
+          "text": "com",
+          "start": 2.894,
+          "end": 3.029
+        },
+        {
+          "text": "fotos,",
+          "start": 3.049,
+          "end": 3.34
+        },
+        {
+          "text": "checklist",
+          "start": 3.46,
+          "end": 3.911
+        },
+        {
+          "text": "e",
+          "start": 3.931,
+          "end": 4.147
+        },
+        {
+          "text": "orçamento.",
+          "start": 4.167,
+          "end": 5.09
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/ordens-de-servico/03.wav",
+      "duration_s": 5.14,
+      "words": [
+        {
+          "text": "Etapa,",
+          "start": 0.05,
+          "end": 0.41
+        },
+        {
+          "text": "técnico",
+          "start": 0.52,
+          "end": 1.003
+        },
+        {
+          "text": "e",
+          "start": 1.023,
+          "end": 1.171
+        },
+        {
+          "text": "prazo",
+          "start": 1.191,
+          "end": 1.507
+        },
+        {
+          "text": "na",
+          "start": 1.527,
+          "end": 1.674
+        },
+        {
+          "text": "tela.",
+          "start": 1.694,
+          "end": 2.01
+        },
+        {
+          "text": "E",
+          "start": 2.42,
+          "end": 2.525
+        },
+        {
+          "text": "o",
+          "start": 2.545,
+          "end": 2.651
+        },
+        {
+          "text": "cliente",
+          "start": 2.671,
+          "end": 2.902
+        },
+        {
+          "text": "acompanha",
+          "start": 2.922,
+          "end": 3.404
+        },
+        {
+          "text": "pelo",
+          "start": 3.424,
+          "end": 3.655
+        },
+        {
+          "text": "link,",
+          "start": 3.675,
+          "end": 3.78
+        },
+        {
+          "text": "sem",
+          "start": 4.07,
+          "end": 4.165
+        },
+        {
+          "text": "ligar",
+          "start": 4.185,
+          "end": 4.395
+        },
+        {
+          "text": "para",
+          "start": 4.415,
+          "end": 4.625
+        },
+        {
+          "text": "a",
+          "start": 4.645,
+          "end": 4.74
+        },
+        {
+          "text": "loja.",
+          "start": 4.76,
+          "end": 4.97
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/cta.wav",
+      "duration_s": 4.37,
+      "words": [
+        {
+          "text": "Teste",
+          "start": 0.05,
+          "end": 0.452
+        },
+        {
+          "text": "grátis",
+          "start": 0.472,
+          "end": 0.875
+        },
+        {
+          "text": "por",
+          "start": 0.895,
+          "end": 1.086
+        },
+        {
+          "text": "quinze",
+          "start": 1.106,
+          "end": 1.509
+        },
+        {
+          "text": "dias,",
+          "start": 1.529,
+          "end": 1.72
+        },
+        {
+          "text": "sem",
+          "start": 1.84,
+          "end": 2.037
+        },
+        {
+          "text": "cartão.",
+          "start": 2.057,
+          "end": 2.47
+        },
+        {
+          "text": "nexusgestor.com",
+          "start": 2.88,
+          "end": 4.18
+        }
+      ]
+    }
+  ],
+  "sfx": []
+}

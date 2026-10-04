@@ -1,0 +1,72 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m32-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m32-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m32-eyebrow{font-size:30px}
+.m32-h2{font-size:76px;margin-top:20px}
+.m32-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m32-bg{position:absolute;inset:0;background:#F2F2F7}
+.m32-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m32-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m32-muted{color:#6E6E73}
+.m32-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m32-num{font-variant-numeric:tabular-nums}
+.m32-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m32-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m32-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m32-row{display:flex;justify-content:space-between;align-items:center}
+.m32-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m32-tk{padding:40px 46px 30px}
+.m32-t{display:flex;align-items:center;gap:22px;font-size:30px;padding:26px 0;border-bottom:2px solid #EFEFF4}
+.m32-t:last-child{border-bottom:0}
+.m32-cb{width:40px;height:40px;border-radius:50%;border:4px solid #C7C7CC;box-sizing:border-box;flex:none}
+
+  </style>
+  <div id="root" data-composition-id="02-demo-a" data-width="1920" data-height="1080">
+    <div id="m32-bg" class="clip m32-bg" data-start="0" data-duration="3.84" data-track-index="0"></div>
+    <div class="m32-f">
+      <div class="m32-l">
+      <div class="m32-eyebrow" id="m32-eb">Tarefas</div>
+      <div class="m32-h2" id="m32-h">Pendências num<br>lugar só.</div>
+      </div>
+      <div class="m32-r">
+        <div class="m32-card m32-tk">
+          <div class="m32-row"><b style="font-size:34px">Hoje</b><span class="m32-muted" style="font-size:26px">4 pendências</span></div>
+          <div class="m32-t" id="m32-t0"><span class="m32-cb" id="m32-cb0"></span><span style="flex:1">Ligar para Ana P. · retorno do orçamento</span><span class="m32-muted m32-num">10:00</span></div>
+          <div class="m32-t" id="m32-t1"><span class="m32-cb" id="m32-cb1"></span><span style="flex:1">Pedir tela do iPhone 13 ao fornecedor</span><span class="m32-muted m32-num">11:30</span></div>
+          <div class="m32-t" id="m32-t2"><span class="m32-cb" id="m32-cb2"></span><span style="flex:1">Cobrar OS #1031 · pronta há 4 dias</span><span class="m32-muted m32-num">14:00</span></div>
+          <div class="m32-t" id="m32-t3"><span class="m32-cb" id="m32-cb3"></span><span style="flex:1">Conferir o caixa</span><span class="m32-muted m32-num">18:00</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="02-demo-a"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="02-demo-a"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m32-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m32-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q(".m32-tk"), {opacity:0, y:110}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.1);
+    tl.fromTo(q("#m32-t0"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 0.91);
+    tl.fromTo(q("#m32-t1"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 1.07);
+    tl.fromTo(q("#m32-t2"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 1.23);
+    tl.fromTo(q("#m32-t3"), {opacity:0, x:-70}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 1.39);
+    tl.to(q("#m32-cb3"), {background:"#34C759", borderColor:"#34C759", duration:0.25}, 3.37);
+
+    window.__timelines["02-demo-a"] = tl;
+  })();
+  </script>
+</template>

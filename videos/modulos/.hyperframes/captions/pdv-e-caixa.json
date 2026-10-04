@@ -1,0 +1,199 @@
+{
+  "bgm": null,
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/pdv-e-caixa/01.wav",
+      "duration_s": 1.62,
+      "words": []
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/pdv-e-caixa/02.wav",
+      "duration_s": 3.73,
+      "words": [
+        {
+          "text": "No",
+          "start": 0.05,
+          "end": 0.283
+        },
+        {
+          "text": "PDV",
+          "start": 0.303,
+          "end": 0.537
+        },
+        {
+          "text": "do",
+          "start": 0.557,
+          "end": 0.79
+        },
+        {
+          "text": "Nexus",
+          "start": 0.81,
+          "end": 1.297
+        },
+        {
+          "text": "OS,",
+          "start": 1.317,
+          "end": 1.55
+        },
+        {
+          "text": "a",
+          "start": 1.73,
+          "end": 1.878
+        },
+        {
+          "text": "venda",
+          "start": 1.898,
+          "end": 2.215
+        },
+        {
+          "text": "no",
+          "start": 2.235,
+          "end": 2.383
+        },
+        {
+          "text": "balcão",
+          "start": 2.403,
+          "end": 2.719
+        },
+        {
+          "text": "sai",
+          "start": 2.739,
+          "end": 2.887
+        },
+        {
+          "text": "em",
+          "start": 2.907,
+          "end": 3.055
+        },
+        {
+          "text": "segundos.",
+          "start": 3.075,
+          "end": 3.56
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/pdv-e-caixa/03.wav",
+      "duration_s": 4.25,
+      "words": [
+        {
+          "text": "Vendas,",
+          "start": 0.05,
+          "end": 1.11
+        },
+        {
+          "text": "sangrias",
+          "start": 1.22,
+          "end": 1.458
+        },
+        {
+          "text": "e",
+          "start": 1.478,
+          "end": 1.587
+        },
+        {
+          "text": "contas",
+          "start": 1.607,
+          "end": 1.845
+        },
+        {
+          "text": "fixas",
+          "start": 1.865,
+          "end": 2.104
+        },
+        {
+          "text": "caem",
+          "start": 2.124,
+          "end": 2.233
+        },
+        {
+          "text": "no",
+          "start": 2.253,
+          "end": 2.362
+        },
+        {
+          "text": "caixa,",
+          "start": 2.382,
+          "end": 2.62
+        },
+        {
+          "text": "cada",
+          "start": 2.95,
+          "end": 3.215
+        },
+        {
+          "text": "uma",
+          "start": 3.235,
+          "end": 3.5
+        },
+        {
+          "text": "no",
+          "start": 3.52,
+          "end": 3.643
+        },
+        {
+          "text": "dia",
+          "start": 3.663,
+          "end": 3.785
+        },
+        {
+          "text": "certo.",
+          "start": 3.805,
+          "end": 4.07
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/cta.wav",
+      "duration_s": 4.37,
+      "words": [
+        {
+          "text": "Teste",
+          "start": 0.05,
+          "end": 0.452
+        },
+        {
+          "text": "grátis",
+          "start": 0.472,
+          "end": 0.875
+        },
+        {
+          "text": "por",
+          "start": 0.895,
+          "end": 1.086
+        },
+        {
+          "text": "quinze",
+          "start": 1.106,
+          "end": 1.509
+        },
+        {
+          "text": "dias,",
+          "start": 1.529,
+          "end": 1.72
+        },
+        {
+          "text": "sem",
+          "start": 1.84,
+          "end": 2.037
+        },
+        {
+          "text": "cartão.",
+          "start": 2.057,
+          "end": 2.47
+        },
+        {
+          "text": "nexusgestor.com",
+          "start": 2.88,
+          "end": 4.18
+        }
+      ]
+    }
+  ],
+  "sfx": []
+}

@@ -1,0 +1,89 @@
+<template>
+  <style>@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.m03-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:row;align-items:center;gap:100px}
+.m03-l{flex:0 0 640px;display:flex;flex-direction:column}
+.m03-eyebrow{font-size:30px}
+.m03-h2{font-size:76px;margin-top:20px}
+.m03-r{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.m03-bg{position:absolute;inset:0;background:#F2F2F7}
+.m03-card{background:#FFFFFF;border-radius:44px;box-shadow:0 22px 60px rgba(0,0,0,.11),0 2px 6px rgba(0,0,0,.04)}
+.m03-dcard{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px}
+.m03-muted{color:#6E6E73}
+.m03-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.m03-num{font-variant-numeric:tabular-nums}
+.m03-eyebrow{font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.m03-h2{font-weight:700;letter-spacing:-.025em;line-height:1.06}
+.m03-ok{background:rgba(52,199,89,.14);color:#1E8E3E;padding:12px 26px;font-size:28px}
+.m03-row{display:flex;justify-content:space-between;align-items:center}
+.m03-btn{background:#5856D6;color:#fff;justify-content:center}
+
+.m03-os{padding:40px 50px 46px}
+.m03-dev{font-size:44px;font-weight:700;letter-spacing:-.02em;margin-top:12px}
+.m03-rail{position:relative;margin-top:36px;display:flex;flex-direction:column;gap:28px}
+.m03-line{position:absolute;left:21px;top:22px;bottom:22px;width:6px;border-radius:3px;background:rgba(88,86,214,.15)}
+.m03-fill{position:absolute;left:0;top:0;width:100%;height:100%;border-radius:3px;background:#5856D6;transform-origin:top center}
+.m03-step{position:relative;display:flex;align-items:center;gap:28px;font-size:34px;font-weight:500;color:#76767C}
+.m03-dot{width:48px;height:48px;border-radius:50%;background:#fff;border:6px solid rgba(88,86,214,.25);box-sizing:border-box;flex:none}
+.m03-link{align-self:flex-start;margin-top:30px;background:#fff;box-shadow:0 12px 34px rgba(0,0,0,.08);padding:22px 34px;font-size:28px;gap:16px}
+.m03-g{color:#1E8E3E;font-size:24px}
+
+  </style>
+  <div id="root" data-composition-id="03-demo-b" data-width="1920" data-height="1080">
+    <div id="m03-bg" class="clip m03-bg" data-start="0" data-duration="5.14" data-track-index="0"></div>
+    <div class="m03-f">
+      <div class="m03-l">
+      <div class="m03-eyebrow" id="m03-eb">Acompanhamento</div>
+      <div class="m03-h2" id="m03-h">O aparelho anda.<br>O cliente vê.</div>
+      </div>
+      <div class="m03-r">
+        <div class="m03-card m03-os" id="m03-card">
+          <div class="m03-row m03-muted" style="font-size:28px"><span class="m03-num">OS #1042</span><span id="m03-tec">Técnico: Rafael</span></div>
+          <div class="m03-dev">iPhone 13 · Troca de tela</div>
+          <div class="m03-muted" style="font-size:28px;margin-top:6px" id="m03-due">Ana P. · prazo hoje, 17h</div>
+          <div class="m03-rail">
+            <div class="m03-line"><div class="m03-fill" id="m03-fill"></div></div>
+            <div class="m03-step" id="m03-s0"><span class="m03-dot" id="m03-d0"></span><span>Na fila</span></div>
+            <div class="m03-step" id="m03-s1"><span class="m03-dot" id="m03-d1"></span><span>Em reparo</span></div>
+            <div class="m03-step" id="m03-s2"><span class="m03-dot" id="m03-d2"></span><span>Pronto para retirada</span></div>
+          </div>
+        </div>
+        <div class="m03-pill m03-link" id="m03-link"><span class="m03-g">●</span>nexusgestor.com/acompanhar · enviado à Ana</div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="03-demo-b"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="03-demo-b"] ' + s);
+    const brl = (v) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      return [String(r).replace(/\B(?=(\d{3})+(?!\d))/g, "."), String(c).padStart(2, "0")];
+    };
+    tl.fromTo(q("#m03-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0.0);
+    tl.fromTo(q("#m03-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q("#m03-card"), {opacity:0, y:110}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.12);
+    tl.set(q("#m03-fill"), {scaleY:0}, 0);
+    tl.to(q("#m03-d0"), {background:"#5856D6", borderColor:"#5856D6", duration:0.25}, 0.0);
+    tl.to(q("#m03-s0"), {color:"#1D1D1F", duration:0.25}, 0.0);
+    tl.fromTo(q("#m03-tec"), {opacity:0, scale:0.85}, {opacity:1, scale:1, duration:0.4, ease:"back.out(1.8)"}, 0.42);
+    tl.fromTo(q("#m03-due"), {opacity:0, scale:0.85}, {opacity:1, scale:1, duration:0.4, ease:"back.out(1.8)"}, 1.09);
+    tl.to(q("#m03-fill"), {scaleY:0.5, ease:"power2.inOut", duration:0.5}, 1.19);
+    tl.to(q("#m03-d1"), {background:"#5856D6", borderColor:"#5856D6", duration:0.25}, 1.54);
+    tl.to(q("#m03-s1"), {color:"#1D1D1F", duration:0.25}, 1.54);
+    tl.to(q("#m03-fill"), {scaleY:1, ease:"power2.inOut", duration:0.5}, 2.57);
+    tl.to(q("#m03-d2"), {background:"#34C759", borderColor:"#34C759", duration:0.25}, 2.97);
+    tl.to(q("#m03-s2"), {color:"#1D1D1F", fontWeight:600, duration:0.25}, 2.97);
+    tl.fromTo(q("#m03-link"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 3.38);
+
+    window.__timelines["03-demo-b"] = tl;
+  })();
+  </script>
+</template>
