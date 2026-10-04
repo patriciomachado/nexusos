@@ -1,10 +1,9 @@
 {
-  "provider": "kokoro",
-  "speed": "1.1",
+  "provider": "gemini",
   "lines": [
     {
       "id": "01",
-      "text": "Caderno, WhatsApp, memória… sua assistência merece mais."
+      "text": "Caderno. WhatsApp. Memória. Sua assistência merece mais."
     },
     {
       "id": "02",
@@ -42,5 +41,7 @@
   "bgm": {
     "mode": "none"
   },
-  "voice": "pm_alex"
+  "voice": "Puck",
+  "model": "gemini-3.1-flash-tts-preview",
+  "style_prompt": "Leia o roteiro abaixo em português do Brasil, com sotaque brasileiro, tom confiante, próximo e animado, como a locução de um vídeo curto para Reels. Faça uma pausa clara de um segundo entre uma linha e a próxima."
 }

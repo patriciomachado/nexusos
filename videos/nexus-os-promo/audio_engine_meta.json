@@ -1,6 +1,6 @@
 {
-  "tts_provider": "kokoro",
-  "voice_id": "pm_alex",
+  "tts_provider": "gemini",
+  "voice_id": "Puck",
   "bgm": null,
   "bgm_pending": false,
   "bgm_provider": null,
@@ -14,58 +14,59 @@
     {
       "id": "01",
       "path": "assets/voice/01.wav",
-      "duration_s": 3.243,
+      "duration_s": 5.85,
       "words": []
     },
     {
       "id": "02",
       "path": "assets/voice/02.wav",
-      "duration_s": 1.579,
+      "duration_s": 1.85,
       "words": []
     },
     {
       "id": "03",
       "path": "assets/voice/03.wav",
-      "duration_s": 4.373,
+      "duration_s": 4.78,
       "words": []
     },
     {
       "id": "04",
       "path": "assets/voice/04.wav",
-      "duration_s": 2.901,
+      "duration_s": 3.19,
       "words": []
     },
     {
       "id": "05",
       "path": "assets/voice/05.wav",
-      "duration_s": 2.603,
+      "duration_s": 3.03,
       "words": []
     },
     {
       "id": "06",
       "path": "assets/voice/06.wav",
-      "duration_s": 2.325,
+      "duration_s": 2.89,
       "words": []
     },
     {
       "id": "07",
       "path": "assets/voice/07.wav",
-      "duration_s": 4.779,
+      "duration_s": 5.4,
       "words": []
     },
     {
       "id": "08",
       "path": "assets/voice/08.wav",
-      "duration_s": 1.963,
+      "duration_s": 2.35,
       "words": []
     },
     {
       "id": "09",
       "path": "assets/voice/09.wav",
-      "duration_s": 3.861,
+      "duration_s": 5.06,
       "words": []
     }
   ],
   "sfx": [],
-  "total_duration_s": 27.627
+  "total_duration_s": 34.4,
+  "tts_model": "gemini-3.1-flash-tts-preview"
 }

@@ -1,7 +1,7 @@
 # SCRIPT — nexus-os-promo
 
-**Voice:** pm_alex (Kokoro, pt-BR)
-**Voice settings:** speed 1.1
+**Voice:** Puck (Gemini TTS `gemini-3.1-flash-tts-preview`, masculina, pt-BR)
+**Voice settings:** as 9 falas geradas numa única chamada (voz e ritmo consistentes), divididas nas pausas entre linhas
 **Voice direction:** Confiante, próximo, ritmo de Reels — direto ao ponto.
 
 ---

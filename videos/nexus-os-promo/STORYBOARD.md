@@ -1,12 +1,12 @@
 ---
 format: 1080x1920
-duration: 30s
+duration: 34s
 message: "Tudo da sua assistência técnica em um só app"
 arc: Hook → Produto → Tour (OS · PDV/Caixa · Estoque · Relatórios · Alice) → Tudo em um app → CTA
 audience: donos de assistência técnica de celulares e eletrônicos
 mode: collaborative
 captions: yes
-voice: pm_alex (Kokoro, pt-BR)
+voice: Puck (Gemini TTS, masculina, pt-BR)
 music: none
 ---
 
@@ -14,7 +14,7 @@ music: none
 
 - scene: "Caderno." "WhatsApp." "Memória." batem um a um e são riscados; resolve em "Sua assistência merece mais."
 - voiceover: "Caderno. WhatsApp. Memória. Sua assistência merece mais."
-- duration: 5.12s
+- duration: 5.85s
 - transition_in: cut
 - status: animated
 - src: compositions/frames/01-hook.html
@@ -37,7 +37,7 @@ Scene 4 (3.3–5.1s): struck words dim to 35%; "Sua assistência merece mais." r
 
 - scene: logo hexagonal do Nexus surge com brilho violeta→ciano, wordmark "Nexus OS" + eyebrow "Sistema para assistências técnicas"
 - voiceover: "Conheça o Nexus OS."
-- duration: 1.579s
+- duration: 1.85s
 - transition_in: zoom-through
 - status: animated
 - src: compositions/frames/02-intro.html
@@ -58,7 +58,7 @@ Scene 2 (0.6–1.58s): "Nexus OS" rises under it as the VO says the name; eyebro
 
 - scene: card de OS "#1042 · iPhone 13 · Troca de tela · Ana P." num app iOS; o pill de status avança Na fila → Em reparo → Pronto para retirada; chip "Link de acompanhamento enviado ao cliente"
 - voiceover: "Cada ordem de serviço com etapa e prazo, e o cliente acompanha pelo link."
-- duration: 4.373s
+- duration: 4.78s
 - transition_in: push-slide LEFT
 - status: animated
 - src: compositions/frames/03-os.html
@@ -80,7 +80,7 @@ Scene 3 (2.8–4.37s): on "cliente acompanha pelo link" the marker lands on "Pro
 
 - scene: título "PDV e caixa"; três vendas entram numa lista (Película 3D, Carregador USB-C, Capinha) enquanto "Caixa de hoje" conta até R$ 1.286,00 · 9 vendas no PDV
 - voiceover: "PDV e caixa que fecham certinho no fim do dia."
-- duration: 2.901s
+- duration: 3.19s
 - transition_in: push-slide LEFT
 - status: animated
 - src: compositions/frames/04-pdv.html
@@ -102,7 +102,7 @@ Scene 3 (2.2–2.9s): "9 vendas no PDV" green chip pops on "fim do dia"; hold.
 
 - scene: título "Estoque e aparelhos"; linhas de peças/seminovos montam em cascata com quantidade e preço (Tela iPhone 13, Bateria Galaxy A54, Conector Moto G84, iPhone 11 seminovo)
 - voiceover: "Estoque de peças e seminovos sob controle."
-- duration: 2.603s
+- duration: 3.03s
 - transition_in: push-slide LEFT
 - status: animated
 - src: compositions/frames/05-estoque.html
@@ -124,7 +124,7 @@ Scene 3 (1.6–2.6s): hold.
 
 - scene: "Faturamento do mês" conta até R$ 18.450,90 com chip verde "+12% vs anterior"; barras do mês crescem; "Lucro líquido R$ 7.320,40 · margem 39,7%" aparece embaixo
 - voiceover: "E no fim do mês, você sabe se teve lucro."
-- duration: 2.325s
+- duration: 2.89s
 - transition_in: push-slide LEFT
 - status: animated
 - src: compositions/frames/06-relatorios.html
@@ -145,7 +145,7 @@ Scene 2 (1.3–2.33s): "+12% vs anterior" chip pops, then the lucro card slides 
 
 - scene: fundo preto; eyebrow "Alice · IA"; pergunta digita em bolha índigo "Quais aparelhos estão prontos e ninguém veio buscar?"; Alice responde "São 4, prontos há mais de 3 dias" + lista; "Pode criar" → check verde "Tarefa criada para hoje às 14h"
 - voiceover: "Pergunte para a Alice, a inteligência artificial do Nexus: ela responde e resolve."
-- duration: 4.779s
+- duration: 5.4s
 - transition_in: blur-crossfade
 - status: animated
 - src: compositions/frames/07-alice.html
@@ -168,7 +168,7 @@ Scene 4 (3.6–4.78s): on "resolve" the confirmation bubble with green check spr
 
 - scene: "Tudo da loja em um app" no topo; 8 tiles de módulos (OS, PDV e caixa, Estoque, Tarefas, Relatórios, Pós-venda, Catálogo, Studio) montam em cascata numa grade 2×4
 - voiceover: "Tudo da sua loja, em um só app."
-- duration: 1.963s
+- duration: 2.35s
 - transition_in: blur-crossfade
 - status: animated
 - src: compositions/frames/08-tudo.html
@@ -189,7 +189,7 @@ Scene 2 (1.3–1.96s): hold.
 
 - scene: logo Nexus OS centralizado; "Sua assistência organizada a partir de hoje."; botão índigo "Teste grátis por 15 dias"; "Sem cartão de crédito" + "nexusgestor.com"
 - voiceover: "Teste grátis por quinze dias, sem cartão. nexusgestor ponto com."
-- duration: 3.861s
+- duration: 5.06s
 - transition_in: zoom-through
 - status: animated
 - src: compositions/frames/09-cta.html

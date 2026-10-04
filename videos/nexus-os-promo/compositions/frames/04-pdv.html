@@ -25,7 +25,7 @@
 
   </style>
   <div id="root" data-composition-id="04-pdv" data-width="1080" data-height="1920">
-    <div id="f04-bg" class="clip f04-bg" data-start="0" data-duration="2.901" data-track-index="0"></div>
+    <div id="f04-bg" class="clip f04-bg" data-start="0" data-duration="3.19" data-track-index="0"></div>
     <div class="f04-f">
       <div class="f04-eyebrow" id="f04-eb">PDV e caixa</div>
       <div class="f04-h2" id="f04-h">Caixa que bate<br>no fim do dia.</div>
@@ -57,11 +57,11 @@
     tl.fromTo(q("#f04-hero"), {opacity:0, y:120}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.12);
     const st = {v:0};
     tl.fromTo(st, {v:0}, {v:1286, duration:1.7, ease:"power2.out", onUpdate(){
-      const [a, b] = brl(st.v, false); q("#f04-int").textContent = a; q("#f04-cts").textContent = b; }}, 0.31999999999999995);
+      const [a, b] = brl(st.v, false); q("#f04-int").textContent = a; q("#f04-cts").textContent = b; }}, 0.39);
     tl.fromTo(q("#f04-r0"), {opacity:0, x:-80}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 0.35);
     tl.fromTo(q("#f04-r1"), {opacity:0, x:-80}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 0.77);
     tl.fromTo(q("#f04-r2"), {opacity:0, x:-80}, {opacity:1, x:0, duration:0.45, ease:"power3.out"}, 1.19);
-    tl.fromTo(q("#f04-ok"), {opacity:0, scale:0.6}, {opacity:1, scale:1, duration:0.45, ease:"back.out(1.8)"}, 2.07);
+    tl.fromTo(q("#f04-ok"), {opacity:0, scale:0.6}, {opacity:1, scale:1, duration:0.45, ease:"back.out(1.8)"}, 2.32);
 
     window.__timelines["04-pdv"] = tl;
   })();
