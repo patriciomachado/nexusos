@@ -452,7 +452,7 @@ def surfaces(slug, c):
     elif slug == "studio":
         S[2] = demo("Studio de conteúdo", "Ideias, roteiros<br>e artes.", """        <div class="__card __b" id="__b0"><span class="__tg">Ideia</span><b>Antes e depois: troca de tela do iPhone 13</b></div>
         <div class="__card __b" id="__b1"><span class="__tg">Roteiro</span><span>1. Mostre a tela trincada · 2. O reparo em 10s · 3. A tela nova, com o preço</span></div>
-        <div class="__card __b __art" id="__b2"><span class="__tg" style="background:rgba(255,255,255,.2);color:#fff">Arte</span><b style="font-size:46px;line-height:1.05">Troca de tela<br>em 1 hora.</b><span style="opacity:.85">Garantia de 90 dias</span></div>
+        <div class="__card __b __art" id="__b2"><span class="__tg" style="background:rgba(0,0,0,.22);color:#fff">Arte</span><b style="font-size:46px;line-height:1.05">Troca de tela<br>em 1 hora.</b><span style="opacity:.85">Garantia de 90 dias</span></div>
 """, """
 .__b{margin-bottom:18px;padding:28px 36px;font-size:28px;display:flex;flex-direction:column;gap:10px;border-radius:36px}
 .__b b{font-size:32px}
@@ -596,6 +596,8 @@ def cta(name):
 
 # ── main ──────────────────────────────────────────────────────────────────────
 TRANS = ["cut", "push-slide LEFT", "blur-crossfade", "zoom-through"]
+# Studio: its white-on-gradient art cards fail contrast mid-blend, so slide instead of crossfade/zoom.
+TRANS_OVERRIDE = {"studio": ["cut", "push-slide LEFT", "push-slide LEFT", "push-slide LEFT"]}
 os.makedirs(os.path.join(ROOT, ".hyperframes", "captions"), exist_ok=True)
 for mi, mod in enumerate(CFG["modules"]):
     slug, name = mod["slug"], mod["name"]
@@ -652,7 +654,7 @@ music: none
 - scene: {['pergunta de dor palavra a palavra', 'tela do app, parte 1', 'tela do app, parte 2', 'logo + módulo + teste grátis'][n - 1]}
 - voiceover: "{vo}"
 - duration: {D_[n]}s
-- transition_in: {TRANS[n - 1]}
+- transition_in: {TRANS_OVERRIDE.get(slug, TRANS)[n - 1]}
 - status: animated
 - src: {src}
 """)

@@ -33,7 +33,7 @@ music: none
 - scene: tela do app, parte 2
 - voiceover: "Conteúdo da sua loja para as redes, sem começar do zero."
 - duration: 3.07s
-- transition_in: blur-crossfade
+- transition_in: push-slide LEFT
 - status: animated
 - src: compositions/frames/studio-16x9/03-demo-b.html
 
@@ -42,6 +42,6 @@ music: none
 - scene: logo + módulo + teste grátis
 - voiceover: "Teste grátis por quinze dias, sem cartão. nexusgestor ponto com."
 - duration: 4.37s
-- transition_in: zoom-through
+- transition_in: push-slide LEFT
 - status: animated
 - src: compositions/frames/studio-16x9/04-cta.html
