@@ -29,3 +29,5 @@ animada + trilha de fundo, legível com som desligado.
 - Usar a copy real da landing (components/landing/Landing.tsx); dados de exemplo
   da landing (iPhone 13 · Troca de tela, Galaxy A54 · Bateria, etc.).
 - Marca: índigo/violeta (primary hsl(241 61% 59%)), logo em public/logo.png.
+
+- Sem trilha embutida: o áudio será escolhido no app (Reels/TikTok) ao postar — `music: none`.

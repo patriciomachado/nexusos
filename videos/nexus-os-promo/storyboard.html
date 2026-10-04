@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nexus OS · Storyboard v1</title>
+<style>
+  :root{
+    --bg:#F2F2F7; --card:#FFFFFF; --ink:#1D1D1F; --muted:#6E6E73; --light:#8E8E93;
+    --primary:#5856D6; --primary-dark:#7D7AFF; --tint:rgba(88,86,214,.08); --border:rgba(88,86,214,.2);
+    --pos:#34C759; --black:#000; --surface:#1C1C1E; --violet:#A21CF0; --cyan:#2DD4EF;
+    --sheet:#E9E9EF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--sheet);color:var(--ink);font-family:Inter,-apple-system,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding:40px 32px 64px;-webkit-font-smoothing:antialiased}
+  header.sheet{max-width:1500px;margin:0 auto 28px;display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap}
+  header.sheet h1{font-size:34px;letter-spacing:-.02em;font-weight:700}
+  header.sheet h1 span{color:var(--primary)}
+  header.sheet p{color:var(--muted);font-size:16px;margin-top:6px;max-width:720px}
+  .tag{margin-left:auto;background:var(--tint);color:var(--primary);border-radius:100px;padding:8px 14px;font-size:13px;font-weight:600}
+  .grid{max-width:1500px;margin:0 auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:22px}
+  @media (max-width:1100px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media (max-width:640px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}body{padding:24px 16px}}
+  figure{display:flex;flex-direction:column;gap:8px}
+  .frame{aspect-ratio:9/16;container-type:inline-size;position:relative;overflow:hidden;border-radius:14px;background:var(--bg);box-shadow:0 1px 2px rgb(0 0 0/.06),0 10px 30px rgb(0 0 0/.08)}
+  .label{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--ink)}
+  .label span:last-child{color:var(--light);font-weight:500}
+  .note{font-size:12.5px;line-height:1.45;color:var(--muted)}
+  .note b{color:var(--ink)}
+  .chip{align-self:flex-start;font-size:11px;font-weight:600;color:var(--primary);background:var(--tint);border-radius:100px;padding:3px 9px}
+
+  /* in-frame atoms (cqw: 100cqw = 1080px) */
+  .f{position:absolute;inset:0;padding:9cqw 7cqw;display:flex;flex-direction:column}
+  .eyebrow{font-size:3.4cqw;font-weight:600;color:var(--primary);letter-spacing:.06em;text-transform:uppercase}
+  .h1{font-size:9.6cqw;font-weight:700;letter-spacing:-.03em;line-height:1.05}
+  .h2{font-size:7.4cqw;font-weight:700;letter-spacing:-.025em;line-height:1.08}
+  .sub{font-size:3.9cqw;color:var(--muted);line-height:1.4}
+  .appcard{background:var(--card);border-radius:5cqw;box-shadow:0 2.2cqw 6cqw rgb(0 0 0/.12)}
+  .pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+  .brandlogo{display:block;object-fit:contain}
+  .safe{position:absolute;left:0;right:0;bottom:0;height:16%;background:repeating-linear-gradient(135deg,rgba(255,59,48,.06) 0 1.2cqw,transparent 1.2cqw 2.4cqw);border-top:1px dashed rgba(255,59,48,.35)}
+  .safe::after{content:"zona da UI do Reels";position:absolute;right:3cqw;bottom:2cqw;font-size:2.6cqw;color:rgba(255,59,48,.6);font-weight:600}
+</style>
+</head>
+<body>
+<header class="sheet">
+  <div>
+    <h1>Nexus OS · <span>Storyboard v1</span></h1>
+    <p>Tour de recursos para donos de assistência técnica — "Tudo da sua assistência técnica em um só app". Rascunho estático: layout, hierarquia e textos; o movimento entra na construção.</p>
+  </div>
+  <span class="tag">1080×1920 · ~31s · 9 cenas · sem narração · sem trilha</span>
+</header>
+
+<main class="grid">
+
+<!-- 01 HOOK -->
+<figure>
+  <div class="frame" id="frame-01">
+    <div class="f" style="justify-content:center;gap:4cqw;padding-left:9cqw">
+      <div class="h1" style="color:var(--light);text-decoration:line-through;text-decoration-thickness:1.1cqw;text-decoration-color:var(--primary)">Caderno.</div>
+      <div class="h1" style="color:var(--light);text-decoration:line-through;text-decoration-thickness:1.1cqw;text-decoration-color:var(--primary)">WhatsApp.</div>
+      <div class="h1" style="color:var(--light);text-decoration:line-through;text-decoration-thickness:1.1cqw;text-decoration-color:var(--primary)">Memória.</div>
+      <div class="h1" style="margin-top:8cqw">Sua assistência<br>merece <span style="color:var(--primary)">mais.</span></div>
+    </div>
+    <div class="safe"></div>
+  </div>
+  <div class="label"><span>01 · GANCHO</span><span>0,0–3,0s</span></div>
+  <p class="note"><b>Cada palavra bate e é riscada em índigo</b> (0,3s cada); a frase final sobe por baixo e segura ~1s.</p>
+  <span class="chip">→ zoom-through</span>
+</figure>
+
+<!-- 02 INTRO -->
+<figure>
+  <div class="frame" id="frame-02">
+    <div style="position:absolute;left:50%;top:40%;width:110cqw;height:110cqw;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(162,28,240,.20),rgba(45,212,239,.10) 55%,transparent)"></div>
+    <div class="f" style="align-items:center;justify-content:center;text-align:center;gap:4cqw">
+      <div style="width:44cqw;height:44cqw;border-radius:10cqw;background:#fff;box-shadow:0 3cqw 8cqw rgb(0 0 0/.12);display:flex;align-items:center;justify-content:center">
+        <img class="brandlogo" src="capture/assets/nexus-logo.png" alt="Nexus" style="width:40cqw;height:40cqw">
+      </div>
+      <div class="h1" style="margin-top:4cqw">Nexus OS</div>
+      <div class="eyebrow">Sistema para assistências técnicas</div>
+    </div>
+    <div class="safe"></div>
+  </div>
+  <div class="label"><span>02 · NEXUS OS</span><span>3,0–5,5s</span></div>
+  <p class="note"><b>O logo nasce do centro com brilho violeta→ciano</b> (spring); o nome e o eyebrow sobem em sequência.</p>
+  <span class="chip">→ push-slide ←</span>
+</figure>
+
+<!-- 03 OS -->
+<figure>
+  <div class="frame" id="frame-03">
+    <div class="f" style="gap:3cqw">
+      <div class="eyebrow">Ordens de serviço</div>
+      <div class="h2">O aparelho anda.<br>O cliente acompanha.</div>
+      <div class="appcard" style="margin-top:6cqw;padding:6cqw">
+        <div style="display:flex;justify-content:space-between;font-size:3.4cqw;color:var(--muted)"><span>OS #1042</span><span>Técnico: Rafael</span></div>
+        <div style="font-size:5.6cqw;font-weight:700;margin-top:1.5cqw;letter-spacing:-.02em">iPhone 13 · Troca de tela</div>
+        <div style="font-size:3.6cqw;color:var(--muted);margin-top:.8cqw">Ana P. · prazo hoje, 17h</div>
+        <div style="display:flex;flex-direction:column;gap:2.6cqw;margin-top:5cqw">
+          <div style="display:flex;align-items:center;gap:3cqw;font-size:3.8cqw;color:var(--light)"><span style="width:4.4cqw;height:4.4cqw;border-radius:50%;background:var(--primary);opacity:.35"></span>Na fila</div>
+          <div style="display:flex;align-items:center;gap:3cqw;font-size:3.8cqw;color:var(--light)"><span style="width:4.4cqw;height:4.4cqw;border-radius:50%;background:var(--primary);opacity:.35"></span>Em reparo</div>
+          <div style="display:flex;align-items:center;gap:3cqw;font-size:3.8cqw;font-weight:600"><span style="width:4.4cqw;height:4.4cqw;border-radius:50%;background:var(--pos)"></span>Pronto para retirada</div>
+        </div>
+      </div>
+      <div class="pill" style="align-self:flex-start;margin-top:4cqw;background:var(--card);box-shadow:0 1cqw 3cqw rgb(0 0 0/.08);padding:2.6cqw 4.4cqw;font-size:3.5cqw;gap:2cqw"><span style="color:var(--pos)">●</span> Link de acompanhamento enviado</div>
+    </div>
+    <div class="safe"></div>
+  </div>
+  <div class="label"><span>03 · ORDENS DE SERVIÇO</span><span>5,5–9,5s</span></div>
+  <p class="note"><b>O card da OS sobe; o marcador desce pelas etapas</b> até ficar verde em "Pronto para retirada"; o chip do link aparece por último.</p>
+  <span class="chip">→ push-slide ←</span>
+</figure>
+
+<!-- 04 PDV -->
+<figure>
+  <div class="frame" id="frame-04">
+    <div class="f" style="gap:3cqw">
+      <div class="eyebrow">PDV e caixa</div>
+      <div class="h2">Caixa que bate<br>no fim do dia.</div>
+      <div class="appcard" style="margin-top:6cqw;padding:6cqw">
+        <div style="font-size:3.6cqw;color:var(--muted)">Caixa de hoje</div>
+        <div style="font-size:12cqw;font-weight:700;letter-spacing:-.03em;color:var(--primary);line-height:1.1"><span style="font-size:.5em;color:var(--muted);font-weight:600">R$ </span>1.286<span style="font-size:.55em">,00</span></div>
+        <div style="font-size:3.6cqw;color:var(--pos);font-weight:600">9 vendas no PDV</div>
+      </div>
+      <div class="appcard" style="padding:2cqw 6cqw">
+        <div style="display:flex;justify-content:space-between;padding:3cqw 0;font-size:3.9cqw;border-bottom:1px solid #eee"><span>Película 3D</span><b>R$ 40,00</b></div>
+        <div style="display:flex;justify-content:space-between;padding:3cqw 0;font-size:3.9cqw;border-bottom:1px solid #eee"><span>Carregador USB-C</span><b>R$ 89,90</b></div>
+        <div style="display:flex;justify-content:space-between;padding:3cqw 0;font-size:3.9cqw"><span>Capinha anti-impacto</span><b>R$ 59,90</b></div>
+      </div>
+    </div>
+    <div class="safe"></div>
+  </div>
+  <div class="label"><span>04 · PDV E CAIXA</span><span>9,5–13,0s</span></div>
+  <p class="note"><b>Cada venda entra na lista e o total sobe</b> (contagem até R$ 1.286,00), terminando no chip verde.</p>
+  <span class="chip">→ push-slide ←</span>
+</figure>
+
+<!-- 05 ESTOQUE -->
+<figure>
+  <div class="frame" id="frame-05">
+    <div class="f" style="gap:3cqw">
+      <div class="eyebrow">Estoque e aparelhos</div>
+      <div class="h2">Peças e seminovos<br>sob controle.</div>
+      <div style="display:flex;flex-direction:column;gap:2.6cqw;margin-top:6cqw">
+        <div class="appcard" style="padding:4.4cqw 5cqw;display:flex;align-items:center;gap:4cqw"><span style="width:10cqw;height:10cqw;border-radius:2.6cqw;background:var(--tint)"></span><span style="flex:1"><b style="font-size:4cqw;display:block">Tela iPhone 13</b><span style="font-size:3.3cqw;color:var(--muted)">Peça · 4 un</span></span><b style="font-size:3.9cqw">R$ 480</b></div>
+        <div class="appcard" style="padding:4.4cqw 5cqw;display:flex;align-items:center;gap:4cqw"><span style="width:10cqw;height:10cqw;border-radius:2.6cqw;background:var(--tint)"></span><span style="flex:1"><b style="font-size:4cqw;display:block">Bateria Galaxy A54</b><span style="font-size:3.3cqw;color:var(--muted)">Peça · 7 un</span></span><b style="font-size:3.9cqw">R$ 160</b></div>
+        <div class="appcard" style="padding:4.4cqw 5cqw;display:flex;align-items:center;gap:4cqw"><span style="width:10cqw;height:10cqw;border-radius:2.6cqw;background:var(--tint)"></span><span style="flex:1"><b style="font-size:4cqw;display:block">Conector Moto G84</b><span style="font-size:3.3cqw;color:var(--muted)">Peça · 12 un</span></span><b style="font-size:3.9cqw">R$ 70</b></div>
+        <div class="appcard" style="padding:4.4cqw 5cqw;display:flex;align-items:center;gap:4cqw"><span style="width:10cqw;height:10cqw;border-radius:2.6cqw;background:var(--tint)"></span><span style="flex:1"><b style="font-size:4cqw;display:block">iPhone 11 seminovo</b><span style="font-size:3.3cqw;color:var(--muted)">Aparelho · 128 GB</span></span><b style="font-size:3.9cqw">R$ 1.890</b></div>
+      </div>
+    </div>
+    <div class="safe"></div>
+  </div>
+  <div class="label"><span>05 · ESTOQUE</span><span>13,0–16,0s</span></div>
+  <p class="note"><b>As linhas montam em cascata de baixo para cima</b> (0,12s de intervalo) e seguram.</p>
+  <span class="chip">→ push-slide ←</span>
+</figure>
+
+<!-- 06 RELATORIOS -->
+<figure>
+  <div class="frame" id="frame-06">
+    <div class="f" style="gap:3cqw">
+      <div class="eyebrow">Relatórios</div>
+      <div class="h2">Você sabe se<br>teve lucro.</div>
+      <div class="appcard" style="margin-top:6cqw;padding:6cqw">
+        <div style="font-size:3.6cqw;color:var(--muted)">Faturamento do mês</div>
+        <div style="font-size:11cqw;font-weight:700;letter-spacing:-.03em;line-height:1.1"><span style="font-size:.5em;color:var(--muted);font-weight:600">R$ </span>18.450<span style="font-size:.55em">,90</span></div>
+        <span class="pill" style="background:rgba(52,199,89,.12);color:#1E8E3E;padding:1.4cqw 3.2cqw;font-size:3.3cqw;margin-top:1.4cqw">↑ +12% vs anterior</span>
+        <div style="display:flex;align-items:flex-end;gap:2cqw;height:30cqw;margin-top:6cqw">
+          <span style="flex:1;height:35%;background:var(--tint);border-radius:1.4cqw"></span><span style="flex:1;height:48%;background:var(--tint);border-radius:1.4cqw"></span><span style="flex:1;height:42%;background:var(--tint);border-radius:1.4cqw"></span><span style="flex:1;height:60%;background:var(--tint);border-radius:1.4cqw"></span><span style="flex:1;height:55%;background:var(--tint);border-radius:1.4cqw"></span><span style="flex:1;height:72%;background:var(--tint);border-radius:1.4cqw"></span><span style="flex:1;height:100%;background:var(--primary);border-radius:1.4cqw"></span>
+        </div>
+      </div>
+      <div class="appcard" style="padding:4.4cqw 6cqw;display:flex;justify-content:space-between;align-items:center"><span style="font-size:3.6cqw;color:var(--muted)">Lucro líquido</span><span style="font-size:5.4cqw;font-weight:700;color:var(--primary)">R$ 7.320,40</span></div>
+      <div style="font-size:3.2cqw;color:var(--muted)">Margem de 39,7%</div>
+    </div>
+    <div class="safe"></div>
+  </div>
+  <div class="label"><span>06 · RELATÓRIOS</span><span>16,0–19,5s</span></div>
+  <p class="note"><b>O faturamento conta até o valor enquanto as barras crescem</b>; o chip +12% e o lucro chegam por último.</p>
+  <span class="chip">→ blur-crossfade</span>
+</figure>
+
+<!-- 07 ALICE -->
+<figure>
+  <div class="frame" id="frame-07" style="background:#000">
+    <div class="f" style="gap:3cqw;color:#fff">
+      <div class="eyebrow" style="color:var(--primary-dark)">Alice · IA</div>
+      <div class="h2">Pergunte.<br>A Alice resolve.</div>
+      <div style="margin-top:5cqw;background:var(--surface);border-radius:5cqw;padding:5cqw;display:flex;flex-direction:column;gap:3cqw;border:1px solid rgba(255,255,255,.08)">
+        <div style="display:flex;align-items:center;gap:2.6cqw;padding-bottom:2.6cqw;border-bottom:1px solid rgba(255,255,255,.1)"><span style="width:8cqw;height:8cqw;border-radius:50%;background:linear-gradient(135deg,#818CF8,#7C3AED)"></span><b style="font-size:4cqw">Alice</b></div>
+        <div style="align-self:flex-end;max-width:85%;background:var(--primary);border-radius:4cqw 4cqw 1.2cqw 4cqw;padding:3cqw 4cqw;font-size:3.8cqw;line-height:1.35">Quais aparelhos estão prontos e ninguém veio buscar?</div>
+        <div style="max-width:90%;background:rgba(255,255,255,.1);border-radius:4cqw 4cqw 4cqw 1.2cqw;padding:3cqw 4cqw;font-size:3.8cqw;line-height:1.4">São 4, prontos há mais de 3 dias:<br><span style="color:rgba(255,255,255,.7);font-size:3.4cqw">#1039 Moto G84 · Júlia R. · 5 dias<br>#1031 iPhone 11 · Marcos T. · 4 dias<br>e mais 2.</span></div>
+        <div style="align-self:flex-end;background:var(--primary);border-radius:4cqw 4cqw 1.2cqw 4cqw;padding:3cqw 4cqw;font-size:3.8cqw">Pode criar</div>
+        <div style="background:rgba(255,255,255,.1);border-radius:4cqw 4cqw 4cqw 1.2cqw;padding:3cqw 4cqw;font-size:3.8cqw;display:flex;gap:2cqw"><span style="color:var(--pos)">✓</span>Pronto. Tarefa criada para hoje às 14h.</div>
+      </div>
+    </div>
+    <div class="safe"></div>
+  </div>
+  <div class="label"><span>07 · ALICE</span><span>19,5–24,5s</span></div>
+  <p class="note"><b>A pergunta é digitada na bolha índigo</b>, três pontinhos de "pensando", a resposta entra linha a linha; termina no check verde.</p>
+  <span class="chip">→ blur-crossfade</span>
+</figure>
+
+<!-- 08 TUDO -->
+<figure>
+  <div class="frame" id="frame-08">
+    <div class="f" style="gap:3cqw">
+      <div class="eyebrow">Tudo da loja em um app</div>
+      <div class="h2">Da entrada do aparelho ao fechamento do caixa.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2.6cqw;margin-top:4cqw">
+        <div class="appcard" style="padding:3.4cqw 4cqw;border-radius:4cqw"><span style="display:block;width:7.5cqw;height:7.5cqw;border-radius:2.6cqw;background:var(--tint)"></span><b style="display:block;font-size:3.9cqw;margin-top:2.6cqw">Ordens de serviço</b></div>
+        <div class="appcard" style="padding:3.4cqw 4cqw;border-radius:4cqw"><span style="display:block;width:7.5cqw;height:7.5cqw;border-radius:2.6cqw;background:var(--tint)"></span><b style="display:block;font-size:3.9cqw;margin-top:2.6cqw">PDV e caixa</b></div>
+        <div class="appcard" style="padding:3.4cqw 4cqw;border-radius:4cqw"><span style="display:block;width:7.5cqw;height:7.5cqw;border-radius:2.6cqw;background:var(--tint)"></span><b style="display:block;font-size:3.9cqw;margin-top:2.6cqw">Estoque</b></div>
+        <div class="appcard" style="padding:3.4cqw 4cqw;border-radius:4cqw"><span style="display:block;width:7.5cqw;height:7.5cqw;border-radius:2.6cqw;background:var(--tint)"></span><b style="display:block;font-size:3.9cqw;margin-top:2.6cqw">Tarefas</b></div>
+        <div class="appcard" style="padding:3.4cqw 4cqw;border-radius:4cqw"><span style="display:block;width:7.5cqw;height:7.5cqw;border-radius:2.6cqw;background:var(--tint)"></span><b style="display:block;font-size:3.9cqw;margin-top:2.6cqw">Relatórios</b></div>
+        <div class="appcard" style="padding:3.4cqw 4cqw;border-radius:4cqw"><span style="display:block;width:7.5cqw;height:7.5cqw;border-radius:2.6cqw;background:var(--tint)"></span><b style="display:block;font-size:3.9cqw;margin-top:2.6cqw">Pós-venda</b></div>
+        <div class="appcard" style="padding:3.4cqw 4cqw;border-radius:4cqw"><span style="display:block;width:7.5cqw;height:7.5cqw;border-radius:2.6cqw;background:var(--tint)"></span><b style="display:block;font-size:3.9cqw;margin-top:2.6cqw">Catálogo online</b></div>
+        <div class="appcard" style="padding:3.4cqw 4cqw;border-radius:4cqw"><span style="display:block;width:7.5cqw;height:7.5cqw;border-radius:2.6cqw;background:var(--primary)"></span><b style="display:block;font-size:3.9cqw;margin-top:2.6cqw">Alice (IA)</b></div>
+      </div>
+    </div>
+    <div class="safe"></div>
+  </div>
+  <div class="label"><span>08 · TUDO EM UM APP</span><span>24,5–27,5s</span></div>
+  <p class="note"><b>Os 8 tiles montam em cascata</b> da esquerda para a direita; o tile da Alice é o único sólido (callback da cena 7).</p>
+  <span class="chip">→ zoom-through</span>
+</figure>
+
+<!-- 09 CTA -->
+<figure>
+  <div class="frame" id="frame-09">
+    <div style="position:absolute;left:50%;top:30%;width:100cqw;height:100cqw;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(162,28,240,.16),rgba(45,212,239,.08) 55%,transparent)"></div>
+    <div class="f" style="align-items:center;justify-content:center;text-align:center;gap:4cqw">
+      <div style="width:30cqw;height:30cqw;border-radius:7cqw;background:#fff;box-shadow:0 3cqw 8cqw rgb(0 0 0/.12);display:flex;align-items:center;justify-content:center"><img class="brandlogo" src="capture/assets/nexus-logo.png" alt="Nexus" style="width:27cqw;height:27cqw"></div>
+      <div class="h2" style="margin-top:3cqw">Sua assistência organizada a partir de hoje.</div>
+      <div class="pill" style="margin-top:4cqw;background:var(--primary);color:#fff;padding:4.4cqw 8cqw;font-size:4.6cqw">Teste grátis por 15 dias</div>
+      <div class="sub">Sem cartão de crédito.</div>
+      <div style="font-size:4.4cqw;font-weight:700;color:var(--primary);margin-top:2cqw">nexusgestor.com</div>
+    </div>
+    <div class="safe"></div>
+  </div>
+  <div class="label"><span>09 · CTA</span><span>27,5–31,0s</span></div>
+  <p class="note"><b>Logo, frase e botão sobem em sequência</b>; o botão dá um "press" leve e tudo segura parado até o fim (frame segurado).</p>
+  <span class="chip">fim</span>
+</figure>
+
+<!-- SEAM MAP -->
+<figure>
+  <div class="frame" style="background:#fff">
+    <div class="f" style="gap:3cqw;padding:8cqw 6cqw">
+      <div class="eyebrow">Mapa de transições</div>
+      <div style="display:flex;flex-direction:column;gap:2.4cqw;margin-top:3cqw;font-size:3.6cqw">
+        <div>01 → 02 <b style="color:var(--primary)">zoom-through</b></div>
+        <div>02 → 03 <b style="color:var(--primary)">push-slide ←</b></div>
+        <div>03 → 04 <b style="color:var(--primary)">push-slide ←</b></div>
+        <div>04 → 05 <b style="color:var(--primary)">push-slide ←</b></div>
+        <div>05 → 06 <b style="color:var(--primary)">push-slide ←</b></div>
+        <div>06 → 07 <b style="color:var(--primary)">blur-crossfade</b> (claro → preto)</div>
+        <div>07 → 08 <b style="color:var(--primary)">blur-crossfade</b> (preto → claro)</div>
+        <div>08 → 09 <b style="color:var(--primary)">zoom-through</b></div>
+      </div>
+      <div class="sub" style="margin-top:4cqw;font-size:3.3cqw">Direção única: o tour anda para a esquerda. Fio condutor: o card branco do app, que muda de conteúdo a cada parada.</div>
+    </div>
+  </div>
+  <div class="label"><span>TRANSIÇÕES</span><span>8 cortes</span></div>
+</figure>
+
+<!-- TOKENS -->
+<figure>
+  <div class="frame" style="background:#fff">
+    <div class="f" style="gap:3cqw;padding:8cqw 6cqw">
+      <div class="eyebrow">Tokens</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2cqw;margin-top:2cqw">
+        <span style="aspect-ratio:1;border-radius:2.4cqw;background:#5856D6"></span><span style="aspect-ratio:1;border-radius:2.4cqw;background:#F2F2F7;border:1px solid #ddd"></span><span style="aspect-ratio:1;border-radius:2.4cqw;background:#1D1D1F"></span><span style="aspect-ratio:1;border-radius:2.4cqw;background:#34C759"></span>
+        <span style="aspect-ratio:1;border-radius:2.4cqw;background:#000"></span><span style="aspect-ratio:1;border-radius:2.4cqw;background:#1C1C1E"></span><span style="aspect-ratio:1;border-radius:2.4cqw;background:#A21CF0"></span><span style="aspect-ratio:1;border-radius:2.4cqw;background:#2DD4EF"></span>
+      </div>
+      <div style="font-size:3.2cqw;color:var(--muted);line-height:1.5">índigo #5856D6 · fundo #F2F2F7 · tinta #1D1D1F · verde #34C759 · Alice #000/#1C1C1E · logo #A21CF0→#2DD4EF</div>
+      <div style="font-size:6cqw;font-weight:700;letter-spacing:-.02em;margin-top:2cqw">Inter 700</div>
+      <div style="font-size:3.6cqw;color:var(--muted)">Inter 400/600 · números tabulares</div>
+      <div style="font-size:3.2cqw;line-height:1.5;margin-top:2cqw"><b>Proibido:</b> texto em gradiente; telas inventadas fora do estilo do app; slideshow (card estático trocando); movimento decorativo sem conteúdo; texto na faixa inferior de 16% (UI do Reels).</div>
+    </div>
+  </div>
+  <div class="label"><span>TOKENS</span><span>frame.md</span></div>
+</figure>
+
+</main>
+</body>
+</html>

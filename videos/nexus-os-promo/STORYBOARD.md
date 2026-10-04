@@ -5,7 +5,7 @@ message: "Tudo da sua assistência técnica em um só app"
 arc: Hook → Produto → Tour (OS · PDV/Caixa · Estoque · Relatórios · Alice) → Tudo em um app → CTA
 audience: donos de assistência técnica de celulares e eletrônicos
 mode: collaborative
-music: upbeat modern tech pop, confident, clean percussion, 110-120 bpm
+music: none
 ---
 
 ## Frame 1 — Hook
@@ -14,7 +14,7 @@ music: upbeat modern tech pop, confident, clean percussion, 110-120 bpm
 - voiceover: ""
 - duration: 3s
 - transition_in: cut
-- status: outline
+- status: built
 - src: compositions/frames/01-hook.html
 - type: hook
 - persuasion: Negative contrast
@@ -31,7 +31,7 @@ keyMessage: o jeito atual não dá conta.
 - voiceover: ""
 - duration: 2.5s
 - transition_in: zoom-through
-- status: outline
+- status: built
 - src: compositions/frames/02-intro.html
 - type: product_intro
 - persuasion: Authority by association
@@ -48,7 +48,7 @@ keyMessage: Nexus OS é o sistema da assistência técnica.
 - voiceover: ""
 - duration: 4s
 - transition_in: push-slide LEFT
-- status: outline
+- status: built
 - src: compositions/frames/03-os.html
 - type: feature_showcase
 - persuasion: Show-don't-tell proof
@@ -65,7 +65,7 @@ keyMessage: cada aparelho com etapa, técnico e prazo; o cliente acompanha pelo 
 - voiceover: ""
 - duration: 3.5s
 - transition_in: push-slide LEFT
-- status: outline
+- status: built
 - src: compositions/frames/04-pdv.html
 - type: feature_showcase
 - persuasion: Feature-to-benefit translation
@@ -82,7 +82,7 @@ keyMessage: caixa que bate no fim do dia.
 - voiceover: ""
 - duration: 3s
 - transition_in: push-slide LEFT
-- status: outline
+- status: built
 - src: compositions/frames/05-estoque.html
 - type: feature_showcase
 - persuasion: Rule of three
@@ -99,7 +99,7 @@ keyMessage: peças, acessórios e seminovos sob controle.
 - voiceover: ""
 - duration: 3.5s
 - transition_in: push-slide LEFT
-- status: outline
+- status: built
 - src: compositions/frames/06-relatorios.html
 - type: feature_showcase
 - persuasion: Statistical proof
@@ -116,7 +116,7 @@ keyMessage: você sabe se teve lucro.
 - voiceover: ""
 - duration: 5s
 - transition_in: blur-crossfade
-- status: outline
+- status: built
 - src: compositions/frames/07-alice.html
 - type: feature_showcase
 - persuasion: Show-don't-tell proof
@@ -133,7 +133,7 @@ keyMessage: pergunte, a Alice responde e resolve.
 - voiceover: ""
 - duration: 3s
 - transition_in: blur-crossfade
-- status: outline
+- status: built
 - src: compositions/frames/08-tudo.html
 - type: benefit_highlight
 - persuasion: Value stacking
@@ -150,7 +150,7 @@ keyMessage: da entrada do aparelho ao fechamento do caixa.
 - voiceover: ""
 - duration: 3.5s
 - transition_in: zoom-through
-- status: outline
+- status: built
 - src: compositions/frames/09-cta.html
 - type: cta
 - persuasion: Risk reversal
