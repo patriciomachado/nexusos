@@ -1,0 +1,36 @@
+[Fonte: código do repositório patriciomachado/nexusos — components/landing/Landing.tsx, components/layout/nav-config.ts, app/tracking]
+
+Nexus OS — Sistema para assistências técnicas
+Organização e controle da sua assistência.
+Ordens de serviço, caixa, estoque e equipe no mesmo lugar. Você sabe o que entrou, o que saiu e o que falta entregar.
+Testar grátis por 15 dias · Sem cartão de crédito. Cancele quando quiser.
+
+Painel · Hoje (dados de exemplo): Faturamento do mês R$ 18.450,90 (+12% vs anterior) · Lucro líquido R$ 7.320,40 (Margem de 39,7%) · OS em aberto 23 (4 prontas para retirada) · Caixa de hoje R$ 1.286,00 (9 vendas no PDV)
+Ordens de serviço: #1042 iPhone 13 · Troca de tela · Ana P. · Em reparo | #1041 Galaxy A54 · Bateria · Carlos M. · Aguardando peça | #1039 Moto G84 · Conector · Júlia R. · Pronto para retirada | #1037 iPad 9 · Diagnóstico · Pedro S. · Orçamento enviado
+
+Menos correria — O que hoje fica no caderno, no WhatsApp e na memória.
+- Aparelho parado na bancada e ninguém sabe em que pé está. → Cada OS tem etapa, técnico e prazo. O cliente acompanha pelo link, sem ligar para a loja.
+- Caixa que não bate no fim do dia. → Vendas, recebimentos, sangrias e contas fixas lançados no caixa, cada um no dia certo.
+- Chega o fim do mês e você não sabe se teve lucro. → Faturamento, lucro e ticket médio na tela, comparados com o período anterior.
+
+Tudo da loja em um app — Da entrada do aparelho ao fechamento do caixa.
+- Ordens de serviço: Entrada com fotos e checklist, orçamento, etapas do reparo e link de acompanhamento para o cliente.
+- PDV e caixa: Venda rápida no balcão, abertura e fechamento de caixa e contas fixas lançadas sozinhas.
+- Estoque e aparelhos: Peças, acessórios e seminovos com custo, preço e avaliação de troca.
+- Tarefas e lembretes: Pendências da loja em um lugar, com aviso no celular na hora certa.
+- Relatórios: Faturamento por dia, lucro e indicadores. No Pro: DRE, meta do mês e desempenho por técnico.
+- Pós-venda: Avaliações dos clientes e, no Pro, a lista de quem contatar com a mensagem pronta no WhatsApp.
+- Catálogo online (Pro): Sua vitrine de aparelhos e acessórios com link próprio para divulgar.
+- Studio de conteúdo (Pro): Ideias, roteiros e artes para redes sociais a partir dos seus serviços.
+
+Alice · plano Pro — Pergunte. A Alice responde e resolve.
+A assistente de IA do Nexus OS conhece a sua loja. Pergunte por texto ou voz quanto vendeu, quais aparelhos estão atrasados ou o que tem no estoque.
+- Consulta e age no sistema · Atende no WhatsApp da loja · Cada pessoa vê o que pode
+Chat: "Quais aparelhos estão prontos e ninguém veio buscar?" → "São 4, prontos há mais de 3 dias: #1039 Moto G84 · Júlia R. · 5 dias / #1031 iPhone 11 · Marcos T. · 4 dias / e mais 2. Quer que eu crie uma tarefa para ligar para eles?" → "Pode criar" → "Pronto. Tarefa criada para hoje às 14h."
+
+Rastreio do cliente (status da OS): Aberta - Na Fila → Em Andamento → Aguardando Peças → Concluída → Faturada
+
+Funciona no celular: instala na tela inicial do iPhone ou Android como app, com lembretes por notificação.
+Menu do app: Dashboard, Tarefas, Agenda, Ordens de Serviço, Vendas/PDV, Venda de Aparelhos, Clientes, Funil de Vendas, Peças, Produtos, Pós-Venda, Studio, Alice (IA), Caixa, Equipe e ponto, Relatórios.
+
+CTA: Sua assistência organizada a partir de hoje. 15 dias grátis, sem cartão de crédito. Criar minha conta — nexusgestor.com

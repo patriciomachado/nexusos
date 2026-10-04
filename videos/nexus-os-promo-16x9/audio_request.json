@@ -1,0 +1,51 @@
+{
+  "provider": "gemini",
+  "tts_model": "gemini-3.8-flash-tts",
+  "voice": "Puck",
+  "speed": "1.0",
+  "style": "Locutor brasileiro, português do Brasil (sotaque paulista neutro), tom confiante e próximo, ritmo de Reels — direto ao ponto, energia constante.",
+  "lines": [
+    {
+      "id": "01",
+      "text": "Caderno. WhatsApp. Memória. Sua assistência merece mais."
+    },
+    {
+      "id": "02",
+      "text": "Conheça o Nexus OS."
+    },
+    {
+      "id": "03",
+      "text": "Cada ordem de serviço com etapa e prazo, e o cliente acompanha pelo link."
+    },
+    {
+      "id": "04",
+      "text": "PDV e caixa que fecham certinho no fim do dia."
+    },
+    {
+      "id": "05",
+      "text": "Estoque de peças e seminovos sob controle."
+    },
+    {
+      "id": "06",
+      "text": "E no fim do mês, você sabe se teve lucro."
+    },
+    {
+      "id": "07",
+      "text": "Pergunte para a Alice, a inteligência artificial do Nexus: ela responde e resolve.",
+      "tts_model": "gemini-3.8-flash-lite-tts"
+    },
+    {
+      "id": "08",
+      "text": "Tudo da sua loja, em um só app.",
+      "tts_model": "gemini-3.8-flash-lite-tts"
+    },
+    {
+      "id": "09",
+      "text": "Teste grátis por quinze dias, sem cartão. nexusgestor ponto com.",
+      "tts_model": "gemini-3.8-flash-lite-tts"
+    }
+  ],
+  "bgm": {
+    "mode": "none"
+  }
+}

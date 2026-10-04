@@ -1,0 +1,63 @@
+<template>
+  <style>
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.f01-bg{position:absolute;inset:0;background:#F2F2F7}
+.f01-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:column}
+.f01-split{flex-direction:row;align-items:center;gap:100px}
+.f01-l{flex:0 0 640px;display:flex;flex-direction:column}
+.f01-r{flex:1;display:flex;flex-direction:column;min-width:0}
+.f01-eyebrow{font-size:30px;font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.f01-h2{font-size:76px;font-weight:700;letter-spacing:-.025em;line-height:1.06;margin-top:22px}
+.f01-card{background:#FFFFFF;border-radius:44px;box-shadow:0 26px 70px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.04)}
+.f01-muted{color:#6E6E73}
+.f01-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.f01-num{font-variant-numeric:tabular-nums}
+
+.f01-w{position:relative;align-self:flex-start;font-size:124px;font-weight:700;letter-spacing:-.035em;line-height:1.12;color:#1D1D1F}
+.f01-strike{position:absolute;left:-6px;right:-6px;top:54%;height:13px;border-radius:7px;background:#5856D6;transform-origin:left center}
+.f01-final{font-size:104px;font-weight:700;letter-spacing:-.035em;line-height:1.05}
+
+  </style>
+  <div id="root" data-composition-id="01-hook" data-width="1920" data-height="1080">
+    <div id="f01-bg" class="clip f01-bg" data-start="0" data-duration="5.15" data-track-index="0"></div>
+    <div class="f01-f f01-split" style="padding-top:20px">
+      <div class="f01-l" style="flex-basis:760px">
+      <div class="f01-w" id="f01-w0"><span class="f01-wt">Caderno.</span><span class="f01-strike" id="f01-s0"></span></div>
+      <div class="f01-w" id="f01-w1"><span class="f01-wt">WhatsApp.</span><span class="f01-strike" id="f01-s1"></span></div>
+      <div class="f01-w" id="f01-w2"><span class="f01-wt">Memória.</span><span class="f01-strike" id="f01-s2"></span></div>
+      </div>
+      <div class="f01-r"><div class="f01-final" id="f01-final">Sua assistência<br>merece <span id="f01-mais" style="color:#5856D6;display:inline-block">mais.</span></div></div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="01-hook"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="01-hook"] ' + s);
+    const brl = (v, cents) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      const s = String(r).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      return cents ? [s, String(c).padStart(2, "0")] : [s, "00"];
+    };
+    tl.fromTo(q("#f01-w0"), {opacity:0, scale:1.35, y:-20}, {opacity:1, scale:1, y:0, duration:0.4, ease:"back.out(1.6)", transformOrigin:"left center"}, 0);
+    tl.fromTo(q("#f01-s0"), {scaleX:0}, {scaleX:1, duration:0.3, ease:"power2.inOut"}, 0.84);
+    tl.to(q("#f01-w0"), {color:"#8B8B90", duration:0.3}, 0.84);
+    tl.fromTo(q("#f01-w1"), {opacity:0, scale:1.35, y:-20}, {opacity:1, scale:1, y:0, duration:0.4, ease:"back.out(1.6)", transformOrigin:"left center"}, 1.21);
+    tl.fromTo(q("#f01-s1"), {scaleX:0}, {scaleX:1, duration:0.3, ease:"power2.inOut"}, 1.5999999999999999);
+    tl.to(q("#f01-w1"), {color:"#8B8B90", duration:0.3}, 1.5999999999999999);
+    tl.fromTo(q("#f01-w2"), {opacity:0, scale:1.35, y:-20}, {opacity:1, scale:1, y:0, duration:0.4, ease:"back.out(1.6)", transformOrigin:"left center"}, 1.97);
+    tl.fromTo(q("#f01-s2"), {scaleX:0}, {scaleX:1, duration:0.3, ease:"power2.inOut"}, 2.61);
+    tl.to(q("#f01-w2"), {color:"#8B8B90", duration:0.3}, 2.61);
+    tl.to(qa(".f01-w"), {opacity:0.35, duration:0.4, ease:"power2.out"}, 3.09);
+    tl.fromTo(q("#f01-final"), {opacity:0, y:80}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 3.09);
+    tl.fromTo(q("#f01-mais"), {opacity:0, scale:0.5}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 4.74);
+
+    window.__timelines["01-hook"] = tl;
+  })();
+  </script>
+</template>

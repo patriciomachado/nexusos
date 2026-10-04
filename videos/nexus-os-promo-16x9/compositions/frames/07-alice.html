@@ -1,0 +1,97 @@
+<template>
+  <style>
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal}
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal}
+#root{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;font-family:"Inter",sans-serif;color:#1D1D1F;-webkit-font-smoothing:antialiased}
+.f07-bg{position:absolute;inset:0;background:#F2F2F7}
+.f07-f{position:absolute;left:0;right:0;top:0;height:880px;padding:0 130px;display:flex;flex-direction:column}
+.f07-split{flex-direction:row;align-items:center;gap:100px}
+.f07-l{flex:0 0 640px;display:flex;flex-direction:column}
+.f07-r{flex:1;display:flex;flex-direction:column;min-width:0}
+.f07-eyebrow{font-size:30px;font-weight:600;color:#5856D6;letter-spacing:.06em;text-transform:uppercase}
+.f07-h2{font-size:76px;font-weight:700;letter-spacing:-.025em;line-height:1.06;margin-top:22px}
+.f07-card{background:#FFFFFF;border-radius:44px;box-shadow:0 26px 70px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.04)}
+.f07-muted{color:#6E6E73}
+.f07-pill{display:inline-flex;align-items:center;border-radius:100px;font-weight:600;white-space:nowrap}
+.f07-num{font-variant-numeric:tabular-nums}
+
+.f07-dark{position:absolute;inset:0;background:#000}
+.f07-chat{background:#1C1C1E;border:2px solid rgba(255,255,255,.08);border-radius:44px;padding:34px 40px 38px;display:flex;flex-direction:column;gap:18px}
+.f07-head{display:flex;align-items:center;gap:22px;padding-bottom:18px;border-bottom:2px solid rgba(255,255,255,.1);font-size:34px}
+.f07-av{width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,#818CF8,#7C3AED)}
+.f07-me{align-self:flex-end;max-width:84%;background:#5856D6;border-radius:34px 34px 10px 34px;padding:22px 32px;font-size:32px;line-height:1.35;min-height:88px}
+.f07-short{min-height:0}
+.f07-caret{display:inline-block;width:4px;height:36px;background:#fff;vertical-align:-8px;margin-left:4px}
+.f07-slot{position:relative;align-self:flex-start;max-width:90%}
+.f07-dots{position:absolute;left:0;top:0;display:flex;gap:12px;background:rgba(255,255,255,.1);border-radius:34px 34px 34px 10px;padding:26px 32px}
+.f07-dots span{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.6)}
+.f07-ai{align-self:flex-start;background:rgba(255,255,255,.1);border-radius:34px 34px 34px 10px;padding:22px 32px;font-size:32px;line-height:1.38}
+.f07-sub{color:rgba(255,255,255,.72);font-size:28px}
+.f07-done{display:flex;gap:20px}
+
+  </style>
+  <div id="root" data-composition-id="07-alice" data-width="1920" data-height="1080">
+    <div id="f07-bg" class="clip f07-bg" data-start="0" data-duration="5.13" data-track-index="0"></div>
+    <div class="f07-dark"></div>
+    <div class="f07-f f07-split" style="color:#fff">
+      <div class="f07-l">
+  <div class="f07-eyebrow" id="f07-eb" style="color:#7D7AFF">Alice · IA</div>
+      <div class="f07-h2" id="f07-h">Pergunte.<br>A Alice resolve.</div>
+      </div>
+      <div class="f07-r">
+      <div class="f07-chat" id="f07-chat">
+        <div class="f07-head"><span class="f07-av"></span><b>Alice</b></div>
+        <div class="f07-me" id="f07-q"><span id="f07-qt"></span><span class="f07-caret" id="f07-caret"></span></div>
+        <div class="f07-slot"><div class="f07-dots" id="f07-dots"><span></span><span></span><span></span></div>
+        <div class="f07-ai" id="f07-a">
+          <div id="f07-a0">São 4, prontos há mais de 3 dias:</div>
+          <div class="f07-sub" id="f07-a1">#1039 Moto G84 · Júlia R. · 5 dias</div>
+          <div class="f07-sub" id="f07-a2">#1031 iPhone 11 · Marcos T. · 4 dias</div>
+          <div class="f07-sub" id="f07-a3">e mais 2.</div>
+        </div></div>
+        <div class="f07-me f07-short" id="f07-ok">Pode criar</div>
+        <div class="f07-ai f07-done" id="f07-done"><span style="color:#34C759;font-weight:700">✓</span><span>Pronto. Tarefa criada para hoje às 14h.</span></div>
+      </div>
+  </div>
+    </div>
+
+  </div>
+  <script>
+  (function(){
+    const tl = gsap.timeline({ paused: true });
+    const q = (s) => document.querySelector('[data-composition-id="07-alice"] ' + s);
+    const qa = (s) => document.querySelectorAll('[data-composition-id="07-alice"] ' + s);
+    const brl = (v, cents) => {
+      const r = Math.floor(v), c = Math.round((v - r) * 100);
+      const s = String(r).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      return cents ? [s, String(c).padStart(2, "0")] : [s, "00"];
+    };
+    tl.fromTo(q("#f07-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.4, ease:"power3.out"}, 0);
+    tl.fromTo(q("#f07-h"), {opacity:0, y:40}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.05);
+    tl.fromTo(q("#f07-chat"), {opacity:0, y:120}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 0.1);
+    const ty = {n:0}; const QS = "Quais aparelhos est\u00e3o prontos e ningu\u00e9m veio buscar?";
+    tl.fromTo(q("#f07-q"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.3, ease:"power3.out"}, 0.25);
+    tl.fromTo(ty, {n:0}, {n:QS.length, duration:0.7, ease:"none", onUpdate(){ q("#f07-qt").textContent = QS.slice(0, Math.round(ty.n)); }}, 0.3);
+    tl.to(q("#f07-caret"), {opacity:0, duration:0.05}, 1.05);
+    tl.fromTo(q("#f07-dots"), {opacity:0, scale:0.8}, {opacity:1, scale:1, duration:0.25, ease:"back.out(2)"}, 1.1);
+    tl.fromTo(q("#f07-dots span:nth-child(1)"), {y:0}, {y:-10, duration:0.18, ease:"sine.out"}, 1.2);
+    tl.to(q("#f07-dots span:nth-child(1)"), {y:0, duration:0.18, ease:"sine.in"}, 1.38);
+    tl.fromTo(q("#f07-dots span:nth-child(2)"), {y:0}, {y:-10, duration:0.18, ease:"sine.out"}, 1.3);
+    tl.to(q("#f07-dots span:nth-child(2)"), {y:0, duration:0.18, ease:"sine.in"}, 1.48);
+    tl.fromTo(q("#f07-dots span:nth-child(3)"), {y:0}, {y:-10, duration:0.18, ease:"sine.out"}, 1.4);
+    tl.to(q("#f07-dots span:nth-child(3)"), {y:0, duration:0.18, ease:"sine.in"}, 1.58);
+    tl.to(q("#f07-dots"), {opacity:0, duration:0.1}, 1.47);
+    tl.fromTo(q("#f07-a"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.35, ease:"power3.out"}, 1.47);
+    tl.fromTo(q("#f07-a0"), {opacity:0}, {opacity:1, duration:0.25}, 1.47);
+    tl.fromTo(q("#f07-a1"), {opacity:0}, {opacity:1, duration:0.25}, 1.69);
+    tl.fromTo(q("#f07-a2"), {opacity:0}, {opacity:1, duration:0.25}, 1.91);
+    tl.fromTo(q("#f07-a3"), {opacity:0}, {opacity:1, duration:0.25}, 2.13);
+    tl.fromTo(q("#f07-ok"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.4, ease:"back.out(1.8)"}, 2.82);
+    tl.fromTo(q("#f07-done"), {opacity:0, scale:0.7}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 3.68);
+
+    window.__timelines["07-alice"] = tl;
+  })();
+  </script>
+</template>
