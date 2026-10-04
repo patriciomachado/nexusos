@@ -36,7 +36,7 @@ export function useOpenWhatsApp() {
             if (res.ok) {
                 const data = await res.json()
                 if (data.available && data.id) {
-                    router.push(`/alice?conversa=${data.id}`)
+                    router.push(`/alice?conversa=${data.id}${text ? `&texto=${encodeURIComponent(text)}` : ''}`)
                     return
                 }
             }

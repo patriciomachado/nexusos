@@ -48,7 +48,7 @@ function timeLabel(iso: string) {
         : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
 }
 
-export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, isAdmin = true }: { enabled: boolean; initialId: string | null; onUnread: (n: number) => void; onSetup?: () => void; isAdmin?: boolean }) {
+export default function WhatsAppInbox({ enabled, initialId, initialDraft, onUnread, onSetup, isAdmin = true }: { enabled: boolean; initialId: string | null; initialDraft?: string | null; onUnread: (n: number) => void; onSetup?: () => void; isAdmin?: boolean }) {
     const [list, setList] = useState<Conversation[] | null>(null)
     const [selected, setSelected] = useState<string | null>(initialId)
     const [detail, setDetail] = useState<{ conversation: Conversation & { title?: string }; items: Item[] } | null>(null)
@@ -117,6 +117,11 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
     useEffect(() => {
         if (initialId) setSelected(initialId)
     }, [initialId])
+
+    // Opened from a "message the customer" button with a ready-made text: put it in the composer for review/send.
+    useEffect(() => {
+        if (initialDraft) setReply(initialDraft)
+    }, [initialDraft, initialId])
 
     const setMode = async (mode: 'alice' | 'human') => {
         if (!selected) return
