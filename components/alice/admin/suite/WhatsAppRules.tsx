@@ -20,7 +20,6 @@ function Row({ title, hint, children }: { title: string; hint?: string; children
 /** Regras do WhatsApp (inspiradas no WA-AKG): boas-vindas, quem recebe respostas automáticas, anti-spam, presença e comandos do bot. */
 export default function WhatsAppRules({ settings, onSaved }: { settings: Settings; onSaved: (s: Settings) => void }) {
     const [busy, setBusy] = useState<string | null>(null)
-    const [welcome, setWelcome] = useState(settings.welcome_message ?? '')
     const [numbers, setNumbers] = useState(settings.autoreply_numbers.join('\n'))
     const [prefix, setPrefix] = useState(settings.bot_prefix)
 
@@ -46,13 +45,6 @@ export default function WhatsAppRules({ settings, onSaved }: { settings: Setting
                 <h2 className="type-headline">Regras do WhatsApp</h2>
                 <p className="text-[14px] text-muted-foreground">Boas-vindas, quem recebe respostas automáticas, proteção contra spam e comandos. Valem para a conexão por QR Code.</p>
             </header>
-
-            <div className="border-t border-border/60 px-5 py-4 space-y-2">
-                <FieldRow label="Mensagem de boas-vindas (primeiro contato)" hint="Enviada quando um número novo escreve. Se ele só disser “oi”, a boas-vindas responde sozinha; se já perguntar algo, a Alice responde em seguida.">
-                    <textarea value={welcome} onChange={e => setWelcome(e.target.value)} rows={3} maxLength={1000} placeholder="Olá! Você está falando com a loja…" className={fieldCls} />
-                </FieldRow>
-                <Button variant="soft" busy={busy === 'welcome'} disabled={welcome.trim() === (settings.welcome_message ?? '')} onClick={() => apply('welcome', { welcome_message: welcome.trim() || null })}>Salvar boas-vindas</Button>
-            </div>
 
             <div className="border-t border-border/60 px-5 py-4 space-y-3">
                 <p className="text-[15px] font-medium">Quem recebe respostas automáticas</p>

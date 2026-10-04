@@ -4,6 +4,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { aliceModel, loadSettings, modelOptions, ROLE_LABELS, styleInstruction } from './config'
 import { STAFF_TOOLS } from './tools/staff'
 import { CUSTOMER_TOOLS } from './tools/customer'
+import { normalizeAutomations } from '@/lib/customers/templates'
 import { allowedFor, formatZodError, isDmChannel, toApiTool, ToolError, type AnyTool, type ToolContext } from './tools/types'
 import { formatWhatsApp } from './phone'
 import { DEFAULT_TIMEZONE } from '@/lib/tasks/dates'
@@ -178,10 +179,20 @@ export async function saveMessage(
 
 // ─── Tools ───────────────────────────────────────────────────────────────────
 
-function toolsFor(ctx: ToolContext): AnyTool[] {
-    if (isDmChannel(ctx.channel) && !ctx.user) return CUSTOMER_TOOLS
+/** Tools a store switched off in Alice → Automações (OS and quotes), by name. */
+const OS_TOOLS = ['criar_ordem', 'atualizar_status_ordem', 'adicionar_nota_ordem', 'atribuir_tecnico']
+const QUOTE_TOOLS = ['criar_orcamento', 'cotar_peca']
+
+async function disabledTools(db: ToolContext['db'], companyId: string): Promise<Set<string>> {
+    const { data } = await db.from('companies').select('settings').eq('id', companyId).maybeSingle()
+    const auto = normalizeAutomations((data?.settings as Record<string, unknown> | null)?.automations)
+    return new Set([...(auto.alice_os ? [] : OS_TOOLS), ...(auto.alice_quotes ? [] : QUOTE_TOOLS)])
+}
+
+function toolsFor(ctx: ToolContext, off: Set<string>): AnyTool[] {
+    if (isDmChannel(ctx.channel) && !ctx.user) return CUSTOMER_TOOLS.filter(t => !off.has(t.name))
     const role = ctx.user?.role ?? ''
-    const pool = STAFF_TOOLS.filter(t => allowedFor(t, role))
+    const pool = STAFF_TOOLS.filter(t => allowedFor(t, role) && !off.has(t.name))
     // A trusted number on WhatsApp has no confirm card to run a write tool, so it only gets queries.
     return isDmChannel(ctx.channel) ? pool.filter(t => t.kind === 'read') : pool
 }
@@ -204,14 +215,14 @@ async function audit(ctx: ToolContext, row: { tool: string; kind: 'read' | 'writ
     return data?.id as string | undefined
 }
 
-async function runTool(ctx: ToolContext, block: Anthropic.ToolUseBlock, emit: (e: AgentEvent) => void): Promise<Anthropic.ToolResultBlockParam> {
+async function runTool(ctx: ToolContext, off: Set<string>, block: Anthropic.ToolUseBlock, emit: (e: AgentEvent) => void): Promise<Anthropic.ToolResultBlockParam> {
     const result = (content: string, isError = false): Anthropic.ToolResultBlockParam => ({ type: 'tool_result', tool_use_id: block.id, content, ...(isError ? { is_error: true } : {}) })
 
     // Look the tool up in the full catalog, then check the caller may use it:
     // the model only sees allowed tools, but never trust its choice.
     const isStaffChannel = ctx.channel === 'app' || !!ctx.user
     const catalog = isStaffChannel ? STAFF_TOOLS : CUSTOMER_TOOLS
-    const tool = catalog.find(t => t.name === block.name)
+    const tool = off.has(block.name) ? undefined : catalog.find(t => t.name === block.name)
     if (!tool || (isStaffChannel && !allowedFor(tool, ctx.user?.role ?? ''))) {
         await audit(ctx, { tool: block.name, kind: tool?.kind === 'write' ? 'write' : 'read', input: block.input, status: 'denied', error: 'Sem permissão' })
         return result('Esta ferramenta não está disponível para o perfil desta pessoa.', true)
@@ -245,7 +256,8 @@ async function runTool(ctx: ToolContext, block: Anthropic.ToolUseBlock, emit: (e
 
 /** Runs a confirmed action; permissions and ownership are checked again here. */
 export async function executeAction(ctx: ToolContext, action: { id: string; tool: string; input: unknown }) {
-    const tool = STAFF_TOOLS.find(t => t.name === action.tool)
+    const off = await disabledTools(ctx.db, ctx.companyId)
+    const tool = off.has(action.tool) ? undefined : STAFF_TOOLS.find(t => t.name === action.tool)
     if (!tool || tool.kind !== 'write' || !allowedFor(tool, ctx.user?.role ?? '')) throw new ToolError('Você não tem permissão para esta ação.')
     const parsed = tool.schema.safeParse(action.input)
     if (!parsed.success) throw new ToolError('Os dados desta ação não são mais válidos.')
@@ -268,7 +280,8 @@ export interface RunOptions {
 export async function runAlice({ ctx, storeName, emit = () => {} }: RunOptions): Promise<string> {
     const isCustomer = isDmChannel(ctx.channel) && !ctx.user
     const isTrustedWhatsapp = ctx.channel === 'whatsapp' && !!ctx.user
-    const tools = toolsFor(ctx).map(toApiTool)
+    const off = await disabledTools(ctx.db, ctx.companyId)
+    const tools = toolsFor(ctx, off).map(toApiTool)
     const channelLabel = ctx.channel === 'instagram' ? 'Instagram Direct' : 'WhatsApp'
     const customerContact = ctx.customer?.phone ? `WhatsApp ${formatWhatsApp(ctx.customer.phone)}` : ctx.customer?.instagramUsername ? `Instagram @${ctx.customer.instagramUsername}` : channelLabel
     const context = isCustomer
@@ -312,7 +325,7 @@ export async function runAlice({ ctx, storeName, emit = () => {} }: RunOptions):
         }
 
         const uses = message.content.filter((b): b is Anthropic.ToolUseBlock => b.type === 'tool_use')
-        const results = await Promise.all(uses.map(u => runTool(ctx, u, emit)))
+        const results = await Promise.all(uses.map(u => runTool(ctx, off, u, emit)))
         await saveMessage(ctx.db, { conversationId: ctx.conversationId, companyId: ctx.companyId, role: 'tool', content: results })
         messages.push({ role: 'user', content: results })
         if (round === MAX_ROUNDS - 1) finalText ||= 'Precisei de muitos passos para isso. Pode reformular o pedido de forma mais específica?'

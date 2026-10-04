@@ -80,7 +80,7 @@ export default function AliceAdmin() {
     if (!data.isAdmin) {
         return (
             <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-10 max-w-6xl mx-auto">
-                <WhatsAppInbox enabled={data.settings.whatsapp_enabled || data.settings.instagram_enabled} initialId={params.get('conversa')} onUnread={setUnread} isAdmin={false} />
+                <WhatsAppInbox enabled={data.settings.whatsapp_enabled || data.settings.instagram_enabled} initialId={params.get('conversa')} initialDraft={params.get('texto')} onUnread={setUnread} isAdmin={false} />
             </div>
         )
     }
@@ -107,7 +107,7 @@ export default function AliceAdmin() {
                 ]}
             />
             {tab === 'config' && <AliceSettingsView data={data} onSaved={setData} onReload={load} />}
-            {tab === 'conversas' && <WhatsAppInbox enabled={data.settings.whatsapp_enabled || data.settings.instagram_enabled} initialId={params.get('conversa')} onUnread={setUnread} onSetup={() => changeTab('config')} />}
+            {tab === 'conversas' && <WhatsAppInbox enabled={data.settings.whatsapp_enabled || data.settings.instagram_enabled} initialId={params.get('conversa')} initialDraft={params.get('texto')} onUnread={setUnread} onSetup={() => changeTab('config')} />}
             {tab === 'respostas' && <AutoRepliesView />}
             {tab === 'agendador' && <SchedulerView />}
             {tab === 'disparos' && <BroadcastView />}

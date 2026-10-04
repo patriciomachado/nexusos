@@ -3,6 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { appUrl, loadSettings } from '@/lib/alice/config'
 import { channelReady, channelSend } from '@/lib/alice/channel'
 import { digitsOnly } from '@/lib/alice/phone'
+import { fill, normalizeAutomations } from '@/lib/customers/templates'
 
 const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -16,9 +17,11 @@ export async function notifyReady(db: SupabaseClient, companyId: string, osId: s
         db.from('service_orders')
             .select('order_number, title, equipment_description, final_cost, estimated_cost, tracking_token, customers(name, phone)')
             .eq('id', osId).eq('company_id', companyId).single(),
-        db.from('companies').select('name, address, city').eq('id', companyId).single(),
+        db.from('companies').select('name, address, city, settings').eq('id', companyId).single(),
     ])
     if (!os) return { sent: false, reason: 'not_found' }
+    const auto = normalizeAutomations((company?.settings as Record<string, unknown> | null)?.automations)
+    if (!auto.os_ready) return { sent: false, reason: 'disabled' }
     const customer = Array.isArray(os.customers) ? os.customers[0] : os.customers
     let phone = digitsOnly(customer?.phone)
     if (phone.length < 10) return { sent: false, reason: 'no_phone' }
@@ -28,12 +31,15 @@ export async function notifyReady(db: SupabaseClient, companyId: string, osId: s
     const what = os.equipment_description || os.title || 'aparelho'
     const value = Number(os.final_cost || os.estimated_cost || 0)
     const where = [company?.address, company?.city].filter(Boolean).join(', ')
-    const text = [
-        `Olá${first ? `, ${first}` : ''}! Boa notícia: seu ${what} (OS ${os.order_number}) está pronto. ✅`,
-        value > 0 ? `Valor: ${brl(value)}.` : null,
-        `Pode retirar na ${company?.name ?? 'loja'}${where ? ` (${where})` : ''} no nosso horário de atendimento.`,
-        os.tracking_token ? `Detalhes: ${appUrl()}/tracking/${os.tracking_token}` : null,
-    ].filter(Boolean).join('\n')
+    const text = fill(auto.os_ready_text, {
+        nome: first,
+        aparelho: what,
+        os: os.order_number,
+        valor: value > 0 ? `Valor: ${brl(value)}.\n` : '',
+        loja: company?.name ?? 'loja',
+        endereco: where ? ` (${where})` : '',
+        link: os.tracking_token ? `${appUrl()}/tracking/${os.tracking_token}` : '',
+    }).replace(/\n?Detalhes: $/, '').trim()
 
     try {
         const alice = await loadSettings(db, companyId)

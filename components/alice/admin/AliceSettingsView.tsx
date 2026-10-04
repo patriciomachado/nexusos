@@ -9,6 +9,7 @@ import QrConnect from './QrConnect'
 import TrustedNumber from './TrustedNumber'
 import AutomationSettings from './AutomationSettings'
 import WhatsAppRules from './suite/WhatsAppRules'
+import AutomationMessages from './AutomationMessages'
 import Segmented from '@/components/ui/Segmented'
 
 export interface SettingsPayload {
@@ -365,6 +366,8 @@ export default function AliceSettingsView({ data, onSaved, onReload }: { data: S
             </section>
 
             <TrustedNumber />
+
+            <AutomationMessages settings={settings} onSaved={next => onSaved({ ...data, settings: next })} />
 
             <AutomationSettings settings={settings} onSaved={next => onSaved({ ...data, settings: next })} />
 
