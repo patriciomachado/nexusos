@@ -95,7 +95,11 @@ async function start(inst) {
     if (inst.starting) return inst.starting
     inst.starting = (async () => {
         const { state, saveCreds } = await useMultiFileAuthState(path.join(dirOf(inst.name), 'auth'))
-        const { version } = await fetchLatestBaileysVersion().catch(() => ({ version: undefined }))
+        // The version lookup must never hold up the QR code: give it 5s, then use the one bundled with Baileys.
+        const { version } = await Promise.race([
+            fetchLatestBaileysVersion().catch(() => ({ version: undefined })),
+            new Promise(resolve => setTimeout(() => resolve({ version: undefined }), 5000)),
+        ])
         const sock = makeWASocket({
             auth: state,
             version,
