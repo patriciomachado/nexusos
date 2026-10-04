@@ -5,7 +5,7 @@ import { getContext, unauthorizedResponse, forbiddenResponse } from '@/lib/secur
 import { aliceConfigured, aliceModel, canUseAlice, isAdminRole, loadSettings, monthlyUsage, publicSettings, STAFF_ROLES } from '@/lib/alice/config'
 import { normalizeBusinessHours } from '@/lib/alice/hours'
 import { planRequiredResponse } from '@/lib/plan-server'
-import { qrServerConfigured } from '@/lib/alice/gateway'
+import { gatewaySetPresence, qrServerConfigured } from '@/lib/alice/gateway'
 import { transcriptionConfigured } from '@/lib/alice/transcribe'
 import { webhookConfigured, describeNumber, WhatsAppError } from '@/lib/alice/whatsapp'
 import { webhookConfigured as instagramWebhookConfigured, describeAccount, subscribeAccount, InstagramError } from '@/lib/alice/instagram'
@@ -69,6 +69,19 @@ const putSchema = z.object({
     tone_custom: z.string().trim().max(500).nullable().optional(),
     emoji_usage: z.enum(['none', 'moderate', 'frequent']).optional(),
     escalation_keywords: z.array(z.string().trim().min(1).max(60)).max(20).optional(),
+    autoreply_mode: z.enum(['all', 'whitelist', 'blacklist']).optional(),
+    autoreply_numbers: z.array(z.string().trim().regex(/^\d{10,15}$/, 'Número inválido (só dígitos, com DDD)')).max(500).optional(),
+    antispam_enabled: z.boolean().optional(),
+    antispam_limit: z.number().int().min(1).max(100).optional(),
+    antispam_window_seconds: z.number().int().min(1).max(3600).optional(),
+    reply_delay_min_ms: z.number().int().min(0).max(30_000).optional(),
+    reply_delay_max_ms: z.number().int().min(0).max(60_000).optional(),
+    auto_read: z.boolean().optional(),
+    always_online: z.boolean().optional(),
+    welcome_message: z.string().trim().max(1000).nullable().optional(),
+    bot_commands_enabled: z.boolean().optional(),
+    bot_prefix: z.string().trim().regex(/^[^\s\w]{1,2}$/, 'O prefixo deve ser 1 ou 2 símbolos (ex.: # ou !)').optional(),
+    bot_commands_mode: z.enum(['trusted', 'all']).optional(),
     business_hours: z.object({
         enabled: z.boolean(),
         days: z.record(z.string(), z.object({ open: z.string(), close: z.string() }).nullable()).optional(),
@@ -131,6 +144,11 @@ export async function PUT(req: NextRequest) {
         }
     }
 
+    if (next.reply_delay_min_ms != null || next.reply_delay_max_ms != null) {
+        const min = next.reply_delay_min_ms ?? settings.reply_delay_min_ms
+        const max = next.reply_delay_max_ms ?? settings.reply_delay_max_ms
+        if (max < min) return NextResponse.json({ error: 'A pausa máxima não pode ser menor que a mínima.' }, { status: 400 })
+    }
     const provider = next.whatsapp_provider ?? settings.whatsapp_provider
     // Switching the way of connecting pauses the WhatsApp until the new one is ready.
     const switching = next.whatsapp_provider !== undefined && next.whatsapp_provider !== settings.whatsapp_provider
@@ -158,5 +176,6 @@ export async function PUT(req: NextRequest) {
         console.error('[alice] settings save failed:', error)
         return NextResponse.json({ error: 'Não foi possível salvar.' }, { status: 500 })
     }
+    if (next.always_online !== undefined && provider !== 'cloud') await gatewaySetPresence(settings, next.always_online)
     return NextResponse.json({ settings: publicSettings(await loadSettings(ctx.db, ctx.companyId)) })
 }

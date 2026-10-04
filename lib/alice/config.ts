@@ -100,6 +100,20 @@ export interface AliceSettings {
     /** Palavras que, se aparecerem na mensagem do cliente, chamam um atendente na hora (não depende do julgamento da IA). */
     escalation_keywords: string[]
     business_hours: BusinessHours
+    /** Central de WhatsApp: respostas automáticas, anti-spam, presença e comandos do bot. */
+    autoreply_mode: 'all' | 'whitelist' | 'blacklist'
+    autoreply_numbers: string[]
+    antispam_enabled: boolean
+    antispam_limit: number
+    antispam_window_seconds: number
+    reply_delay_min_ms: number
+    reply_delay_max_ms: number
+    auto_read: boolean
+    always_online: boolean
+    welcome_message: string | null
+    bot_commands_enabled: boolean
+    bot_prefix: string
+    bot_commands_mode: 'trusted' | 'all'
     updated_at?: string
     /** The company's plan does not include Alice (Essencial). */
     plan_blocked?: boolean
@@ -133,6 +147,19 @@ export const DEFAULT_SETTINGS: Omit<AliceSettings, 'company_id'> = {
     emoji_usage: 'moderate',
     escalation_keywords: [],
     business_hours: DEFAULT_BUSINESS_HOURS,
+    autoreply_mode: 'all',
+    autoreply_numbers: [],
+    antispam_enabled: false,
+    antispam_limit: 6,
+    antispam_window_seconds: 10,
+    reply_delay_min_ms: 0,
+    reply_delay_max_ms: 0,
+    auto_read: true,
+    always_online: false,
+    welcome_message: null,
+    bot_commands_enabled: false,
+    bot_prefix: '#',
+    bot_commands_mode: 'trusted',
 }
 
 export async function loadSettings(db: SupabaseClient, companyId: string): Promise<AliceSettings> {

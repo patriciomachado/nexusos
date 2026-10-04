@@ -14,6 +14,12 @@ import { isWithinBusinessHours } from './hours'
 import { findOrCreateInstagramConversation, findOrCreateWhatsAppConversation } from './conversations'
 import * as instagram from './instagram'
 import type { IncomingInstagramMessage } from './instagram'
+import { autoReplyAllowed, countHit, findAutoReply } from './suite/autoreply'
+import { sendRich } from './suite/media'
+import { dispatchEvent } from './suite/webhooks'
+import { floodState, humanDelay } from './suite/guard'
+import { touchContact } from './suite/contacts'
+import { handleCommand } from './suite/commands'
 
 /** Wait for a burst of messages ("oi" / "tudo bem?" / "meu celular...") to finish before answering once. */
 const DEBOUNCE_MS = 3000
@@ -113,12 +119,18 @@ export async function handleIncoming(db: SupabaseClient, settings: AliceSettings
     const companyId = settings.company_id
     const phone = digitsOnly(msg.from)
 
+    // Group chats never reach Alice (the AI) nor the inbox: only the store's keyword replies and webhooks see them.
+    if (msg.isGroup) return handleGroupMessage(db, settings, msg, phone)
+
     // A store admin/manager's own WhatsApp, registered in Alice → Configurações: talks to Alice as staff, not a customer.
     const trusted = await findTrustedStaff(db, companyId, phone)
     const customers = trusted ? [] : await findCustomers(db, companyId, phone)
     const knownName = trusted?.name ?? customers[0]?.name ?? null
     const conv = await findOrCreateWhatsAppConversation(db, companyId, phone, knownName ?? msg.profileName, customers[0]?.id ?? null)
     const who = conv.customer_name || knownName || msg.profileName || formatWhatsApp(phone)
+
+    const contact = await touchContact(db, companyId, phone, msg.profileName, customers[0]?.id ?? null)
+    if (conv.isNew) void dispatchEvent(db, companyId, 'conversation.created', { conversationId: conv.id, phone, name: who })
 
     // First-ever message from this number, and not an already-known customer: a new lead for the funil, right away.
     if (conv.isNew && !trusted && !customers.length) {
@@ -168,6 +180,13 @@ export async function handleIncoming(db: SupabaseClient, settings: AliceSettings
     // Every message notifies, like a normal WhatsApp chat — whether or not Alice ends up answering it.
     // A trusted number talking to Alice isn't a customer writing in, so it's skipped here.
     if (!trusted) await tellStaff(db, companyId, conv.id, who, transcribed ? `🎤 ${text}` : display)
+    void dispatchEvent(db, companyId, 'message.received', { conversationId: conv.id, phone, name: who, type: msg.type, text: text ?? null, messageId: msg.id })
+
+    // Blocked in Alice → Contatos: the message is kept and the team is notified, but nothing answers it automatically.
+    if (contact.blocked) return
+
+    // Bot commands (#ping, #figurinha…) are answered here, not by the AI.
+    if (await handleCommand(db, settings, msg, conv, !!trusted)) return
 
     // A person is handling this chat: the message push above already covers it.
     if (conv.mode === 'human') return
@@ -176,6 +195,7 @@ export async function handleIncoming(db: SupabaseClient, settings: AliceSettings
     const hitKeyword = !trusted && text ? settings.escalation_keywords.find(k => k.trim() && text!.toLowerCase().includes(k.trim().toLowerCase())) : undefined
     if (hitKeyword) {
         await db.from('alice_conversations').update({ mode: 'human' }).eq('id', conv.id)
+        void dispatchEvent(db, companyId, 'conversation.handoff', { conversationId: conv.id, phone, name: who, reason: `palavra "${hitKeyword}"` })
         const handoff = 'Só um instante, já vou te conectar com alguém da equipe! 🙋'
         try {
             await channelSend(settings, phone, handoff)
@@ -186,7 +206,50 @@ export async function handleIncoming(db: SupabaseClient, settings: AliceSettings
         return
     }
 
-    await channelMarkRead(settings, msg)
+    // Anti-spam: a number flooding the chat stops getting automatic answers; one note tells the team.
+    if (!trusted) {
+        const flood = await floodState(db, settings, conv.id)
+        if (flood !== 'ok') {
+            if (flood === 'first') await saveMessage(db, { conversationId: conv.id, companyId, role: 'event', text: 'Anti-spam: muitas mensagens seguidas; respostas automáticas pausadas por alguns segundos.' }).catch(() => {})
+            return
+        }
+    }
+
+    // Keyword replies (Alice → Respostas automáticas) answer instantly and skip the AI — free and predictable.
+    if (!trusted && text && autoReplyAllowed(settings, phone)) {
+        const rule = await findAutoReply(db, companyId, text, false)
+        if (rule) {
+            try {
+                await humanDelay(settings)
+                await sendRich(settings, phone, { text: rule.response, media: rule.media_url && rule.media_type ? { url: rule.media_url, type: rule.media_type, name: rule.media_name } : null })
+                const shown = rule.response?.trim() || `[${rule.media_type}]`
+                await saveMessage(db, { conversationId: conv.id, companyId, role: 'assistant', content: [{ type: 'text', text: shown }], text: shown })
+                void dispatchEvent(db, companyId, 'message.sent', { conversationId: conv.id, phone, text: shown, source: 'auto_reply' })
+                const { data: row } = await db.from('alice_auto_replies').select('hits').eq('id', rule.id).single()
+                await countHit(db, rule, row?.hits ?? 0)
+            } catch (err) {
+                console.error('[alice] auto-reply failed:', err)
+                await saveMessage(db, { conversationId: conv.id, companyId, role: 'event', text: `Falha ao enviar a resposta automática: ${(err as Error).message}` }).catch(() => {})
+            }
+            return
+        }
+    }
+
+    // First contact: the store's welcome message. A bare greeting ("oi") is answered by it alone.
+    let welcomed = false
+    if (!trusted && conv.isNew && settings.welcome_message?.trim()) {
+        try {
+            await humanDelay(settings)
+            await channelSend(settings, phone, settings.welcome_message.trim())
+            await saveMessage(db, { conversationId: conv.id, companyId, role: 'assistant', content: [{ type: 'text', text: settings.welcome_message.trim() }], text: settings.welcome_message.trim() })
+            welcomed = true
+        } catch (err) {
+            console.error('[alice] welcome send failed:', err)
+        }
+        if (welcomed && (!text || text.trim().split(/\s+/).length <= 3)) return
+    }
+
+    if (settings.auto_read) await channelMarkRead(settings, msg)
 
     // Answer once per burst: only the latest message's handler replies.
     await new Promise(r => setTimeout(r, DEBOUNCE_MS))
@@ -207,6 +270,7 @@ export async function handleIncoming(db: SupabaseClient, settings: AliceSettings
     if (!trusted && !isWithinBusinessHours(settings.business_hours)) {
         const closed = settings.business_hours.after_hours_message?.trim() || 'No momento estamos fora do horário de atendimento. Assim que abrirmos, alguém te responde por aqui!'
         try {
+            await humanDelay(settings)
             await channelSend(settings, phone, closed)
             await saveMessage(db, { conversationId: conv.id, companyId, role: 'assistant', content: [{ type: 'text', text: closed }], text: closed })
         } catch (err) {
@@ -244,7 +308,9 @@ export async function handleIncoming(db: SupabaseClient, settings: AliceSettings
     }
     if (!reply) return
     try {
+        await humanDelay(settings)
         await channelSend(settings, phone, reply)
+        void dispatchEvent(db, companyId, 'message.sent', { conversationId: conv.id, phone, text: reply, source: 'alice' })
     } catch (err) {
         console.error('[alice] whatsapp send failed:', err)
         await saveMessage(db, { conversationId: conv.id, companyId, role: 'event', text: `Falha ao enviar a resposta pelo WhatsApp: ${(err as Error).message}` })
@@ -396,6 +462,24 @@ export async function sendStaffReply(
         await channelSend(settings, conversation.customer_phone, text)
     }
     await saveMessage(db, { conversationId: conversation.id, companyId: settings.company_id, role: 'staff', text, content: [], authorUserId: userId })
+    void dispatchEvent(db, settings.company_id, 'message.sent', { conversationId: conversation.id, phone: conversation.customer_phone, text, source: 'staff' })
     await clearConversationNotifications(db, settings.company_id, conversation.id).catch(err => console.error('[alice] clear notifications failed:', err))
 }
 
+
+/** A message in a WhatsApp group: keyword replies and webhooks only — no conversation, no AI, no notification. */
+async function handleGroupMessage(db: SupabaseClient, settings: AliceSettings, msg: InboundMessage, phone: string) {
+    const companyId = settings.company_id
+    void dispatchEvent(db, companyId, 'message.received', { group: msg.groupJid, from: phone, name: msg.profileName, type: msg.type, text: msg.text, messageId: msg.id })
+    if (!msg.text || !msg.groupJid || !autoReplyAllowed(settings, phone)) return
+    const rule = await findAutoReply(db, companyId, msg.text, true)
+    if (!rule) return
+    try {
+        await humanDelay(settings)
+        await sendRich(settings, msg.groupJid, { text: rule.response, media: rule.media_url && rule.media_type ? { url: rule.media_url, type: rule.media_type, name: rule.media_name } : null })
+        const { data: row } = await db.from('alice_auto_replies').select('hits').eq('id', rule.id).single()
+        await countHit(db, rule, row?.hits ?? 0)
+    } catch (err) {
+        console.error('[alice] group auto-reply failed:', err)
+    }
+}

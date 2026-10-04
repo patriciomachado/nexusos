@@ -36,7 +36,14 @@ export interface InboundMessage {
     media: Media | null
     /** Evolution chat id (e.g. 5548...@s.whatsapp.net), for read receipts. */
     chatId?: string
+    /** Message from a WhatsApp group: `from` is the member who wrote, `groupJid` the group. */
+    isGroup?: boolean
+    groupJid?: string
+    /** Photo/video the sender attached to a command (the server only sends it when the caption is a sticker command). */
+    mediaBase64?: string
 }
+
+export type OutboundMediaType = 'image' | 'video' | 'document' | 'audio'
 
 export interface GatewayState {
     state: 'connected' | 'qr' | 'connecting' | 'disconnected'
@@ -282,6 +289,58 @@ export async function gatewayDownload(s: AliceSettings, media: Media): Promise<{
     throw new WhatsAppError('Mídia não suportada.')
 }
 
+// ─── Central de WhatsApp: mídia, figurinhas, grupos, contatos ───────────────
+
+/** Evolution-compatible shape: our own server and the Evolution API both answer these. */
+function qrOnly(s: AliceSettings) {
+    if (s.whatsapp_provider !== 'evolution') throw new WhatsAppError('Este recurso funciona com a conexão por QR Code.')
+    return evolutionConfig(s).instance
+}
+
+/** `to` is a phone number or, for groups, the group id (…@g.us). */
+export async function gatewaySendMedia(s: AliceSettings, to: string, m: { type: OutboundMediaType; url: string; caption?: string | null; fileName?: string | null }) {
+    const instance = qrOnly(s)
+    const number = to.includes('@') ? to : digitsOnly(to)
+    await evolution(s, `/message/sendMedia/${encodeURIComponent(instance)}`, {
+        method: 'POST',
+        body: JSON.stringify({ number, mediatype: m.type, media: m.url, caption: m.caption ?? undefined, fileName: m.fileName ?? undefined }),
+    })
+}
+
+/** Image (URL or base64) → sticker. */
+export async function gatewaySendSticker(s: AliceSettings, to: string, image: string) {
+    const instance = qrOnly(s)
+    const number = to.includes('@') ? to : digitsOnly(to)
+    await evolution(s, `/message/sendSticker/${encodeURIComponent(instance)}`, { method: 'POST', body: JSON.stringify({ number, image }) })
+}
+
+export interface WaGroup { id: string; subject: string; desc: string | null; size: number }
+export async function gatewayGroups(s: AliceSettings): Promise<WaGroup[]> {
+    const instance = qrOnly(s)
+    const r = await evolution<unknown>(s, `/group/fetchAll/${encodeURIComponent(instance)}`)
+    return Array.isArray(r.data) ? (r.data as WaGroup[]) : []
+}
+
+export interface WaContact { id: string; name: string | null; pushName: string | null }
+export async function gatewayContacts(s: AliceSettings): Promise<WaContact[]> {
+    const instance = qrOnly(s)
+    const r = await evolution<unknown>(s, `/chat/contacts/${encodeURIComponent(instance)}`)
+    return Array.isArray(r.data) ? (r.data as WaContact[]) : []
+}
+
+export async function gatewayCheckNumbers(s: AliceSettings, numbers: string[]): Promise<{ number: string; exists: boolean }[]> {
+    const instance = qrOnly(s)
+    const r = await evolution<unknown>(s, `/chat/checkNumbers/${encodeURIComponent(instance)}`, { method: 'POST', body: JSON.stringify({ numbers }) })
+    return Array.isArray(r.data) ? (r.data as { number: string; exists: boolean }[]) : []
+}
+
+/** Presence options handled by the server ("sempre online"). Best effort. */
+export async function gatewaySetPresence(s: AliceSettings, alwaysOnline: boolean) {
+    if (s.whatsapp_provider !== 'evolution') return
+    const { instance } = evolutionConfig(s)
+    await evolution(s, `/instance/settings/${encodeURIComponent(instance)}`, { method: 'POST', body: JSON.stringify({ alwaysOnline }), allow404: true }).catch(() => {})
+}
+
 // ─── Webhook payloads ─────────────────────────────────────────────────────
 
 type EvoMessage = {
@@ -292,11 +351,12 @@ type EvoMessage = {
     buttonsResponseMessage?: { selectedDisplayText?: string }
     listResponseMessage?: { title?: string }
     audioMessage?: { mimetype?: string }
+    imageMessage_?: never
     base64?: string
     [k: string]: unknown
 }
 type EvoData = {
-    key?: { remoteJid?: string; remoteJidAlt?: string; senderPn?: string; fromMe?: boolean; id?: string }
+    key?: { remoteJid?: string; remoteJidAlt?: string; senderPn?: string; fromMe?: boolean; id?: string; participant?: string; participantAlt?: string }
     pushName?: string
     message?: EvoMessage
     messageType?: string
@@ -317,8 +377,11 @@ export function parseEvolution(body: unknown): InboundMessage[] {
         const key = d.key
         if (!key?.id || key.fromMe) continue
         let jid = key.remoteJid ?? ''
-        if (/@(g\.us|broadcast|newsletter)$/.test(jid) || jid === 'status@broadcast') continue
-        if (jid.endsWith('@lid')) jid = key.remoteJidAlt ?? key.senderPn ?? d.senderPn ?? ''
+        if (/@(broadcast|newsletter)$/.test(jid) || jid === 'status@broadcast') continue
+        const isGroup = jid.endsWith('@g.us')
+        // In a group the author is the participant, not the chat.
+        if (isGroup) jid = key.participantAlt ?? key.participant ?? ''
+        if (jid.endsWith('@lid')) jid = (isGroup ? key.participantAlt : key.remoteJidAlt) ?? key.senderPn ?? d.senderPn ?? ''
         const from = digitsOnly(jid.split('@')[0])
         if (!from) continue
         const m = d.message ?? {}
@@ -338,6 +401,8 @@ export function parseEvolution(body: unknown): InboundMessage[] {
             text: text || null,
             media,
             chatId: key.remoteJid,
+            ...(isGroup ? { isGroup: true, groupJid: key.remoteJid } : {}),
+            ...(m.base64 && !m.audioMessage ? { mediaBase64: m.base64 } : {}),
         })
     }
     return out

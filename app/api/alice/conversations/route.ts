@@ -46,9 +46,20 @@ export async function GET(req: NextRequest) {
         for (const m of msgs ?? []) if (!previews.has(m.conversation_id)) previews.set(m.conversation_id, { text: m.text, role: m.role })
     }
 
+    // Labels per conversation (Alice → Etiquetas).
+    const labelsByConv = new Map<string, { id: string; name: string; color: string }[]>()
+    if (channel === 'social' && ids.length) {
+        const { data: links } = await ctx.db.from('alice_conversation_labels').select('conversation_id, alice_labels(id, name, color)').in('conversation_id', ids)
+        for (const l of links ?? []) {
+            const label = (Array.isArray(l.alice_labels) ? l.alice_labels[0] : l.alice_labels) as { id: string; name: string; color: string } | null
+            if (label) labelsByConv.set(l.conversation_id, [...(labelsByConv.get(l.conversation_id) ?? []), label])
+        }
+    }
+
     return NextResponse.json({
         conversations: rows.map(c => ({
             ...c,
+            labels: labelsByConv.get(c.id) ?? [],
             contact_label: c.customer_phone ? formatWhatsApp(c.customer_phone) : c.instagram_username ? `@${c.instagram_username}` : null,
             preview: previews.get(c.id) ?? null,
             window_open: c.last_customer_message_at ? Date.now() - new Date(c.last_customer_message_at).getTime() < 24 * 3600 * 1000 : false,

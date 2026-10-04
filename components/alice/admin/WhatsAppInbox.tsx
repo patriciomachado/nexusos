@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ArrowUp, ChevronLeft, Hand, Instagram, Loader2, MessageCircle, Sparkles, User, Clock, Pencil, Trash2 } from 'lucide-react'
+import { ArrowUp, ChevronLeft, Hand, Instagram, Loader2, MessageCircle, Sparkles, Tag, User, Clock, Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import ActionMenu from '@/components/ui/ActionMenu'
@@ -20,7 +20,9 @@ interface Conversation {
     last_message_at: string
     window_open: boolean
     preview: { text: string; role: string } | null
+    labels?: LabelRef[]
 }
+interface LabelRef { id: string; name: string; color: string }
 
 /** Small per-channel accent so WhatsApp and Instagram conversations stay visually distinct in the merged inbox. */
 function channelStyle(channel: Conversation['channel']) {
@@ -55,6 +57,9 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
     const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
     const [renaming, setRenaming] = useState(false)
     const [renameValue, setRenameValue] = useState('')
+    const [labels, setLabels] = useState<LabelRef[]>([])
+    const [labelFilter, setLabelFilter] = useState('')
+    const [labelPicker, setLabelPicker] = useState(false)
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const loadList = useCallback(async () => {
@@ -75,6 +80,19 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
             return data
         })
     }, [])
+
+    useEffect(() => {
+        fetch('/api/alice/labels', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(d => d && setLabels(d.labels ?? [])).catch(() => {})
+    }, [])
+
+    const toggleLabel = async (label: LabelRef) => {
+        if (!selected) return
+        const current = list?.find(c => c.id === selected)?.labels ?? []
+        const next = current.some(l => l.id === label.id) ? current.filter(l => l.id !== label.id) : [...current, label]
+        setList(l => l?.map(c => c.id === selected ? { ...c, labels: next } : c) ?? null)
+        const res = await fetch(`/api/alice/conversations/${selected}/labels`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ label_ids: next.map(l => l.id) }) })
+        if (!res.ok) { toast.error('Não foi possível mudar a etiqueta.'); loadList() }
+    }
 
     useEffect(() => {
 
@@ -177,6 +195,15 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
             <div className="rounded-2xl bg-card border border-border/60 overflow-hidden grid md:grid-cols-[320px_1fr] h-[calc(100dvh-14rem-env(safe-area-inset-top))] min-h-[420px]">
                 {/* List */}
                 <div className={cn('border-r border-border/60 overflow-y-auto min-w-0', selected && 'hidden md:block')}>
+                    {labels.length > 0 && (
+                        <div className="px-3 py-2 border-b border-border/60 flex items-center gap-2">
+                            <Tag className="w-4 h-4 text-muted-foreground shrink-0" />
+                            <select value={labelFilter} onChange={e => setLabelFilter(e.target.value)} aria-label="Filtrar por etiqueta" className="flex-1 h-8 rounded-lg bg-foreground/[0.05] px-2 text-[14px] focus:outline-none">
+                                <option value="">Todas as conversas</option>
+                                {labels.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                            </select>
+                        </div>
+                    )}
                     {list === null ? (
                         <div className="p-6 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>
                     ) : list.length === 0 ? (
@@ -186,7 +213,7 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
                         </div>
                     ) : (
                         <ul className="divide-y divide-border/60">
-                            {list.map(c => {
+                            {list.filter(c => !labelFilter || c.labels?.some(l => l.id === labelFilter)).map(c => {
                                 const style = channelStyle(c.channel)
                                 const ChannelIcon = style.icon
                                 return (
@@ -201,6 +228,11 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
                                                 <span className="text-[15px] font-semibold truncate flex-1">{name(c)}</span>
                                                 <span className="text-[12px] text-muted-foreground shrink-0">{timeLabel(c.last_message_at)}</span>
                                             </span>
+                                            {!!c.labels?.length && (
+                                                <span className="flex flex-wrap gap-1 py-0.5">
+                                                    {c.labels.map(l => <span key={l.id} className="inline-flex items-center h-[18px] px-1.5 rounded-full text-[10px] font-semibold text-white" style={{ backgroundColor: l.color }}>{l.name}</span>)}
+                                                </span>
+                                            )}
                                             <span className="flex items-center gap-2">
                                                 <span className="text-[13px] text-muted-foreground truncate flex-1">
                                                     {c.preview ? `${c.preview.role === 'assistant' ? 'Alice: ' : c.preview.role === 'staff' ? 'Você: ' : ''}${c.preview.text}` : ''}
@@ -248,6 +280,7 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
                                         label="Mais opções"
                                         items={[
                                             { label: 'Renomear conversa', icon: <Pencil className="w-4 h-4" />, onSelect: openRename },
+                                            ...(labels.length ? [{ label: 'Etiquetas', icon: <Tag className="w-4 h-4" />, onSelect: () => setLabelPicker(true) }] : []),
                                             ...(isAdmin ? [{ label: 'Apagar conversa', icon: <Trash2 className="w-4 h-4" />, danger: true, onSelect: () => setPendingDeleteId(selected) }] : []),
                                         ]}
                                     />
@@ -289,6 +322,25 @@ export default function WhatsAppInbox({ enabled, initialId, onUnread, onSetup, i
                     onConfirm={confirmDelete}
                     onCancel={() => setPendingDeleteId(null)}
                 />
+            )}
+
+            {labelPicker && selected && (
+                <Sheet open onClose={() => setLabelPicker(false)} title="Etiquetas da conversa">
+                    <ul className="space-y-1">
+                        {labels.map(l => {
+                            const on = !!list?.find(c => c.id === selected)?.labels?.some(x => x.id === l.id)
+                            return (
+                                <li key={l.id}>
+                                    <button type="button" onClick={() => toggleLabel(l)} className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-foreground/[0.05] text-left">
+                                        <span className="w-3.5 h-3.5 rounded-full shrink-0" style={{ backgroundColor: l.color }} />
+                                        <span className="flex-1 text-[16px]">{l.name}</span>
+                                        <span className={cn('w-6 h-6 rounded-full border-2 flex items-center justify-center text-white text-[13px]', on ? 'bg-primary border-primary' : 'border-border')}>{on && '✓'}</span>
+                                    </button>
+                                </li>
+                            )
+                        })}
+                    </ul>
+                </Sheet>
             )}
 
             {renaming && (
