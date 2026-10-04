@@ -1,10 +1,13 @@
 {
-  "provider": "kokoro",
-  "speed": "1.1",
+  "provider": "gemini",
+  "tts_model": "gemini-3.8-flash-tts",
+  "voice": "Puck",
+  "speed": "1.0",
+  "style": "Locutor brasileiro, português do Brasil (sotaque paulista neutro), tom confiante e próximo, ritmo de Reels — direto ao ponto, energia constante.",
   "lines": [
     {
       "id": "01",
-      "text": "Caderno, WhatsApp, memória… sua assistência merece mais."
+      "text": "Caderno. WhatsApp. Memória. Sua assistência merece mais."
     },
     {
       "id": "02",
@@ -28,19 +31,21 @@
     },
     {
       "id": "07",
-      "text": "Pergunte para a Alice, a inteligência artificial do Nexus: ela responde e resolve."
+      "text": "Pergunte para a Alice, a inteligência artificial do Nexus: ela responde e resolve.",
+      "tts_model": "gemini-3.8-flash-lite-tts"
     },
     {
       "id": "08",
-      "text": "Tudo da sua loja, em um só app."
+      "text": "Tudo da sua loja, em um só app.",
+      "tts_model": "gemini-3.8-flash-lite-tts"
     },
     {
       "id": "09",
-      "text": "Teste grátis por quinze dias, sem cartão. nexusgestor ponto com."
+      "text": "Teste grátis por quinze dias, sem cartão. nexusgestor ponto com.",
+      "tts_model": "gemini-3.8-flash-lite-tts"
     }
   ],
   "bgm": {
     "mode": "none"
-  },
-  "voice": "pm_alex"
+  }
 }

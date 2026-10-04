@@ -19,8 +19,8 @@
 .f01-final{font-size:112px;font-weight:700;letter-spacing:-.035em;line-height:1.05;margin-top:90px}
 
   </style>
-  <div id="root" data-composition-id="01-hook" data-width="1080" data-height="1920">
-    <div id="f01-bg" class="clip f01-bg" data-start="0" data-duration="5.12" data-track-index="0"></div>
+  <div id="root" data-composition-id="01-hook" data-width="1080" data-height="1920" data-duration="5.55">
+    <div id="f01-bg" class="clip f01-bg" data-start="0" data-duration="5.55" data-track-index="0"></div>
     <div class="f01-f" style="justify-content:center;padding-bottom:120px">
       <div class="f01-w" id="f01-w0"><span class="f01-wt">Caderno.</span><span class="f01-strike" id="f01-s0"></span></div>
       <div class="f01-w" id="f01-w1"><span class="f01-wt">WhatsApp.</span><span class="f01-strike" id="f01-s1"></span></div>
@@ -40,17 +40,17 @@
       return cents ? [s, String(c).padStart(2, "0")] : [s, "00"];
     };
     tl.fromTo(q("#f01-w0"), {opacity:0, scale:1.35, y:-20}, {opacity:1, scale:1, y:0, duration:0.4, ease:"back.out(1.6)", transformOrigin:"left center"}, 0);
-    tl.fromTo(q("#f01-s0"), {scaleX:0}, {scaleX:1, duration:0.3, ease:"power2.inOut"}, 0.7100000000000001);
-    tl.to(q("#f01-w0"), {color:"#8B8B90", duration:0.3}, 0.7100000000000001);
-    tl.fromTo(q("#f01-w1"), {opacity:0, scale:1.35, y:-20}, {opacity:1, scale:1, y:0, duration:0.4, ease:"back.out(1.6)", transformOrigin:"left center"}, 1.0999999999999999);
-    tl.fromTo(q("#f01-s1"), {scaleX:0}, {scaleX:1, duration:0.3, ease:"power2.inOut"}, 1.73);
-    tl.to(q("#f01-w1"), {color:"#8B8B90", duration:0.3}, 1.73);
-    tl.fromTo(q("#f01-w2"), {opacity:0, scale:1.35, y:-20}, {opacity:1, scale:1, y:0, duration:0.4, ease:"back.out(1.6)", transformOrigin:"left center"}, 2.12);
-    tl.fromTo(q("#f01-s2"), {scaleX:0}, {scaleX:1, duration:0.3, ease:"power2.inOut"}, 2.76);
-    tl.to(q("#f01-w2"), {color:"#8B8B90", duration:0.3}, 2.76);
-    tl.to(qa(".f01-w"), {opacity:0.35, duration:0.4, ease:"power2.out"}, 3.23);
-    tl.fromTo(q("#f01-final"), {opacity:0, y:80}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 3.23);
-    tl.fromTo(q("#f01-mais"), {opacity:0, scale:0.5}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 4.78);
+    tl.fromTo(q("#f01-s0"), {scaleX:0}, {scaleX:1, duration:0.3, ease:"power2.inOut"}, 0.84);
+    tl.to(q("#f01-w0"), {color:"#8B8B90", duration:0.3}, 0.84);
+    tl.fromTo(q("#f01-w1"), {opacity:0, scale:1.35, y:-20}, {opacity:1, scale:1, y:0, duration:0.4, ease:"back.out(1.6)", transformOrigin:"left center"}, 1.21);
+    tl.fromTo(q("#f01-s1"), {scaleX:0}, {scaleX:1, duration:0.3, ease:"power2.inOut"}, 1.5999999999999999);
+    tl.to(q("#f01-w1"), {color:"#8B8B90", duration:0.3}, 1.5999999999999999);
+    tl.fromTo(q("#f01-w2"), {opacity:0, scale:1.35, y:-20}, {opacity:1, scale:1, y:0, duration:0.4, ease:"back.out(1.6)", transformOrigin:"left center"}, 1.97);
+    tl.fromTo(q("#f01-s2"), {scaleX:0}, {scaleX:1, duration:0.3, ease:"power2.inOut"}, 2.61);
+    tl.to(q("#f01-w2"), {color:"#8B8B90", duration:0.3}, 2.61);
+    tl.to(qa(".f01-w"), {opacity:0.35, duration:0.4, ease:"power2.out"}, 3.09);
+    tl.fromTo(q("#f01-final"), {opacity:0, y:80}, {opacity:1, y:0, duration:0.6, ease:"power3.out"}, 3.09);
+    tl.fromTo(q("#f01-mais"), {opacity:0, scale:0.5}, {opacity:1, scale:1, duration:0.5, ease:"back.out(1.8)"}, 4.74);
 
     window.__timelines["01-hook"] = tl;
   })();

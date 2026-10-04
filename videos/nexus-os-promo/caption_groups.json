@@ -1,782 +1,773 @@
 {
-  "total_duration_s": 29.504,
+  "total_duration_s": 30.93,
   "width": 1080,
   "height": 1920,
   "groups": [
     {
       "id": "caption-group-0",
       "frame": 2,
-      "start": 5.16,
-      "end": 6.411,
+      "start": 5.2,
+      "end": 6.589,
       "text": "Conheça o Nexus",
       "words": [
         {
           "id": "caption-word-0-0",
           "text": "Conheça",
-          "start": 5.16,
-          "end": 5.766
+          "start": 5.2,
+          "end": 5.874
         },
         {
           "id": "caption-word-0-1",
           "text": "o",
-          "start": 5.786,
-          "end": 5.974
+          "start": 5.894,
+          "end": 6.106
         },
         {
           "id": "caption-word-0-2",
           "text": "Nexus",
-          "start": 5.994,
-          "end": 6.391
+          "start": 6.126,
+          "end": 6.569
         }
       ]
     },
     {
       "id": "caption-group-1",
       "frame": 2,
-      "start": 6.411,
-      "end": 6.72,
+      "start": 6.589,
+      "end": 6.92,
       "text": "OS.",
       "words": [
         {
           "id": "caption-word-1-0",
           "text": "OS.",
-          "start": 6.411,
-          "end": 6.6
+          "start": 6.589,
+          "end": 6.8
         }
       ]
     },
     {
       "id": "caption-group-2",
       "frame": 3,
-      "start": 6.739,
-      "end": 7.366,
+      "start": 7.04,
+      "end": 7.656,
       "text": "Cada ordem",
       "words": [
         {
           "id": "caption-word-2-0",
           "text": "Cada",
-          "start": 6.739,
-          "end": 7.032
+          "start": 7.04,
+          "end": 7.328
         },
         {
           "id": "caption-word-2-1",
           "text": "ordem",
-          "start": 7.052,
-          "end": 7.346
+          "start": 7.348,
+          "end": 7.636
         }
       ]
     },
     {
       "id": "caption-group-3",
       "frame": 3,
-      "start": 7.366,
-      "end": 7.992,
+      "start": 7.656,
+      "end": 8.272,
       "text": "de serviço",
       "words": [
         {
           "id": "caption-word-3-0",
           "text": "de",
-          "start": 7.366,
-          "end": 7.502
+          "start": 7.656,
+          "end": 7.79
         },
         {
           "id": "caption-word-3-1",
           "text": "serviço",
-          "start": 7.522,
-          "end": 7.972
+          "start": 7.81,
+          "end": 8.252
         }
       ]
     },
     {
       "id": "caption-group-4",
       "frame": 3,
-      "start": 7.992,
-      "end": 8.619,
+      "start": 8.272,
+      "end": 8.888,
       "text": "com etapa",
       "words": [
         {
           "id": "caption-word-4-0",
           "text": "com",
-          "start": 7.992,
-          "end": 8.129
+          "start": 8.272,
+          "end": 8.406
         },
         {
           "id": "caption-word-4-1",
           "text": "etapa",
-          "start": 8.149,
-          "end": 8.599
+          "start": 8.426,
+          "end": 8.868
         }
       ]
     },
     {
       "id": "caption-group-5",
       "frame": 3,
-      "start": 8.619,
-      "end": 9.189,
+      "start": 8.888,
+      "end": 9.45,
       "text": "e prazo,",
       "words": [
         {
           "id": "caption-word-5-0",
           "text": "e",
-          "start": 8.619,
-          "end": 8.756
+          "start": 8.888,
+          "end": 9.022
         },
         {
           "id": "caption-word-5-1",
           "text": "prazo,",
-          "start": 8.776,
-          "end": 9.069
+          "start": 9.042,
+          "end": 9.33
         }
       ]
     },
     {
       "id": "caption-group-6",
       "frame": 3,
-      "start": 9.359,
-      "end": 9.624,
+      "start": 9.51,
+      "end": 9.763,
       "text": "e o",
       "words": [
         {
           "id": "caption-word-6-0",
           "text": "e",
-          "start": 9.359,
-          "end": 9.472
+          "start": 9.51,
+          "end": 9.616
         },
         {
           "id": "caption-word-6-1",
           "text": "o",
-          "start": 9.492,
-          "end": 9.604
+          "start": 9.636,
+          "end": 9.743
         }
       ]
     },
     {
       "id": "caption-group-7",
       "frame": 3,
-      "start": 9.624,
-      "end": 10.686,
+      "start": 9.763,
+      "end": 10.774,
       "text": "cliente acompanha pelo",
       "words": [
         {
           "id": "caption-word-7-0",
           "text": "cliente",
-          "start": 9.624,
-          "end": 9.87
+          "start": 9.763,
+          "end": 9.995
         },
         {
           "id": "caption-word-7-1",
           "text": "acompanha",
-          "start": 9.89,
-          "end": 10.401
+          "start": 10.015,
+          "end": 10.501
         },
         {
           "id": "caption-word-7-2",
           "text": "pelo",
-          "start": 10.421,
-          "end": 10.666
+          "start": 10.521,
+          "end": 10.754
         }
       ]
     },
     {
       "id": "caption-group-8",
       "frame": 3,
-      "start": 10.686,
-      "end": 10.919,
+      "start": 10.774,
+      "end": 11,
       "text": "link.",
       "words": [
         {
           "id": "caption-word-8-0",
           "text": "link.",
-          "start": 10.686,
-          "end": 10.799
+          "start": 10.774,
+          "end": 10.88
         }
       ]
     },
     {
       "id": "caption-group-9",
       "frame": 4,
-      "start": 11.102,
-      "end": 11.492,
+      "start": 11.17,
+      "end": 11.546,
       "text": "PDV e",
       "words": [
         {
           "id": "caption-word-9-0",
           "text": "PDV",
-          "start": 11.102,
-          "end": 11.277
+          "start": 11.17,
+          "end": 11.338
         },
         {
           "id": "caption-word-9-1",
           "text": "e",
-          "start": 11.297,
-          "end": 11.472
+          "start": 11.358,
+          "end": 11.526
         }
       ]
     },
     {
       "id": "caption-group-10",
       "frame": 4,
-      "start": 11.492,
-      "end": 12.077,
+      "start": 11.546,
+      "end": 12.109,
       "text": "caixa que",
       "words": [
         {
           "id": "caption-word-10-0",
           "text": "caixa",
-          "start": 11.492,
-          "end": 11.862
+          "start": 11.546,
+          "end": 11.901
         },
         {
           "id": "caption-word-10-1",
           "text": "que",
-          "start": 11.882,
-          "end": 12.057
+          "start": 11.921,
+          "end": 12.089
         }
       ]
     },
     {
       "id": "caption-group-11",
       "frame": 4,
-      "start": 12.077,
-      "end": 13.247,
+      "start": 12.109,
+      "end": 13.236,
       "text": "fecham certinho no",
       "words": [
         {
           "id": "caption-word-11-0",
           "text": "fecham",
-          "start": 12.077,
-          "end": 12.447
+          "start": 12.109,
+          "end": 12.465
         },
         {
           "id": "caption-word-11-1",
           "text": "certinho",
-          "start": 12.467,
-          "end": 13.032
+          "start": 12.485,
+          "end": 13.029
         },
         {
           "id": "caption-word-11-2",
           "text": "no",
-          "start": 13.052,
-          "end": 13.227
+          "start": 13.049,
+          "end": 13.216
         }
       ]
     },
     {
       "id": "caption-group-12",
       "frame": 4,
-      "start": 13.247,
-      "end": 13.637,
+      "start": 13.236,
+      "end": 13.612,
       "text": "fim do",
       "words": [
         {
           "id": "caption-word-12-0",
           "text": "fim",
-          "start": 13.247,
-          "end": 13.422
+          "start": 13.236,
+          "end": 13.404
         },
         {
           "id": "caption-word-12-1",
           "text": "do",
-          "start": 13.442,
-          "end": 13.617
+          "start": 13.424,
+          "end": 13.592
         }
       ]
     },
     {
       "id": "caption-group-13",
       "frame": 4,
-      "start": 13.637,
-      "end": 13.932,
+      "start": 13.612,
+      "end": 13.9,
       "text": "dia.",
       "words": [
         {
           "id": "caption-word-13-0",
           "text": "dia.",
-          "start": 13.637,
-          "end": 13.812
+          "start": 13.612,
+          "end": 13.78
         }
       ]
     },
     {
       "id": "caption-group-14",
       "frame": 5,
-      "start": 14.003,
-      "end": 14.646,
-      "text": "Estoque de",
+      "start": 14,
+      "end": 15.028,
+      "text": "Estoque de peças",
       "words": [
         {
           "id": "caption-word-14-0",
           "text": "Estoque",
-          "start": 14.003,
-          "end": 14.465
+          "start": 14,
+          "end": 14.494
         },
         {
           "id": "caption-word-14-1",
           "text": "de",
-          "start": 14.485,
-          "end": 14.626
+          "start": 14.514,
+          "end": 14.665
+        },
+        {
+          "id": "caption-word-14-2",
+          "text": "peças",
+          "start": 14.685,
+          "end": 15.008
         }
       ]
     },
     {
       "id": "caption-group-15",
       "frame": 5,
-      "start": 14.646,
-      "end": 15.77,
-      "text": "peças e seminovos",
+      "start": 15.028,
+      "end": 16.056,
+      "text": "e seminovos sob",
       "words": [
         {
           "id": "caption-word-15-0",
-          "text": "peças",
-          "start": 14.646,
-          "end": 14.947
+          "text": "e",
+          "start": 15.028,
+          "end": 15.179
         },
         {
           "id": "caption-word-15-1",
-          "text": "e",
-          "start": 14.967,
-          "end": 15.108
+          "text": "seminovos",
+          "start": 15.199,
+          "end": 15.865
         },
         {
           "id": "caption-word-15-2",
-          "text": "seminovos",
-          "start": 15.128,
-          "end": 15.75
+          "text": "sob",
+          "start": 15.885,
+          "end": 16.036
         }
       ]
     },
     {
       "id": "caption-group-16",
       "frame": 5,
-      "start": 15.77,
-      "end": 16.513,
-      "text": "sob controle.",
+      "start": 16.056,
+      "end": 16.67,
+      "text": "controle.",
       "words": [
         {
           "id": "caption-word-16-0",
-          "text": "sob",
-          "start": 15.77,
-          "end": 15.911
-        },
-        {
-          "id": "caption-word-16-1",
           "text": "controle.",
-          "start": 15.931,
-          "end": 16.393
+          "start": 16.056,
+          "end": 16.55
         }
       ]
     },
     {
       "id": "caption-group-17",
       "frame": 6,
-      "start": 16.606,
-      "end": 16.918,
+      "start": 16.77,
+      "end": 17.106,
       "text": "E no",
       "words": [
         {
           "id": "caption-word-17-0",
           "text": "E",
-          "start": 16.606,
-          "end": 16.742
+          "start": 16.77,
+          "end": 16.918
         },
         {
           "id": "caption-word-17-1",
           "text": "no",
-          "start": 16.762,
-          "end": 16.898
+          "start": 16.938,
+          "end": 17.086
         }
       ]
     },
     {
       "id": "caption-group-18",
       "frame": 6,
-      "start": 16.918,
-      "end": 17.23,
+      "start": 17.106,
+      "end": 17.442,
       "text": "fim do",
       "words": [
         {
           "id": "caption-word-18-0",
           "text": "fim",
-          "start": 16.918,
-          "end": 17.054
+          "start": 17.106,
+          "end": 17.254
         },
         {
           "id": "caption-word-18-1",
           "text": "do",
-          "start": 17.074,
-          "end": 17.21
+          "start": 17.274,
+          "end": 17.422
         }
       ]
     },
     {
       "id": "caption-group-19",
       "frame": 6,
-      "start": 17.23,
-      "end": 17.386,
+      "start": 17.442,
+      "end": 17.71,
       "text": "mês,",
       "words": [
         {
           "id": "caption-word-19-0",
           "text": "mês,",
-          "start": 17.23,
-          "end": 17.366
+          "start": 17.442,
+          "end": 17.59
         }
       ]
     },
     {
       "id": "caption-group-20",
       "frame": 6,
-      "start": 17.386,
-      "end": 18.017,
+      "start": 17.75,
+      "end": 18.417,
       "text": "você sabe",
       "words": [
         {
           "id": "caption-word-20-0",
           "text": "você",
-          "start": 17.386,
-          "end": 17.682
+          "start": 17.75,
+          "end": 18.063
         },
         {
           "id": "caption-word-20-1",
           "text": "sabe",
-          "start": 17.702,
-          "end": 17.997
+          "start": 18.083,
+          "end": 18.397
         }
       ]
     },
     {
       "id": "caption-group-21",
       "frame": 6,
-      "start": 18.017,
-      "end": 18.49,
-      "text": "se teve",
+      "start": 18.417,
+      "end": 19.35,
+      "text": "se teve lucro.",
       "words": [
         {
           "id": "caption-word-21-0",
           "text": "se",
-          "start": 18.017,
-          "end": 18.155
+          "start": 18.417,
+          "end": 18.563
         },
         {
           "id": "caption-word-21-1",
           "text": "teve",
-          "start": 18.175,
-          "end": 18.47
+          "start": 18.583,
+          "end": 18.897
+        },
+        {
+          "id": "caption-word-21-2",
+          "text": "lucro.",
+          "start": 18.917,
+          "end": 19.23
         }
       ]
     },
     {
       "id": "caption-group-22",
-      "frame": 6,
-      "start": 18.49,
-      "end": 18.906,
-      "text": "lucro.",
+      "frame": 7,
+      "start": 19.46,
+      "end": 20.066,
+      "text": "Pergunte para",
       "words": [
         {
           "id": "caption-word-22-0",
-          "text": "lucro.",
-          "start": 18.49,
-          "end": 18.786
+          "text": "Pergunte",
+          "start": 19.46,
+          "end": 19.803
+        },
+        {
+          "id": "caption-word-22-1",
+          "text": "para",
+          "start": 19.823,
+          "end": 20.046
         }
       ]
     },
     {
       "id": "caption-group-23",
       "frame": 7,
-      "start": 18.931,
-      "end": 19.653,
-      "text": "Pergunte para",
+      "start": 20.066,
+      "end": 20.65,
+      "text": "a Alice,",
       "words": [
         {
           "id": "caption-word-23-0",
-          "text": "Pergunte",
-          "start": 18.931,
-          "end": 19.344
+          "text": "a",
+          "start": 20.066,
+          "end": 20.167
         },
         {
           "id": "caption-word-23-1",
-          "text": "para",
-          "start": 19.364,
-          "end": 19.633
+          "text": "Alice,",
+          "start": 20.187,
+          "end": 20.53
         }
       ]
     },
     {
       "id": "caption-group-24",
       "frame": 7,
-      "start": 19.653,
-      "end": 20.231,
-      "text": "a Alice,",
+      "start": 20.78,
+      "end": 22.326,
+      "text": "a inteligência artificial",
       "words": [
         {
           "id": "caption-word-24-0",
           "text": "a",
-          "start": 19.653,
-          "end": 19.778
+          "start": 20.78,
+          "end": 20.915
         },
         {
           "id": "caption-word-24-1",
-          "text": "Alice,",
-          "start": 19.798,
-          "end": 20.211
+          "text": "inteligência",
+          "start": 20.935,
+          "end": 21.688
+        },
+        {
+          "id": "caption-word-24-2",
+          "text": "artificial",
+          "start": 21.708,
+          "end": 22.306
         }
       ]
     },
     {
       "id": "caption-group-25",
       "frame": 7,
-      "start": 20.231,
-      "end": 21.577,
-      "text": "a inteligência artificial",
+      "start": 22.326,
+      "end": 22.89,
+      "text": "do Nexus:",
       "words": [
         {
           "id": "caption-word-25-0",
-          "text": "a",
-          "start": 20.231,
-          "end": 20.346
+          "text": "do",
+          "start": 22.326,
+          "end": 22.461
         },
         {
           "id": "caption-word-25-1",
-          "text": "inteligência",
-          "start": 20.366,
-          "end": 21.019
-        },
-        {
-          "id": "caption-word-25-2",
-          "text": "artificial",
-          "start": 21.039,
-          "end": 21.557
+          "text": "Nexus:",
+          "start": 22.481,
+          "end": 22.77
         }
       ]
     },
     {
       "id": "caption-group-26",
       "frame": 7,
-      "start": 21.577,
-      "end": 22.081,
-      "text": "do Nexus:",
+      "start": 22.98,
+      "end": 23.763,
+      "text": "ela responde",
       "words": [
         {
           "id": "caption-word-26-0",
-          "text": "do",
-          "start": 21.577,
-          "end": 21.692
+          "text": "ela",
+          "start": 22.98,
+          "end": 23.273
         },
         {
           "id": "caption-word-26-1",
-          "text": "Nexus:",
-          "start": 21.712,
-          "end": 21.961
+          "text": "responde",
+          "start": 23.293,
+          "end": 23.743
         }
       ]
     },
     {
       "id": "caption-group-27",
       "frame": 7,
-      "start": 22.241,
-      "end": 22.908,
-      "text": "ela responde",
+      "start": 23.763,
+      "end": 24.49,
+      "text": "e resolve.",
       "words": [
         {
           "id": "caption-word-27-0",
-          "text": "ela",
-          "start": 22.241,
-          "end": 22.488
+          "text": "e",
+          "start": 23.763,
+          "end": 23.9
         },
         {
           "id": "caption-word-27-1",
-          "text": "responde",
-          "start": 22.508,
-          "end": 22.888
+          "text": "resolve.",
+          "start": 23.92,
+          "end": 24.37
         }
       ]
     },
     {
       "id": "caption-group-28",
-      "frame": 7,
-      "start": 22.908,
-      "end": 23.541,
-      "text": "e resolve.",
+      "frame": 8,
+      "start": 24.59,
+      "end": 25.055,
+      "text": "Tudo da",
       "words": [
         {
           "id": "caption-word-28-0",
-          "text": "e",
-          "start": 22.908,
-          "end": 23.021
+          "text": "Tudo",
+          "start": 24.59,
+          "end": 24.88
         },
         {
           "id": "caption-word-28-1",
-          "text": "resolve.",
-          "start": 23.041,
-          "end": 23.421
+          "text": "da",
+          "start": 24.9,
+          "end": 25.035
         }
       ]
     },
     {
       "id": "caption-group-29",
       "frame": 8,
-      "start": 23.73,
-      "end": 24.18,
-      "text": "Tudo da",
+      "start": 25.055,
+      "end": 25.62,
+      "text": "sua loja,",
       "words": [
         {
           "id": "caption-word-29-0",
-          "text": "Tudo",
-          "start": 23.73,
-          "end": 24.01
+          "text": "sua",
+          "start": 25.055,
+          "end": 25.19
         },
         {
           "id": "caption-word-29-1",
-          "text": "da",
-          "start": 24.03,
-          "end": 24.16
+          "text": "loja,",
+          "start": 25.21,
+          "end": 25.5
         }
       ]
     },
     {
       "id": "caption-group-30",
       "frame": 8,
-      "start": 24.18,
-      "end": 24.73,
-      "text": "sua loja,",
+      "start": 25.67,
+      "end": 26.04,
+      "text": "em um",
       "words": [
         {
           "id": "caption-word-30-0",
-          "text": "sua",
-          "start": 24.18,
-          "end": 24.31
+          "text": "em",
+          "start": 25.67,
+          "end": 25.835
         },
         {
           "id": "caption-word-30-1",
-          "text": "loja,",
-          "start": 24.33,
-          "end": 24.61
+          "text": "um",
+          "start": 25.855,
+          "end": 26.02
         }
       ]
     },
     {
       "id": "caption-group-31",
       "frame": 8,
-      "start": 24.73,
-      "end": 25.06,
-      "text": "em um",
+      "start": 26.04,
+      "end": 26.51,
+      "text": "só app.",
       "words": [
         {
           "id": "caption-word-31-0",
-          "text": "em",
-          "start": 24.73,
-          "end": 24.875
+          "text": "só",
+          "start": 26.04,
+          "end": 26.205
         },
         {
           "id": "caption-word-31-1",
-          "text": "um",
-          "start": 24.895,
-          "end": 25.04
+          "text": "app.",
+          "start": 26.225,
+          "end": 26.39
         }
       ]
     },
     {
       "id": "caption-group-32",
-      "frame": 8,
-      "start": 25.06,
-      "end": 25.49,
-      "text": "só app.",
+      "frame": 9,
+      "start": 26.61,
+      "end": 27.666,
+      "text": "Teste grátis por",
       "words": [
         {
           "id": "caption-word-32-0",
-          "text": "só",
-          "start": 25.06,
-          "end": 25.205
+          "text": "Teste",
+          "start": 26.61,
+          "end": 27.012
         },
         {
           "id": "caption-word-32-1",
-          "text": "app.",
-          "start": 25.225,
-          "end": 25.37
+          "text": "grátis",
+          "start": 27.032,
+          "end": 27.435
+        },
+        {
+          "id": "caption-word-32-2",
+          "text": "por",
+          "start": 27.455,
+          "end": 27.646
         }
       ]
     },
     {
       "id": "caption-group-33",
       "frame": 9,
-      "start": 25.673,
-      "end": 27.432,
-      "text": "Teste grátis por quinze",
+      "start": 27.666,
+      "end": 28.4,
+      "text": "quinze dias,",
       "words": [
         {
           "id": "caption-word-33-0",
-          "text": "Teste",
-          "start": 25.673,
-          "end": 26.156
+          "text": "quinze",
+          "start": 27.666,
+          "end": 28.069
         },
         {
           "id": "caption-word-33-1",
-          "text": "grátis",
-          "start": 26.176,
-          "end": 26.658
-        },
-        {
-          "id": "caption-word-33-2",
-          "text": "por",
-          "start": 26.678,
-          "end": 26.909
-        },
-        {
-          "id": "caption-word-33-3",
-          "text": "quinze",
-          "start": 26.929,
-          "end": 27.412
+          "text": "dias,",
+          "start": 28.089,
+          "end": 28.28
         }
       ]
     },
     {
       "id": "caption-group-34",
       "frame": 9,
-      "start": 27.432,
-      "end": 27.773,
-      "text": "dias,",
+      "start": 28.4,
+      "end": 29.15,
+      "text": "sem cartão.",
       "words": [
         {
           "id": "caption-word-34-0",
-          "text": "dias,",
-          "start": 27.432,
-          "end": 27.663
+          "text": "sem",
+          "start": 28.4,
+          "end": 28.597
+        },
+        {
+          "id": "caption-word-34-1",
+          "text": "cartão.",
+          "start": 28.617,
+          "end": 29.03
         }
       ]
     },
     {
       "id": "caption-group-35",
       "frame": 9,
-      "start": 27.773,
-      "end": 28.063,
-      "text": "sem cartão.",
-      "words": [
-        {
-          "id": "caption-word-35-0",
-          "text": "sem",
-          "start": 27.773,
-          "end": 27.816
-        },
-        {
-          "id": "caption-word-35-1",
-          "text": "cartão.",
-          "start": 27.836,
-          "end": 27.943
-        }
-      ]
-    },
-    {
-      "id": "caption-group-36",
-      "frame": 9,
-      "start": 28.173,
-      "end": 29.453,
+      "start": 29.44,
+      "end": 30.86,
       "text": "nexusgestor.com",
       "words": [
         {
-          "id": "caption-word-36-0",
+          "id": "caption-word-35-0",
           "text": "nexusgestor.com",
-          "start": 28.173,
-          "end": 29.333
+          "start": 29.44,
+          "end": 30.74
         }
       ]
     }

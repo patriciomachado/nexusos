@@ -1,7 +1,7 @@
 # SCRIPT — nexus-os-promo
 
-**Voice:** pm_alex (Kokoro, pt-BR)
-**Voice settings:** speed 1.1
+**Voice:** Puck (Gemini TTS, pt-BR — gemini-3.8-flash-tts; falas 7–9 com gemini-3.8-flash-lite-tts)
+**Voice settings:** speed 1.0 (Gemini); style "Locutor brasileiro, português do Brasil (sotaque paulista neutro), tom confiante e próximo, ritmo de Reels — direto ao ponto, energia constante."; loudnorm -16 LUFS; silêncios de borda aparados (0,05s/0,15s); cena 1 remontada com pausas 0,32/0,32/0,45s
 **Voice direction:** Confiante, próximo, ritmo de Reels — direto ao ponto.
 
 ---

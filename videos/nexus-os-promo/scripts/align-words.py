@@ -1,4 +1,4 @@
-"""Estimate word timings for Kokoro narration (no ASR available offline).
+"""Estimate word timings for TTS narration (Kokoro, then Gemini) (no ASR available offline).
 
 The script text is known exactly, so we find speech/pause regions from the
 waveform energy, map punctuation breaks to the longest pauses, and spread the

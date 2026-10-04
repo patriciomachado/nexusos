@@ -20,8 +20,8 @@
 .f02-name{font-size:124px;font-weight:700;letter-spacing:-.035em;margin-top:70px}
 
   </style>
-  <div id="root" data-composition-id="02-intro" data-width="1080" data-height="1920">
-    <div id="f02-bg" class="clip f02-bg" data-start="0" data-duration="1.579" data-track-index="0"></div>
+  <div id="root" data-composition-id="02-intro" data-width="1080" data-height="1920" data-duration="2.34">
+    <div id="f02-bg" class="clip f02-bg" data-start="0" data-duration="2.34" data-track-index="0"></div>
     <div class="f02-glow" id="f02-glow"></div>
     <div class="f02-f" style="align-items:center;justify-content:center;text-align:center;padding-bottom:140px">
       <div class="f02-tile" id="f02-tile"><img src="capture/assets/nexus-logo.png" alt="Nexus" class="f02-logo"></div>
@@ -42,8 +42,8 @@
     };
     tl.fromTo(q("#f02-glow"), {opacity:0, scale:0.6}, {opacity:1, scale:1, duration:0.9, ease:"power2.out"}, 0);
     tl.fromTo(q("#f02-tile"), {opacity:0, scale:0.55}, {opacity:1, scale:1, duration:0.6, ease:"back.out(1.8)"}, 0.02);
-    tl.fromTo(q("#f02-name"), {opacity:0, y:50}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.67);
-    tl.fromTo(q("#f02-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.45, ease:"power3.out"}, 0.92);
+    tl.fromTo(q("#f02-name"), {opacity:0, y:50}, {opacity:1, y:0, duration:0.5, ease:"power3.out"}, 0.78);
+    tl.fromTo(q("#f02-eb"), {opacity:0, y:30}, {opacity:1, y:0, duration:0.45, ease:"power3.out"}, 1.03);
 
     window.__timelines["02-intro"] = tl;
   })();
