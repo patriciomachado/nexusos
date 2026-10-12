@@ -79,7 +79,7 @@ function instanceOf(name) {
     let inst = instances.get(name)
     if (!inst) {
         inst = {
-            name, sock: null, state: 'close', qr: null, user: null, webhook: readWebhook(name), starting: null, media: new Map(),
+            name, sock: null, state: 'close', qr: null, user: null, webhook: readWebhook(name), starting: null, media: new Map(), sent: new Set(),
             settings: readJsonFile(settingsFile(name), {}),
             contacts: new Map(Object.entries(readJsonFile(contactsFile(name), {}))),
             contactsDirty: false, presenceTimer: null,
@@ -207,7 +207,13 @@ async function emit(inst, event, data) {
 
 async function forward(inst, msg) {
     const jid = msg.key?.remoteJid ?? ''
-    if (!msg.message || msg.key?.fromMe || /@(broadcast|newsletter)$/.test(jid) || jid === 'status@broadcast') return
+    if (!msg.message || /@(broadcast|newsletter)$/.test(jid) || jid === 'status@broadcast') return
+    // Sent by the store: echoes of what the API sent (Alice) are dropped; what was typed on the phone is
+    // forwarded flagged `fromPhone`, so Alice can step back from that chat for a while.
+    const fromMe = !!msg.key?.fromMe
+    // The echo of an API send can land before sendMessage() returns its id: give it a moment.
+    if (fromMe) await new Promise(r => setTimeout(r, 1500))
+    if (fromMe && inst.sent.has(msg.key.id)) return
     const message = { ...content(msg.message) }
     const messageType = Object.keys(message).find(k => k === 'conversation' || k.endsWith('Message')) ?? 'unknown'
     if (messageType === 'protocolMessage' || messageType === 'reactionMessage') return
@@ -216,7 +222,7 @@ async function forward(inst, msg) {
 
     // Audio is transcribed by the app; an image sent with a sticker command is turned into a sticker.
     const caption = message.imageMessage?.caption ?? message.videoMessage?.caption ?? ''
-    const wantsMedia = message.audioMessage || ((message.imageMessage || message.videoMessage) && COMMAND_RE.test(caption))
+    const wantsMedia = !fromMe && (message.audioMessage || ((message.imageMessage || message.videoMessage) && COMMAND_RE.test(caption)))
     if (wantsMedia) {
         try {
             const buffer = await downloadMediaMessage(msg, 'buffer', {}, { logger, reuploadRequest: inst.sock?.updateMediaMessage })
@@ -230,7 +236,7 @@ async function forward(inst, msg) {
         }
     }
 
-    await emit(inst, 'messages.upsert', { key: msg.key, pushName: msg.pushName ?? null, message, messageType, messageTimestamp: toNumber(msg.messageTimestamp) })
+    await emit(inst, 'messages.upsert', { key: msg.key, pushName: msg.pushName ?? null, message, messageType, messageTimestamp: toNumber(msg.messageTimestamp), ...(fromMe ? { fromPhone: true } : {}) })
 }
 
 async function waitForQrOrOpen(inst, ms = 12000) {
@@ -359,6 +365,7 @@ const routes = [
         if (!text) throw httpError(400, 'text é obrigatório')
         const jid = await jidFor(inst, body.number)
         const sent = await sock.sendMessage(jid, { text: String(text) })
+        if (sent?.key?.id) { inst.sent.add(sent.key.id); if (inst.sent.size > 200) inst.sent.delete(inst.sent.values().next().value) }
         return { key: sent?.key ?? null, status: 'PENDING' }
     }],
 
@@ -389,6 +396,7 @@ const routes = [
             : type === 'audio' ? { audio: buffer, mimetype: mimetype || 'audio/mpeg', ptt: body.ptt === true }
             : { document: buffer, mimetype: mimetype || 'application/octet-stream', fileName: body.fileName || 'arquivo', caption }
         const sent = await sock.sendMessage(jid, payload)
+        if (sent?.key?.id) { inst.sent.add(sent.key.id); if (inst.sent.size > 200) inst.sent.delete(inst.sent.values().next().value) }
         return { key: sent?.key ?? null, status: 'PENDING' }
     }],
 
@@ -399,6 +407,7 @@ const routes = [
         const { buffer } = await mediaBuffer(body.image)
         const sticker = await toSticker(buffer)
         const sent = await sock.sendMessage(jid, { sticker })
+        if (sent?.key?.id) { inst.sent.add(sent.key.id); if (inst.sent.size > 200) inst.sent.delete(inst.sent.values().next().value) }
         return { key: sent?.key ?? null, status: 'PENDING' }
     }],
 
